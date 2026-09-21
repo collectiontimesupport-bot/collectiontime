@@ -1,0 +1,47 @@
+COME È FATTO IL SITO
+--------------------
+index.html                 pagina iniziale con l'elenco delle collezioni
+collezioni.json            l'elenco (titolo, cartella, descrizione, immagine di ogni collezione)
+legami-erasable/           la collezione Legami (index.html + anteprima.png)
+modello-collezione/        copia vuota da usare per creare nuove collezioni
+
+COME AGGIUNGERE UNA NUOVA COLLEZIONE (per esempio "lampadine")
+---------------------------------------------------------------
+1. Copia la cartella modello-collezione e chiamala come vuoi, senza spazi né accenti (es. lampadine).
+   Il nome della cartella serve anche a tenere separati i dati di ogni collezione nel browser:
+   cartelle con nomi diversi = dati separati.
+
+2. Apri lampadine/index.html con un editor di testo (non con Word). Cerca la parola CONFIG: trovi un blocco
+   con le impostazioni. Cambia solo i testi tra virgolette:
+     titolo            il titolo in alto (es. "Lampadine")
+     nome, un          singolare (es. "lampadina", "una lampadina")
+     possedute         "possedute" (femminile) o "posseduti" (maschile)
+     tutte             "Tutte" o "Tutti"
+     ceLiHo            "Ce le ho" o "Ce li ho"
+     tuttiTesto        es. "Tutte le lampadine"
+     mancanti          "Quelle che mi mancano" o "Quelli che mi mancano"
+     aggiungi          testo del pulsante (es. "Aggiungi lampadina")
+     etichettaEp       nome del campo codice (es. "Codice")
+     etichettaNumero   nome del campo numero
+     colonne           "auto" (adatta il numero di colonne) oppure un numero fisso (come 25 per le penne)
+     proporzione       altezza rispetto alla larghezza: 7 per oggetti alti e sottili come le penne,
+                       1.4 per oggetti quasi quadrati
+     pdfColonne, pdfFile, pdfAltezza   colonne, file e altezza nel PDF stampato
+     suggerimenti      hashtag suggeriti nei dettagli (anche vuoto: [])
+   Non toccare "home".
+
+3. Aggiungi la collezione a collezioni.json, copiando una riga come quella di legami-erasable e cambiando
+   titolo, cartella e descrizione (l'immagine è facoltativa).
+
+4. Apri lampadine/index.html dal tuo computer: sei in modalità proprietario. Aggiungi gli elementi con il
+   pulsante "Aggiungi ...", compila i dettagli, poi premi "Pubblica": scarica catalogo-dati.json.
+   Mettilo nella cartella lampadine (accanto a index.html).
+
+PUBBLICARE SU GITHUB PAGES
+--------------------------
+Carica su GitHub tutta la struttura (index.html, collezioni.json e le cartelle). Ogni collezione sarà
+raggiungibile su tuodominio.it/nome-cartella/ . Per aggiornare i dati di una collezione, ricarica il suo
+catalogo-dati.json con lo stesso nome.
+
+NOTA: sulla pagina pubblicata i visitatori non possono aggiungere elementi né cambiare i dati fissi:
+possono solo segnare "Ce l'ho", cambiare gli hashtag e la foto (sul proprio browser).
