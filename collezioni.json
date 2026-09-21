@@ -1,0 +1,12 @@
+{
+  "titolo": "Le mie collezioni",
+  "sottotitolo": "Scegli una collezione",
+  "collezioni": [
+    {
+      "titolo": "Legami Erasable Pens",
+      "cartella": "legami-erasable",
+      "descrizione": "Le penne cancellabili Legami, in ordine di catalogo.",
+      "immagine": "legami-erasable/anteprima.png"
+    }
+  ]
+}
