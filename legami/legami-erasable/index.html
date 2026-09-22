@@ -9,7 +9,7 @@
                               per aggiungere o cambiare penne)
        css/stile.css        ← tutto l'aspetto grafico (colori, misure…)
        js/app.js            ← il funzionamento (griglia, ricerca, bagliore,
-                              salvataggio, PDF, backup…)
+                              salvataggio, PDF…)
        js/pdf-lib.min.js    ← libreria esterna per creare i PDF
                               (non va modificata; viene caricata solo
                               quando si preme "Stampa")
@@ -84,16 +84,13 @@
     <p id="emptyText"></p>
   </section>
 
-  <!-- ============ PIÈ DI PAGINA: BACKUP E STAMPA ============ -->
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       Esporta e Importa sono nella banda in alto e valgono per tutto il sito. -->
   <footer>
     <p class="hint" id="footHint"></p>
-    <span>Backup:</span>
-    <button class="btn" id="btnExport" type="button">Esporta</button>
-    <button class="btn" id="btnImport" type="button">Importa</button>
     <button class="btn" id="btnPrint" type="button">Stampa</button>
     <button class="btn" id="btnPublish" type="button" hidden title="Salva il file dei dati da caricare sul sito">Pubblica</button>
     <span class="modebadge" id="modeBadge" hidden>Modalità proprietario</span>
-    <input type="file" id="importInput" accept="application/json,.json" hidden>
   </footer>
 </div>
 
@@ -185,7 +182,7 @@
    copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
    ===================================================================== */
 const CONFIG = {
-  id: "legami-erasable",           // nome usato nei file di backup e nei PDF
+  id: "legami-erasable",           // nome usato nei PDF
   dbName: "catalogo-penne",        // archivio nel browser (NON cambiarlo: perderesti le spunte salvate)
   titolo: "Legami Erasable Pens",  // titolo della scheda del browser e del PDF
   nome: "penna",                   // come si chiama un elemento

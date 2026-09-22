@@ -9,25 +9,13 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
+  /* Colori della pagina: --ink = testo blu scuro, --muted = testo grigio,
+     --line = bordi sottili, --amber = ambra (lineette e sottolineature).
+     Le bande in alto e in basso hanno il loro stile in sito.css. */
   :root { --ink: #1A2140; --muted: #5D6580; --line: #D5D9E2; --amber: #F2A900; color-scheme: light; }
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: #fff; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-
-  .st-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: #fff; }
-  .st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(15px, 4.4vw, 18px); line-height: 1; color: var(--ink); text-decoration: none; }
-  .st-brand .mk { width: 1.55em; height: 1.55em; flex: none; }
-  .st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
-  .st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
-  .st-top nav { display: flex; gap: 20px; font-size: .875rem; }
-  .st-top nav a { color: var(--ink); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
-  .st-top nav a:hover { border-bottom-color: var(--line); }
-  .st-top nav a[aria-current="page"] { border-bottom-color: var(--amber); }
-
-  .st-band { margin-top: auto; background: var(--ink); color: #fff; border-top: 3px solid var(--amber); padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
-  .st-band a { color: #fff; text-underline-offset: 3px; }
-  .st-band a:hover { color: var(--amber); }
-  .st-band :focus-visible { outline-color: var(--amber); }
 
   .wrap { width: 100%; max-width: 600px; margin: 0 auto; padding: 56px 20px 72px; }
   h1 { margin: 0; font: 600 clamp(2rem, 4vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
@@ -45,17 +33,10 @@
 </style>
 </head>
 <body>
-<header class="st-top">
-  <a class="st-brand" href="index.html" aria-label="Collection Time, pagina iniziale">
-    <svg class="mk" viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="10" fill="#F2A900"/><path d="M12 23l7 7 13-14" fill="none" stroke="#1A2140" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span class="st-wm">Collecti<svg class="st-clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#1A2140" stroke-width="2.6"/><path d="M12 12 8 9.7M12 12 17.7 8.7" fill="none" stroke="#F2A900" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="12" r="1.3" fill="#1A2140"/></svg>n Time</span>
-  </a>
-  <nav aria-label="Principale">
-    <a href="index.html">Collezioni</a>
-    <a href="contatti.html" aria-current="page">Contatti</a>
-  </nav>
-</header>
+<!-- Banda in alto (logo, Esporta, Importa): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
 
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="wrap">
   <h1>Contatti</h1>
   <p class="lead">Per segnalare un errore, proporre una novità o solo per scrivermi.</p>
@@ -69,11 +50,11 @@
   </div>
 </main>
 
-<footer class="st-band">
-  <span>Collection Time</span>
-  <a href="contatti.html">Contatti</a>
-</footer>
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
 
+<!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
+<script src="script.js"></script>
 <script>
 /* L'indirizzo viene composto qui, così non compare in chiaro nel codice della pagina (meno spam) */
 (function () {

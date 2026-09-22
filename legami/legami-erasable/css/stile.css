@@ -78,25 +78,9 @@ button { cursor: pointer; }
 
 /* =====================================================================
    3. HEADER E FOOTER DEL SITO
-   Il loro HTML arriva da header.html e footer.html (vedi script.js).
-   I segnaposto non devono creare un riquadro in più: "display: contents".
+   Sono uguali in tutto il sito: il loro aspetto è in ../../sito.css
+   (lo carica ../../script.js).
    ===================================================================== */
-#header-placeholder, #footer-placeholder { display: contents; }
-
-.st-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: #fff; }
-.st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(15px, 4.4vw, 18px); line-height: 1; color: var(--ink); text-decoration: none; }
-.st-brand .mk { width: 1.55em; height: 1.55em; flex: none; }
-.st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
-.st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
-.st-top nav { display: flex; gap: 20px; font-size: .875rem; }
-.st-top nav a { color: var(--ink); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
-.st-top nav a:hover { border-bottom-color: var(--line); }
-.st-top nav a[aria-current="page"] { border-bottom-color: var(--accent); }   /* voce della pagina attuale */
-
-.st-band { margin-top: auto; background: var(--ink); color: #fff; border-top: 3px solid var(--accent); padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
-.st-band a { color: #fff; text-underline-offset: 3px; }
-.st-band a:hover { color: var(--accent); }
-.st-band :focus-visible { outline-color: var(--accent); }
 
 /* link "← Legami" in alto a sinistra */
 .backlink { position: absolute; top: 10px; left: 16px; font-size: .8125rem; color: var(--muted); text-decoration: none; }
@@ -424,7 +408,7 @@ dialog input[readonly]:focus-visible { outline: none; border-color: var(--line);
 .choice small { display: block; color: var(--muted); font-size: .8125rem; line-height: 1.35; }
 #printDlg .dlg-body:focus { outline: none; }
 
-/* avviso temporaneo in basso ("PDF salvato…", "Backup salvato…") */
+/* avviso temporaneo in basso ("PDF salvato…") */
 #status {
   position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
   background: var(--ink); color: var(--paper);

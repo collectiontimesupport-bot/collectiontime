@@ -23,7 +23,7 @@
      · nuove penne da foto
      · finestra di modifica
      · stampa in PDF
-     · controlli, trascinamento, backup
+     · controlli, trascinamento, pubblicazione
      · avvio
    ===================================================================== */
 
@@ -1041,7 +1041,8 @@
     addFiles(e.dataTransfer.files);
   });
 
-  /* ---------- backup ---------- */
+  /* ---------- pubblicazione ----------
+     (Esporta e Importa sono nella banda in alto: li gestisce ../../script.js per tutto il sito) */
   /* scarica un oggetto come file .json */
   function download(name, obj) {
     const blob = new Blob([JSON.stringify(obj)], { type: 'application/json' });
@@ -1053,61 +1054,6 @@
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
-  const today = () => new Date().toISOString().slice(0, 10);
-  $('btnExport').addEventListener('click', () => {
-    if (ADMIN) {
-      download('catalogo-' + CONFIG.id + '-' + today() + '.json', { version: 2, mode: 'owner', pens });
-    } else {
-      /* i visitatori salvano solo le proprie cose: spunte, hashtag e foto personali */
-      const mine = pens.filter(p => p.owned || p.tagsTouched || p.notesTouched).map(p => {
-        const r = { id: p.id, owned: p.owned };
-        if (p.tagsTouched) { r.tags = p.tags; r.tagsTouched = true; }
-        if (p.notesTouched) { r.notes = p.notes; r.notesTouched = true; }
-        return r;
-      });
-      download('mie-' + CONFIG.id + '-' + today() + '.json', { version: 3, mode: 'visitor', pens: mine });
-    }
-    say('Backup salvato nella cartella Download.');
-  });
-  $('btnImport').addEventListener('click', () => $('importInput').click());
-  $('importInput').addEventListener('change', async e => {
-    const file = e.target.files[0];
-    e.target.value = '';
-    if (!file) return;
-    try {
-      const data = JSON.parse(await file.text());
-      const list = Array.isArray(data) ? data : data.pens || [];
-      if (ADMIN && data.mode !== 'visitor') {
-        const incoming = list
-          .filter(p => p && typeof p.id === 'string' && typeof p.image === 'string')
-          .map(normalize);
-        if (!incoming.length) throw new Error('vuoto');
-        await saveMany(incoming);
-        const ids = new Set(incoming.map(p => p.id));
-        pens = pens.filter(p => !ids.has(p.id)).concat(incoming);
-        render();
-        say('Dati importati: ' + incoming.length + '.');
-      } else {
-        /* file personale: prendo solo spunte, hashtag e note delle penne che esistono già */
-        const byId = new Map(pens.map(p => [p.id, p]));
-        const changed = [];
-        list.forEach(r => {
-          const cur = r && byId.get(r.id);
-          if (!cur) return;
-          if (typeof r.owned === 'boolean') cur.owned = r.owned;
-          if (r.tagsTouched && Array.isArray(r.tags)) { cur.tags = r.tags.map(String).slice(0, 30); cur.tagsTouched = true; }
-          if (r.notesTouched && typeof r.notes === 'string') { cur.notes = r.notes.slice(0, 2000); cur.notesTouched = true; }
-          changed.push(cur);
-        });
-        if (!changed.length) throw new Error('vuoto');
-        await saveMany(changed);
-        render();
-        say('Dati importati: ' + changed.length + '.');
-      }
-    } catch (err) {
-      say('Il file non è un backup valido del catalogo.');
-    }
-  });
 
   /* Pubblica: salva i dati "fissi" (numero, colore, nome, note, hashtag, penne aggiunte) da caricare sul sito */
   $('btnPublish').addEventListener('click', () => {
@@ -1166,6 +1112,14 @@
       fresh.forEach(f => {
         const cur = byId.get(f.id);
         if (!cur) { pens.push(f); toSave.push(f); return; }
+        /* scheda creata da "Importa" prima di aprire questa pagina: ha solo spunta, note e hashtag */
+        if (cur.v === undefined) {
+          Object.assign(cur, f, { owned: cur.owned },
+            cur.notesTouched ? { notes: cur.notes, notesTouched: true } : {},
+            cur.tagsTouched ? { tags: cur.tags, tagsTouched: true } : {});
+          toSave.push(cur);
+          return;
+        }
         if (cur.v !== SEED_V) {
           if (!cur.customImage) cur.image = f.image;
           if (!cur.metaTouched) {

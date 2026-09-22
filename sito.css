@@ -1,0 +1,53 @@
+/* ==========================================================
+   sito.css — Collection Time
+   Aspetto della banda in alto (header.html), della banda in
+   basso (footer.html) e dell'avviso di Esporta/Importa.
+   È uguale in tutto il sito: lo carica script.js, quindi le
+   pagine non devono richiamarlo.
+
+   Colori usati (per cambiarli, sostituisci il codice ovunque):
+     #1A2140  blu scuro   testo e banda in basso
+     #D5D9E2  grigio      linea sotto la banda in alto
+     #F2A900  ambra       sottolineature e bordo della banda in basso
+   ========================================================== */
+
+/* i segnaposto non creano un riquadro in più */
+#header-placeholder, #footer-placeholder { display: contents; }
+
+/* ---------- banda in alto ----------
+   "position: sticky; top: 0" la tiene ferma in cima mentre si scorre.
+   z-index 15: sta sopra le penne ma sotto le finestre e gli avvisi. */
+.st-top {
+  position: sticky; top: 0; z-index: 15;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px;
+  margin: 0; padding: 12px 20px;
+  border-bottom: 1px solid #D5D9E2; background: #fff;
+}
+.st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(15px, 4.4vw, 18px); line-height: 1; color: #1A2140; text-decoration: none; }
+.st-brand .mk { width: 1.55em; height: 1.55em; flex: none; }
+.st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
+.st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
+
+/* pulsanti Esporta / Importa: sembrano link, con la riga ambra al passaggio del mouse */
+.st-top nav { display: flex; gap: 20px; }
+.st-top nav button {
+  font: inherit; font-size: .875rem; color: #1A2140; cursor: pointer;
+  background: none; border: 0; border-bottom: 2px solid transparent; padding: 6px 0;
+}
+.st-top nav button:hover { border-bottom-color: #F2A900; }
+.st-top :focus-visible { outline: 2px solid #1A2140; outline-offset: 3px; }
+
+/* ---------- banda in basso ---------- */
+.st-band { margin-top: auto; background: #1A2140; color: #fff; border-top: 3px solid #F2A900; padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+.st-band a { color: #fff; text-underline-offset: 3px; }
+.st-band a:hover { color: #F2A900; }
+.st-band :focus-visible { outline: 2px solid #F2A900; outline-offset: 3px; }
+
+/* ---------- avviso dopo Esporta / Importa ---------- */
+.st-avviso {
+  position: fixed; left: 50%; bottom: 20px; z-index: 30; transform: translateX(-50%);
+  max-width: 90vw; padding: 10px 16px; border-radius: 10px;
+  background: #1A2140; color: #fff; font: .9375rem/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.st-avviso.show { opacity: 1; }

@@ -9,24 +9,13 @@
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <style>
+  /* Colori della pagina: --ink = testo blu scuro, --muted = testo grigio,
+     --line = bordi sottili, --amber = ambra (lineette e sottolineature).
+     Le bande in alto e in basso hanno il loro stile in sito.css. */
   :root { --ink: #1A2140; --muted: #5D6580; --line: #D5D9E2; --amber: #F2A900; color-scheme: light; }
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: #fff; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  #header-placeholder, #footer-placeholder { display: contents; }
-  .st-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: #fff; }
-  .st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(15px, 4.4vw, 18px); line-height: 1; color: var(--ink); text-decoration: none; }
-  .st-brand .mk { width: 1.55em; height: 1.55em; flex: none; }
-  .st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
-  .st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
-  .st-top nav { display: flex; gap: 20px; font-size: .875rem; }
-  .st-top nav a { color: var(--ink); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
-  .st-top nav a:hover { border-bottom-color: var(--line); }
-  .st-top nav a[aria-current="page"] { border-bottom-color: var(--amber); }
-  .st-band { margin-top: auto; background: var(--ink); color: #fff; border-top: 3px solid var(--amber); padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
-  .st-band a { color: #fff; text-underline-offset: 3px; }
-  .st-band a:hover { color: var(--amber); }
-  .st-band :focus-visible { outline-color: var(--amber); }
   .wrap { width: 100%; max-width: 700px; margin: 0 auto; padding: 56px 20px 72px; text-align: center; }
   .backlink { display: inline-block; margin: 0 0 28px; color: var(--muted); text-decoration: none; font-size: .9375rem; }
   .backlink:hover { color: var(--ink); }
@@ -36,16 +25,20 @@
 </style>
 </head>
 <body>
+<!-- Banda in alto (logo, Esporta, Importa): la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="wrap">
   <a class="backlink" href="../index.html">&larr; Legami</a>
   <h1>Righello</h1>
   <p class="sub">Questa collezione arriverà presto.</p>
 </main>
 
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
+<!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
 <script src="../../script.js"></script>
 </body>
 </html>
