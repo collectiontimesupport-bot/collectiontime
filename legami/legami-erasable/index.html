@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Legami Erasable Pens</title>
+<meta name="theme-color" content="#1A2140">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <style>
   :root {
     --paper: #FFFFFF;
@@ -29,10 +32,31 @@
 
   body {
     margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     background: var(--paper);
     color: var(--ink);
     font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
+
+  #header-placeholder, #footer-placeholder { display: contents; }
+
+  .st-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: #fff; }
+  .st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(15px, 4.4vw, 18px); line-height: 1; color: var(--ink); text-decoration: none; }
+  .st-brand .mk { width: 1.55em; height: 1.55em; flex: none; }
+  .st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
+  .st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
+  .st-top nav { display: flex; gap: 20px; font-size: .875rem; }
+  .st-top nav a { color: var(--ink); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
+  .st-top nav a:hover { border-bottom-color: var(--line); }
+  .st-top nav a[aria-current="page"] { border-bottom-color: #F2A900; }
+
+  .st-band { margin-top: auto; background: var(--ink); color: #fff; border-top: 3px solid #F2A900; padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+  .st-band a { color: #fff; text-underline-offset: 3px; }
+  .st-band a:hover { color: #F2A900; }
+  .st-band :focus-visible { outline-color: #F2A900; }
+
   .wrap { max-width: 1600px; margin: 0 auto; padding: 36px 16px 48px; }
 
   header { margin-bottom: 12px; }
