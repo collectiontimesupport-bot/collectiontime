@@ -10,7 +10,7 @@
        css/stile.css        ← tutto l'aspetto grafico (colori, misure…)
        (il funzionamento, app.js, e la libreria dei PDF stanno nella
         cartella "comune" del sito: sono gli stessi per tutte le collezioni)
-       immagini/            ← le foto delle penne in PNG trasparente
+       immagini/            ← le foto delle penne in WebP trasparente (leggere)
 
      ▸ PER AGGIUNGERE UNA PENNA: vai in fondo alla pagina, al blocco
        "ELENCO DELLE PENNE", e segui le istruzioni scritte lì.
@@ -19,15 +19,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Legami Erasable Pens</title>
+<title>Legami Erasable Pens · Collection Time</title>
+<meta name="description" content="Legami Erasable Pens: la collezione completa, con quelle che ho e quelle che mi mancano.">
 <meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="manifest" href="../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Legami Erasable Pens · Collection Time">
+<meta property="og:description" content="Legami Erasable Pens: la collezione completa, con quelle che ho e quelle che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/legami/legami-erasable/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../sito.css?v=6">
 
 <!-- Aspetto grafico della pagina -->
-<!-- "?v=3" è il numero di versione: quando cambi un file .js o .css aumentalo (v=3 → v=4)
+<!-- "?v=6" è il numero di versione: quando cambi un file .js o .css aumentalo (v=6 → v=7)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<link rel="stylesheet" href="css/stile.css?v=3">
+<link rel="stylesheet" href="css/stile.css?v=5">
 </head>
 <body>
 
@@ -50,7 +66,7 @@
           <button type="button" class="icon-btn" id="btnSearch" aria-label="Cerca" aria-expanded="false" title="Cerca">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
           </button>
-          <input type="search" id="search" placeholder="Cerca numero, nome, note" aria-label="Cerca" tabindex="-1" autocomplete="off">
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
         </div>
         <!-- Filtro: tutte / possedute / mancanti -->
         <select id="filter" aria-label="Mostra">
@@ -154,7 +170,8 @@
         <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" autocomplete="off" placeholder="N°" aria-labelledby="lblNumero"></div>
       </div>
       <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" autocomplete="off" aria-labelledby="lblNome"></div>
-      <label class="field">Note<textarea id="fNotes" rows="3"></textarea></label>
+      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
       <div class="field">Metadati
         <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
         <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
@@ -211,8 +228,11 @@ const CONFIG = {
    nello stesso ordine di questo elenco.
 
    COME AGGIUNGERE UNA PENNA
-     1. Salva la foto in PNG con lo sfondo trasparente nella cartella
-        "immagini" (es. immagini/96.png). Consiglio: penna in
+     1. Salva la foto con lo sfondo trasparente nella cartella
+        "immagini" in formato WebP, che pesa circa la metà del PNG
+        (es. immagini/96.webp). Da PNG a WebP: apri squoosh.app,
+        trascina la foto, a destra scegli "WebP" qualità 88 e scarica.
+        Va bene anche un PNG, ma il sito diventa più lento. Consiglio: penna in
         verticale, alta circa 800–1000 pixel, senza margini vuoti.
      2. Copia una riga qui sotto, incollala nel punto dove vuoi che
         compaia e cambia i valori.
@@ -229,14 +249,14 @@ const CONFIG = {
      nome      nome della penna (es. "RICCIO")
      colore    nome del colore (es. "Blu")          — facoltativo
      hex       codice del colore (es. "#2c357e")    — facoltativo
-     foto      percorso della foto: "immagini/NOMEFILE.png"
+     foto      percorso della foto: "immagini/NOMEFILE.webp"
                (se manca, al posto della penna compare una sagoma vuota)
      limitata  true = edizione limitata (numero in rosso)   — facoltativo
      hashtag   es. ["Natale", "Limited Edition"]            — facoltativo
-     note      testo libero                                  — facoltativo
+     info      informazioni fisse (es. "Prima versione con stellina")  — facoltativo
 
    ESEMPIO
-     { id: "seed-116", numero: "96", ep: "EP0096", nome: "RICCIO", colore: "Marrone", hex: "#7a4b2a", foto: "immagini/96.png" },
+     { id: "seed-116", numero: "96", ep: "EP0096", nome: "RICCIO", colore: "Marrone", hex: "#7a4b2a", foto: "immagini/96.webp" },
 
    Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
    virgolette "…". Le penne 60, 61, 77 e LE Cavalluccio usano la stessa
@@ -244,127 +264,127 @@ const CONFIG = {
    quando avrai la foto vera basta cambiare "foto".
    ===================================================================== */
 const PENNE = [
-  { id: "seed-001", numero: "01", ep: "EP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01.png" },
-  { id: "seed-002", numero: "01-A", ep: "EP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-A.png" },
-  { id: "seed-003", numero: "01-S", ep: "EP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-004", numero: "02", ep: "EP0002", nome: "ORSO", colore: "Rosso", hex: "#ff4013", foto: "immagini/02.png" },
-  { id: "seed-005", numero: "02-S", ep: "EP0002", nome: "ORSO", colore: "Blu", hex: "#2c357e", foto: "immagini/02-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-006", numero: "03", ep: "EP0003", nome: "KOALA", colore: "Rosso", hex: "#e32400", foto: "immagini/03.png" },
-  { id: "seed-007", numero: "03-S", ep: "EP0003", nome: "KOALA", colore: "Rosso", hex: "#e32400", foto: "immagini/03-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-008", numero: "04", ep: "EP0004", nome: "UNICORNO", colore: "Nero", hex: "#27292b", foto: "immagini/04.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-009", numero: "05", ep: "EP0005", nome: "GATTO", colore: "Nero", hex: "#27292b", foto: "immagini/05.png" },
-  { id: "seed-010", numero: "05-S", ep: "EP0005", nome: "GATTO", colore: "Nero", hex: "#27292b", foto: "immagini/05-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-011", numero: "06", ep: "EP0006", nome: "SQUALO", colore: "Blu", hex: "#0657ab", foto: "immagini/06.png" },
-  { id: "seed-012", numero: "06-A", ep: "EP0006", nome: "SQUALO", colore: "Blu", hex: "#0061ff", foto: "immagini/06-A.png" },
-  { id: "seed-013", numero: "06-S", ep: "EP0006", nome: "SQUALO", colore: "Blu", hex: "#0657ab", foto: "immagini/06-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-014", numero: "07", ep: "EP0007", nome: "DINOSAURO", colore: "Verde", hex: "#72ca4d", foto: "immagini/07.png" },
-  { id: "seed-015", numero: "07-S", ep: "EP0007", nome: "DINOSAURO", colore: "Verde", hex: "#72ca4d", foto: "immagini/07-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-016", numero: "08", ep: "EP0008", nome: "MAIALE", colore: "Rosa", hex: "#f3dbe1", foto: "immagini/08.png" },
-  { id: "seed-017", numero: "08-S", ep: "EP0008", nome: "MAIALE", colore: "Rosa", hex: "#f3dbe1", foto: "immagini/08-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-018", numero: "09", ep: "EP0009", nome: "ASTRONAUTA", colore: "Nero", hex: "#000000", foto: "immagini/09.png" },
-  { id: "seed-019", numero: "09-S", ep: "EP0009", nome: "ASTRONAUTA", colore: "Nero", hex: "#000000", foto: "immagini/09-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-020", numero: "10", ep: "EP0010", nome: "LAMA", colore: "Blu", hex: "#0061ff", foto: "immagini/10.png" },
-  { id: "seed-021", numero: "10-S", ep: "EP0010", nome: "LAMA", colore: "Blu", hex: "#0061ff", foto: "immagini/10-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-022", numero: "11", ep: "EP0011", nome: "CONIGLIO", colore: "Viola", hex: "#834687", foto: "immagini/11.png", note: "Prima versione senza coda" },
-  { id: "seed-023", numero: "11-S", ep: "EP0011", nome: "CONIGLIO", colore: "Viola", hex: "#834687", foto: "immagini/11-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-024", numero: "12", ep: "EP0012", nome: "FLORA", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/12.png" },
-  { id: "seed-025", numero: "12-S", ep: "EP0012", nome: "FLORA", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/12-S.png", hashtag: ["Stellina"], note: "Prima versione con stellina" },
-  { id: "seed-026", numero: "13", ep: "EP0013", nome: "UNICORNO", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/13.png" },
-  { id: "seed-027", numero: "14", ep: "EP0014", nome: "KOALA", colore: "Blu", hex: "#2c357e", foto: "immagini/14.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-028", numero: "15", ep: "EP0015", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/15.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-029", numero: "16", ep: "EP0016", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/16.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-030", numero: "17", ep: "EP0017", nome: "LEONE", colore: "Arancione", hex: "#d95a44", foto: "immagini/17.png" },
-  { id: "seed-031", numero: "18", ep: "EP0018", nome: "ELEFANTE", colore: "Blu", hex: "#2c357e", foto: "immagini/18.png" },
-  { id: "seed-032", numero: "19", ep: "EP0019", nome: "GIRAFFA", colore: "Nero", hex: "#000000", foto: "immagini/19.png" },
-  { id: "seed-033", numero: "20", ep: "EP0020", nome: "CORGI", colore: "Nero", hex: "#000000", foto: "immagini/20.png" },
-  { id: "seed-034", numero: "21", ep: "EP0021", nome: "VOLPE", colore: "Verde", hex: "#3c8765", foto: "immagini/21.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-035", numero: "22", ep: "EP0022", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/22.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-036", numero: "23", ep: "EP0023", nome: "PINGUINO", colore: "Blu", hex: "#2c357e", foto: "immagini/23.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-037", numero: "24", ep: "EP0024", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/24.png", note: "Con miele" },
-  { id: "seed-038", numero: "25", ep: "EP0025", nome: "FRANKENSTEIN", colore: "Verde", hex: "#3c8765", foto: "immagini/25.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-039", numero: "26", ep: "EP0026", nome: "MUMMIA", colore: "Nero", hex: "#000000", foto: "immagini/26.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-040", numero: "27", ep: "EP0027", nome: "ZUCCA", colore: "Arancione", hex: "#d95a44", foto: "immagini/27.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-041", numero: "LE", ep: "", nome: "GATTO", colore: "Rosso", hex: "#c43329", foto: "immagini/LE-gatto.png", limitata: true, hashtag: ["San Valentino", "Limited Edition"], note: "Codice EP sostituito da scritta “LIMITED EDITION”" },
-  { id: "seed-042", numero: "LE", ep: "", nome: "DALMATA", colore: "Nero", hex: "#000000", foto: "immagini/LE-dalmata.png", limitata: true, hashtag: ["San Valentino", "Limited Edition"], note: "Codice EP sostituito da scritta “LIMITED EDITION”" },
-  { id: "seed-043", numero: "28", ep: "EP0028", nome: "IPPOPOTAMO", colore: "Blu", hex: "#2c357e", foto: "immagini/28.png" },
-  { id: "seed-044", numero: "29", ep: "EP0029", nome: "APE", colore: "Nero", hex: "#000000", foto: "immagini/29.png" },
-  { id: "seed-045", numero: "30", ep: "EP0030", nome: "TARTARUGA", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/30.png", note: "Versione con codice EP" },
-  { id: "seed-046", numero: "31", ep: "EP0031", nome: "PESCE PAGLIACCIO", colore: "Nero", hex: "#000000", foto: "immagini/31.png", note: "Versione con codice EP" },
-  { id: "seed-047", numero: "32", ep: "EP0032", nome: "CAVALLUCCIO MARINO", colore: "Viola", hex: "#834687", foto: "immagini/32.png", note: "Versione con codice EP" },
-  { id: "seed-048", numero: "LE", ep: "", nome: "TARTARUGA", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/LE-tartaruga.png", limitata: true, hashtag: ["Limited Edition"], note: "Codice EP sostituito da scritta “LIMITED EDITION”" },
-  { id: "seed-049", numero: "LE", ep: "", nome: "PESCE PAGLIACCIO", colore: "Nero", hex: "#000000", foto: "immagini/LE-pesce-pagliaccio.png", limitata: true, hashtag: ["Limited Edition"], note: "Codice EP sostituito da scritta “LIMITED EDITION”" },
-  { id: "seed-050", numero: "LE", ep: "", nome: "CAVALLUCCIO MARINO", colore: "Viola", hex: "#834687", foto: "immagini/32.png", limitata: true, hashtag: ["Limited Edition"], note: "Codice EP sostituito da scritta “LIMITED EDITION”" },
-  { id: "seed-051", numero: "33", ep: "EP0033", nome: "PINGUINO", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/33.png" },
-  { id: "seed-052", numero: "34", ep: "EP0034", nome: "PIPISTRELLO", colore: "Nero", hex: "#000000", foto: "immagini/34.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-053", numero: "35", ep: "EP0035", nome: "STREGA", colore: "Viola", hex: "#834687", foto: "immagini/35.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-054", numero: "36", ep: "EP0036", nome: "VAMPIRO", colore: "Rosso", hex: "#c43329", foto: "immagini/36.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-055", numero: "37", ep: "EP0037", nome: "BABBO NATALE", colore: "Rosso", hex: "#c43329", foto: "immagini/37.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-056", numero: "38", ep: "EP0038", nome: "RENNA", colore: "Blu", hex: "#2c357e", foto: "immagini/38.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-057", numero: "39", ep: "EP0039", nome: "ELFO", colore: "Verde", hex: "#3c8765", foto: "immagini/39.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-058", numero: "40", ep: "EP0040", nome: "PIPISTRELLO", colore: "Nero", hex: "#000000", foto: "immagini/40.png", limitata: true, hashtag: ["Halloween", "Edizione Estera", "Limited Edition"], note: "Venduta nel Regno Unito" },
-  { id: "seed-059", numero: "41", ep: "EP0041", nome: "BABBO NATALE", colore: "Nero", hex: "#000000", foto: "immagini/41.png", limitata: true, hashtag: ["Natale", "Edizione Estera", "Limited Edition"], note: "Venduta nel Regno Unito" },
-  { id: "seed-060", numero: "42", ep: "EP0042", nome: "YETI", colore: "Blu", hex: "#2c357e", foto: "immagini/42.png", limitata: true, hashtag: ["Natale", "Avvento", "Limited Edition"], note: "Venduta all’interno del calendario dell’avvento 2024" },
-  { id: "seed-061", numero: "43", ep: "EP0043", nome: "KOALA", colore: "Nero", hex: "#000000", foto: "immagini/43.png", limitata: true, hashtag: ["Limited Edition", "Edizione Estera"], note: "Venduta soltanto in Australia" },
-  { id: "seed-062", numero: "44", ep: "EP0044", nome: "TIGRE", colore: "Arancione", hex: "#d95a44", foto: "immagini/44.png" },
-  { id: "seed-063", numero: "45", ep: "EP0045", nome: "FARFALLA", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/45.png" },
-  { id: "seed-064", numero: "46", ep: "EP0046", nome: "CONIGLIO", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/46.png", limitata: true, hashtag: ["Limited Edition", "Pasqua"] },
-  { id: "seed-065", numero: "47", ep: "EP0047", nome: "PULCINO", colore: "Viola", hex: "#834687", foto: "immagini/47.png", limitata: true, hashtag: ["Limited Edition", "Pasqua"] },
-  { id: "seed-066", numero: "48", ep: "EP0048", nome: "MUCCA", colore: "Nero", hex: "#000000", foto: "immagini/48.png" },
-  { id: "seed-067", numero: "49", ep: "EP0049", nome: "MAIALE", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/49.png", note: "Con microfono" },
-  { id: "seed-068", numero: "50", ep: "EP0050", nome: "ASINO", colore: "Verde", hex: "#3c8765", foto: "immagini/50.png" },
-  { id: "seed-069", numero: "51", ep: "EP0051", nome: "GALLO", colore: "Rosso", hex: "#c43329", foto: "immagini/51.png" },
-  { id: "seed-070", numero: "52", ep: "EP0052", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/52.png", limitata: true, hashtag: ["Natale", "Avvento", "Limited Edition"], note: "Venduta all’interno del calendario dell’avvento 2025" },
-  { id: "seed-071", numero: "53", ep: "EP0053", nome: "ZOMBIE", colore: "Nero", hex: "#000000", foto: "immagini/53.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-072", numero: "54", ep: "EP0054", nome: "GATTO", colore: "Viola", hex: "#834687", foto: "immagini/54.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-073", numero: "55", ep: "EP0055", nome: "SCHELETRO", colore: "Arancione", hex: "#d95a44", foto: "immagini/55.png", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
-  { id: "seed-074", numero: "56", ep: "EP0056", nome: "MOSTRO", colore: "Blu", hex: "#2c357e", foto: "immagini/56.png" },
-  { id: "seed-075", numero: "57", ep: "EP0057", nome: "SCHIACCIANOCI", colore: "Blu", hex: "#2c357e", foto: "immagini/57.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-076", numero: "58", ep: "EP0058", nome: "BALLERINA", colore: "Rosso", hex: "#c43329", foto: "immagini/58.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-077", numero: "59", ep: "EP0059", nome: "TOPO", colore: "Verde", hex: "#3c8765", foto: "immagini/59.png", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-078", numero: "60", ep: "EP0060", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-A.png", note: "Con bambù, Riedizione con nuovo codice EP" },
-  { id: "seed-079", numero: "61", ep: "EP0061", nome: "UNICORNO", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/13.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-080", numero: "62", ep: "EP0062", nome: "GATTO", colore: "Nero", hex: "#000000", foto: "immagini/62.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-081", numero: "63", ep: "EP0063", nome: "SQUALO", colore: "Blu", hex: "#2c357e", foto: "immagini/63.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-082", numero: "64", ep: "EP0064", nome: "LAMA", colore: "Blu", hex: "#2c357e", foto: "immagini/64.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-083", numero: "65", ep: "EP0065", nome: "DINOSAURO", colore: "Verde", hex: "#3c8765", foto: "immagini/65.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-084", numero: "66", ep: "EP0066", nome: "CONIGLIO", colore: "Viola", hex: "#834687", foto: "immagini/66.png", note: "Con coda, Riedizione con nuovo codice EP" },
-  { id: "seed-085", numero: "67", ep: "EP0067", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/67.png", note: "Con miele, Riedizione con nuovo codice EP" },
-  { id: "seed-086", numero: "68", ep: "EP0068", nome: "IPPOPOTAMO", colore: "Blu", hex: "#2c357e", foto: "immagini/68.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-087", numero: "69", ep: "EP0069", nome: "APE", colore: "Nero", hex: "#000000", foto: "immagini/69.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-088", numero: "70", ep: "EP0070", nome: "PINGUINO", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/70.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-089", numero: "71", ep: "EP0071", nome: "TIGRE", colore: "Arancione", hex: "#d95a44", foto: "immagini/71.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-090", numero: "72", ep: "EP0072", nome: "FARFALLA", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/72.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-091", numero: "73", ep: "EP0073", nome: "MOSTRO", colore: "Blu", hex: "#2c357e", foto: "immagini/73.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-092", numero: "74", ep: "EP0074", nome: "COCCINELLA", colore: "Rosso", hex: "#c43329", foto: "immagini/74.png" },
-  { id: "seed-093", numero: "75", ep: "EP0075", nome: "PAPPAGALLO", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/75.png", limitata: true, hashtag: ["San Valentino", "Limited Edition"] },
-  { id: "seed-094", numero: "76", ep: "EP0076", nome: "PAPPAGALLO", colore: "Arancione", hex: "#d95a44", foto: "immagini/76.png", limitata: true, hashtag: ["San Valentino", "Limited Edition"] },
-  { id: "seed-095", numero: "77", ep: "EP0077", nome: "MUCCA", colore: "Nero", hex: "#000000", foto: "immagini/48.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-096", numero: "78", ep: "EP0078", nome: "MAIALE", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/78.png", note: "Con microfono, Riedizione con nuovo codice EP" },
-  { id: "seed-097", numero: "79", ep: "EP0079", nome: "ASINO", colore: "Verde", hex: "#3c8765", foto: "immagini/79.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-098", numero: "80", ep: "EP0080", nome: "GALLO", colore: "Rosso", hex: "#c43329", foto: "immagini/80.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-099", numero: "81", ep: "EP0081", nome: "GIRAFFA", colore: "Nero", hex: "#000000", foto: "immagini/81.png", note: "Riedizione con nuovo codice EP" },
-  { id: "seed-100", numero: "82", ep: "EP0082", nome: "LABRADOR", colore: "Rosso", hex: "#c43329", foto: "immagini/82.png", limitata: true, hashtag: ["Limited Edition"] },
-  { id: "seed-101", numero: "83", ep: "EP0083", nome: "BULLDOG", colore: "Blu", hex: "#2c357e", foto: "immagini/83.png", limitata: true, hashtag: ["Limited Edition"] },
-  { id: "seed-102", numero: "84", ep: "EP0084", nome: "BARBONCINO", colore: "Nero", hex: "#000000", foto: "immagini/84.png", limitata: true, hashtag: ["Limited Edition"] },
-  { id: "seed-103", numero: "85", ep: "EP0085", nome: "GORILLA", colore: "Nero", hex: "#000000", foto: "immagini/85.png" },
-  { id: "seed-104", numero: "86", ep: "EP0086", nome: "GALLINA", colore: "Rosso", hex: "#c43329", foto: "immagini/86.png" },
-  { id: "seed-105", numero: "87", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.png" },
-  { id: "seed-106", numero: "88", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.png" },
-  { id: "seed-107", numero: "89", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.png" },
-  { id: "seed-108", numero: "90", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.png" },
-  { id: "seed-109", numero: "91", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.png" },
-  { id: "seed-110", numero: "92", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.png" },
-  { id: "seed-111", numero: "93", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.png" },
-  { id: "seed-112", numero: "94", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.png" },
-  { id: "seed-113", numero: "95", ep: "EP0095", nome: "PANDA VAMPIRO", colore: "Rosso", hex: "#ff4013", foto: "immagini/95.png", limitata: true, hashtag: ["Halloween", "Limited Edition", "Blind box"], note: "Venduta all'interno della blind box" },
-  { id: "seed-114", numero: "95-A", ep: "EP0095", nome: "PANDA VAMPIRO", colore: "Nero", hex: "#000000", foto: "immagini/95-A.png", limitata: true, hashtag: ["Halloween", "Limited Edition", "Blind box"], note: "Venduta all'interno della blind box, Magic limited Edition (1 su 25)" },
-  { id: "seed-115", numero: "95-B", ep: "EP0095", nome: "PANDA VAMPIRO", colore: "Viola", hex: "#d357fe", foto: "immagini/95-B.png", limitata: true, hashtag: ["Halloween", "Limited Edition", "Blind box"], note: "Venduta all'interno della blind box" },
+  { id: "seed-001", numero: "01", ep: "EP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01.webp" },
+  { id: "seed-002", numero: "01-A", ep: "EP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-A.webp" },
+  { id: "seed-003", numero: "01-S", ep: "EP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-004", numero: "02", ep: "EP0002", nome: "ORSO", colore: "Rosso", hex: "#ff4013", foto: "immagini/02.webp" },
+  { id: "seed-005", numero: "02-S", ep: "EP0002", nome: "ORSO", colore: "Blu", hex: "#2c357e", foto: "immagini/02-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-006", numero: "03", ep: "EP0003", nome: "KOALA", colore: "Rosso", hex: "#e32400", foto: "immagini/03.webp" },
+  { id: "seed-007", numero: "03-S", ep: "EP0003", nome: "KOALA", colore: "Rosso", hex: "#e32400", foto: "immagini/03-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-008", numero: "04", ep: "EP0004", nome: "UNICORNO", colore: "Nero", hex: "#27292b", foto: "immagini/04.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-009", numero: "05", ep: "EP0005", nome: "GATTO", colore: "Nero", hex: "#27292b", foto: "immagini/05.webp" },
+  { id: "seed-010", numero: "05-S", ep: "EP0005", nome: "GATTO", colore: "Nero", hex: "#27292b", foto: "immagini/05-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-011", numero: "06", ep: "EP0006", nome: "SQUALO", colore: "Blu", hex: "#0657ab", foto: "immagini/06.webp" },
+  { id: "seed-012", numero: "06-A", ep: "EP0006", nome: "SQUALO", colore: "Blu", hex: "#0061ff", foto: "immagini/06-A.webp" },
+  { id: "seed-013", numero: "06-S", ep: "EP0006", nome: "SQUALO", colore: "Blu", hex: "#0657ab", foto: "immagini/06-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-014", numero: "07", ep: "EP0007", nome: "DINOSAURO", colore: "Verde", hex: "#72ca4d", foto: "immagini/07.webp" },
+  { id: "seed-015", numero: "07-S", ep: "EP0007", nome: "DINOSAURO", colore: "Verde", hex: "#72ca4d", foto: "immagini/07-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-016", numero: "08", ep: "EP0008", nome: "MAIALE", colore: "Rosa", hex: "#f3dbe1", foto: "immagini/08.webp" },
+  { id: "seed-017", numero: "08-S", ep: "EP0008", nome: "MAIALE", colore: "Rosa", hex: "#f3dbe1", foto: "immagini/08-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-018", numero: "09", ep: "EP0009", nome: "ASTRONAUTA", colore: "Nero", hex: "#000000", foto: "immagini/09.webp" },
+  { id: "seed-019", numero: "09-S", ep: "EP0009", nome: "ASTRONAUTA", colore: "Nero", hex: "#000000", foto: "immagini/09-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-020", numero: "10", ep: "EP0010", nome: "LAMA", colore: "Blu", hex: "#0061ff", foto: "immagini/10.webp" },
+  { id: "seed-021", numero: "10-S", ep: "EP0010", nome: "LAMA", colore: "Blu", hex: "#0061ff", foto: "immagini/10-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-022", numero: "11", ep: "EP0011", nome: "CONIGLIO", colore: "Viola", hex: "#834687", foto: "immagini/11.webp", info: "Prima versione senza coda" },
+  { id: "seed-023", numero: "11-S", ep: "EP0011", nome: "CONIGLIO", colore: "Viola", hex: "#834687", foto: "immagini/11-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-024", numero: "12", ep: "EP0012", nome: "FLORA", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/12.webp" },
+  { id: "seed-025", numero: "12-S", ep: "EP0012", nome: "FLORA", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/12-S.webp", hashtag: ["Stellina"], info: "Prima versione con stellina" },
+  { id: "seed-026", numero: "13", ep: "EP0013", nome: "UNICORNO", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/13.webp" },
+  { id: "seed-027", numero: "14", ep: "EP0014", nome: "KOALA", colore: "Blu", hex: "#2c357e", foto: "immagini/14.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-028", numero: "15", ep: "EP0015", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/15.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-029", numero: "16", ep: "EP0016", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/16.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-030", numero: "17", ep: "EP0017", nome: "LEONE", colore: "Arancione", hex: "#d95a44", foto: "immagini/17.webp" },
+  { id: "seed-031", numero: "18", ep: "EP0018", nome: "ELEFANTE", colore: "Blu", hex: "#2c357e", foto: "immagini/18.webp" },
+  { id: "seed-032", numero: "19", ep: "EP0019", nome: "GIRAFFA", colore: "Nero", hex: "#000000", foto: "immagini/19.webp" },
+  { id: "seed-033", numero: "20", ep: "EP0020", nome: "CORGI", colore: "Nero", hex: "#000000", foto: "immagini/20.webp" },
+  { id: "seed-034", numero: "21", ep: "EP0021", nome: "VOLPE", colore: "Verde", hex: "#3c8765", foto: "immagini/21.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-035", numero: "22", ep: "EP0022", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/22.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-036", numero: "23", ep: "EP0023", nome: "PINGUINO", colore: "Blu", hex: "#2c357e", foto: "immagini/23.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-037", numero: "24", ep: "EP0024", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/24.webp", info: "Con miele" },
+  { id: "seed-038", numero: "25", ep: "EP0025", nome: "FRANKENSTEIN", colore: "Verde", hex: "#3c8765", foto: "immagini/25.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-039", numero: "26", ep: "EP0026", nome: "MUMMIA", colore: "Nero", hex: "#000000", foto: "immagini/26.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-040", numero: "27", ep: "EP0027", nome: "ZUCCA", colore: "Arancione", hex: "#d95a44", foto: "immagini/27.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-041", numero: "LE", ep: "", nome: "GATTO", colore: "Rosso", hex: "#c43329", foto: "immagini/LE-gatto.webp", limitata: true, hashtag: ["San Valentino", "Limited Edition"], info: "Codice EP sostituito da scritta “LIMITED EDITION”" },
+  { id: "seed-042", numero: "LE", ep: "", nome: "DALMATA", colore: "Nero", hex: "#000000", foto: "immagini/LE-dalmata.webp", limitata: true, hashtag: ["San Valentino", "Limited Edition"], info: "Codice EP sostituito da scritta “LIMITED EDITION”" },
+  { id: "seed-043", numero: "28", ep: "EP0028", nome: "IPPOPOTAMO", colore: "Blu", hex: "#2c357e", foto: "immagini/28.webp" },
+  { id: "seed-044", numero: "29", ep: "EP0029", nome: "APE", colore: "Nero", hex: "#000000", foto: "immagini/29.webp" },
+  { id: "seed-045", numero: "30", ep: "EP0030", nome: "TARTARUGA", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/30.webp", info: "Versione con codice EP" },
+  { id: "seed-046", numero: "31", ep: "EP0031", nome: "PESCE PAGLIACCIO", colore: "Nero", hex: "#000000", foto: "immagini/31.webp", info: "Versione con codice EP" },
+  { id: "seed-047", numero: "32", ep: "EP0032", nome: "CAVALLUCCIO MARINO", colore: "Viola", hex: "#834687", foto: "immagini/32.webp", info: "Versione con codice EP" },
+  { id: "seed-048", numero: "LE", ep: "", nome: "TARTARUGA", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/LE-tartaruga.webp", limitata: true, hashtag: ["Limited Edition"], info: "Codice EP sostituito da scritta “LIMITED EDITION”" },
+  { id: "seed-049", numero: "LE", ep: "", nome: "PESCE PAGLIACCIO", colore: "Nero", hex: "#000000", foto: "immagini/LE-pesce-pagliaccio.webp", limitata: true, hashtag: ["Limited Edition"], info: "Codice EP sostituito da scritta “LIMITED EDITION”" },
+  { id: "seed-050", numero: "LE", ep: "", nome: "CAVALLUCCIO MARINO", colore: "Viola", hex: "#834687", foto: "immagini/32.webp", limitata: true, hashtag: ["Limited Edition"], info: "Codice EP sostituito da scritta “LIMITED EDITION”" },
+  { id: "seed-051", numero: "33", ep: "EP0033", nome: "PINGUINO", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/33.webp" },
+  { id: "seed-052", numero: "34", ep: "EP0034", nome: "PIPISTRELLO", colore: "Nero", hex: "#000000", foto: "immagini/34.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-053", numero: "35", ep: "EP0035", nome: "STREGA", colore: "Viola", hex: "#834687", foto: "immagini/35.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-054", numero: "36", ep: "EP0036", nome: "VAMPIRO", colore: "Rosso", hex: "#c43329", foto: "immagini/36.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-055", numero: "37", ep: "EP0037", nome: "BABBO NATALE", colore: "Rosso", hex: "#c43329", foto: "immagini/37.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-056", numero: "38", ep: "EP0038", nome: "RENNA", colore: "Blu", hex: "#2c357e", foto: "immagini/38.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-057", numero: "39", ep: "EP0039", nome: "ELFO", colore: "Verde", hex: "#3c8765", foto: "immagini/39.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-058", numero: "40", ep: "EP0040", nome: "PIPISTRELLO", colore: "Nero", hex: "#000000", foto: "immagini/40.webp", limitata: true, hashtag: ["Halloween", "Edizione Estera", "Limited Edition"], info: "Venduta nel Regno Unito" },
+  { id: "seed-059", numero: "41", ep: "EP0041", nome: "BABBO NATALE", colore: "Nero", hex: "#000000", foto: "immagini/41.webp", limitata: true, hashtag: ["Natale", "Edizione Estera", "Limited Edition"], info: "Venduta nel Regno Unito" },
+  { id: "seed-060", numero: "42", ep: "EP0042", nome: "YETI", colore: "Blu", hex: "#2c357e", foto: "immagini/42.webp", limitata: true, hashtag: ["Natale", "Avvento", "Limited Edition"], info: "Venduta all’interno del calendario dell’avvento 2024" },
+  { id: "seed-061", numero: "43", ep: "EP0043", nome: "KOALA", colore: "Nero", hex: "#000000", foto: "immagini/43.webp", limitata: true, hashtag: ["Limited Edition", "Edizione Estera"], info: "Venduta soltanto in Australia" },
+  { id: "seed-062", numero: "44", ep: "EP0044", nome: "TIGRE", colore: "Arancione", hex: "#d95a44", foto: "immagini/44.webp" },
+  { id: "seed-063", numero: "45", ep: "EP0045", nome: "FARFALLA", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/45.webp" },
+  { id: "seed-064", numero: "46", ep: "EP0046", nome: "CONIGLIO", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/46.webp", limitata: true, hashtag: ["Limited Edition", "Pasqua"] },
+  { id: "seed-065", numero: "47", ep: "EP0047", nome: "PULCINO", colore: "Viola", hex: "#834687", foto: "immagini/47.webp", limitata: true, hashtag: ["Limited Edition", "Pasqua"] },
+  { id: "seed-066", numero: "48", ep: "EP0048", nome: "MUCCA", colore: "Nero", hex: "#000000", foto: "immagini/48.webp" },
+  { id: "seed-067", numero: "49", ep: "EP0049", nome: "MAIALE", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/49.webp", info: "Con microfono" },
+  { id: "seed-068", numero: "50", ep: "EP0050", nome: "ASINO", colore: "Verde", hex: "#3c8765", foto: "immagini/50.webp" },
+  { id: "seed-069", numero: "51", ep: "EP0051", nome: "GALLO", colore: "Rosso", hex: "#c43329", foto: "immagini/51.webp" },
+  { id: "seed-070", numero: "52", ep: "EP0052", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/52.webp", limitata: true, hashtag: ["Natale", "Avvento", "Limited Edition"], info: "Venduta all’interno del calendario dell’avvento 2025" },
+  { id: "seed-071", numero: "53", ep: "EP0053", nome: "ZOMBIE", colore: "Nero", hex: "#000000", foto: "immagini/53.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-072", numero: "54", ep: "EP0054", nome: "GATTO", colore: "Viola", hex: "#834687", foto: "immagini/54.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-073", numero: "55", ep: "EP0055", nome: "SCHELETRO", colore: "Arancione", hex: "#d95a44", foto: "immagini/55.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"] },
+  { id: "seed-074", numero: "56", ep: "EP0056", nome: "MOSTRO", colore: "Blu", hex: "#2c357e", foto: "immagini/56.webp" },
+  { id: "seed-075", numero: "57", ep: "EP0057", nome: "SCHIACCIANOCI", colore: "Blu", hex: "#2c357e", foto: "immagini/57.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-076", numero: "58", ep: "EP0058", nome: "BALLERINA", colore: "Rosso", hex: "#c43329", foto: "immagini/58.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-077", numero: "59", ep: "EP0059", nome: "TOPO", colore: "Verde", hex: "#3c8765", foto: "immagini/59.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
+  { id: "seed-078", numero: "60", ep: "EP0060", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-A.webp", info: "Con bambù, Riedizione con nuovo codice EP" },
+  { id: "seed-079", numero: "61", ep: "EP0061", nome: "UNICORNO", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/13.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-080", numero: "62", ep: "EP0062", nome: "GATTO", colore: "Nero", hex: "#000000", foto: "immagini/62.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-081", numero: "63", ep: "EP0063", nome: "SQUALO", colore: "Blu", hex: "#2c357e", foto: "immagini/63.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-082", numero: "64", ep: "EP0064", nome: "LAMA", colore: "Blu", hex: "#2c357e", foto: "immagini/64.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-083", numero: "65", ep: "EP0065", nome: "DINOSAURO", colore: "Verde", hex: "#3c8765", foto: "immagini/65.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-084", numero: "66", ep: "EP0066", nome: "CONIGLIO", colore: "Viola", hex: "#834687", foto: "immagini/66.webp", info: "Con coda, Riedizione con nuovo codice EP" },
+  { id: "seed-085", numero: "67", ep: "EP0067", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/67.webp", info: "Con miele, Riedizione con nuovo codice EP" },
+  { id: "seed-086", numero: "68", ep: "EP0068", nome: "IPPOPOTAMO", colore: "Blu", hex: "#2c357e", foto: "immagini/68.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-087", numero: "69", ep: "EP0069", nome: "APE", colore: "Nero", hex: "#000000", foto: "immagini/69.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-088", numero: "70", ep: "EP0070", nome: "PINGUINO", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/70.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-089", numero: "71", ep: "EP0071", nome: "TIGRE", colore: "Arancione", hex: "#d95a44", foto: "immagini/71.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-090", numero: "72", ep: "EP0072", nome: "FARFALLA", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/72.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-091", numero: "73", ep: "EP0073", nome: "MOSTRO", colore: "Blu", hex: "#2c357e", foto: "immagini/73.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-092", numero: "74", ep: "EP0074", nome: "COCCINELLA", colore: "Rosso", hex: "#c43329", foto: "immagini/74.webp" },
+  { id: "seed-093", numero: "75", ep: "EP0075", nome: "PAPPAGALLO", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/75.webp", limitata: true, hashtag: ["San Valentino", "Limited Edition"] },
+  { id: "seed-094", numero: "76", ep: "EP0076", nome: "PAPPAGALLO", colore: "Arancione", hex: "#d95a44", foto: "immagini/76.webp", limitata: true, hashtag: ["San Valentino", "Limited Edition"] },
+  { id: "seed-095", numero: "77", ep: "EP0077", nome: "MUCCA", colore: "Nero", hex: "#000000", foto: "immagini/48.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-096", numero: "78", ep: "EP0078", nome: "MAIALE", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/78.webp", info: "Con microfono, Riedizione con nuovo codice EP" },
+  { id: "seed-097", numero: "79", ep: "EP0079", nome: "ASINO", colore: "Verde", hex: "#3c8765", foto: "immagini/79.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-098", numero: "80", ep: "EP0080", nome: "GALLO", colore: "Rosso", hex: "#c43329", foto: "immagini/80.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-099", numero: "81", ep: "EP0081", nome: "GIRAFFA", colore: "Nero", hex: "#000000", foto: "immagini/81.webp", info: "Riedizione con nuovo codice EP" },
+  { id: "seed-100", numero: "82", ep: "EP0082", nome: "LABRADOR", colore: "Rosso", hex: "#c43329", foto: "immagini/82.webp", limitata: true, hashtag: ["Limited Edition"] },
+  { id: "seed-101", numero: "83", ep: "EP0083", nome: "BULLDOG", colore: "Blu", hex: "#2c357e", foto: "immagini/83.webp", limitata: true, hashtag: ["Limited Edition"] },
+  { id: "seed-102", numero: "84", ep: "EP0084", nome: "BARBONCINO", colore: "Nero", hex: "#000000", foto: "immagini/84.webp", limitata: true, hashtag: ["Limited Edition"] },
+  { id: "seed-103", numero: "85", ep: "EP0085", nome: "GORILLA", colore: "Nero", hex: "#000000", foto: "immagini/85.webp" },
+  { id: "seed-104", numero: "86", ep: "EP0086", nome: "GALLINA", colore: "Rosso", hex: "#c43329", foto: "immagini/86.webp" },
+  { id: "seed-105", numero: "87", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.webp" },
+  { id: "seed-106", numero: "88", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.webp" },
+  { id: "seed-107", numero: "89", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.webp" },
+  { id: "seed-108", numero: "90", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.webp" },
+  { id: "seed-109", numero: "91", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.webp" },
+  { id: "seed-110", numero: "92", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.webp" },
+  { id: "seed-111", numero: "93", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.webp" },
+  { id: "seed-112", numero: "94", ep: "", nome: "", colore: "", hex: "", foto: "immagini/in-arrivo.webp" },
+  { id: "seed-113", numero: "95", ep: "EP0095", nome: "PANDA VAMPIRO", colore: "Rosso", hex: "#ff4013", foto: "immagini/95.webp", limitata: true, hashtag: ["Halloween", "Limited Edition", "Blind box"], info: "Venduta all'interno della blind box" },
+  { id: "seed-114", numero: "95-A", ep: "EP0095", nome: "PANDA VAMPIRO", colore: "Nero", hex: "#000000", foto: "immagini/95-A.webp", limitata: true, hashtag: ["Halloween", "Limited Edition", "Blind box"], info: "Venduta all'interno della blind box, Magic limited Edition (1 su 25)" },
+  { id: "seed-115", numero: "95-B", ep: "EP0095", nome: "PANDA VAMPIRO", colore: "Viola", hex: "#d357fe", foto: "immagini/95-B.webp", limitata: true, hashtag: ["Halloween", "Limited Edition", "Blind box"], info: "Venduta all'interno della blind box" },
 ];
 </script>
 
 <!-- Funzionamento della pagina (legge CONFIG e PENNE qui sopra) -->
-<script src="../../comune/app.js?v=5"></script>
+<script src="../../comune/app.js?v=10"></script>
 <!-- Header, footer e menu comuni a tutto il sito -->
-<script src="../../script.js?v=3"></script>
+<script src="../../script.js?v=5"></script>
 </body>
 </html>

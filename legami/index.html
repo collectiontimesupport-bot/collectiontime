@@ -6,17 +6,30 @@
 <title>Legami · Collection Time</title>
 <meta name="description" content="Legami: tutte le mie collezioni a tema Legami.">
 <meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../favicon.ico" sizes="32x32">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Legami · Collection Time">
+<meta property="og:description" content="Legami: tutte le mie collezioni a tema Legami.">
+<meta property="og:url" content="https://www.collectiontime.com/legami/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../sito.css?v=6">
 <style>
-  /* Colori della pagina: --ink = testo blu scuro, --muted = testo grigio,
-     --line = bordi sottili, --amber = ambra (lineette e sottolineature).
-     Le bande in alto e in basso hanno il loro stile in sito.css. */
-  :root { --ink: #1A2140; --muted: #5D6580; --line: #D5D9E2; --amber: #F2A900; color-scheme: light;
+  /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
+  :root {
     /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
     --titolo: #E50A15; }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: #fff; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
   .wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 56px 20px 72px; }
@@ -28,7 +41,7 @@
   h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
   .sub { margin: 14px 0 40px; text-align: center; color: var(--muted); }
   .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-  .card { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: inherit; text-decoration: none; background: #fff; transition: border-color .15s, box-shadow .15s; }
+  .card { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: inherit; text-decoration: none; background: var(--white); transition: border-color .15s, box-shadow .15s; }
   .card:hover, .card:focus-visible { border-color: var(--amber); box-shadow: 0 6px 20px rgba(242, 169, 0, .16); outline: none; }
   .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
   /* Card con immagine (es. Erasable): testo e "Apri" a sinistra, immagine a destra.
@@ -38,7 +51,9 @@
   .card:has(.thumb) > :not(.thumb) { grid-column: 1; }
   .card:has(.thumb) .open { justify-self: start; align-self: end; }
   .thumb { grid-column: 2; grid-row: 1 / 4; display: grid; place-items: center; }
-  .thumb img { width: 100%; max-height: 220px; object-fit: contain; display: block; }
+  /* Tutte le immagini delle card stanno nello stesso riquadro quadrato,
+     così hanno la stessa altezza (la lampadina come le penne). */
+  .thumb img { width: 100%; aspect-ratio: 1; max-height: 220px; object-fit: contain; display: block; }
   .card h2 { margin: 0; font-size: 1.125rem; }
   .card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
   .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
@@ -55,9 +70,9 @@
   <p class="sub">Scegli un oggetto</p>
   <!-- Una card per ogni oggetto: per aggiungerne uno, copia un <li> ... </li> e cambia link e testi. -->
   <ul class="cards">
-     <li><a class="card" href="legami-erasable/index.html"><div class="thumb"><img src="legami-erasable/immagini/copertina.png" alt=""></div><h2>Erasable</h2><p>Penne cancellabili </p><span class="open">Apri</span></a></li>
-    <li><a class="card" href="legami-lampada/index.html"><div class="thumb"><img src="legami-lampada/immagini/08.png" alt=""></div><h2>Lampada</h2><p>Lampade Bulb Fiction</p><span class="open">Apri</span></a></li>
-    <li><a class="card" href="legami-righello/index.html"><h2>Righello</h2><p>La collezione Legami Righello.</p><span class="open">Apri</span></a></li>
+     <li><a class="card" href="legami-erasable/index.html"><div class="thumb"><img src="legami-erasable/immagini/copertina.webp" alt=""></div><h2>Erasable Pens</h2><p>Penne cancellabili </p><span class="open">Apri</span></a></li>
+     <li><a class="card" href="legami-righello/index.html"><h2>Righello</h2><p>La collezione Legami Righello.</p><span class="open">Apri</span></a></li>
+     <li><a class="card" href="legami-lampada/index.html"><div class="thumb"><img src="legami-lampada/immagini/08.webp" alt=""></div><h2>Bulb Fiction</h2><p>Lampade </p><span class="open">Apri</span></a></li>
   </ul>
 </main>
 
@@ -65,8 +80,8 @@
 <div id="footer-placeholder"></div>
 
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
-<!-- "?v=3" è il numero di versione: quando cambi un file .js o .css aumentalo (v=3 → v=4)
+<!-- "?v=6" è il numero di versione: quando cambi un file .js o .css aumentalo (v=6 → v=7)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../script.js?v=3"></script>
+<script src="../script.js?v=5"></script>
 </body>
 </html>

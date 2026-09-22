@@ -28,10 +28,8 @@
 :root {
   --paper: #FFFFFF;          /* sfondo della pagina */
   --card: #FFFFFF;           /* sfondo di campi e riquadri */
-  --ink: #1A2140;            /* testo principale (blu notte) */
-  --muted: #5D6580;          /* testo secondario */
-  --line: #D5D9E2;           /* bordi sottili */
-  --accent: #F2A900;         /* ambra: evidenziazioni e pulsanti principali */
+  /* --ink, --muted, --line e --amber sono i colori del sito: stanno in sito.css */
+  --accent: var(--amber);    /* ambra: evidenziazioni e pulsanti principali */
   --accent-ink: #FFFFFF;     /* testo sopra il colore ambra */
   --legami-red: #E50A15;     /* rosso Legami: titolo e pulsanti */
   --danger: #B3261E;         /* pulsante "Elimina" */
@@ -62,7 +60,7 @@ body {
 .wrap { position: relative; max-width: 1600px; margin: 0 auto; padding: 36px 16px 48px; }
 
 /* controlli dei moduli: stesso carattere del resto della pagina */
-input, select, textarea, button { font: inherit; color: inherit; }
+input, select, button { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }   /* contorno quando si naviga con la tastiera */
 
@@ -115,7 +113,7 @@ h1 .titolo-testo {
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
 /* campi di testo e menu a tendina */
-input[type=search], select, .field input[type=text], .field textarea {
+input[type=search], select, .field input[type=text] {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -298,7 +296,9 @@ dialog::backdrop { background: rgba(10, 14, 30, .55); }   /* sfondo scuro dietro
 
 /* etichetta + campo */
 .field { display: grid; gap: 4px; font-size: .875rem; color: var(--muted); }
-.field input[type=text], .field textarea { color: var(--ink); font-size: 1rem; width: 100%; }
+.field input[type=text] { color: var(--ink); font-size: 1rem; width: 100%; }
+/* testo "Info" (fisso, non modificabile) */
+.info { margin: 0; color: var(--ink); font-size: 1rem; white-space: pre-line; }
 .check { display: flex; align-items: center; gap: 8px; }
 .check input { accent-color: var(--legami-red); width: 18px; height: 18px; margin: 0; }
 
@@ -309,7 +309,7 @@ dialog::backdrop { background: rgba(10, 14, 30, .55); }   /* sfondo scuro dietro
 
 /* campi attivi con cornice ambra (più contrasto del rosso) */
 dialog :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-dialog input:focus-visible, dialog textarea:focus-visible { outline-offset: 0; border-color: var(--accent); }
+dialog input:focus-visible { outline-offset: 0; border-color: var(--accent); }
 #editForm .btn.primary:hover { background: color-mix(in srgb, var(--accent) 88%, #000); border-color: color-mix(in srgb, var(--accent) 88%, #000); }
 
 /* campi di sola lettura (visitatori): non si cliccano e non prendono la cornice ambra */

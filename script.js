@@ -1,7 +1,7 @@
 /* ==========================================================
    script.js — Collection Time
-   1) carica lo stile comune (sito.css), header.html e
-      footer.html nei segnaposto (Fetch)
+   1) carica header.html e footer.html nei segnaposto (Fetch);
+      lo stile comune, sito.css, è richiamato nel <head> di ogni pagina
    2) fa funzionare Esporta e Importa della banda in alto:
       valgono per TUTTE le collezioni del sito insieme
    Da richiamare in ogni pagina con una sola riga:
@@ -9,25 +9,16 @@
    (dentro una sottocartella: <script src="../script.js"></script>)
    ========================================================== */
 
-/* Cartella in cui si trova questo file: sito.css, header.html, footer.html
+/* Cartella in cui si trova questo file: header.html, footer.html
    e i link vengono cercati da qui, quindi funzionano anche dalle
    pagine dentro le sottocartelle. */
 const BASE = new URL('.', document.currentScript.src);
 /* Numero di versione scritto nella pagina (script.js?v=3): lo aggiungo anche
-   a sito.css, header.html e footer.html, così anche loro si aggiornano subito. */
+   a header.html e footer.html, così anche loro si aggiornano subito. */
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
 
-/* ---------- Stile, header e footer ---------- */
-
-/* sito.css: aspetto di header, footer e avvisi, uguale in tutte le pagine */
-const stileCaricato = new Promise(fine => {
-  const l = document.createElement('link');
-  l.rel = 'stylesheet';
-  l.href = conVersione('sito.css');
-  l.onload = l.onerror = fine;
-  document.head.append(l);
-});
+/* ---------- Header e footer ---------- */
 
 async function caricaParte(idSegnaposto, file) {
   const box = document.getElementById(idSegnaposto);
@@ -36,7 +27,6 @@ async function caricaParte(idSegnaposto, file) {
     const res = await fetch(conVersione(file));
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const html = await res.text();
-    await stileCaricato;                    // così la banda non compare mai senza stile
     box.innerHTML = html;
     sistemaLink(box);
   } catch (e) {
@@ -60,13 +50,12 @@ function sistemaLink(box) {
    Esporta legge tutti questi archivi e salva UN solo file leggero con,
    per ogni collezione, solo:
      possedute → gli id di ciò che hai segnato "Ce l'ho"
-     note      → le note che hai scritto tu        (id → testo)
      hashtag   → gli hashtag che hai cambiato tu   (id → elenco)
    Niente foto, nomi o colori: quelli sono già nelle pagine del sito.
    Esempio:
    {"sito":"Collection Time","versione":1,"data":"2026-09-22",
     "collezioni":{"catalogo-penne":{"possedute":["seed-000","seed-005"],
-    "note":{"seed-011":"Comprata a Roma"},"hashtag":{"seed-011":["Natale"]}}}}
+    "hashtag":{"seed-011":["Natale"]}}}}
    Importa rimette tutto a posto, anche nelle collezioni che in
    questo browser non sono mai state aperte. */
 
@@ -115,16 +104,14 @@ async function archivi() {
 const nomeCollezione = n => n.endsWith(ANTEPRIMA) ? n.slice(0, -ANTEPRIMA.length) : n;
 const oggi = () => new Date().toISOString().slice(0, 10);
 
-/* dalle schede salvate nel browser tiene solo spunte, note e hashtag */
+/* dalle schede salvate nel browser tiene solo spunte e hashtag */
 function riassumi(penne) {
-  const c = {}, note = {}, hashtag = {};
+  const c = {}, hashtag = {};
   const possedute = penne.filter(p => p.owned === true).map(p => p.id);
   penne.forEach(p => {
-    if (p.notesTouched) note[p.id] = p.notes || '';
     if (p.tagsTouched) hashtag[p.id] = p.tags || [];
   });
   if (possedute.length) c.possedute = possedute;
-  if (Object.keys(note).length) c.note = note;
   if (Object.keys(hashtag).length) c.hashtag = hashtag;
   return c;
 }
@@ -159,9 +146,8 @@ async function esporta() {
 async function applica(db, dati) {
   const soloId = v => Array.isArray(v) ? v.filter(x => typeof x === 'string') : [];
   const possedute = new Set(soloId(dati.possedute));
-  const note = dati.note && typeof dati.note === 'object' ? dati.note : {};
   const hashtag = dati.hashtag && typeof dati.hashtag === 'object' ? dati.hashtag : {};
-  const ids = new Set([...possedute, ...Object.keys(note), ...Object.keys(hashtag)]);
+  const ids = new Set([...possedute, ...Object.keys(hashtag)]);
   const penne = await leggi(db);
   const perId = new Map(penne.map(p => [p.id, p]));
   const cambiate = penne.filter(p => p.owned && !ids.has(p.id));   // non più segnate nel file
@@ -169,7 +155,6 @@ async function applica(db, dati) {
   ids.forEach(id => {
     const p = perId.get(id) || { id };   // mai vista in questo browser: la completa la pagina della collezione
     p.owned = possedute.has(id);
-    if (typeof note[id] === 'string') { p.notes = note[id].slice(0, 2000); p.notesTouched = true; }
     if (Array.isArray(hashtag[id])) { p.tags = hashtag[id].map(String).slice(0, 30); p.tagsTouched = true; }
     cambiate.push(p);
   });

@@ -1,15 +1,24 @@
 /* ==========================================================
    sito.css — Collection Time
-   Aspetto della banda in alto (header.html), della banda in
-   basso (footer.html) e dell'avviso di Esporta/Importa.
-   È uguale in tutto il sito: lo carica script.js, quindi le
-   pagine non devono richiamarlo.
-
-   Colori usati (per cambiarli, sostituisci il codice ovunque):
-     #1A2140  blu scuro   testo e banda in basso
-     #D5D9E2  grigio      linea sotto la banda in alto
-     #F2A900  ambra       sottolineature e bordo della banda in basso
+   Stile comune a TUTTE le pagine: colori del sito, banda in alto
+   (header.html), banda in basso (footer.html) e avviso di
+   Esporta/Importa. Ogni pagina lo richiama nel <head> con:
+   <link rel="stylesheet" href="sito.css?v=5">
+   (dentro una sottocartella: "../sito.css", "../../sito.css")
    ========================================================== */
+
+/* ---------- COLORI DEL SITO: si cambiano solo qui ----------
+   Tutte le pagine usano questi nomi: var(--ink), var(--amber)…
+   Le collezioni possono aggiungere i propri (es. rosso Legami)
+   nel loro file di stile. */
+:root {
+  --ink: #1A2140;     /* blu scuro: testo, banda in basso */
+  --muted: #5D6580;   /* grigio-blu: testo secondario */
+  --line: #D5D9E2;    /* grigio chiaro: bordi sottili */
+  --amber: #F2A900;   /* ambra: accento, sottolineature, logo */
+  --white: #FFFFFF;   /* sfondo */
+  color-scheme: light;
+}
 
 /* i segnaposto non creano un riquadro in più */
 #header-placeholder, #footer-placeholder { display: contents; }
@@ -21,9 +30,9 @@
   position: sticky; top: 0; z-index: 15;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px;
   margin: 0; padding: 12px 20px;
-  border-bottom: 1px solid #D5D9E2; background: #fff;
+  border-bottom: 1px solid var(--line); background: var(--white);
 }
-.st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(15px, 4.4vw, 18px); line-height: 1; color: #1A2140; text-decoration: none; }
+.st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(19px, 5.4vw, 25px);   /* grandezza del nome del sito (il logo segue) */ line-height: 1; color: var(--ink); text-decoration: none; }
 .st-brand .mk { width: 1.55em; height: 1.55em; flex: none; }
 .st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
 .st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
@@ -31,23 +40,23 @@
 /* pulsanti Esporta / Importa: sembrano link, con la riga ambra al passaggio del mouse */
 .st-top nav { display: flex; gap: 20px; }
 .st-top nav button {
-  font: inherit; font-size: .875rem; color: #1A2140; cursor: pointer;
+  font: inherit; font-size: .875rem; color: var(--ink); cursor: pointer;
   background: none; border: 0; border-bottom: 2px solid transparent; padding: 6px 0;
 }
-.st-top nav button:hover { border-bottom-color: #F2A900; }
-.st-top :focus-visible { outline: 2px solid #1A2140; outline-offset: 3px; }
+.st-top nav button:hover { border-bottom-color: var(--amber); }
+.st-top :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ---------- banda in basso ---------- */
-.st-band { margin-top: auto; background: #1A2140; color: #fff; border-top: 3px solid #F2A900; padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
-.st-band a { color: #fff; text-underline-offset: 3px; }
-.st-band a:hover { color: #F2A900; }
-.st-band :focus-visible { outline: 2px solid #F2A900; outline-offset: 3px; }
+.st-band { margin-top: auto; background: var(--ink); color: var(--white); border-top: 3px solid var(--amber); padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+.st-band a { color: var(--white); text-underline-offset: 3px; }
+.st-band a:hover { color: var(--amber); }
+.st-band :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 
 /* ---------- avviso dopo Esporta / Importa ---------- */
 .st-avviso {
   position: fixed; left: 50%; bottom: 20px; z-index: 30; transform: translateX(-50%);
   max-width: 90vw; padding: 10px 16px; border-radius: 10px;
-  background: #1A2140; color: #fff; font: .9375rem/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--ink); color: var(--white); font: .9375rem/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
   opacity: 0; pointer-events: none; transition: opacity .2s;
 }
 .st-avviso.show { opacity: 1; }

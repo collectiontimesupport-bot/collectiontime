@@ -61,7 +61,7 @@
 
   /* testi e forma della collezione */
   (function applyConfig() {
-    document.title = CONFIG.titolo;
+    document.title = CONFIG.titolo + ' · Collection Time';   // es. "Legami Erasable Pens · Collection Time"
     $('btnAdd').textContent = CONFIG.aggiungi;
     $('optAll').textContent = CONFIG.tutte;
     $('optOwned').textContent = CONFIG.ceLiHo;
@@ -71,8 +71,8 @@
     $('pMissingLabel').textContent = CONFIG.mancanti;
     $('pAllLabel').textContent = CONFIG.tuttiTesto;
     $('footHint').textContent = ADMIN
-      ? 'Premi su ' + CONFIG.un + " per segnare che ce l'hai. Con \u270E cambi i dettagli, la foto e le note."
-      : 'Premi su ' + CONFIG.un + " per segnare che ce l'hai. Con \u270E vedi i dettagli, le note e gli hashtag.";
+      ? 'Premi su ' + CONFIG.un + " per segnare che ce l'hai. Con \u270E cambi i dettagli e la foto."
+      : 'Premi su ' + CONFIG.un + " per segnare che ce l'hai. Con \u270E vedi i dettagli, le info e gli hashtag.";
     $('emptyText').textContent = ADMIN
       ? 'Premi "' + CONFIG.aggiungi + '" per inserire la prima foto.'
       : 'Non ci sono ancora elementi in questa collezione.';
@@ -98,7 +98,7 @@
      riceve le foto e i colori aggiornati (le sue spunte restano). */
   const SEED_V = 5;
   /* Sagoma grigia mostrata al posto delle penne senza foto. */
-  const SLOT_IMG = 'immagini/slot-vuoto.png';
+  const SLOT_IMG = 'immagini/slot-vuoto.webp';
 
   const idVisti = new Set();
   const SEED = (typeof PENNE !== 'undefined' ? PENNE : []).map((r, i) => {
@@ -116,10 +116,12 @@
       colorHex: r.hex || '',
       limited: !!r.limitata,
       tags: Array.isArray(r.hashtag) ? r.hashtag.slice() : [],
-      notes: r.note || '',
-      img: r.foto || ''                        /* percorso della foto, es. "immagini/01.png" */
+      info: r.info || '',                      /* testo fisso "Info": si cambia solo nell'HTML */
+      img: r.foto || ''                        /* percorso della foto, es. "immagini/01.webp" */
     };
   });
+  /* testi "Info" dell'elenco (id → testo): fissi, non vengono salvati nel browser */
+  const INFO = new Map(SEED.map(s => [s.id, s.info]));
 
   /* ---------- stato della pagina ---------- */
   let db = null;           /* archivio del browser (IndexedDB) */
@@ -179,7 +181,7 @@
     p.limited = !!p.limited;
     p.owned = typeof p.owned === 'boolean' ? p.owned : true;
     p.name = p.name || '';
-    p.notes = p.notes || '';
+    delete p.notes; delete p.notesTouched;   /* vecchie "Note" dei visitatori (ora c'è "Info", fissa): le tolgo */
     p.added = p.added || Date.now();
     p.ep = p.ep || '';
     p.colorHex = p.colorHex || '';
@@ -191,7 +193,7 @@
   /* crea le penne "di base" dall'elenco PENNE, tutte ancora da spuntare */
   const seedPens = () => SEED.map(s => ({
     id: s.id, seed: true, v: SEED_V, pos: s.pos, code: s.code, limited: s.limited,
-    owned: false, name: s.name || '', notes: s.notes || '', image: s.img, added: 0,
+    owned: false, name: s.name || '', image: s.img, added: 0,
     ep: s.ep || '', colorHex: s.colorHex || '', colorName: s.colorName || '', tags: (s.tags || []).slice(), metaTouched: false
   }));
 
@@ -257,9 +259,9 @@
     'pasqua': ['pasqua', 'easter']
   };
   const foldText = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  /* tutto il testo in cui cercare per una penna (numero, EP, nome, note, colore, hashtag) */
+  /* tutto il testo in cui cercare per una penna (numero, EP, nome, info, colore, hashtag) */
   function searchText(p) {
-    const parts = [p.code, p.ep, p.name, p.notes, p.colorName];
+    const parts = [p.code, p.ep, p.name, INFO.get(p.id), p.colorName];
     (p.tags || []).forEach(t => {
       parts.push(t, '#' + t);
       const al = TAG_ALIASES[String(t).toLowerCase()];
@@ -485,8 +487,8 @@
     edit.type = 'button';
     edit.className = 'edit';
     edit.textContent = '\u270E';
-    edit.setAttribute('aria-label', 'Dettagli, foto e note');
-    edit.title = 'Dettagli, foto e note';
+    edit.setAttribute('aria-label', 'Dettagli e foto');
+    edit.title = 'Dettagli e foto';
     edit.addEventListener('click', () => openEdit(p.id));
     row.append(lab, edit);
 
@@ -517,7 +519,7 @@
         const p = normalize({
           id: newId(), seed: false, pos: ++pos,
           code: '', limited: false, owned: true,
-          name: '', notes: '', image, added: Date.now() + i
+          name: '', image, added: Date.now() + i
         });
         await savePen(p);
         pens.push(p);
@@ -696,7 +698,7 @@
   });
   document.querySelectorAll('#tagSug button').forEach(b => b.addEventListener('click', () => addTag(b.dataset.tag)));
 
-  /* apre la finestra "Dettagli" di una penna (i visitatori possono cambiare solo note, hashtag e "Ce l'ho") */
+  /* apre la finestra "Dettagli" di una penna (i visitatori possono cambiare solo hashtag e "Ce l'ho") */
   function openEdit(id) {
     const p = pens.find(x => x.id === id);
     if (!p) return;
@@ -726,14 +728,15 @@
         el.removeAttribute('tabindex');
       }
     });
-    $('fNotes').readOnly = false;
     btnColorMenu.hidden = lock;
     $('colorDot').style.pointerEvents = lock ? 'none' : '';
     document.querySelector('.colorbox').classList.toggle('locked', lock);
     $('btnPhoto').hidden = lock;
     $('fCode').value = p.code;
     $('fName').value = p.name;
-    $('fNotes').value = p.notes;
+    const info = INFO.get(p.id) || '';        /* "Info": nascosta se la penna non ne ha */
+    $('fInfo').textContent = info;
+    $('fInfoBox').hidden = !info;
     $('fOwned').checked = p.owned;
     $('btnDelete').hidden = !ADMIN || !!p.seed;
     const step = $('dlgStep');
@@ -774,10 +777,7 @@
       editing.metaTouched = true;
       editing.code = $('fCode').value.trim();
       editing.name = $('fName').value.trim();
-      editing.notes = $('fNotes').value.trim();
     } else {
-      const nuovaNota = $('fNotes').value.trim();
-      if (nuovaNota !== editing.notes) { editing.notes = nuovaNota; editing.notesTouched = true; }
       if (editTags.join('|') !== editing.tags.join('|')) editing.tagsTouched = true;
     }
     editing.tags = editTags.slice();
@@ -885,9 +885,12 @@
     await loadPdfLib();
     if (typeof PDFLib === 'undefined') { say('Il modulo per creare il PDF non è disponibile.'); return; }
     say('Sto creando il PDF…');
-    const { PDFDocument, StandardFonts, rgb } = PDFLib;
+    const { PDFDocument, StandardFonts, rgb, LineCapStyle } = PDFLib;
     const doc = await PDFDocument.create();
     doc.setTitle(pdfText(CONFIG.titolo));
+    doc.setAuthor('Collection Time');                 // proprietà del file (autore, programma)
+    doc.setCreator('collectiontime.com');
+    doc.setProducer('Collection Time');
     const font = await doc.embedFont(StandardFonts.Helvetica);
     const bold = await doc.embedFont(StandardFonts.HelveticaBold);
     const titlePngBytes = await titlePng();
@@ -950,8 +953,54 @@
       }
     }
 
-    /* numero di pagina in basso a destra */
+    /* ---- marchio Collection Time: tessera ambra con la spunta ----
+       Stessa forma di favicon.svg (griglia 32×32): i due tratti della spunta
+       hanno la forma delle lancette della "o" a orologio.
+       FILIGRANA_OPACITA: 0 = invisibile, 1 = piena. Più è alta, più protegge dalle copie. */
+    const FILIGRANA_OPACITA = 0.12;
+    const TESSERA = 'M7 0H25Q32 0 32 7V25Q32 32 25 32H7Q0 32 0 25V7Q0 0 7 0Z';   // quadrato arrotondato 32×32
+    const SPUNTA = [[8.22, 16.6], [13.4, 21.6], [24.52, 11.23]];                 // i 3 punti della spunta
+    const SPESSORI = [4.6, 3.8];                                                  // tratto corto più spesso, lungo più sottile
+    const ink = rgb(26 / 255, 33 / 255, 64 / 255);
+
+    /* piccolo, pieno (piè di pagina): disegnato a vettori */
+    function marchio(pg, x, y, size) {
+      const scale = size / 32;
+      pg.drawSvgPath(TESSERA, { x, y, scale, color: tick });
+      const P = SPUNTA.map(([px, py]) => ({ x: x + px * scale, y: y - py * scale }));
+      for (let k = 0; k < 2; k++) pg.drawLine({ start: P[k], end: P[k + 1], thickness: SPESSORI[k] * scale, color: ink, lineCap: LineCapStyle.Round });
+    }
+
+    /* filigrana: disegnata una volta su un'immagine trasparente e poi messa
+       su ogni pagina (così i tratti che si sovrappongono non fanno macchie).
+       Tessera a metà intensità, spunta piena: nel PDF la spunta risulta più scura. */
+    async function filigranaPng() {
+      const px = 512, k = px / 32, c = document.createElement('canvas');
+      c.width = c.height = px;
+      const ctx = c.getContext('2d');
+      ctx.scale(k, k);
+      ctx.fillStyle = 'rgba(26, 33, 64, .5)';
+      ctx.fill(new Path2D(TESSERA));
+      ctx.strokeStyle = '#1A2140'; ctx.lineCap = 'round';   // spunta piena: copre la tessera, nessuna macchia
+      for (let i = 0; i < 2; i++) {
+        ctx.lineWidth = SPESSORI[i];
+        ctx.beginPath(); ctx.moveTo(...SPUNTA[i]); ctx.lineTo(...SPUNTA[i + 1]); ctx.stroke();
+      }
+      const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+      return doc.embedPng(new Uint8Array(await blob.arrayBuffer()));
+    }
+    const filigrana = await filigranaPng();
+
     pages.forEach((pg, i) => {
+      /* filigrana grande al centro, SOPRA le penne (così non si toglie ritagliando) */
+      const WM = 250;
+      pg.drawImage(filigrana, { x: (W - WM) / 2, y: (H - WM) / 2 + 10, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
+
+      /* piè di pagina a sinistra: tessera piccola + indirizzo del sito */
+      marchio(pg, MX, 36, 18);                                                     // tessera 18 pt
+      pg.drawText('collectiontime.com', { x: MX + 24, y: 22, size: 14, font: bold, color: ink });
+
+      /* numero di pagina in basso a destra */
       const t = (i + 1) + ' su ' + pages.length;
       const tw = font.widthOfTextAtSize(t, 9);
       pg.drawText(t, { x: W - MX - tw, y: 22, size: 9, font, color: rgb(0.35, 0.38, 0.5) });
@@ -961,7 +1010,9 @@
     const blob = new Blob([bytes], { type: 'application/pdf' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = CONFIG.id + '-' + kindName[kind] + '-' + new Date().toISOString().slice(0, 10) + '.pdf';
+    /* nome del file, es. "collection-time_legami-erasable_mancanti_2026-09-23.pdf" */
+    const oggi = new Date(), dd = n => String(n).padStart(2, '0');                 // data del tuo computer (non quella di Londra)
+    a.download = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + '.pdf';
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1062,13 +1113,13 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
-  /* Pubblica: salva i dati "fissi" (numero, colore, nome, note, hashtag, penne aggiunte) da caricare sul sito */
+  /* Pubblica: salva i dati "fissi" (numero, colore, nome, hashtag, penne aggiunte) da caricare sul sito */
   $('btnPublish').addEventListener('click', () => {
     const seedImg = new Map(SEED.map(x => [x.id, x.img]));
     const list = [...pens].sort((a, b) => a.pos - b.pos).filter(p => p.seed || p.image).map(p => {
       const r = {
         id: p.id, seed: !!p.seed, pos: p.pos, code: p.code, ep: p.ep, colorHex: p.colorHex, colorName: p.colorName,
-        name: p.name, notes: p.notes, tags: p.tags, limited: !!p.limited
+        name: p.name, tags: p.tags, limited: !!p.limited
       };
       if (!p.seed || (p.image && p.image !== seedImg.get(p.id))) r.image = p.image;
       return r;
@@ -1082,7 +1133,7 @@
        - penna nuova nell'elenco      → la aggiungo
        - numero/nome/foto cambiati    → li aggiorno
        - penna tolta dall'elenco      → la tolgo
-     Le spunte "Ce l'ho" e le note/hashtag scritti dal visitatore restano. */
+     Le spunte "Ce l'ho" e gli hashtag cambiati dal visitatore restano. */
   async function applyMaster() {
     const master = new Map(seedPens().map(x => [x.id, x]));
     const byId = new Map(pens.map(x => [x.id, x]));
@@ -1096,7 +1147,6 @@
       if (cur.seed !== m.seed) { cur.seed = m.seed; changed = true; }
       if (cur.customImage) { cur.customImage = false; changed = true; }   /* nella vista pubblica le foto sono fisse */
       if (cur.image !== m.image) { cur.image = m.image; changed = true; }
-      if (!cur.notesTouched && cur.notes !== m.notes) { cur.notes = m.notes; changed = true; }
       if (!cur.tagsTouched && cur.tags.join('|') !== m.tags.join('|')) { cur.tags = m.tags.slice(); changed = true; }
       if (changed) toSave.push(cur);
     });
@@ -1141,10 +1191,9 @@
       fresh.forEach(f => {
         const cur = byId.get(f.id);
         if (!cur) { pens.push(f); toSave.push(f); return; }
-        /* scheda creata da "Importa" prima di aprire questa pagina: ha solo spunta, note e hashtag */
+        /* scheda creata da "Importa" prima di aprire questa pagina: ha solo spunta e hashtag */
         if (cur.v === undefined) {
           Object.assign(cur, f, { owned: cur.owned },
-            cur.notesTouched ? { notes: cur.notes, notesTouched: true } : {},
             cur.tagsTouched ? { tags: cur.tags, tagsTouched: true } : {});
           toSave.push(cur);
           return;

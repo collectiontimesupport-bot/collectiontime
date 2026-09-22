@@ -1,0 +1,14 @@
+{
+  "name": "Collection Time",
+  "short_name": "Collection Time",
+  "description": "Il catalogo delle mie collezioni.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1A2140",
+  "lang": "it",
+  "icons": [
+    { "src": "/icone/icona-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icone/icona-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
