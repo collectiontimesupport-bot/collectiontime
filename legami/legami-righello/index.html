@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../sito.css?v=6">
+<link rel="stylesheet" href="../../sito.css?v=7">
 <style>
   /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
   * { box-sizing: border-box; }
@@ -31,6 +31,8 @@
   .wrap { width: 100%; max-width: 700px; margin: 0 auto; padding: 56px 20px 72px; text-align: center; }
   .backlink { display: inline-block; margin: 0 0 28px; color: var(--muted); text-decoration: none; font-size: .9375rem; }
   .backlink:hover { color: var(--ink); }
+  /* solo PC: link per tornare indietro più grande e facile da cliccare */
+  @media (min-width: 768px) and (pointer: fine) { .backlink { padding: 6px 0; font-size: 1.125rem; } }
   h1 { margin: 0; font: 600 clamp(1.8rem, 3.6vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
   h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
   .sub { margin: 18px 0 0; color: var(--muted); }

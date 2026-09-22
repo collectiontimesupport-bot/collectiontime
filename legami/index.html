@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../sito.css?v=6">
+<link rel="stylesheet" href="../sito.css?v=7">
 <style>
   /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
   :root {
@@ -35,6 +35,8 @@
   .wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 56px 20px 72px; }
   .backlink { display: inline-block; margin: 0 0 28px; color: var(--muted); text-decoration: none; font-size: .9375rem; }
   .backlink:hover { color: var(--ink); }
+  /* solo PC: link per tornare indietro più grande e facile da cliccare */
+  @media (min-width: 768px) and (pointer: fine) { .backlink { padding: 6px 0; font-size: 1.125rem; } }
   /* Titolo nello stesso carattere del titolo di Erasable: Comic Sans MS Bold
      (se il dispositivo non ce l'ha, usa il carattere più simile disponibile). */
   h1 { margin: 0; text-align: center; font: 700 clamp(2rem, 4vw, 3rem)/1.1 "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", "Marker Felt", cursive; letter-spacing: .01em; color: var(--titolo); }

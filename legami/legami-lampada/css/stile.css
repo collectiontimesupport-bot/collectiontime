@@ -83,6 +83,10 @@ button { cursor: pointer; }
 /* link "← Legami" in alto a sinistra */
 .backlink { position: absolute; top: 10px; left: 16px; font-size: .8125rem; color: var(--muted); text-decoration: none; }
 .backlink:hover { color: var(--legami-red); }
+/* solo PC: scritta più grande e più spazio da cliccare (sul telefono resta com'è) */
+@media (min-width: 768px) and (pointer: fine) {
+  .backlink { top: 4px; padding: 6px 0; font-size: 1.125rem; }
+}
 
 /* =====================================================================
    4. TITOLO E BARRA DEGLI STRUMENTI

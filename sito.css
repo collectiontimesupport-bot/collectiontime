@@ -3,7 +3,7 @@
    Stile comune a TUTTE le pagine: colori del sito, banda in alto
    (header.html), banda in basso (footer.html) e avviso di
    Esporta/Importa. Ogni pagina lo richiama nel <head> con:
-   <link rel="stylesheet" href="sito.css?v=5">
+   <link rel="stylesheet" href="sito.css?v=7">
    (dentro una sottocartella: "../sito.css", "../../sito.css")
    ========================================================== */
 
@@ -44,6 +44,12 @@
   background: none; border: 0; border-bottom: 2px solid transparent; padding: 6px 0;
 }
 .st-top nav button:hover { border-bottom-color: var(--amber); }
+/* solo PC (schermo largo + mouse): Esporta / Importa più grandi e facili da cliccare.
+   Sul telefono restano come sopra, se no si accavallano col nome del sito. */
+@media (min-width: 768px) and (pointer: fine) {
+  .st-top nav { gap: 28px; }
+  .st-top nav button { font-size: 1.125rem; padding: 10px 2px; }
+}
 .st-top :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ---------- banda in basso ---------- */
