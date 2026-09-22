@@ -115,7 +115,7 @@
       limited: !!r.limitata,
       tags: Array.isArray(r.hashtag) ? r.hashtag.slice() : [],
       notes: r.note || '',
-      img: r.foto || ''                        /* percorso della foto, es. "immagini/01-panda.png" */
+      img: r.foto || ''                        /* percorso della foto, es. "immagini/01.png" */
     };
   });
 
@@ -1099,11 +1099,33 @@
     for (const id of toDelete) await removePen(id);
   }
 
+  /* ---------- id rinumerati (settembre 2026) ----------
+     Gli id dell'elenco PENNE sono stati rimessi in ordine (seed-001, seed-002…).
+     Chi aveva già aperto la pagina ha le spunte salvate con gli id vecchi:
+     le sposto sugli id nuovi riconoscendo la penna da numero + nome.
+     Quando tutti avranno riaperto la pagina puoi togliere questa funzione
+     e la riga "await rinumera();" in "avvio". */
+  async function rinumera() {
+    const idNuovo = new Map(SEED.map(s => [s.code + '|' + s.name, s.id]));
+    const nuovoDi = p => p.seed && idNuovo.get(p.code + '|' + p.name);
+    const spostate = pens.filter(p => nuovoDi(p) && nuovoDi(p) !== p.id);
+    if (!spostate.length) return;
+    const t = db.transaction(STORE, 'readwrite'), s = t.objectStore(STORE);
+    spostate.forEach(p => s.delete(p.id));                    /* prima tolgo gli id vecchi… */
+    spostate.forEach(p => { p.id = nuovoDi(p); s.put(p); });  /* …poi salvo con quelli nuovi */
+    await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
+    /* in memoria tengo una sola scheda per id (vincono quelle appena spostate) */
+    const perId = new Map(pens.filter(p => !spostate.includes(p)).map(p => [p.id, p]));
+    spostate.forEach(p => perId.set(p.id, p));
+    pens = [...perId.values()];
+  }
+
   /* ---------- avvio ---------- */
   (async function init() {
     try {
       db = await openDB();
       pens = (await loadAll()).map(normalize);
+      await rinumera();
       /* penne dell'elenco: aggiungo quelle nuove; se SEED_V è cambiato aggiorno
          foto e colori (non le foto che hai cambiato tu, non i dati che hai modificato) */
       const fresh = seedPens();
