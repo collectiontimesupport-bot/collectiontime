@@ -1,5 +1,5 @@
 {
-  "titolo": "Legami",
+  "titolo": "LEGAMI",
   "sottotitolo": "Scegli un oggetto",
   "schede": [
     {
@@ -17,8 +17,8 @@
     {
       "titolo": "Erasable",
       "cartella": "legami-erasable",
-      "descrizione": "Le penne cancellabili Legami, in ordine di catalogo.",
-      "immagine": "legami-erasable/anteprima.png"
+      "descrizione": "Penne cancellabili",
+      "immagine": "legami-erasable/immagini/copertina.png"
     }
   ]
 }
