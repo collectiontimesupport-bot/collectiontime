@@ -15,7 +15,7 @@
     --ink: #1A2140;
     --muted: #5D6580;
     --line: #D5D9E2;
-    --accent: #2A4BD0;
+    --accent: #F2A900;
     --accent-ink: #FFFFFF;
     --legami-red: #E50A15;
     --red: var(--legami-red);
@@ -47,12 +47,12 @@
   .st-top nav { display: flex; gap: 20px; font-size: .875rem; }
   .st-top nav a { color: var(--ink); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
   .st-top nav a:hover { border-bottom-color: var(--line); }
-  .st-top nav a[aria-current="page"] { border-bottom-color: #F2A900; }
+  .st-top nav a[aria-current="page"] { border-bottom-color: var(--accent); }
 
-  .st-band { margin-top: auto; background: var(--ink); color: #fff; border-top: 3px solid #F2A900; padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+  .st-band { margin-top: auto; background: var(--ink); color: #fff; border-top: 3px solid var(--accent); padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
   .st-band a { color: #fff; text-underline-offset: 3px; }
-  .st-band a:hover { color: #F2A900; }
-  .st-band :focus-visible { outline-color: #F2A900; }
+  .st-band a:hover { color: var(--accent); }
+  .st-band :focus-visible { outline-color: var(--accent); }
 
   .wrap { max-width: 1600px; margin: 0 auto; padding: 36px 16px 48px; }
 
@@ -181,7 +181,7 @@
 
   .row { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
   .have { display: flex; align-items: center; gap: 4px; font-size: .8125rem; color: var(--muted); cursor: pointer; }
-  .have input { accent-color: var(--legami-red); margin: 0; width: 16px; height: 16px; }
+  .have input { accent-color: var(--accent); margin: 0; width: 16px; height: 16px; }
   .pen.owned .have { color: var(--ink); font-weight: 600; }
   .edit {
     background: transparent; border: 0; border-radius: 6px;
@@ -236,7 +236,7 @@
     display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 10px;
     border: 1px solid var(--line); border-radius: 8px; background: var(--card);
   }
-  .colorbox:focus-within { border-color: var(--legami-red); }
+  .colorbox:focus-within { border-color: var(--accent); }
   .colorbox input[type=text] {
     flex: 1; min-width: 0; height: 100%; border: 0; border-radius: 0; padding: 0;
     background: transparent; outline: none; color: var(--ink); font-size: 1rem;
@@ -262,23 +262,23 @@
     width: 100%; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: .9375rem; color: var(--ink);
   }
   .colormenu .opt:hover { background: #F3F4F7; }
-  .colormenu .opt:focus-visible { background: #F3F4F7; outline: 2px solid var(--legami-red); outline-offset: -2px; }
+  .colormenu .opt:focus-visible { background: #F3F4F7; outline: 2px solid var(--accent); outline-offset: -2px; }
   .colormenu .opt.sel { font-weight: 600; }
   .colormenu .opt.sel::after { content: "\2713"; margin-left: auto; padding-left: 12px; color: var(--legami-red); }
   .colormenu .dot { cursor: inherit; }
   .dot.rainbow { background: conic-gradient(#E50A15, #F5C400, #3C8765, #4AA3A8, #2C357E, #834687, #E50A15) !important; }
 
-  /* nei dettagli i campi attivi hanno la cornice rossa Legami */
-  dialog :focus-visible { outline: 2px solid var(--legami-red); outline-offset: 2px; }
-  dialog input:focus-visible, dialog textarea:focus-visible { outline-offset: 0; border-color: var(--legami-red); }
+  /* nei dettagli i campi attivi hanno la cornice ambra (più contrasto del rosso) */
+  dialog :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  dialog input:focus-visible, dialog textarea:focus-visible { outline-offset: 0; border-color: var(--accent); }
   .colorbox input[type=text]:focus-visible, .tagbox input[type=text]:focus-visible { outline: none; }
-  #editForm .btn.primary { background: var(--legami-red); border-color: var(--legami-red); color: #fff; }
-  #editForm .btn.primary:hover { background: color-mix(in srgb, var(--legami-red) 88%, #000); border-color: color-mix(in srgb, var(--legami-red) 88%, #000); }
+  #editForm .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  #editForm .btn.primary:hover { background: color-mix(in srgb, var(--accent) 88%, #000); border-color: color-mix(in srgb, var(--accent) 88%, #000); }
   .tagbox {
     display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 38px; padding: 4px 8px;
     border: 1px solid var(--line); border-radius: 8px; background: var(--card);
   }
-  .tagbox:focus-within { border-color: var(--legami-red); }
+  .tagbox:focus-within { border-color: var(--accent); }
   .chips { display: contents; }
   .chip {
     display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 10px; border-radius: 999px;
@@ -299,7 +299,7 @@
   input[readonly] { pointer-events: none; }
   .colorbox.locked { pointer-events: none; }
   .chev:disabled { opacity: .3; cursor: default; }
-  .modebadge { margin-left: auto; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--legami-red); color: var(--legami-red); font-size: .75rem; font-weight: 600; }
+  .modebadge { margin-left: auto; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); font-size: .75rem; font-weight: 600; }
   .backlink { position: absolute; top: 10px; left: 16px; font-size: .8125rem; color: var(--muted); text-decoration: none; }
   .backlink:hover { color: var(--legami-red); }
   .wrap { position: relative; }
@@ -1309,7 +1309,7 @@ SEED.forEach(x => { if (x.halo) HALO_BY_ID.set(x.id, x.halo); });
     const ITEM_H = PH + GAP + CODE_H + GAP + BOX, ROW_GAP = 14;
     const gridTop = H - LOGO_TOP - LOGO_H - 20;
     const colPitch = (W - 2 * MX) / COLS;
-    const gray = rgb(0.78, 0.8, 0.85), dark = rgb(0.1, 0.13, 0.25), red = rgb(229 / 255, 10 / 255, 21 / 255), tick = rgb(229 / 255, 10 / 255, 21 / 255);
+    const gray = rgb(0.78, 0.8, 0.85), dark = rgb(0.1, 0.13, 0.25), red = rgb(242 / 255, 169 / 255, 0), tick = rgb(242 / 255, 169 / 255, 0);
 
     const pages = [];
     let ghost = null;
