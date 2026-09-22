@@ -1,7 +1,9 @@
 /* =====================================================================
-   app.js — Legami Erasable Pens (Collection Time)
+   app.js — pagine delle collezioni (Collection Time)
    ---------------------------------------------------------------------
-   Fa funzionare la pagina legami-erasable/index.html.
+   UN SOLO FILE per tutte le collezioni (penne, lampade…): ogni pagina
+   lo richiama con  <script src="../../comune/app.js?v=…">.
+   Il browser lo scarica una volta sola e lo riusa per tutte le pagine.
    Legge dall'HTML due blocchi:
      • CONFIG → testi e misure della collezione
      • PENNE  → l'elenco delle penne (numero, nome, foto…)
@@ -844,13 +846,15 @@
     return { bytes: new Uint8Array(await blob.arrayBuffer()), dw, dh };
   }
 
-  /* La libreria dei PDF (js/pdf-lib.min.js, circa 500 KB) viene scaricata
-     SOLO la prima volta che si preme "Crea PDF": così la pagina si apre più in fretta. */
+  /* La libreria dei PDF (comune/pdf-lib.min.js, circa 500 KB) viene scaricata
+     SOLO la prima volta che si preme "Crea PDF": così la pagina si apre più in fretta.
+     Il percorso si ricava da quello di app.js: stanno nella stessa cartella. */
+  const PDF_LIB = document.currentScript.src.replace(/[^/]*$/, '') + 'pdf-lib.min.js';
   function loadPdfLib() {
     if (typeof PDFLib !== 'undefined') return Promise.resolve();
     return new Promise(resolve => {
       const sc = document.createElement('script');
-      sc.src = 'js/pdf-lib.min.js';
+      sc.src = PDF_LIB;
       sc.onload = resolve;
       sc.onerror = resolve;   /* se non si carica, makePdf mostra un avviso */
       document.head.appendChild(sc);
@@ -986,7 +990,10 @@
       await makePdf(list, kind);
     } catch (err) {
       console.error(err);
-      say('Non sono riuscito a creare il PDF.');
+      /* aperta con doppio clic (file://) il browser vieta di leggere le foto */
+      say(location.protocol === 'file:'
+        ? 'Il PDF non si può creare con la pagina aperta dal Finder: aprila dal sito o da un server locale.'
+        : 'Non sono riuscito a creare il PDF.');
     }
   });
 

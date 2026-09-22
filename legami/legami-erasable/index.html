@@ -8,11 +8,8 @@
                               ELENCO DELLE PENNE (le uniche parti da toccare
                               per aggiungere o cambiare penne)
        css/stile.css        ← tutto l'aspetto grafico (colori, misure…)
-       js/app.js            ← il funzionamento (griglia, ricerca, bagliore,
-                              salvataggio, PDF…)
-       js/pdf-lib.min.js    ← libreria esterna per creare i PDF
-                              (non va modificata; viene caricata solo
-                              quando si preme "Stampa")
+       (il funzionamento, app.js, e la libreria dei PDF stanno nella
+        cartella "comune" del sito: sono gli stessi per tutte le collezioni)
        immagini/            ← le foto delle penne in PNG trasparente
 
      ▸ PER AGGIUNGERE UNA PENNA: vai in fondo alla pagina, al blocco
@@ -180,7 +177,7 @@
 <script>
 /* =====================================================================
    IMPOSTAZIONI DELLA COLLEZIONE
-   Testi e misure usati da js/app.js. Per un'altra collezione basta
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra collezione basta
    copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
    ===================================================================== */
 const CONFIG = {
@@ -366,7 +363,7 @@ const PENNE = [
 </script>
 
 <!-- Funzionamento della pagina (legge CONFIG e PENNE qui sopra) -->
-<script src="js/app.js?v=3"></script>
+<script src="../../comune/app.js?v=5"></script>
 <!-- Header, footer e menu comuni a tutto il sito -->
 <script src="../../script.js?v=3"></script>
 </body>

@@ -1,46 +1,271 @@
 <!doctype html>
+<!-- =====================================================================
+     LEGAMI BULB FICTION — pagina della collezione delle lampade (Collection Time)
+     ---------------------------------------------------------------------
+     Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI ed
+                              ELENCO DELLE LAMPADE (le uniche parti da toccare
+                              per aggiungere o cambiare lampade)
+       css/stile.css        ← tutto l'aspetto grafico (colori, misure…)
+       (il funzionamento, app.js, e la libreria dei PDF stanno nella
+        cartella "comune" del sito: sono gli stessi per tutte le collezioni)
+       immagini/            ← le foto delle lampade in PNG trasparente
+
+     ▸ PER AGGIUNGERE UNA LAMPADA: vai in fondo alla pagina, al blocco
+       "ELENCO DELLE LAMPADE", e segui le istruzioni scritte lì.
+     ===================================================================== -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lampada · Legami · Collection Time</title>
-<meta name="description" content="Legami Lampada: collezione in arrivo.">
+<title>Legami Bulb Fiction</title>
 <meta name="theme-color" content="#1A2140">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
-<style>
-  /* Colori della pagina: --ink = testo blu scuro, --muted = testo grigio,
-     --line = bordi sottili, --amber = ambra (lineette e sottolineature).
-     Le bande in alto e in basso hanno il loro stile in sito.css. */
-  :root { --ink: #1A2140; --muted: #5D6580; --line: #D5D9E2; --amber: #F2A900; color-scheme: light; }
-  * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: #fff; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  .wrap { width: 100%; max-width: 700px; margin: 0 auto; padding: 56px 20px 72px; text-align: center; }
-  .backlink { display: inline-block; margin: 0 0 28px; color: var(--muted); text-decoration: none; font-size: .9375rem; }
-  .backlink:hover { color: var(--ink); }
-  h1 { margin: 0; font: 600 clamp(1.8rem, 3.6vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
-  h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
-  .sub { margin: 18px 0 0; color: var(--muted); }
-</style>
-</head>
-<body>
-<!-- Banda in alto (logo, Esporta, Importa): la riempie script.js con header.html. Lasciare vuoto. -->
-<div id="header-placeholder"></div>
 
-<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
-<main class="wrap">
-  <a class="backlink" href="../index.html">&larr; Legami</a>
-  <h1>Lampada</h1>
-  <p class="sub">Questa collezione arriverà presto.</p>
-</main>
-
-<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
-<div id="footer-placeholder"></div>
-
-<!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
+<!-- Aspetto grafico della pagina -->
 <!-- "?v=3" è il numero di versione: quando cambi un file .js o .css aumentalo (v=3 → v=4)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
+<link rel="stylesheet" href="css/stile.css?v=1">
+</head>
+<body>
+
+<!-- Header del sito: viene riempito con header.html da ../../script.js -->
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <!-- Link per tornare alla pagina Legami (compare se CONFIG.home è impostato) -->
+  <a class="backlink" id="backLink" href="../index.html" hidden>&larr; Legami</a>
+
+  <!-- ============ TITOLO E STRUMENTI ============ -->
+  <header>
+    <h1 id="pageTitle"><span class="titolo-testo">LEGAMI BULB FICTION</span></h1>
+    <div class="bar">
+      <!-- "5 possedute su 21": il testo lo scrive app.js -->
+      <p class="sub" id="count"></p>
+      <div class="tools">
+        <!-- Ricerca: la lente apre il campo -->
+        <div class="search" id="searchBox">
+          <button type="button" class="icon-btn" id="btnSearch" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, note" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <!-- Filtro: tutte / possedute / mancanti -->
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutte</option>
+          <option value="owned" id="optOwned">Ce le ho</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <!-- Ordine: come il poster (dalla prima) o al contrario (dalla più recente) -->
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dalla prima</option>
+          <option value="desc">Dalla più recente</option>
+        </select>
+        <!-- Aggiungi lampada da foto (solo modalità proprietario) -->
+        <button class="btn primary" id="btnAdd" type="button">Aggiungi lampada</button>
+        <input type="file" id="fileInput" accept="image/*" multiple hidden>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ GRIGLIA DELLE LAMPADE ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni lampada
+       dell'ELENCO DELLE LAMPADE (in fondo a questa pagina). -->
+  <ul class="grid" id="grid"></ul>
+
+  <!-- Messaggi quando non c'è nulla da mostrare -->
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p id="emptyText"></p>
+  </section>
+
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       Esporta e Importa sono nella banda in alto e valgono per tutto il sito. -->
+  <footer>
+    <p class="hint" id="footHint"></p>
+    <button class="btn" id="btnPrint" type="button">Stampa</button>
+    <button class="btn" id="btnPublish" type="button" hidden title="Salva il file dei dati da caricare sul sito">Pubblica</button>
+    <span class="modebadge" id="modeBadge" hidden>Modalità proprietario</span>
+  </footer>
+</div>
+
+<!-- Footer del sito: viene riempito con footer.html da ../../script.js -->
+<div id="footer-placeholder"></div>
+
+<!-- Cornice che appare trascinando foto sulla pagina (modalità proprietario) -->
+<div class="drop" aria-hidden="true">Rilascia le foto per aggiungerne di nuove</div>
+<!-- Avviso temporaneo in basso -->
+<div id="status" role="status" aria-live="polite"></div>
+
+<!-- ============ FINESTRA "STAMPA" ============ -->
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Verrà creato un PDF da salvare o stampare.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small id="pOwnedSmall">Tutte le lampade, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="missing">
+      <span><strong id="pMissingLabel">Quelle che mi mancano</strong> (<span id="cnt-missing"></span>)<small>Solo ciò che non hai ancora segnato, con il quadratino vuoto.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong id="pAllLabel">Tutte le lampade</strong> (<span id="cnt-all"></span>)<small>Tutto l'elenco con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn primary" id="printGo">Crea PDF</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ FINESTRA "DETTAGLI" (si apre con ✎) ============ -->
+<dialog id="dlg">
+  <form id="editForm">
+    <!-- foto grande -->
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.<br>Premi "Cambia foto" per aggiungerla.</span></div>
+    <div class="dlg-body">
+      <!-- "Foto 2 di 5" quando si aggiungono più foto insieme -->
+      <p class="sub" id="dlgStep" hidden></p>
+      <!-- Codice EP · Colore · Numero -->
+      <div class="trio">
+        <div class="field"><span id="lblEp">Codice EP</span><input type="text" id="fEp" autocomplete="off" placeholder="VCLB…" aria-labelledby="lblEp"></div>
+        <!-- Colore: non serve per le lampade, resta nascosto (app.js ne ha bisogno, quindi non va cancellato) -->
+        <div class="field" hidden>Colore
+          <div class="colorwrap" id="colorWrap">
+            <div class="colorbox">
+              <span class="dot empty" id="colorDot" title="Scegli il colore"></span>
+              <input type="text" id="fColorName" autocomplete="off" aria-label="Nome del colore">
+              <button type="button" class="chev" id="btnColorMenu" aria-haspopup="listbox" aria-expanded="false" aria-label="Scegli un colore">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+            </div>
+            <!-- elenco dei colori: lo riempie app.js -->
+            <ul class="colormenu" id="colorMenu" role="listbox" aria-label="Colori" hidden></ul>
+            <input type="color" id="fColor" class="sr-color" tabindex="-1" aria-hidden="true">
+          </div>
+        </div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" autocomplete="off" placeholder="N°" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" autocomplete="off" aria-labelledby="lblNome"></div>
+      <label class="field">Note<textarea id="fNotes" rows="3"></textarea></label>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <button type="button" class="btn" id="btnPhoto">Cambia foto</button>
+        <input type="file" id="photoInput" accept="image/*" hidden>
+        <button type="button" class="btn danger" id="btnDelete">Elimina</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+/* =====================================================================
+   IMPOSTAZIONI DELLA COLLEZIONE
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra collezione basta
+   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
+   ===================================================================== */
+const CONFIG = {
+  id: "legami-lampada",            // nome usato nei PDF
+  dbName: "catalogo-legami-lampada", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "Legami Bulb Fiction",   // titolo della scheda del browser e del PDF
+  nome: "lampada",                 // come si chiama un elemento
+  un: "una lampada",
+  possedute: "possedute",          // "5 possedute su 21"
+  tutte: "Tutte",
+  ceLiHo: "Ce le ho",
+  tuttiTesto: "Tutte le lampade",
+  mancanti: "Quelle che mi mancano",
+  aggiungi: "Aggiungi lampada",
+  etichettaEp: "Codice",           // codice Legami sulla scatola (es. "VCLB0012")
+  etichettaNumero: "Numero",
+  colonne: 6,                      // lampade per fila sugli schermi larghi, come nel poster ("auto" = si adattano)
+  proporzione: 1.7,                // altezza ÷ larghezza di una lampada
+  pdfColonne: 6,                   // lampade per fila nel PDF
+  pdfFile: 2,                      // file di lampade per pagina del PDF
+  pdfAltezza: 190,                 // altezza di una lampada nel PDF (in punti)
+  suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua", "Limited Edition"],   // hashtag proposti nei dettagli
+  home: "../index.html",           // pagina del link "← Legami"
+  modalita: "pubblica"             // "pubblica" = nessuno può modificare i dati fissi (versione del sito)
+};
+
+/* =====================================================================
+   ELENCO DELLE LAMPADE  ★ QUI SI AGGIUNGONO LE LAMPADE ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è UNA lampada. Le lampade compaiono sulla pagina
+   nello stesso ordine di questo elenco (in ordine di codice).
+   (L'elenco si chiama PENNE perché comune/app.js è lo stesso della pagina
+   delle penne: il nome non va cambiato.)
+
+   COME AGGIUNGERE UNA LAMPADA
+     1. Salva la foto in PNG con lo sfondo trasparente nella cartella
+        "immagini" (es. immagini/20.png), alta circa 640 pixel,
+        senza margini vuoti.
+     2. Copia una riga qui sotto, incollala nel punto dove vuoi che
+        compaia e cambia i valori.
+     3. Salva questo file e ricarica la pagina: la lampada c'è già.
+
+   I CAMPI
+     id        codice unico, in ordine: "lampada-001", "lampada-002"…
+               Serve al browser per ricordare se ce l'hai: non usare lo
+               stesso id due volte (per una nuova: l'ultimo + 1).
+     numero    ultime due cifre del codice (VCLB0012 → "12")
+     ep        codice Legami (es. "VCLB0012"), o "" se non si conosce
+     nome      nome della lampada (es. "ALIENO")
+     foto      percorso della foto: "immagini/NOMEFILE.png"
+               Finché non hai la foto vera usa "immagini/in-arrivo.png"
+               (sagoma nera con il "?"), come la 20.
+     hashtag   evento: ["Natale"], ["San Valentino"], ["Halloween"] — facoltativo
+     note      testo libero                                 — facoltativo
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…".
+   ===================================================================== */
+const PENNE = [
+  { id: "lampada-001", numero: "01", ep: "VCLB0001", nome: "BABBO NATALE", foto: "immagini/01.png", hashtag: ["Natale"] },
+  { id: "lampada-002", numero: "02", ep: "VCLB0002", nome: "RENNA", foto: "immagini/02.png", hashtag: ["Natale"] },
+  { id: "lampada-003", numero: "03", ep: "VCLB0003", nome: "FIOCCO DI NEVE", foto: "immagini/03.png", hashtag: ["Natale"] },
+  { id: "lampada-004", numero: "04", ep: "VCLB0004", nome: "ALBERO DI NATALE", foto: "immagini/04.png", hashtag: ["Natale"] },
+  { id: "lampada-005", numero: "05", ep: "VCLB0005", nome: "CUORE", foto: "immagini/05.png", hashtag: ["San Valentino"] },
+  { id: "lampada-006", numero: "06", ep: "VCLB0006", nome: "CACTUS", foto: "immagini/06.png" },
+  { id: "lampada-007", numero: "07", ep: "VCLB0007", nome: "FENICOTTERO", foto: "immagini/07.png" },
+  { id: "lampada-008", numero: "08", ep: "VCLB0008", nome: "ARCOBALENO", foto: "immagini/08.png" },
+  { id: "lampada-009", numero: "09", ep: "VCLB0009", nome: "GATTO", foto: "immagini/09.png" },
+  { id: "lampada-010", numero: "10", ep: "VCLB0010", nome: "MARGHERITA", foto: "immagini/10.png" },
+  { id: "lampada-011", numero: "11", ep: "VCLB0011", nome: "FARFALLA", foto: "immagini/11.png" },
+  { id: "lampada-012", numero: "12", ep: "VCLB0012", nome: "ALIENO", foto: "immagini/12.png" },
+  { id: "lampada-013", numero: "13", ep: "VCLB0013", nome: "UNICORNO", foto: "immagini/13.png" },
+  { id: "lampada-014", numero: "14", ep: "VCLB0014", nome: "DREAM BIG", foto: "immagini/14.png" },
+  { id: "lampada-015", numero: "15", ep: "VCLB0015", nome: "BE HAPPY", foto: "immagini/15.png" },
+  { id: "lampada-016", numero: "16", ep: "VCLB0016", nome: "GOOD VIBES", foto: "immagini/16.png" },
+  { id: "lampada-017", numero: "17", ep: "VCLB0017", nome: "BELIEVE IN MAGIC", foto: "immagini/17.png" },
+  { id: "lampada-018", numero: "18", ep: "VCLB0018", nome: "JOY", foto: "immagini/18.png", hashtag: ["Natale"] },
+  { id: "lampada-019", numero: "19", ep: "VCLB0019", nome: "FANTASMA", foto: "immagini/19.png", hashtag: ["Halloween"] },
+  { id: "lampada-020", numero: "20", ep: "VCLB0020", nome: "WE ARE DREAMERS", foto: "immagini/in-arrivo.png", note: "Esclusiva per le boutique Legami" },
+  { id: "lampada-021", numero: "21", ep: "VCLB0021", nome: "LOVE IS IN THE AIR", foto: "immagini/21.png", hashtag: ["San Valentino"] },
+  { id: "lampada-022", numero: "22", ep: "VCLB0022", nome: "BOOO!", foto: "immagini/22.png", hashtag: ["Halloween"] },
+];
+</script>
+
+<!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
+<script src="../../comune/app.js?v=5"></script>
+<!-- Header, footer e menu comuni a tutto il sito -->
 <script src="../../script.js?v=3"></script>
 </body>
 </html>
