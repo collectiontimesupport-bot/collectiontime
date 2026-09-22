@@ -42,7 +42,6 @@
   .card h2 { margin: 0; font-size: 1.125rem; }
   .card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
   .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
-  .empty { text-align: center; color: var(--muted); padding: 40px 0; }
 </style>
 </head>
 <body>
@@ -52,23 +51,22 @@
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="wrap">
   <a class="backlink" href="../index.html">&larr; Tutte le collezioni</a>
-  <h1 id="titolo">LEGAMI</h1>
-  <p class="sub" id="sottotitolo">Scegli un oggetto</p>
-  <ul class="cards" id="cards" data-src="oggetti.json">
-    <!-- Contenuto di base: usato se il browser non riesce a leggere oggetti.json. -->
+  <h1>LEGAMI</h1>
+  <p class="sub">Scegli un oggetto</p>
+  <!-- Una card per ogni oggetto: per aggiungerne uno, copia un <li> ... </li> e cambia link e testi. -->
+  <ul class="cards">
     <li><a class="card" href="legami-lampada/index.html"><h2>Lampada</h2><p>La collezione Legami Lampada.</p><span class="open">Apri</span></a></li>
     <li><a class="card" href="legami-righello/index.html"><h2>Righello</h2><p>La collezione Legami Righello.</p><span class="open">Apri</span></a></li>
     <li><a class="card" href="legami-erasable/index.html"><div class="thumb"><img src="legami-erasable/immagini/copertina.png" alt=""></div><h2>Erasable</h2><p>Penne cancellabili </p><span class="open">Apri</span></a></li>
   </ul>
-  <p class="empty" id="empty" hidden>Nessun oggetto ancora.</p>
 </main>
 
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
-<!-- "?v=2" è il numero di versione: quando cambi un file .js o .css aumentalo (v=2 → v=3)
+<!-- "?v=3" è il numero di versione: quando cambi un file .js o .css aumentalo (v=3 → v=4)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../script.js?v=2"></script>
+<script src="../script.js?v=3"></script>
 </body>
 </html>

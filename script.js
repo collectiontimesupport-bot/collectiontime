@@ -4,10 +4,6 @@
       footer.html nei segnaposto (Fetch)
    2) fa funzionare Esporta e Importa della banda in alto:
       valgono per TUTTE le collezioni del sito insieme
-   3) in ogni pagina "hub" (Home, Legami, e in futuro altre
-      sezioni): mostra l'elenco delle schede definito in un
-      file .json, così da poter aggiungere nuove sezioni o
-      nuovi oggetti senza toccare il codice.
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js"></script>
    (dentro una sottocartella: <script src="../script.js"></script>)
@@ -17,7 +13,7 @@
    e i link vengono cercati da qui, quindi funzionano anche dalle
    pagine dentro le sottocartelle. */
 const BASE = new URL('.', document.currentScript.src);
-/* Numero di versione scritto nella pagina (script.js?v=2): lo aggiungo anche
+/* Numero di versione scritto nella pagina (script.js?v=3): lo aggiungo anche
    a sito.css, header.html e footer.html, così anche loro si aggiornano subito. */
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
@@ -227,56 +223,7 @@ document.addEventListener('change', e => {
   if (file) protetto(importa)(file);
 });
 
-/* ---------- Elenco schede (Home, Legami, e future pagine "hub") ----------
-   Ogni pagina hub ha un <ul id="cards" data-src="NOMEFILE.json"></ul>.
-   Il file json (nella stessa cartella della pagina) ha questa forma:
-   {"titolo": "...", "sottotitolo": "...", "schede": [
-     {"titolo": "...", "cartella": "...", "descrizione": "...", "immagine": "..."}
-   ]}
-   "cartella" è il percorso (relativo alla pagina) della sottopagina/sezione:
-   per una sezione allo stesso livello: "legami-lampada"
-   per risalire e poi scendere in un'altra cartella: "../legami-righello"
-*/
-
-async function caricaSchede() {
-  const ul = document.getElementById('cards');
-  if (!ul) return;                          // questa pagina non è un hub
-  const src = ul.dataset.src;
-  if (!src) return;
-  let data = null;
-  if (/^https?:$/.test(location.protocol)) {
-    try {
-      const res = await fetch(src + '?v=' + Date.now(), { cache: 'no-store' });
-      if (res.ok) { const d = await res.json(); if (Array.isArray(d.schede)) data = d; }
-    } catch (e) { /* uso i valori già scritti nell'HTML, se ci sono */ }
-  }
-  if (!data) return;                        // niente file (es. aperto in locale): resta il contenuto di base
-  if (data.titolo) document.getElementById('titolo').textContent = data.titolo;
-  if (data.sottotitolo) document.getElementById('sottotitolo').textContent = data.sottotitolo;
-  const list = data.schede || [];
-  const local = location.protocol === 'file:';
-  ul.replaceChildren();
-  list.forEach(c => {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.className = 'card';
-    const local_suffix = local ? '/index.html' : '/';
-    a.href = /\.html?$/i.test(c.cartella) ? c.cartella : c.cartella + local_suffix;
-    if (c.immagine) {
-      const t = document.createElement('div'); t.className = 'thumb';
-      const img = document.createElement('img'); img.src = c.immagine; img.alt = ''; t.append(img); a.append(t);
-    }
-    const h = document.createElement('h2'); h.textContent = c.titolo; a.append(h);
-    if (c.descrizione) { const p = document.createElement('p'); p.textContent = c.descrizione; a.append(p); }
-    const o = document.createElement('span'); o.className = 'open'; o.textContent = 'Apri'; a.append(o);
-    li.append(a); ul.append(li);
-  });
-  const vuoto = document.getElementById('empty');
-  if (vuoto) vuoto.hidden = list.length > 0;
-}
-
 /* ---------- Avvio ---------- */
 
 caricaParte('header-placeholder', 'header.html');
 caricaParte('footer-placeholder', 'footer.html');
-caricaSchede();
