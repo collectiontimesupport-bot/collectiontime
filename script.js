@@ -17,6 +17,10 @@
    e i link vengono cercati da qui, quindi funzionano anche dalle
    pagine dentro le sottocartelle. */
 const BASE = new URL('.', document.currentScript.src);
+/* Numero di versione scritto nella pagina (script.js?v=2): lo aggiungo anche
+   a sito.css, header.html e footer.html, così anche loro si aggiornano subito. */
+const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
+const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
 
 /* ---------- Stile, header e footer ---------- */
 
@@ -24,7 +28,7 @@ const BASE = new URL('.', document.currentScript.src);
 const stileCaricato = new Promise(fine => {
   const l = document.createElement('link');
   l.rel = 'stylesheet';
-  l.href = new URL('sito.css', BASE);
+  l.href = conVersione('sito.css');
   l.onload = l.onerror = fine;
   document.head.append(l);
 });
@@ -33,7 +37,7 @@ async function caricaParte(idSegnaposto, file) {
   const box = document.getElementById(idSegnaposto);
   if (!box) return;                         // la pagina non ha questo segnaposto
   try {
-    const res = await fetch(new URL(file, BASE));
+    const res = await fetch(conVersione(file));
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const html = await res.text();
     await stileCaricato;                    // così la banda non compare mai senza stile
