@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collection Time</title>
+<meta name="description" content="Collection Time: il catalogo delle mie collezioni.">
+<meta name="theme-color" content="#1A2140">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root { --ink: #1A2140; --muted: #5D6580; --line: #D5D9E2; --amber: #F2A900; color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: #fff; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  .st-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: #fff; }
+  .st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(15px, 4.4vw, 18px); line-height: 1; color: var(--ink); text-decoration: none; }
+  .st-brand .mk { width: 1.55em; height: 1.55em; flex: none; }
+  .st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
+  .st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
+  .st-top nav { display: flex; gap: 20px; font-size: .875rem; }
+  .st-top nav a { color: var(--ink); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
+  .st-top nav a:hover { border-bottom-color: var(--line); }
+  .st-top nav a[aria-current="page"] { border-bottom-color: var(--amber); }
+
+  .st-band { margin-top: auto; background: var(--ink); color: #fff; border-top: 3px solid var(--amber); padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+  .st-band a { color: #fff; text-underline-offset: 3px; }
+  .st-band a:hover { color: var(--amber); }
+  .st-band :focus-visible { outline-color: var(--amber); }
+
+  .wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 56px 20px 72px; }
+  h1 { margin: 0; text-align: center; font: 600 clamp(2rem, 4vw, 3rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
+  .sub { margin: 14px 0 40px; text-align: center; color: var(--muted); }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .card { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: inherit; text-decoration: none; background: #fff; transition: border-color .15s, box-shadow .15s; }
+  .card:hover, .card:focus-visible { border-color: var(--amber); box-shadow: 0 6px 20px rgba(242, 169, 0, .16); outline: none; }
+  .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .thumb { height: 84px; display: grid; place-items: center; }
+  .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .card h2 { margin: 0; font-size: 1.125rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
+  .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .empty { text-align: center; color: var(--muted); padding: 40px 0; }
+</style>
+</head>
+<body>
+<div id="header-placeholder"></div>
+<header class="st-top">
+  <a class="st-brand" href="index.html" aria-label="Collection Time, pagina iniziale">
+    <svg class="mk" viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="10" fill="#F2A900"/><path d="M12 23l7 7 13-14" fill="none" stroke="#1A2140" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="st-wm">Collecti<svg class="st-clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#1A2140" stroke-width="2.6"/><path d="M12 12 8 9.7M12 12 17.7 8.7" fill="none" stroke="#F2A900" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="12" r="1.3" fill="#1A2140"/></svg>n Time</span>
+  </a>
+  <nav aria-label="Principale">
+    <a href="index.html" aria-current="page">Collezioni</a>
+    <a href="contatti.html">Contatti</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <h1 id="titolo">Le mie collezioni</h1>
+  <p class="sub" id="sottotitolo">Scegli una collezione</p>
+  <ul class="cards" id="cards"></ul>
+  <p class="empty" id="empty" hidden>Nessuna collezione ancora.</p>
+</main>
+
+<footer class="st-band">
+  <span>Collection Time</span>
+  <a href="contatti.html">Contatti</a>
+</footer>
+
+<script>
+/* Elenco di base (se il file collezioni.json non si legge, per esempio aprendo la pagina dal computer) */
+const FALLBACK = {"titolo": "Le mie collezioni", "sottotitolo": "Scegli una collezione", "collezioni": [{"titolo": "Legami Erasable Pens", "cartella": "legami-erasable", "descrizione": "Le penne cancellabili Legami, in ordine di catalogo.", "immagine": "legami-erasable/anteprima.png"}]};
+
+(async function () {
+  let data = FALLBACK;
+  if (/^https?:$/.test(location.protocol)) {
+    try {
+      const res = await fetch('collezioni.json?v=' + Date.now(), { cache: 'no-store' });
+      if (res.ok) { const d = await res.json(); if (Array.isArray(d.collezioni)) data = d; }
+    } catch (e) { /* uso l'elenco di base */ }
+  }
+  if (data.titolo) document.getElementById('titolo').textContent = data.titolo;
+  if (data.sottotitolo) document.getElementById('sottotitolo').textContent = data.sottotitolo;
+  const list = data.collezioni || [];
+  const ul = document.getElementById('cards');
+  const local = location.protocol === 'file:';
+  list.forEach(c => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = c.cartella + (local ? '/index.html' : '/');
+    if (c.immagine) {
+      const t = document.createElement('div'); t.className = 'thumb';
+      const img = document.createElement('img'); img.src = c.immagine; img.alt = ''; t.append(img); a.append(t);
+    }
+    const h = document.createElement('h2'); h.textContent = c.titolo; a.append(h);
+    if (c.descrizione) { const p = document.createElement('p'); p.textContent = c.descrizione; a.append(p); }
+    const o = document.createElement('span'); o.className = 'open'; o.textContent = 'Apri la collezione'; a.append(o);
+    li.append(a); ul.append(li);
+  });
+  document.getElementById('empty').hidden = list.length > 0;
+})();
+</script>
+<div id="footer-placeholder"></div>
+</body>
+</html>
