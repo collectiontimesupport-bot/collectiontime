@@ -1,10 +1,47 @@
 <!-- ==========================================================
      footer.html — BANDA IN BASSO, uguale in tutte le pagine
      Viene inserita da script.js nel segnaposto
-     <div id="footer-placeholder"></div>. Per aggiungere un link
-     copia la riga <a href="…">…</a>. L'aspetto è in sito.css.
+     <div id="footer-placeholder"></div>. L'aspetto è in sito.css
+     (sezione "banda in basso").
+     · per aggiungere un link copia una riga <a href="…">…</a>
+       dentro <nav class="st-band-link">
+     · i link si scrivono come se la pagina fosse nella cartella
+       principale (es. "faq.html"): script.js li corregge da solo
+     · class="st-solo-pc" / "st-solo-tel": testo che si vede solo
+       sul PC / solo sul telefono
      ========================================================== -->
 <footer class="st-band">
-  <span>Collection Time</span>
-  <a href="contatti.html">Contatti</a>
+  <div class="st-band-in">
+    <div class="st-band-top">
+      <div>
+        <div class="st-band-nome">Collection Time</div>
+        <div class="st-band-frase">Un catalogo fatto da un collezionista, per i collezionisti.</div>
+      </div>
+      <div class="st-band-pul">
+        <!-- Aggiungi alla Home: il funzionamento è in script.js; l'id stHome NON va cambiato.
+             Se il sito è già aperto dalla Home, il pulsante sparisce da solo. -->
+        <button type="button" class="st-pul st-pul-home" id="stHome">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 9v6M9 12h6"/></svg>
+          Aggiungi alla Home
+        </button>
+        <!-- Donazioni: quando avrai il link (Ko-fi, PayPal…) mettilo qui al posto di
+             "faq.html#sostieni", per esempio href="https://ko-fi.com/collectiontime" -->
+        <a class="st-pul st-pul-dona" href="faq.html#sostieni">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/></svg>
+          Sostieni<span class="st-solo-pc"> il progetto</span>
+        </a>
+      </div>
+    </div>
+    <nav class="st-band-link" aria-label="Informazioni">
+      <a href="faq.html"><span class="st-solo-pc">Come funziona (FAQ)</span><span class="st-solo-tel">FAQ</span></a>
+      <a href="contatti.html">Contatti</a>
+      <a href="note-legali.html">Note legali</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+    <div class="st-band-legale">
+      <p class="st-solo-pc">Sito amatoriale e non ufficiale, non affiliato né approvato dalle aziende produttrici degli oggetti presentati. Marchi, nomi dei prodotti e immagini appartengono ai rispettivi proprietari e sono usati solo per riconoscere gli oggetti della collezione. Sei il titolare di un'immagine e vuoi che venga tolta? <a href="contatti.html">Scrivimi</a> e la rimuovo.</p>
+      <p class="st-solo-tel">Sito non ufficiale, non affiliato ai produttori. Marchi e immagini appartengono ai rispettivi proprietari. <a href="note-legali.html">Dettagli</a></p>
+      <p>© 2026 Collection Time</p>
+    </div>
+  </div>
 </footer>

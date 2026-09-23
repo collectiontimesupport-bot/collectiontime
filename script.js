@@ -4,6 +4,8 @@
       lo stile comune, sito.css, è richiamato nel <head> di ogni pagina
    2) fa funzionare Esporta e Importa della banda in alto:
       valgono per TUTTE le collezioni del sito insieme
+   3) fa funzionare "Aggiungi alla Home" della banda in basso
+   4) la ricerca tra le categorie (lente nelle pagine con le card)
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js"></script>
    (dentro una sottocartella: <script src="../script.js"></script>)
@@ -29,6 +31,7 @@ async function caricaParte(idSegnaposto, file) {
     const html = await res.text();
     box.innerHTML = html;
     sistemaLink(box);
+    nascondiHomeSeInstallato();
   } catch (e) {
     console.warn('Impossibile caricare ' + file + ':', e);
   }
@@ -207,6 +210,63 @@ document.addEventListener('change', e => {
   e.target.value = '';
   if (file) protetto(importa)(file);
 });
+
+/* ---------- Aggiungi alla Home (banda in basso) ----------
+   · Android, Chrome ed Edge: il browser avvisa che il sito si può
+     installare ("beforeinstallprompt"); allora il pulsante apre
+     direttamente la sua finestra di installazione.
+   · iPhone, iPad, Safari sul Mac e gli altri browser: i siti non
+     possono aggiungersi da soli, quindi mostro i passi da fare.
+   · Se il sito è già aperto dall'icona sulla Home, il pulsante sparisce.
+   Nome e icona usati sono quelli di site.webmanifest. */
+
+let invitoInstalla = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); invitoInstalla = e; });
+window.addEventListener('appinstalled', () => { invitoInstalla = null; nascondiHomeSeInstallato(true); });
+
+const giaInstallato = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+function nascondiHomeSeInstallato(forza) {
+  const btn = document.getElementById('stHome');
+  if (btn && (forza || giaInstallato())) btn.hidden = true;
+}
+
+/* passi da mostrare, in base al dispositivo */
+const ICONA_CONDIVIDI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Condividi"><path d="M8 9H6.5A1.5 1.5 0 0 0 5 10.5v9A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 17.5 9H16M12 3v11M8.5 6.5 12 3l3.5 3.5"/></svg>';
+function passiHome() {
+  const ua = navigator.userAgent;
+  const iOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const safariMac = /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome|Chromium|Edg|Firefox|OPR/.test(ua);
+  if (iOS) return ['Tocca ' + ICONA_CONDIVIDI + ' <b>Condividi</b>', 'Scegli <b>Aggiungi alla schermata Home</b>', 'Tocca <b>Aggiungi</b>'];
+  if (safariMac) return ['Apri il menu <b>File</b> di Safari', 'Scegli <b>Aggiungi al Dock</b>', 'Premi <b>Aggiungi</b>'];
+  return ['Apri il menu del browser (i tre puntini ⋮ o le tre righe ☰)', 'Scegli <b>Installa</b> o <b>Aggiungi alla schermata Home</b>', 'Conferma'];
+}
+
+function guidaHome() {
+  let d = document.querySelector('.st-guida');
+  if (!d) {
+    d = document.createElement('dialog');
+    d.className = 'st-guida';
+    d.setAttribute('aria-labelledby', 'stGuidaTitolo');
+    /* il logo è lo stesso della banda in alto (header.html) */
+    d.innerHTML = '<h2 id="stGuidaTitolo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#F2A900"/><path d="M8.22 16.6 13.4 21.6" fill="none" stroke="#1A2140" stroke-width="4.6" stroke-linecap="round"/><path d="M13.4 21.6 24.52 11.23" fill="none" stroke="#1A2140" stroke-width="3.8" stroke-linecap="round"/></svg>Metti Collection Time sulla Home</h2>' +
+      '<ol>' + passiHome().map(p => '<li>' + p + '</li>').join('') + '</ol>' +
+      '<form method="dialog"><button>Ho capito</button></form>';
+    d.addEventListener('click', e => {                                       // clic fuori dalla finestra: chiude
+      const r = d.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+    });
+    document.body.append(d);
+  }
+  d.showModal();
+}
+
+async function aggiungiHome() {
+  if (!invitoInstalla) return guidaHome();
+  invitoInstalla.prompt();
+  await invitoInstalla.userChoice;
+  invitoInstalla = null;               // l'invito si può usare una volta sola
+}
+document.addEventListener('click', e => { if (e.target.closest('#stHome')) aggiungiHome(); });
 
 /* ---------- Cerca tra le categorie ----------
    Nelle pagine con le card (Home, Legami): la lente accanto alla frase

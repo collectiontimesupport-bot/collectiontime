@@ -1,9 +1,10 @@
 /* ==========================================================
    sito.css — Collection Time
    Stile comune a TUTTE le pagine: colori del sito, banda in alto
-   (header.html), banda in basso (footer.html) e avviso di
-   Esporta/Importa. Ogni pagina lo richiama nel <head> con:
-   <link rel="stylesheet" href="sito.css?v=8">
+   (header.html), banda in basso (footer.html), avviso di
+   Esporta/Importa, finestra "Aggiungi alla Home" e pagine di
+   solo testo (FAQ, Note legali, Privacy). Ogni pagina lo richiama nel <head> con:
+   <link rel="stylesheet" href="sito.css?v=9">
    (dentro una sottocartella: "../sito.css", "../../sito.css")
    ========================================================== */
 
@@ -17,6 +18,8 @@
   --line: #D5D9E2;    /* grigio chiaro: bordi sottili */
   --amber: #F2A900;   /* ambra: accento, sottolineature, logo */
   --white: #FFFFFF;   /* sfondo */
+  --soft: #B9BFD3;    /* grigio chiaro: testo piccolo sulla banda in basso */
+  --band-line: #343C5E; /* riga sottile sulla banda in basso */
   color-scheme: light;
 }
 
@@ -52,11 +55,73 @@
 }
 .st-top :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
-/* ---------- banda in basso ---------- */
-.st-band { margin-top: auto; background: var(--ink); color: var(--white); border-top: 3px solid var(--amber); padding: 16px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+/* ---------- banda in basso (footer.html) ---------- */
+.st-band { margin-top: auto; background: var(--ink); color: var(--white); border-top: 3px solid var(--amber); padding: 22px 20px; font: .8125rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.st-band-in { max-width: 1100px; margin: 0 auto; }   /* larghezza massima del contenuto */
 .st-band a { color: var(--white); text-underline-offset: 3px; }
 .st-band a:hover { color: var(--amber); }
 .st-band :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+/* riga in alto: nome + frase a sinistra, pulsanti a destra */
+.st-band-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 24px; }
+.st-band-nome { font: 1.125rem/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+.st-band-frase { margin-top: 2px; color: var(--soft); }
+.st-band-pul { display: flex; flex-wrap: wrap; gap: 10px; }
+/* pulsanti: "Aggiungi alla Home" solo bordo, "Sostieni" pieno in ambra */
+.st-band .st-pul { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: 1px solid #6B7396;
+                   background: none; color: var(--white); font: inherit; font-weight: 600; font-size: .875rem; line-height: 1.2; text-decoration: none; cursor: pointer; }
+.st-band .st-pul svg { width: 16px; height: 16px; flex: none; }
+.st-band .st-pul:hover { border-color: var(--amber); color: var(--white); }
+.st-band .st-pul-dona { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+.st-band .st-pul-dona:hover { background: var(--white); border-color: var(--white); color: var(--ink); }
+/* link (FAQ, Contatti, Note legali, Privacy) */
+.st-band-link { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 16px 0 14px; }
+/* avviso legale e © */
+.st-band-legale { border-top: 1px solid var(--band-line); padding-top: 12px; color: var(--soft); font-size: .75rem; line-height: 1.55; }
+.st-band-legale p { margin: 0 0 8px; }
+.st-band-legale p:last-child { margin: 0; }
+.st-band-legale a { color: var(--soft); }
+/* testo solo PC / solo telefono */
+.st-solo-tel { display: none; }
+@media (max-width: 600px) {
+  .st-band { text-align: center; }
+  .st-band-top { flex-direction: column; }
+  .st-band-pul, .st-band-link { justify-content: center; }
+  .st-solo-pc { display: none; }
+  .st-solo-tel { display: inline; }
+  p.st-solo-tel { display: block; }
+}
+
+/* ---------- finestra "Aggiungi alla Home" (la crea script.js) ---------- */
+.st-guida { max-width: min(360px, 90vw); padding: 20px; border: 0; border-radius: 14px; color: var(--ink); background: var(--white);
+            font: 1rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.st-guida::backdrop { background: rgba(26, 33, 64, .55); }
+.st-guida h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 1.0625rem; }
+.st-guida h2 svg { width: 34px; height: 34px; flex: none; }
+.st-guida ol { margin: 0; padding-left: 22px; line-height: 1.8; }
+.st-guida ol svg { width: 18px; height: 18px; vertical-align: -3px; }
+.st-guida form { margin: 16px 0 0; text-align: right; }
+.st-guida button { padding: 8px 18px; border: 0; border-radius: 8px; background: var(--ink); color: var(--white); font: inherit; font-weight: 600; font-size: .9375rem; cursor: pointer; }
+.st-guida button:hover { background: var(--amber); color: var(--ink); }
+
+/* ---------- pagine di solo testo (FAQ, Note legali, Privacy) ----------
+   Nel file basta: <body class="st-semplice"> e <main class="st-testo"> */
+body.st-semplice { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink);
+                   font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.st-testo { box-sizing: border-box; width: 100%; max-width: 720px; margin: 0 auto; padding: 56px 20px 72px; }
+.st-testo h1 { margin: 0; font: 600 clamp(2rem, 4vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+.st-testo h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px 0 0; background: var(--amber); border-radius: 2px; }
+.st-testo .lead { margin: 18px 0 28px; color: var(--muted); }
+.st-testo h2 { margin: 32px 0 8px; font-size: 1.125rem; }
+.st-testo a { color: var(--ink); text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.st-testo :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.st-testo .agg { margin-top: 40px; color: var(--muted); font-size: .875rem; }   /* "Ultimo aggiornamento" */
+/* domande delle FAQ: si aprono e chiudono con un clic, senza script */
+.st-testo details { border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
+.st-testo summary { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; font-weight: 600; cursor: pointer; list-style: none; }
+.st-testo summary::-webkit-details-marker { display: none; }
+.st-testo summary::after { content: "+"; color: var(--amber); font-size: 1.25rem; line-height: 1; }
+.st-testo details[open] summary::after { content: "–"; }
+.st-testo details > :not(summary) { margin: 0 0 14px; }
 
 /* ---------- avviso dopo Esporta / Importa ---------- */
 .st-avviso {
