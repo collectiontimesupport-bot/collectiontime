@@ -253,7 +253,7 @@ document.addEventListener('click', e => { if (e.target.closest('#stHome')) aggiu
 
 /* ---------- Ricerca (la lente) ----------
    La lente apre il campo; con Esc o uscendo dal campo vuoto si richiude.
-   Nelle pagine con le card (Home, Legami, LEGO) scrivendo restano visibili
+   Nelle pagine con le card (Home, Legami, LEGO, Kinder) scrivendo restano visibili
    solo le card che contengono quelle parole (nel testo della card o nel
    suo data-cerca="..."). Nelle pagine delle collezioni il filtro lo fa
    app.js, che ascolta lo stesso campo. */

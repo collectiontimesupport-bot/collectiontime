@@ -38,9 +38,9 @@
   .logo-coll span { font-size: 3.6rem; }   /* grandezza di "Legami" */
   /* "Milano": grandezza (font-size) e distanza da "Legami" (margin-top) */
   .logo-coll small { font-size: 1.7rem; letter-spacing: .18em; text-transform: uppercase; margin-top: 14px; }
-  /* card LEGO: stesso carattere delle pagine LEGO (carattere di sistema molto grosso) */
-  .logo-coll.lego { font-family: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; font-weight: 900; }
-  .logo-coll.lego small { font-size: 1.15rem; letter-spacing: .12em; }
+  /* card LEGO e Kinder: stesso carattere delle loro pagine (carattere di sistema molto grosso) */
+  .logo-coll.lego, .logo-coll.kinder { font-family: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; font-weight: 900; }
+  .logo-coll.lego small, .logo-coll.kinder small { font-size: 1.15rem; letter-spacing: .12em; }
 </style>
 </head>
 <body>
@@ -77,6 +77,14 @@
         <!-- logo scritto: --titolo = colore della collezione (blu scuro del sito, quasi nero) -->
         <div class="logo-coll lego" style="--titolo: #1A2140" aria-hidden="true"><span>LEGO</span><small>Minifigures</small></div>
         <p>Le serie di minifigure da collezione.</p>
+        <span class="st-apri">Apri</span>
+      </a>
+    </li>
+    <li data-cerca="Kinder Ferrero Kinder Sorpresa Kinder Joy Merendine Ferrero merendina sorpresine ovetti Gnomburloni gnomi Svitatelli animali Banda Bidon bidoni Lattimbri latte">
+      <a class="st-card" href="kinder/index.html" aria-label="Kinder Ferrero">
+        <!-- logo scritto: --titolo = colore della collezione (blu scuro del sito, quasi nero) -->
+        <div class="logo-coll kinder" style="--titolo: #1A2140" aria-hidden="true"><span>Kinder</span><small>Ferrero</small></div>
+        <p>Le sorpresine di ovetti e merendine.</p>
         <span class="st-apri">Apri</span>
       </a>
     </li>

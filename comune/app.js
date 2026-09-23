@@ -524,10 +524,19 @@
     });
   }
 
-  /* titolo del PDF: disegnato con lo stesso carattere e colore del titolo della pagina */
+  /* titolo del PDF: se nella pagina il titolo è un'immagine (.titolo-img, es. Gnomburloni)
+     uso quella; altrimenti lo disegno con lo stesso carattere e colore del titolo della pagina */
   async function titlePng() {
-    const el = document.querySelector('.titolo-testo');
+    const el = document.querySelector('.titolo-img, .titolo-testo');
     if (!el) return null;
+    if (el.tagName === 'IMG') {
+      const img = await loadImg(el.currentSrc || el.src);
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      c.getContext('2d').drawImage(img, 0, 0);
+      const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+      return new Uint8Array(await blob.arrayBuffer());
+    }
     const cs = getComputedStyle(el), text = el.textContent.trim(), size = 200;
     const font = '700 ' + size + 'px ' + cs.fontFamily;
     try { if (document.fonts && document.fonts.load) await document.fonts.load(font, text); } catch (e) { /* uso il carattere disponibile */ }
@@ -641,12 +650,18 @@
     /* ---- misure (in punti; A4 orizzontale = 842 × 595) ---- */
     const W = 841.89, H = 595.28, MX = 28, COLS = CONFIG.pdfColonne || 25, ROWS = CONFIG.pdfFile || 2;
     const BAND = 30;                                        // banda blu in alto
-    /* titolo su un cartellino bianco, come le schede; TITOLO_H = altezza delle lettere */
+    /* titolo scritto su un cartellino bianco, come le schede; TITOLO_H = altezza delle lettere */
     let TITOLO_H = 32;
+    /* titolo fatto con il logo (es. Gnomburloni, Lattimbri): grande e al centro.
+       Alto al massimo LOGO_MAX_H punti e mai più largo di metà pagina. */
+    const LOGO_MAX_H = 110;
+    const titoloLogo = !!(logo && document.querySelector('.titolo-img'));   // true = titolo fatto con il logo
+    if (titoloLogo) TITOLO_H = Math.min(LOGO_MAX_H, (W / 2) * logo.height / logo.width);
     const TITOLO_MAXW = W - 2 * MX - 40;
     if (logo && TITOLO_H * logo.width / logo.height > TITOLO_MAXW) TITOLO_H = TITOLO_MAXW * logo.height / logo.width;   // titoli molto lunghi
     const LOGO_W = logo ? TITOLO_H * logo.width / logo.height : 0;
-    const CART_PX = 26, CART_PY = 12, CART_H = TITOLO_H + 2 * CART_PY;   // margini del cartellino
+    /* margini del cartellino; con il logo niente cartellino (logo trasparente sul fondo) */
+    const CART_PX = titoloLogo ? 0 : 26, CART_PY = titoloLogo ? 0 : 12, CART_H = TITOLO_H + 2 * CART_PY;
     const areaTop = H - BAND - 16, gridBottom = 52;         // spazio tra la banda e il piè di pagina
     const TITOLO_GAP = 18;                                  // spazio tra titolo e schede
     const gridTop = areaTop - CART_H - TITOLO_GAP;          // spazio massimo per le schede
@@ -722,8 +737,10 @@
       const title = pdfText(CONFIG.titolo);
       const tw = logo ? LOGO_W : bold.widthOfTextAtSize(title, TITOLO_H * 1.35);
       const cartW = tw + 2 * CART_PX;
-      page.drawSvgPath(scheda(cartW, CART_H), { x: (W - cartW) / 2, y: cartTop, color: bianco, borderColor: gray, borderWidth: 0.6 });
-      page.drawRectangle({ x: (W - cartW) / 2 + R, y: cartTop - CART_H, width: cartW - 2 * R, height: 2.5, color: ambra });
+      if (!titoloLogo) {   // cartellino bianco solo per i titoli scritti
+        page.drawSvgPath(scheda(cartW, CART_H), { x: (W - cartW) / 2, y: cartTop, color: bianco, borderColor: gray, borderWidth: 0.6 });
+        page.drawRectangle({ x: (W - cartW) / 2 + R, y: cartTop - CART_H, width: cartW - 2 * R, height: 2.5, color: ambra });
+      }
       if (logo) page.drawImage(logo, { x: (W - LOGO_W) / 2, y: cartTop - CART_PY - TITOLO_H, width: LOGO_W, height: TITOLO_H });
       else page.drawText(title, { x: (W - tw) / 2, y: cartTop - CART_PY - TITOLO_H, size: TITOLO_H * 1.35, font: bold, color: ink });
 
