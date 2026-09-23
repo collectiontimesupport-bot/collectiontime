@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LEGO Minifigures · Collection Time</title>
+<meta name="description" content="LEGO Minifigures: tutte le serie, con le minifigure che ho e quelle che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="LEGO Minifigures · Collection Time">
+<meta property="og:description" content="LEGO Minifigures: tutte le serie, con le minifigure che ho e quelle che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/lego/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../sito.css?v=9">
+<style>
+  /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
+  :root {
+    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+    --titolo: #E3000B; }   /* rosso LEGO */
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  .wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 12px 20px 72px; }
+  /* link per tornare indietro: grande e facile da toccare, su telefono e su PC */
+  .backlink { display: inline-block; margin: 0 0 22px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
+  .backlink:hover { color: var(--ink); }
+  /* Titolo nello stesso carattere delle pagine delle serie (carattere di sistema molto grosso) */
+  h1 { margin: 0; text-align: center; font: 900 clamp(2rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
+  h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
+  .sub { margin: 14px 0 40px; text-align: center; color: var(--muted); }
+  /* telefoni: titolo grande come nelle pagine delle serie */
+  @media (max-width: 520px) { h1 { font-size: 9vw; } }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .card { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: inherit; text-decoration: none; background: var(--white); transition: border-color .15s, box-shadow .15s; }
+  .card:hover, .card:focus-visible { border-color: var(--amber); box-shadow: 0 6px 20px rgba(242, 169, 0, .16); outline: none; }
+  .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  /* Card con immagine: testo e "Apri" a sinistra, immagine a destra.
+     L'immagine va dentro il suo <a>:
+     <div class="thumb"><img src="..." alt=""></div> */
+  .card:has(.thumb) { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto; gap: 10px 16px; }
+  .card:has(.thumb) > :not(.thumb) { grid-column: 1; }
+  .card:has(.thumb) .open { justify-self: start; align-self: end; }
+  .thumb { grid-column: 2; grid-row: 1 / 4; display: grid; place-items: center; }
+  /* Tutte le immagini delle card stanno nello stesso riquadro quadrato,
+     così hanno la stessa altezza. */
+  .thumb img { width: 100%; aspect-ratio: 1; max-height: 220px; object-fit: contain; display: block; }
+  .card h2 { margin: 0; font-size: 1.125rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
+  .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+</style>
+</head>
+<body>
+<!-- Banda in alto (logo, Esporta, Importa): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
+<main class="wrap">
+  <a class="backlink" href="../index.html">&larr; Tutte le collezioni</a>
+  <h1>LEGO MINIFIGURES</h1>
+  <!-- Frase + lente: la lente apre il campo per cercare tra le collezioni (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Seleziona la serie</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una serie" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una serie o una minifigura" aria-label="Cerca una serie" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
+  <!-- Una card per ogni serie: per aggiungerne una, copia un <li> ... </li> e cambia link, foto e testi.
+       data-cerca="..." sul <li> = i nomi delle minifigure, così la ricerca trova la serie giusta. -->
+  <ul class="cards">
+    <li data-cerca="Tribal Hunter Cheerleader Caveman Circus Clown Zombie Skater Robot Demolition Dummy Magician Super Wrestler Nurse Ninja Spaceman Forestman Deep Sea Diver Cowboy"><a class="card" href="minifigures-serie-1/index.html"><div class="thumb"><img src="minifigures-serie-1/immagini/13.webp" alt="" width="560" height="560" loading="lazy"></div><h2>Serie 1</h2><p>16 minifigure<br>Set LEGO 8683</p><span class="open">Apri</span></a></li>
+    <li data-cerca="Mariachi Spartan Warrior Ringmaster Witch Vampire Traffic Cop Explorer Lifeguard Mime Weight Lifter Pop Star Skier Disco Dancer Karate Master Surfer Pharaoh"><a class="card" href="minifigures-serie-2/index.html"><div class="thumb"><img src="minifigures-serie-2/immagini/16.webp" alt="" width="560" height="560" loading="lazy"></div><h2>Serie 2</h2><p>16 minifigure<br>Set LEGO 8684</p><span class="open">Apri</span></a></li>
+    <li data-cerca="Fisherman Pilot Tribal Chief Samurai Warrior Snowboarder Space Villain Sumo Wrestler Mummy Elf Tennis Player Race Car Driver Gorilla Suit Guy Space Alien Hula Dancer Rapper Baseball Player"><a class="card" href="minifigures-serie-3/index.html"><div class="thumb"><img src="minifigures-serie-3/immagini/13.webp" alt="" width="560" height="560" loading="lazy"></div><h2>Serie 3</h2><p>16 minifigure<br>Set LEGO 8803</p><span class="open">Apri</span></a></li>
+    <li data-cerca="Lawn Gnome Kimono Girl Musketeer Punk Rocker Surfer Girl Viking Monster Hockey Player Street Skater Sailor Soccer Player Werewolf Hazmat Guy Artist Ice Skater Crazy Scientist"><a class="card" href="minifigures-serie-4/index.html"><div class="thumb"><img src="minifigures-serie-4/immagini/16.webp" alt="" width="560" height="560" loading="lazy"></div><h2>Serie 4</h2><p>16 minifigure<br>Set LEGO 8804</p><span class="open">Apri</span></a></li>
+    <li data-cerca="Graduate Gladiator Royal Guard Eskimo Cave Woman Lizard Man Zookeeper Lumberjack Small Clown Fitness Instructor Detective Evil Dwarf Boxer Egyptian Queen Gangster Snowboarder"><a class="card" href="minifigures-serie-5/index.html"><div class="thumb"><img src="minifigures-serie-5/immagini/12.webp" alt="" width="560" height="560" loading="lazy"></div><h2>Serie 5</h2><p>16 minifigure<br>Set LEGO 8805</p><span class="open">Apri</span></a></li>
+    <li data-cerca="Alien Highland Battler Sleepyhead Lady Liberty Bandit Flamenco Dancer Clockwork Robot Minotaur Leprechaun Roman Soldier Surgeon Skater Girl Intergalactic Girl Butcher Mechanic Genie"><a class="card" href="minifigures-serie-6/index.html"><div class="thumb"><img src="minifigures-serie-6/immagini/16.webp" alt="" width="560" height="560" loading="lazy"></div><h2>Serie 6</h2><p>16 minifigure<br>Set LEGO 8827</p><span class="open">Apri</span></a></li>
+  </ul>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
+<!-- "?v=7" è il numero di versione: quando cambi un file .js o .css aumentalo (v=7 → v=8)
+     in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
+<script src="../script.js?v=7"></script>
+</body>
+</html>

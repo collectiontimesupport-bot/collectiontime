@@ -46,6 +46,9 @@
   .logo-coll span { font-size: 3.6rem; }   /* grandezza di "Legami" */
   /* "Milano": grandezza (font-size) e distanza da "Legami" (margin-top) */
   .logo-coll small { font-size: 1.7rem; letter-spacing: .18em; text-transform: uppercase; margin-top: 14px; }
+  /* card LEGO: stesso carattere delle pagine LEGO (carattere di sistema molto grosso) */
+  .logo-coll.lego { font-family: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; font-weight: 900; }
+  .logo-coll.lego small { font-size: 1.15rem; letter-spacing: .12em; }
   .card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
   .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 </style>
@@ -76,6 +79,14 @@
         <!-- logo scritto: --titolo = colore della collezione (rosso Legami) -->
         <div class="logo-coll" style="--titolo: #E50A15" aria-hidden="true"><span>Legami</span><small>Milano</small></div>
         <p>Tutte le mie collezioni a tema Legami.</p>
+        <span class="open">Apri</span>
+      </a>
+    </li>
+    <li data-cerca="LEGO Minifigures minifigure minifig Serie 1 2 3 4 5 6">
+      <a class="card" href="lego/index.html" aria-label="LEGO Minifigures">
+        <!-- logo scritto: --titolo = colore della collezione (rosso LEGO) -->
+        <div class="logo-coll lego" style="--titolo: #E3000B" aria-hidden="true"><span>LEGO</span><small>Minifigures</small></div>
+        <p>Le minifigure da collezione, serie per serie.</p>
         <span class="open">Apri</span>
       </a>
     </li>
