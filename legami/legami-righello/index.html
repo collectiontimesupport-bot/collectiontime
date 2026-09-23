@@ -28,13 +28,13 @@
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  .wrap { width: 100%; max-width: 700px; margin: 0 auto; padding: 56px 20px 72px; text-align: center; }
+  .wrap { width: 100%; max-width: 700px; margin: 0 auto; padding: 12px 20px 72px; }
   /* link per tornare indietro: grande e facile da toccare, su telefono e su PC */
   .backlink { display: inline-block; margin: 0 0 22px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
   .backlink:hover { color: var(--ink); }
-  h1 { margin: 0; font: 600 clamp(1.8rem, 3.6vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  h1 { margin: 0; text-align: center; font: 600 clamp(1.8rem, 3.6vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
   h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
-  .sub { margin: 18px 0 0; color: var(--muted); }
+  .sub { margin: 18px 0 0; text-align: center; color: var(--muted); }
   /* telefoni: titolo più grande */
   @media (max-width: 520px) { h1 { font-size: 2.5rem; } }
 </style>

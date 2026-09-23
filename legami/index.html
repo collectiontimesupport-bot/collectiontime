@@ -32,7 +32,7 @@
   body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
-  .wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 56px 20px 72px; }
+  .wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 12px 20px 72px; }
   /* link per tornare indietro: grande e facile da toccare, su telefono e su PC */
   .backlink { display: inline-block; margin: 0 0 22px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
   .backlink:hover { color: var(--ink); }
@@ -41,6 +41,8 @@
   h1 { margin: 0; text-align: center; font: 700 clamp(2rem, 4vw, 3rem)/1.1 "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", "Marker Felt", cursive; letter-spacing: .01em; color: var(--titolo); }
   h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
   .sub { margin: 14px 0 40px; text-align: center; color: var(--muted); }
+  /* telefoni: titolo grande come nelle pagine Erasable e Lampada */
+  @media (max-width: 520px) { h1 { font-size: 9vw; } }
   .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
   .card { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: inherit; text-decoration: none; background: var(--white); transition: border-color .15s, box-shadow .15s; }
   .card:hover, .card:focus-visible { border-color: var(--amber); box-shadow: 0 6px 20px rgba(242, 169, 0, .16); outline: none; }
