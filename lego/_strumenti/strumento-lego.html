@@ -1,0 +1,472 @@
+<!doctype html>
+<!-- =====================================================================
+     STRUMENTO LEGO — solo per te, sul tuo Mac (NON viene pubblicato)
+     ---------------------------------------------------------------------
+     Si apre in Google Chrome: tasto destro sul file → Apri con → Google Chrome.
+     (Safari non va bene: non sa salvare le foto in WebP e non può scrivere
+     nella cartella.)
+
+     Cosa fa:
+       1. CREA UNA NUOVA SERIE → cartella lego/<nome>/ con la pagina
+          index.html (copiata dalla Serie 1, con i tuoi nomi) e la cartella
+          immagini/, e aggiunge la card nella home LEGO (lego/index.html).
+       2. FOTO DI TUTTA UNA SERIE → trascini tutte le schermate insieme e le
+          salva ai numeri giusti (immagini/NN.webp + immagini/mini/NN.webp).
+       3. CAMBIA UNA FOTO → una sola minifigura, oppure la copertina.
+       4. RIFAI LE COPIE PICCOLE → rigenera tutte le immagini/mini/NN.webp.
+
+     Sicurezza: prima di sostituire un file ne salva una copia in
+     _backup/ (nella cartella del sito). Non cancella mai niente.
+     La cartella "_strumenti" inizia con "_": GitHub Pages non la pubblica.
+     Guida con le figure: GUIDA-NUOVA-SERIE-LEGO.pdf (in questa cartella).
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strumento LEGO · Collection Time</title>
+<style>
+  :root { --ink: #1A2140; --muted: #5D6580; --line: #D5D9E2; --amber: #F2A900; --rosso: #E3000B; --ok: #1E7F4F; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: #F6F7FA; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  h1 b { color: var(--rosso); }
+  .sub { margin: 0 0 20px; color: var(--muted); }
+  section { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin: 0 0 16px; }
+  h2 { margin: 0 0 10px; font-size: 1.15rem; }
+  h2 span { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border-radius: 50%; background: var(--rosso); color: #fff; font-size: .9rem; }
+  p { margin: 6px 0; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  button, select, input, textarea { font: inherit; }
+  button { padding: 9px 16px; border-radius: 9px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
+  button.primario { background: var(--ink); color: #fff; border-color: var(--ink); font-weight: 600; }
+  button:disabled { opacity: .45; cursor: default; }
+  select, input[type=number], input[type=text], textarea { padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
+  textarea { width: 100%; min-height: 190px; }
+  label.campo { display: grid; gap: 4px; font-size: .9rem; color: var(--muted); }
+  label.campo input { color: var(--ink); font-size: 1rem; }
+  .griglia2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) { .griglia2 { grid-template-columns: 1fr; } }
+  .riga { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
+  .scelta { display: flex; gap: 18px; flex-wrap: wrap; margin: 6px 0 4px; }
+  .drop { border: 2px dashed var(--line); border-radius: 12px; padding: 22px; text-align: center; color: var(--muted); cursor: pointer; }
+  .drop.sopra { border-color: var(--amber); background: #FFF8E6; }
+  .anteprima { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; margin: 12px 0; }
+  .anteprima figure { margin: 0; text-align: center; font-size: .8rem; color: var(--muted); }
+  .anteprima img, .blocco img { display: block; border: 1px solid var(--line); border-radius: 8px;
+    background: repeating-conic-gradient(#eee 0 25%, #fff 0 50%) 0 0 / 16px 16px; }   /* quadretti = parti trasparenti */
+  .anteprima img { max-width: 260px; max-height: 260px; }
+  .blocco { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 12px 0; }
+  .blocco figure { margin: 0; font-size: .75rem; color: var(--muted); text-align: center; }
+  .blocco img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+  .blocco b { color: var(--ink); }
+  .msg { margin: 10px 0 0; padding: 10px 12px; border-radius: 9px; background: #EEF1F6; white-space: pre-line; }
+  .msg.ok { background: #E7F5EC; color: var(--ok); }
+  .msg.err { background: #FDECEC; color: #B3261E; }
+  .bloccato { opacity: .45; pointer-events: none; }
+  progress { width: 100%; height: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Strumento <b>LEGO</b></h1>
+  <p class="sub">Crea nuove serie e sistema le foto da solo. Lavora nella cartella del sito sulla Scrivania e salva sempre una copia di sicurezza prima di cambiare qualcosa.</p>
+
+  <!-- 0. scelta della cartella -->
+  <section>
+    <h2>Prima di tutto: la cartella del sito</h2>
+    <p>Premi il pulsante e scegli la cartella <strong>collection time website</strong> sulla Scrivania. Chrome ti chiederà il permesso di modificarla: rispondi <em>Modifica file</em>.</p>
+    <div class="riga"><button class="primario" id="btnCartella" type="button">Scegli la cartella del sito</button><span id="nomeCartella" class="muted"></span></div>
+    <p class="msg err" id="noChrome" hidden>Questo browser non può scrivere nella cartella. Apri questo file con Google Chrome (tasto destro sul file → Apri con → Google Chrome).</p>
+  </section>
+
+  <div id="lavoro" class="bloccato">
+    <!-- 1. nuova serie -->
+    <section id="sezNuova">
+      <h2><span>1</span>Crea una nuova serie</h2>
+      <div class="scelta">
+        <label><input type="radio" name="gruppo" value="Serie" checked> Serie numerata (es. Serie 30)</label>
+        <label><input type="radio" name="gruppo" value="Serie a tema"> Serie a tema (film, cartoni…)</label>
+      </div>
+      <div class="griglia2">
+        <label class="campo">Nome della serie (come appare nella card)<input type="text" id="nTitolo" placeholder="Serie 30"></label>
+        <label class="campo">Codice del set (sulla bustina)<input type="text" id="nSet" placeholder="71054"></label>
+      </div>
+      <p class="muted" id="nCartella"></p>
+      <label class="campo" style="margin-top:10px"><span>Nomi delle minifigure, <strong>uno per riga</strong>, dal n° 1 all'ultimo</span>
+        <textarea id="nNomi" placeholder="Primo nome&#10;Secondo nome&#10;Terzo nome&#10;…"></textarea></label>
+      <p class="muted" id="nConta">0 minifigure</p>
+      <div class="riga"><button class="primario" id="btnCrea" type="button">Crea la serie</button></div>
+      <p class="msg" id="msgN" hidden></p>
+    </section>
+
+    <!-- 2. foto di tutta una serie -->
+    <section id="sezBlocco">
+      <h2><span>2</span>Foto di tutta una serie (in blocco)</h2>
+      <div class="riga"><select id="bSerie" aria-label="Serie"></select></div>
+      <label class="riga"><input type="checkbox" id="bInverti" checked> Le schermate vanno dal numero più alto al più basso (come quando scorri le figure nell'app)</label>
+      <div class="drop" id="bDrop" tabindex="0">Trascina qui TUTTE le schermate già scontornate della serie (una per minifigura), oppure clicca per sceglierle</div>
+      <input type="file" id="bFile" accept="image/png,image/webp,image/*" multiple hidden>
+      <div class="blocco" id="bAnteprima"></div>
+      <div class="riga"><button class="primario" id="btnBlocco" type="button" disabled>Salva tutte le foto</button></div>
+      <progress id="bBar" max="1" value="0" hidden></progress>
+      <p class="msg" id="msgB" hidden></p>
+    </section>
+
+    <!-- 3. una foto / copertina -->
+    <section id="sezUna">
+      <h2><span>3</span>Cambia una foto (o la copertina)</h2>
+      <div class="scelta">
+        <label><input type="radio" name="tipo" value="figura" checked> Foto di una minifigura</label>
+        <label><input type="radio" name="tipo" value="copertina"> Copertina della serie (foto di gruppo)</label>
+      </div>
+      <div class="riga">
+        <select id="serie" aria-label="Serie"></select>
+        <label id="boxNumero">Numero <input type="number" id="numero" min="1" max="99" value="1" style="width:80px"></label>
+      </div>
+      <div class="drop" id="drop" tabindex="0">Trascina qui la foto già scontornata (PNG con lo sfondo trasparente), oppure clicca per sceglierla</div>
+      <input type="file" id="file" accept="image/png,image/webp,image/*" hidden>
+      <div class="anteprima" id="anteprima" hidden>
+        <figure><img id="imgPrima" alt=""><figcaption>Ora sul sito</figcaption></figure>
+        <figure><img id="imgDopo" alt=""><figcaption>Nuova (ritagliata)</figcaption></figure>
+      </div>
+      <div class="riga"><button class="primario" id="btnSalva" type="button" disabled>Salva la nuova foto</button></div>
+      <p class="msg" id="msg1" hidden></p>
+    </section>
+
+    <!-- 4. copie piccole -->
+    <section id="sezMini">
+      <h2><span>4</span>Rifai tutte le copie piccole</h2>
+      <p>Solo se hai cambiato delle foto grandi <em>a mano</em> (senza questo strumento): rifà le foto piccole della pagina "Tutte le minifigures". Circa un minuto.</p>
+      <div class="riga"><button class="primario" id="btnMini" type="button">Rifai le copie piccole</button></div>
+      <progress id="bar" max="1" value="0" hidden></progress>
+      <p class="msg" id="msg2" hidden></p>
+    </section>
+  </div>
+</main>
+
+<script>
+/* =====================================================================
+   MISURE (le stesse di tutte le foto del sito)
+   ===================================================================== */
+const GRANDE = 560;      // foto della minifigura: 560 × 560
+const PICCOLA = 160;     // copia piccola per la pagina "Tutte": 160 × 160
+const COPERTINA = 900;   // copertina: larga (o alta) al massimo 900
+const QUALITA = 0.84;    // qualità WebP (0–1)
+/* Riquadro della card nelle schermate dell'app (MinifigScan) scontornate con Photoroom,
+   per dimensione della schermata → [x, y, lato]: così le minifigure hanno tutte la stessa misura. */
+const RIQUADRI = { '1109x2400': [87, 620, 919], '1280x2048': [319, 384, 642] };
+const MODELLO = 'minifigures-serie-1';   // pagina da cui copiare le nuove serie
+
+const $ = id => document.getElementById(id);
+let cartella = null;     // la cartella del sito (collection time website)
+
+/* ---------- utilità ---------- */
+function messaggio(el, testo, tipo) { el.hidden = false; el.className = 'msg' + (tipo ? ' ' + tipo : ''); el.textContent = testo; }
+const oggi = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+function caricaImmagine(blob) {
+  return new Promise((ok, ko) => { const u = URL.createObjectURL(blob), i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error('Immagine non leggibile')); i.src = u; });
+}
+function tela(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function aWebp(c, q = QUALITA) {
+  return new Promise((ok, ko) => c.toBlob(b => (b && b.type === 'image/webp') ? ok(b) : ko(new Error('Questo browser non sa creare WebP: usa Chrome.')), 'image/webp', q));
+}
+/* bordi della parte visibile (non trasparente) */
+function bordi(img) {
+  const c = tela(img.naturalWidth, img.naturalHeight), x = c.getContext('2d');
+  x.drawImage(img, 0, 0);
+  const d = x.getImageData(0, 0, c.width, c.height).data;
+  let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < c.height; y++) for (let k = 0; k < c.width; k++) {
+    if (d[(y * c.width + k) * 4 + 3] > 30) { if (k < x0) x0 = k; if (k > x1) x1 = k; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  return x1 < 0 ? null : { x0, y0, x1: x1 + 1, y1: y1 + 1 };
+}
+/* ritaglio quadrato della minifigura, alla stessa scala delle altre */
+function riquadroFigura(img) {
+  const b = bordi(img); if (!b) throw new Error('La foto è tutta trasparente.');
+  const r = RIQUADRI[img.naturalWidth + 'x' + img.naturalHeight];
+  let x0, y0, S;
+  if (r) {                                   // schermata dell'app: riquadro fisso della card
+    [x0, y0, S] = r;
+    if (b.x1 - b.x0 <= S) { if (b.x0 < x0) x0 = b.x0; if (b.x1 > x0 + S) x0 = b.x1 - S; }
+    if (b.y1 - b.y0 <= S) { if (b.y0 < y0) y0 = b.y0; if (b.y1 > y0 + S) y0 = b.y1 - S; }
+  } else {                                   // altra foto: figura al 92% dell'altezza, piedi in basso
+    S = Math.round(Math.max(b.y1 - b.y0, b.x1 - b.x0) / 0.92);
+    x0 = Math.round((b.x0 + b.x1) / 2 - S / 2);
+    y0 = Math.round(b.y1 + S * 0.03 - S);
+  }
+  return { x0, y0, S };
+}
+async function fotoFigura(img) {
+  const { x0, y0, S } = riquadroFigura(img);
+  const g = tela(GRANDE, GRANDE), gx = g.getContext('2d');
+  gx.imageSmoothingQuality = 'high';
+  gx.drawImage(img, x0, y0, S, S, 0, 0, GRANDE, GRANDE);
+  return { grande: await aWebp(g), piccola: await piccola(g) };
+}
+async function piccola(sorgente) {
+  const p = tela(PICCOLA, PICCOLA), px = p.getContext('2d');
+  px.imageSmoothingQuality = 'high';
+  px.drawImage(sorgente, 0, 0, PICCOLA, PICCOLA);
+  return aWebp(p, 0.8);
+}
+async function fotoCopertina(img) {
+  const b = bordi(img); if (!b) throw new Error('La foto è tutta trasparente.');
+  const w = b.x1 - b.x0, h = b.y1 - b.y0, s = Math.min(1, COPERTINA / Math.max(w, h));
+  const c = tela(Math.round(w * s), Math.round(h * s)), x = c.getContext('2d');
+  x.imageSmoothingQuality = 'high';
+  x.drawImage(img, b.x0, b.y0, w, h, 0, 0, c.width, c.height);
+  return { copertina: await aWebp(c, 0.82) };
+}
+
+/* ---------- file nella cartella ---------- */
+async function dir(percorso, crea = false) {
+  let d = cartella;
+  for (const nome of percorso.split('/').filter(Boolean)) d = await d.getDirectoryHandle(nome, { create: crea });
+  return d;
+}
+async function esiste(percorso) { try { await dir(percorso); return true; } catch (e) { return false; } }
+async function leggi(d, nome) { try { return await (await d.getFileHandle(nome)).getFile(); } catch (e) { return null; } }
+async function scrivi(d, nome, dati) {
+  const w = await (await d.getFileHandle(nome, { create: true })).createWritable();
+  await w.write(dati); await w.close();
+}
+/* scrive un file, ma prima salva una copia della versione vecchia in _backup/<cartella>/ */
+async function scriviConCopia(percorsoDir, nome, dati) {
+  const d = await dir(percorsoDir, true);
+  const vecchio = await leggi(d, nome);
+  if (vecchio) await scrivi(await dir('_backup/strumento-lego/' + percorsoDir, true), oggi() + '_' + nome, vecchio);
+  await scrivi(d, nome, dati);
+}
+/* elenco delle minifigure di una serie, letto dalla sua pagina (righe dell'ELENCO) */
+async function elencoDi(serie) {
+  const f = await leggi(await dir('lego/' + serie), 'index.html');
+  const t = f ? await f.text() : '';
+  return [...t.matchAll(/\{\s*id:\s*"[^"]+"[^}]*?numero:\s*"([^"]*)"[^}]*?nome:\s*"((?:[^"\\]|\\.)*)"/g)].map(m => ({ numero: m[1], nome: m[2].replace(/\\(.)/g, '$1') }));
+}
+
+/* ---------- 0. scelta della cartella ---------- */
+if (!window.showDirectoryPicker) { $('noChrome').hidden = false; $('btnCartella').disabled = true; }
+$('btnCartella').addEventListener('click', async () => {
+  try {
+    const d = await showDirectoryPicker({ id: 'collectiontime', mode: 'readwrite' });
+    cartella = d;
+    if (!(await esiste('lego'))) { cartella = null; $('nomeCartella').textContent = 'Questa non è la cartella del sito (dentro non c\'è "lego"). Riprova.'; return; }
+    $('nomeCartella').textContent = '✓ ' + d.name;
+    await elencoSerie();
+    $('lavoro').classList.remove('bloccato');
+  } catch (e) { if (e.name !== 'AbortError') $('nomeCartella').textContent = 'Non riesco ad aprire la cartella: ' + e.message; }
+});
+/* menu delle serie: le cartelle dentro "lego" che hanno una pagina index.html */
+async function elencoSerie(scegli) {
+  const lego = await dir('lego'), voci = [];
+  for await (const [nome, h] of lego.entries()) {
+    if (h.kind !== 'directory' || nome === 'css' || nome === 'tutte' || nome.startsWith('_')) continue;
+    const f = await leggi(h, 'index.html'); if (!f) continue;
+    const t = (await f.text()).match(/<title>([^<·]+)/);
+    const num = (nome.match(/serie-(\d+)$/) || [])[1];
+    voci.push({ nome, titolo: t ? t[1].trim() : nome, ord: num ? +num : 1000 });
+  }
+  voci.sort((a, b) => a.ord - b.ord || a.titolo.localeCompare(b.titolo));
+  for (const id of ['serie', 'bSerie']) {
+    $(id).replaceChildren(...voci.map(v => new Option(v.titolo, v.nome)));
+    if (scegli) $(id).value = scegli;
+  }
+}
+
+/* =====================================================================
+   1. CREA UNA NUOVA SERIE
+   ===================================================================== */
+const gruppo = () => document.querySelector('input[name=gruppo]:checked').value;
+const nomi = () => $('nNomi').value.split('\n').map(s => s.trim()).filter(Boolean);
+/* nome della cartella: "Serie 30" → minifigures-serie-30; "Wicked" → wicked */
+function nomeCartella() {
+  const t = $('nTitolo').value.trim(), n = (t.match(/^serie\s+(\d+)/i) || [])[1];
+  if (gruppo() === 'Serie' && n) return 'minifigures-serie-' + n;
+  return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+function aggiornaNuova() {
+  const c = nomeCartella(), n = nomi().length;
+  $('nCartella').textContent = c ? 'Cartella che verrà creata: lego/' + c + '/' : '';
+  $('nConta').textContent = n + (n === 1 ? ' minifigura' : ' minifigure');
+}
+['nTitolo', 'nNomi'].forEach(id => $(id).addEventListener('input', aggiornaNuova));
+document.querySelectorAll('input[name=gruppo]').forEach(r => r.addEventListener('change', () => {
+  $('nTitolo').placeholder = gruppo() === 'Serie' ? 'Serie 30' : 'Wicked'; aggiornaNuova();
+}));
+const js = s => '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+const html = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+$('btnCrea').addEventListener('click', async () => {
+  const titolo = $('nTitolo').value.trim(), set = $('nSet').value.trim(), elenco = nomi(), slug = nomeCartella();
+  const msg = $('msgN');
+  if (!titolo || !slug) return messaggio(msg, 'Scrivi il nome della serie.', 'err');
+  if (!/^[0-9]{4,6}$/.test(set)) return messaggio(msg, 'Scrivi il codice del set: solo numeri (es. 71054).', 'err');
+  if (elenco.length < 2) return messaggio(msg, 'Scrivi i nomi delle minifigure, uno per riga.', 'err');
+  if (elenco.some(n => n.includes('"'))) return messaggio(msg, 'Nei nomi non usare le virgolette doppie " (usa l\'apostrofo \').', 'err');
+  if (await esiste('lego/' + slug)) return messaggio(msg, 'La cartella lego/' + slug + '/ esiste già: scegli un altro nome (o usa le sezioni 2 e 3 per le sue foto).', 'err');
+  $('btnCrea').disabled = true;
+  try {
+    const n = elenco.length, colonne = n <= 9 ? n : Math.ceil(n / 2);
+    const num = (slug.match(/^minifigures-serie-(\d+)$/) || [])[1];
+    const prefisso = num ? 'minifig-s' + num + '-' : slug + '-';
+    const titoloPagina = 'LEGO Minifigures ' + titolo;
+    /* 1) pagina: copia della Serie 1 con titolo, impostazioni ed elenco nuovi */
+    let t = await (await leggi(await dir('lego/' + MODELLO), 'index.html')).text();
+    t = t.split('LEGO MINIFIGURES SERIE 1').join(html(titoloPagina.toUpperCase()))
+         .split('LEGO Minifigures Serie 1').join(html(titoloPagina))
+         .split('/lego/' + MODELLO + '/').join('/lego/' + slug + '/')
+         .split('minifig-s1-').join(prefisso)
+         .split('le 16 minifigure').join('le ' + n + ' minifigure')
+         .split('"5 possedute su 16"').join('"5 possedute su ' + n + '"')
+         .split('(dalla n° 1 alla n° 16)').join('(dalla n° 1 alla n° ' + n + ')')
+         .split('("01" … "16")').join('("01" … "' + String(n).padStart(2, '0') + '")');
+    t = t.replace(/id: "lego-[^"]+",/, 'id: "lego-' + slug + '",')
+         .replace(/dbName: "[^"]+",/, 'dbName: "catalogo-lego-' + slug + '",')
+         .replace(/titolo: "[^"]+",/, 'titolo: ' + js(titoloPagina) + ',')
+         .replace(/possedute: "possedute",\s*\/\/[^\n]*/, 'possedute: "possedute",          // "5 possedute su ' + n + '"')
+         .replace(/colonne: \d+,\s*\/\/[^\n]*/, 'colonne: ' + colonne + ',                      // elementi per fila sugli schermi larghi (' + n + ' in ' + (n <= colonne ? 1 : 2) + (n <= colonne ? ' fila)' : ' file)'))
+         .replace(/\(es\. "\d+"\)/, '(es. "' + set + '")');
+    const righe = elenco.map((nome, i) => {
+      const k = String(i + 1).padStart(2, '0');
+      return '  { id: "' + prefisso + k + '", numero: "' + k + '", ep: "' + set + '", nome: ' + js(nome) + ', foto: "immagini/' + k + '.webp" },';
+    }).join('\n');
+    t = t.replace(/const PENNE = \[[\s\S]*?\n\];/, 'const PENNE = [\n' + righe + '\n];');
+    const d = await dir('lego/' + slug, true);
+    await scrivi(d, 'index.html', t);
+    await dir('lego/' + slug + '/immagini/mini', true);
+    /* 2) card nella home LEGO, in fondo al gruppo scelto (copia di sicurezza prima) */
+    const home = await (await leggi(await dir('lego'), 'index.html')).text();
+    const titoloGruppo = '<h2 class="gruppo">' + gruppo() + '</h2>';
+    const i = home.indexOf(titoloGruppo), fine = i < 0 ? -1 : home.indexOf('\n  </ul>', i);
+    if (fine < 0) throw new Error('Non trovo il gruppo "' + gruppo() + '" in lego/index.html: la pagina è stata creata, la card aggiungila a mano.');
+    const card = '\n    <li data-cerca="' + html(elenco.join(' ')) + '"><a class="card" href="' + slug + '/index.html"><div class="thumb"><img src="' + slug + '/immagini/copertina.webp" alt="" loading="lazy"></div><h2>' + html(titolo) + '</h2><p>' + n + ' minifigure<br>Set LEGO ' + set + '</p><span class="open">Apri</span></a></li>';
+    await scriviConCopia('lego', 'index.html', home.slice(0, fine) + card + home.slice(fine));
+    await elencoSerie(slug);
+    messaggio(msg, '✓ Serie creata: lego/' + slug + '/ (' + n + ' minifigure) e card aggiunta nella home LEGO.\nOra carica le foto con la sezione 2 e la copertina con la sezione 3 (sono già impostate su questa serie).', 'ok');
+  } catch (e) { messaggio(msg, 'Qualcosa non è andato: ' + e.message, 'err'); }
+  $('btnCrea').disabled = false;
+});
+
+/* =====================================================================
+   2. FOTO DI TUTTA UNA SERIE
+   ===================================================================== */
+let pronte = [];   // [{ k: "01", grande, piccola }]
+const bDrop = $('bDrop');
+bDrop.addEventListener('click', () => $('bFile').click());
+bDrop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('bFile').click(); } });
+bDrop.addEventListener('dragover', e => { e.preventDefault(); bDrop.classList.add('sopra'); });
+bDrop.addEventListener('dragleave', () => bDrop.classList.remove('sopra'));
+bDrop.addEventListener('drop', e => { e.preventDefault(); bDrop.classList.remove('sopra'); preparaBlocco([...e.dataTransfer.files]); });
+$('bFile').addEventListener('change', e => { preparaBlocco([...e.target.files]); e.target.value = ''; });
+$('bSerie').addEventListener('change', () => { pronte = []; $('bAnteprima').replaceChildren(); $('btnBlocco').disabled = true; $('msgB').hidden = true; });
+async function preparaBlocco(files) {
+  const msg = $('msgB'); pronte = []; $('btnBlocco').disabled = true; $('bAnteprima').replaceChildren();
+  files = files.filter(f => f.type.startsWith('image/'));
+  /* in ordine di nome (le schermate hanno data e ora nel nome, quindi = ordine in cui le hai fatte) */
+  files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+  if ($('bInverti').checked) files.reverse();
+  const elenco = await elencoDi($('bSerie').value);
+  if (files.length !== elenco.length) return messaggio(msg, 'Hai messo ' + files.length + ' foto, ma questa serie ha ' + elenco.length + ' minifigure. Devono essere lo stesso numero.', 'err');
+  messaggio(msg, 'Preparo le foto…');
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const r = await fotoFigura(await caricaImmagine(files[i]));
+      pronte.push({ k: String(i + 1).padStart(2, '0'), ...r });
+      const f = document.createElement('figure'), img = new Image();
+      img.src = URL.createObjectURL(r.grande);
+      f.append(img); f.insertAdjacentHTML('beforeend', '<figcaption><b>' + (i + 1) + '</b> ' + html(elenco[i].nome) + '</figcaption>');
+      $('bAnteprima').append(f);
+    }
+    $('btnBlocco').disabled = false;
+    messaggio(msg, 'Controlla che ogni foto sia sopra il suo nome. Se sono al contrario, togli o metti la spunta sopra e trascina di nuovo le foto. Se va bene: "Salva tutte le foto".');
+  } catch (e) { messaggio(msg, e.message, 'err'); }
+}
+$('btnBlocco').addEventListener('click', async () => {
+  const serie = $('bSerie').value, bar = $('bBar'); $('btnBlocco').disabled = true; bar.hidden = false; bar.max = pronte.length; bar.value = 0;
+  try {
+    for (const p of pronte) {
+      await scriviConCopia('lego/' + serie + '/immagini', p.k + '.webp', p.grande);
+      await scriviConCopia('lego/' + serie + '/immagini/mini', p.k + '.webp', p.piccola);
+      bar.value++;
+    }
+    messaggio($('msgB'), '✓ Salvate ' + pronte.length + ' foto in lego/' + serie + '/immagini/ (e le copie piccole).', 'ok');
+    pronte = [];
+  } catch (e) { messaggio($('msgB'), 'Interrotto: ' + e.message, 'err'); $('btnBlocco').disabled = false; }
+});
+
+/* =====================================================================
+   3. CAMBIA UNA FOTO / COPERTINA
+   ===================================================================== */
+let nuova = null;
+const tipo = () => document.querySelector('input[name=tipo]:checked').value;
+document.querySelectorAll('input[name=tipo]').forEach(r => r.addEventListener('change', () => { $('boxNumero').hidden = tipo() === 'copertina'; azzera(); mostraAttuale(); }));
+$('serie').addEventListener('change', () => { azzera(); mostraAttuale(); });
+$('numero').addEventListener('change', () => { azzera(); mostraAttuale(); });
+function azzera() { nuova = null; $('btnSalva').disabled = true; $('imgDopo').removeAttribute('src'); $('msg1').hidden = true; }
+const nomeFile = () => tipo() === 'copertina' ? 'copertina.webp' : String(Math.max(1, +$('numero').value || 1)).padStart(2, '0') + '.webp';
+async function mostraAttuale() {
+  if (!cartella) return;
+  const d = await dir('lego/' + $('serie').value + '/immagini').catch(() => null);
+  const f = d && await leggi(d, nomeFile());
+  $('anteprima').hidden = false;
+  $('imgPrima').parentElement.hidden = !f;          /* serie nuova: niente foto "di adesso" */
+  if (f) $('imgPrima').src = URL.createObjectURL(f);
+}
+const drop = $('drop');
+drop.addEventListener('click', () => $('file').click());
+drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('file').click(); } });
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('sopra'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('sopra'));
+drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('sopra'); if (e.dataTransfer.files[0]) prepara(e.dataTransfer.files[0]); });
+$('file').addEventListener('change', e => { if (e.target.files[0]) prepara(e.target.files[0]); e.target.value = ''; });
+async function prepara(file) {
+  try {
+    azzera(); await mostraAttuale();
+    const img = await caricaImmagine(file);
+    nuova = tipo() === 'copertina' ? await fotoCopertina(img) : await fotoFigura(img);
+    $('imgDopo').src = URL.createObjectURL(nuova.copertina || nuova.grande);
+    $('btnSalva').disabled = false;
+    messaggio($('msg1'), 'Controlla l\'anteprima. Se va bene premi "Salva la nuova foto" (' + $('serie').selectedOptions[0].text + ' · ' + (tipo() === 'copertina' ? 'copertina' : 'n° ' + nomeFile().slice(0, 2)) + ').');
+  } catch (e) { messaggio($('msg1'), e.message, 'err'); }
+}
+$('btnSalva').addEventListener('click', async () => {
+  if (!nuova) return;
+  $('btnSalva').disabled = true;
+  try {
+    const p = 'lego/' + $('serie').value + '/immagini', nome = nomeFile();
+    if (nuova.copertina) await scriviConCopia(p, 'copertina.webp', nuova.copertina);
+    else { await scriviConCopia(p, nome, nuova.grande); await scriviConCopia(p + '/mini', nome, nuova.piccola); }
+    messaggio($('msg1'), '✓ Salvata. Ricarica la pagina del sito per vederla.', 'ok');
+    await mostraAttuale(); nuova = null;
+  } catch (e) { messaggio($('msg1'), 'Non salvata: ' + e.message, 'err'); $('btnSalva').disabled = false; }
+});
+
+/* =====================================================================
+   4. RIFAI TUTTE LE COPIE PICCOLE
+   ===================================================================== */
+$('btnMini').addEventListener('click', async () => {
+  const b = $('btnMini'), bar = $('bar'); b.disabled = true; bar.hidden = false;
+  try {
+    const lego = await dir('lego'), lavori = [];
+    for await (const [nome, h] of lego.entries()) {
+      if (h.kind !== 'directory' || nome.startsWith('_')) continue;
+      const d = await h.getDirectoryHandle('immagini').catch(() => null); if (!d) continue;
+      for await (const [f, fh] of d.entries()) if (fh.kind === 'file' && /^\d\d\.webp$/.test(f)) lavori.push([d, f, fh]);
+    }
+    bar.max = lavori.length; bar.value = 0;
+    for (const [d, f, fh] of lavori) {
+      const img = await caricaImmagine(await fh.getFile());
+      await scrivi(await d.getDirectoryHandle('mini', { create: true }), f, await piccola(img));
+      bar.value++;
+    }
+    messaggio($('msg2'), '✓ Fatto: ' + lavori.length + ' copie piccole aggiornate.', 'ok');
+  } catch (e) { messaggio($('msg2'), 'Interrotto: ' + e.message, 'err'); }
+  b.disabled = false;
+});
+</script>
+</body>
+</html>

@@ -27,7 +27,7 @@
   /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
   :root {
     /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
-    --titolo: #E3000B; }   /* rosso LEGO */
+    --titolo: #1A2140; }   /* blu scuro del sito, quasi nero (il rosso è solo per Legami) */
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
@@ -58,6 +58,10 @@
   /* titoletti "Serie" e "Serie a tema" */
   .gruppo { margin: 36px 0 16px; font-size: 1.25rem; color: var(--titolo); }
   .cards + .gruppo { margin-top: 48px; }
+  /* collegamento "Vedi tutte le minifigure insieme" */
+  .tutte-link { text-align: center; margin: -18px 0 8px; }
+  .tutte-link a { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--amber); color: var(--ink); font-weight: 600; text-decoration: none; }
+  .tutte-link a:hover { filter: brightness(1.06); }
   .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 </style>
 </head>
@@ -80,6 +84,8 @@
     </div>
   </div>
   <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
+  <!-- collegamento alla pagina con TUTTE le minifigure insieme (cartella "tutte") -->
+  <p class="tutte-link"><a href="tutte/index.html">Vedi tutte le minifigure insieme &rarr;</a></p>
   <!-- Una card per ogni collezione: per aggiungerne una, copia un <li> ... </li> e cambia link, foto e testi.
        data-cerca="..." sul <li> = i nomi delle minifigure, così la ricerca trova la serie giusta. -->
   <!-- SERIE NUMERATE: una card per serie, dalla 1 in poi -->

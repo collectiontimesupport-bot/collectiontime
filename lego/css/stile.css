@@ -34,7 +34,7 @@
   --accent: var(--amber);    /* ambra: evidenziazioni e pulsanti principali */
   --accent-ink: #FFFFFF;     /* testo sopra il colore ambra */
   /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
-  --titolo: #E3000B;         /* rosso LEGO: titolo, spunta, pulsante "Aggiungi" */
+  --titolo: #1A2140;         /* blu scuro del sito, quasi nero: titolo, spunta, pulsante "Aggiungi" */
   --danger: #B3261E;         /* pulsante "Elimina" */
 
   /* Altezza di ogni minifigura nella griglia: 3/7 dello spazio verticale
