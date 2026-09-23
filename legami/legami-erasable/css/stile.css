@@ -57,7 +57,7 @@ body {
 }
 
 /* contenitore centrale della pagina */
-.wrap { position: relative; max-width: 1600px; margin: 0 auto; padding: 36px 16px 48px; }
+.wrap { max-width: 1600px; margin: 0 auto; padding: 12px 16px 48px; }
 
 /* controlli dei moduli: stesso carattere del resto della pagina */
 input, select, button { font: inherit; color: inherit; }
@@ -80,13 +80,9 @@ button { cursor: pointer; }
    (lo carica ../../script.js).
    ===================================================================== */
 
-/* link "← Legami" in alto a sinistra */
-.backlink { position: absolute; top: 10px; left: 16px; font-size: .8125rem; color: var(--muted); text-decoration: none; }
+/* link "← Legami" in alto a sinistra: grande e facile da toccare, su telefono e su PC */
+.backlink { display: inline-block; padding: 6px 0; font-size: 1.125rem; color: var(--muted); text-decoration: none; }
 .backlink:hover { color: var(--legami-red); }
-/* solo PC: scritta più grande e più spazio da cliccare (sul telefono resta com'è) */
-@media (min-width: 768px) and (pointer: fine) {
-  .backlink { top: 4px; padding: 6px 0; font-size: 1.125rem; }
-}
 
 /* =====================================================================
    4. TITOLO E BARRA DEGLI STRUMENTI
@@ -433,7 +429,7 @@ dialog input[readonly]:focus-visible { outline: none; border-color: var(--line);
 
 /* telefoni */
 @media (max-width: 520px) {
-  .wrap { padding: 24px 16px 48px; }
+  h1 .titolo-testo { font-size: 9vw; }   /* titolo più grande: se serve va su due righe */
   .trio { grid-template-columns: minmax(0, .85fr) minmax(0, 1.55fr) minmax(0, .6fr); gap: 8px; }
   .trio .field input[type=text] { padding-left: 8px; padding-right: 6px; }
   .colorbox { padding: 0 6px 0 8px; gap: 6px; }

@@ -33,10 +33,9 @@
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
   .wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 56px 20px 72px; }
-  .backlink { display: inline-block; margin: 0 0 28px; color: var(--muted); text-decoration: none; font-size: .9375rem; }
+  /* link per tornare indietro: grande e facile da toccare, su telefono e su PC */
+  .backlink { display: inline-block; margin: 0 0 22px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
   .backlink:hover { color: var(--ink); }
-  /* solo PC: link per tornare indietro più grande e facile da cliccare */
-  @media (min-width: 768px) and (pointer: fine) { .backlink { padding: 6px 0; font-size: 1.125rem; } }
   /* Titolo nello stesso carattere del titolo di Erasable: Comic Sans MS Bold
      (se il dispositivo non ce l'ha, usa il carattere più simile disponibile). */
   h1 { margin: 0; text-align: center; font: 700 clamp(2rem, 4vw, 3rem)/1.1 "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", "Marker Felt", cursive; letter-spacing: .01em; color: var(--titolo); }
@@ -69,7 +68,7 @@
 <main class="wrap">
   <a class="backlink" href="../index.html">&larr; Tutte le collezioni</a>
   <h1>LEGAMI</h1>
-  <p class="sub">Scegli un oggetto</p>
+  <p class="sub">Seleziona la collezione</p>
   <!-- Una card per ogni oggetto: per aggiungerne uno, copia un <li> ... </li> e cambia link e testi. -->
   <ul class="cards">
      <li><a class="card" href="legami-erasable/index.html"><div class="thumb"><img src="legami-erasable/immagini/copertina.webp" alt=""></div><h2>Erasable Pens</h2><p>Penne cancellabili </p><span class="open">Apri</span></a></li>
