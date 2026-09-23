@@ -40,11 +40,12 @@
   /* Logo scritto della collezione nella card (es. "Legami / Milano"),
      nello stesso carattere del titolo della collezione: Comic Sans MS Bold.
      Il colore è a parte, nella voce --titolo di ogni card. */
-  .logo-coll { display: grid; place-content: center; justify-items: center; height: 120px; line-height: 1; color: var(--titolo);
+  /* margin-top negativo: la scritta parte a circa 5 mm dal bordo alto della card */
+  .logo-coll { display: grid; justify-items: center; margin: -3px 0 6px; line-height: 1; color: var(--titolo);
                font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", "Marker Felt", cursive; font-weight: 700; }
-  .logo-coll span { font-size: 2.6rem; }
+  .logo-coll span { font-size: 3.6rem; }   /* grandezza di "Legami" */
   /* "Milano": grandezza (font-size) e distanza da "Legami" (margin-top) */
-  .logo-coll small { font-size: 1.3rem; letter-spacing: .18em; text-transform: uppercase; margin-top: 12px; }
+  .logo-coll small { font-size: 1.7rem; letter-spacing: .18em; text-transform: uppercase; margin-top: 14px; }
   .card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
   .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 </style>
