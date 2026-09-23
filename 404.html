@@ -18,20 +18,15 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="/sito.css?v=9">
+<link rel="stylesheet" href="/sito.css?v=11">
 <style>
-  /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
-  * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  .wrap { width: 100%; max-width: 600px; margin: 0 auto; padding: 72px 20px; text-align: center; }
+  /* Base della pagina (st-wrap), titolo (st-titolo) e pulsante (st-btn) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  .st-wrap { max-width: 600px; padding: 72px 20px; text-align: center; }
   /* orologio fermo: la stessa "o" del logo, più grande */
   .clk { width: 88px; height: 88px; display: block; margin: 0 auto 24px; }
-  h1 { margin: 0; font: 600 clamp(1.8rem, 4vw, 2.4rem)/1.15 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-wrap: balance; }
-  h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
+  .st-titolo { font-size: clamp(1.8rem, 4vw, 2.4rem); line-height: 1.15; text-wrap: balance; }
   p { margin: 18px 0 28px; color: var(--muted); }
-  .btn { display: inline-block; background: var(--ink); color: var(--white); font-weight: 600; font-size: .9375rem; text-decoration: none; padding: 10px 22px; border-radius: 8px; transition: background .15s, color .15s; }
-  .btn:hover { background: var(--amber); color: var(--ink); }
 </style>
 </head>
 <body>
@@ -39,16 +34,16 @@
 <div id="header-placeholder"></div>
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
-<main class="wrap">
+<main class="st-wrap">
   <svg class="clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#1A2140" stroke-width="1.6"/><path d="M12 12V6.5M12 12l4 2.3" fill="none" stroke="#F2A900" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="1" fill="#1A2140"/></svg>
-  <h1>Questo pezzo non è ancora in collezione</h1>
+  <h1 class="st-titolo">Questo pezzo non è ancora in collezione</h1>
   <p>La pagina che cerchi non esiste o è stata spostata.</p>
-  <a class="btn" href="/">Torna alle collezioni</a>
+  <a class="st-btn" href="/">Torna alle collezioni</a>
 </main>
 
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
-<script src="/script.js?v=7"></script>
+<script src="/script.js?v=8"></script>
 </body>
 </html>

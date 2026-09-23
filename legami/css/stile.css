@@ -1,0 +1,35 @@
+/* =====================================================================
+   stile.css — collezioni Legami (Collection Time)
+   ---------------------------------------------------------------------
+   Solo ciò che è diverso nelle pagine Legami: tutto il resto
+   dell'aspetto è in comune/collezione.css (uguale per tutte le collezioni).
+   Lo richiamano le pagine legami-erasable e legami-lampada con
+     <link rel="stylesheet" href="../css/stile.css?v=…">
+   Ogni pagina ha nel <body> la sua classe (class="erasable",
+   class="lampada"): serve solo per le misure della griglia qui sotto.
+   Per una nuova collezione Legami: dai una classe al suo <body> e
+   copia uno dei due blocchi della griglia con quella classe.
+   ===================================================================== */
+
+/* Colore del titolo, a parte: rosso Legami. */
+:root { --titolo: #E50A15; }
+
+/* Titolo nel carattere Legami (var(--font-legami), in sito.css):
+   uguale su iPhone, Android e PC. */
+h1 .titolo-testo { font-family: var(--font-legami); font-weight: 700; letter-spacing: .01em; }
+
+/* ---------- griglia di Erasable Pens ----------
+   25 colonne come nel poster Legami (CONFIG.colonne); sotto i 1250px
+   le colonne si adattano da sole alla larghezza dello schermo. */
+.erasable .grid { gap: 14px 4px; }
+@media (max-width: 1250px) {
+  .erasable .grid { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
+}
+
+/* ---------- griglia di Bulb Fiction (lampade) ----------
+   6 colonne come nel poster (CONFIG.colonne); le lampade sono larghe:
+   oltre 1300px resterebbero troppo distanti. Sotto i 1000px si adattano. */
+.lampada .grid { max-width: 1300px; gap: 28px 20px; }
+@media (max-width: 1000px) {
+  .lampada .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 22px 12px; }
+}

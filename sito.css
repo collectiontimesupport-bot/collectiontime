@@ -1,11 +1,13 @@
 /* ==========================================================
    sito.css — Collection Time
-   Stile comune a TUTTE le pagine: colori del sito, banda in alto
-   (header.html), banda in basso (footer.html), avviso di
-   Esporta/Importa, finestra "Aggiungi alla Home" e pagine di
-   solo testo (FAQ, Note legali, Privacy). Ogni pagina lo richiama nel <head> con:
-   <link rel="stylesheet" href="sito.css?v=9">
+   Stile comune a TUTTE le pagine: colori del sito, base della pagina,
+   pagine con le card (Home, Legami, LEGO), banda in alto (header.html),
+   banda in basso (footer.html), ricerca, avviso in basso, finestra
+   "Aggiungi alla Home" e pagine di solo testo (FAQ, Note legali, Privacy).
+   Ogni pagina lo richiama nel <head> con:
+   <link rel="stylesheet" href="sito.css?v=11">
    (dentro una sottocartella: "../sito.css", "../../sito.css")
+   Le pagine delle collezioni aggiungono comune/collezione.css.
    ========================================================== */
 
 /* ---------- COLORI DEL SITO: si cambiano solo qui ----------
@@ -20,11 +22,61 @@
   --white: #FFFFFF;   /* sfondo */
   --soft: #B9BFD3;    /* grigio chiaro: testo piccolo sulla banda in basso */
   --band-line: #343C5E; /* riga sottile sulla banda in basso */
+  /* carattere dei titoli rossi Legami (vedi sotto "CARATTERE LEGAMI") */
+  --font-legami: "Legami Titolo", "Comic Sans MS", cursive;
   color-scheme: light;
 }
 
+/* ---------- CARATTERE LEGAMI ----------
+   Il Comic Sans MS c'è solo su Mac e Windows: iPhone e Android
+   lo sostituivano ognuno con un carattere diverso.
+   Per questo il carattere è incluso nel sito (file in comune/caratteri/):
+   "Comic Relief" Bold, gratuito, disegnato identico al Comic Sans MS Bold.
+   Così i titoli Legami sono uguali su ogni dispositivo.
+   Il file pesa 15 KB e si scarica solo nelle pagine che lo usano.
+   Contiene lettere, numeri, punteggiatura e accenti italiani. */
+@font-face {
+  font-family: "Legami Titolo";
+  src: url("comune/caratteri/legami-titolo.woff2") format("woff2");
+  font-weight: 700;
+  font-display: block;   /* aspetta il carattere giusto invece di mostrarne un altro per un attimo */
+}
+
+/* ---------- base di tutte le pagine ----------
+   body a colonna: la banda in basso resta sempre in fondo allo schermo. */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* "hidden" nasconde sempre, anche se una regola dice altro */
+body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink);
+       font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }   /* contorno quando si naviga con la tastiera */
+
 /* i segnaposto non creano un riquadro in più */
 #header-placeholder, #footer-placeholder { display: contents; }
+
+/* ---------- pagine con le card (Home, Legami, LEGO) e pagine semplici ----------
+   Nel file basta: <main class="st-wrap">, <h1 class="st-titolo">,
+   <ul class="st-cards"> con un <li><a class="st-card">…</a></li> per card.
+   Quello che cambia da pagina a pagina (colore e carattere del titolo,
+   immagini delle card) sta nel <style> della pagina. */
+.st-wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 12px 20px 72px; }
+/* link per tornare indietro ("← Legami"): grande e facile da toccare, su telefono e su PC */
+.st-back { display: inline-block; margin: 0 0 22px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
+.st-back:hover { color: var(--ink); }
+/* titolo al centro con la lineetta ambra sotto */
+.st-titolo { margin: 0; text-align: center; font: 600 clamp(2rem, 4vw, 3rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+.st-titolo::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
+/* le card */
+.st-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.st-card { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: inherit; text-decoration: none; background: var(--white); transition: border-color .15s, box-shadow .15s; }
+.st-card:hover, .st-card:focus-visible { border-color: var(--amber); box-shadow: 0 6px 20px rgba(242, 169, 0, .16); outline: none; }
+.st-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.st-card h2 { margin: 0; font-size: 1.125rem; }
+.st-card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
+/* "Apri" in fondo alla card */
+.st-apri { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+/* pulsante pieno blu scuro (Contatti, pagina 404) */
+.st-btn { display: inline-block; background: var(--ink); color: var(--white); font-weight: 600; font-size: .9375rem; text-decoration: none; padding: 10px 22px; border-radius: 8px; transition: background .15s, color .15s; }
+.st-btn:hover { background: var(--amber); color: var(--ink); }
 
 /* ---------- banda in alto ----------
    "position: sticky; top: 0" la tiene ferma in cima mentre si scorre.
@@ -105,15 +157,13 @@
 
 /* ---------- pagine di solo testo (FAQ, Note legali, Privacy) ----------
    Nel file basta: <body class="st-semplice"> e <main class="st-testo"> */
-body.st-semplice { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink);
-                   font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
-.st-testo { box-sizing: border-box; width: 100%; max-width: 720px; margin: 0 auto; padding: 56px 20px 72px; }
+body.st-semplice { line-height: 1.6; }
+.st-testo { width: 100%; max-width: 720px; margin: 0 auto; padding: 56px 20px 72px; }
 .st-testo h1 { margin: 0; font: 600 clamp(2rem, 4vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .st-testo h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px 0 0; background: var(--amber); border-radius: 2px; }
 .st-testo .lead { margin: 18px 0 28px; color: var(--muted); }
 .st-testo h2 { margin: 32px 0 8px; font-size: 1.125rem; }
 .st-testo a { color: var(--ink); text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 3px; }
-.st-testo :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .st-testo .agg { margin-top: 40px; color: var(--muted); font-size: .875rem; }   /* "Ultimo aggiornamento" */
 /* domande delle FAQ: si aprono e chiudono con un clic, senza script */
 .st-testo details { border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
@@ -123,7 +173,8 @@ body.st-semplice { margin: 0; min-height: 100vh; display: flex; flex-direction: 
 .st-testo details[open] summary::after { content: "–"; }
 .st-testo details > :not(summary) { margin: 0 0 14px; }
 
-/* ---------- avviso dopo Esporta / Importa ---------- */
+/* ---------- avviso temporaneo in basso ("File salvato…", "PDF salvato…") ----------
+   Lo crea la funzione avviso() di script.js; lo usano anche le pagine delle collezioni. */
 .st-avviso {
   position: fixed; left: 50%; bottom: 20px; z-index: 30; transform: translateX(-50%);
   max-width: 90vw; padding: 10px 16px; border-radius: 10px;
@@ -132,11 +183,13 @@ body.st-semplice { margin: 0; min-height: 100vh; display: flex; flex-direction: 
 }
 .st-avviso.show { opacity: 1; }
 
-/* ---------- ricerca delle categorie (Home e pagine con le card) ----------
-   Si vede solo la lente accanto alla frase ("Scegli una categoria");
-   premendola il campo si allarga. Il funzionamento è in script.js. */
+/* ---------- ricerca (lente) ----------
+   Si vede solo la lente; premendola il campo si allarga.
+   Nelle pagine con le card sta accanto alla frase ("Cerca una categoria"),
+   nelle pagine delle collezioni nella barra degli strumenti.
+   Apertura e chiusura sono in script.js (avviaCerca). */
 .st-sub { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 4px; margin: 14px 0 40px; }
-.st-sub .sub { margin: 0; }
+.st-sub .sub { margin: 0; color: var(--muted); }
 .st-cerca { display: flex; align-items: center; border: 1px solid transparent; border-radius: 8px; }
 .st-cerca.open { border-color: var(--line); }
 .st-cerca button { display: grid; place-items: center; padding: 8px 10px; border: 0; border-radius: 8px; background: none; color: var(--ink); cursor: pointer; }

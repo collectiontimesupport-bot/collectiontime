@@ -1,31 +1,28 @@
 /* =====================================================================
    app.js — pagine delle collezioni (Collection Time)
    ---------------------------------------------------------------------
-   UN SOLO FILE per tutte le collezioni (penne, lampade…): ogni pagina
-   lo richiama con  <script src="../../comune/app.js?v=…">.
+   UN SOLO FILE per tutte le collezioni (penne, lampade, minifigure…):
+   ogni pagina lo richiama con  <script src="../../comune/app.js?v=…">.
    Il browser lo scarica una volta sola e lo riusa per tutte le pagine.
    Legge dall'HTML due blocchi:
      • CONFIG → testi e misure della collezione
-     • PENNE  → l'elenco delle penne (numero, nome, foto…)
-   Per aggiungere penne NON serve toccare questo file: basta
+     • PENNE  → l'elenco degli oggetti (numero, nome, foto…)
+   Per aggiungere oggetti NON serve toccare questo file: basta
    aggiungere una riga all'elenco PENNE nell'HTML.
 
-   Dove vengono salvate le spunte "Ce l'ho"?
-   Nel browser di chi visita (IndexedDB), quindi ognuno ha la sua
-   collezione. I dati "fissi" (nome, numero, foto…) arrivano sempre
+   Cosa resta salvato nel browser di chi visita (IndexedDB)?
+   Solo i suoi dati: "Ce l'ho" e gli hashtag che ha cambiato.
+   Tutto il resto (nome, numero, colore, foto, info) arriva sempre
    dall'elenco PENNE, così una modifica all'HTML si vede subito.
 
    Indice delle sezioni (cerca il titolo con ---------- ):
-     · modalità proprietario / visitatore
-     · elenco delle penne (da PENNE)
+     · elenco (da PENNE)
      · archivio (IndexedDB)
-     · utilità
-     · ordinamento e filtri
+     · ricerca e filtri
      · disegno della pagina (+ bagliore)
-     · nuove penne da foto
-     · finestra di modifica
+     · finestra "Dettagli"
      · stampa in PDF
-     · controlli, trascinamento, pubblicazione
+     · controlli
      · avvio
    ===================================================================== */
 
@@ -33,76 +30,22 @@
   /* scorciatoia: $('grid') = document.getElementById('grid') */
   const $ = id => document.getElementById(id);
   const grid = $('grid'), dlg = $('dlg');
+  /* avviso temporaneo in basso: è quello comune del sito (funzione avviso in script.js) */
+  const say = msg => avviso(msg);
 
-  /* ---------- modalità proprietario / visitatore ----------
-     Modalità proprietario: sul tuo computer (file, localhost, rete di casa) puoi modificare tutto.
-     Sul sito pubblicato i visitatori vedono i dati fissi e cambiano solo hashtag e foto, sul proprio browser.
-     Con ?admin=1 forzi la modalità proprietario, con ?admin=0 quella dei visitatori (per provarla). */
-  const params = new URLSearchParams(location.search);
-  const privateHost = location.protocol === 'file:' ||
-    /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname) || /\.local$/.test(location.hostname);
-  let ADMIN = privateHost;
-  if (CONFIG.modalita === 'pubblica') ADMIN = false;          /* versione da pubblicare: sempre bloccata */
-  else if (params.get('admin') === '0') ADMIN = false;         /* anteprima della vista pubblica */
-  $('btnAdd').hidden = !ADMIN;
-  $('btnPublish').hidden = !ADMIN;
-  $('modeBadge').hidden = !ADMIN;
-  /* Ogni collezione ha il suo archivio nel browser, legato al nome della sua cartella: così più collezioni
-     sullo stesso dominio non si mescolano. (Legami mantiene il nome storico, per non perdere i dati già salvati.) */
-  function folderName() {
-    const parts = location.pathname.split('/').filter(Boolean);
-    if (parts.length && /\.html?$/i.test(parts[parts.length - 1])) parts.pop();
-    let n = parts.length ? parts[parts.length - 1] : 'radice';
-    try { n = decodeURIComponent(n); } catch (e) { /* lascio com'è */ }
-    return n.toLowerCase();
-  }
-  /* l'anteprima della vista pubblica, aperta sul tuo computer, usa un archivio a parte: i tuoi dati non si toccano */
-  const DB_NAME = (CONFIG.dbName || ('catalogo-' + folderName())) + ((!ADMIN && privateHost) ? '-anteprima' : ''), STORE = 'penne';
+  /* misure della collezione (da CONFIG) */
+  document.documentElement.style.setProperty('--proporzione', String(CONFIG.proporzione || 7));
+  document.documentElement.style.setProperty('--colonne', String(CONFIG.colonne || 8));
 
-  /* testi e forma della collezione */
-  (function applyConfig() {
-    document.title = CONFIG.titolo + ' · Collection Time';   // es. "Legami Erasable Pens · Collection Time"
-    $('btnAdd').textContent = CONFIG.aggiungi;
-    $('optAll').textContent = CONFIG.tutte;
-    $('optOwned').textContent = CONFIG.ceLiHo;
-    $('lblEp').textContent = CONFIG.etichettaEp;
-    $('lblNumero').textContent = CONFIG.etichettaNumero;
-    $('pOwnedSmall').textContent = CONFIG.tuttiTesto + ", con il quadratino spuntato dove ce l'hai.";
-    $('pMissingLabel').textContent = CONFIG.mancanti;
-    $('pAllLabel').textContent = CONFIG.tuttiTesto;
-    $('footHint').textContent = ADMIN
-      ? 'Premi su ' + CONFIG.un + " per segnare che ce l'hai. Con \u270E cambi i dettagli e la foto."
-      : 'Premi su ' + CONFIG.un + " per segnare che ce l'hai. Con \u270E vedi i dettagli, le info e gli hashtag.";
-    $('emptyText').textContent = ADMIN
-      ? 'Premi "' + CONFIG.aggiungi + '" per inserire la prima foto.'
-      : 'Non ci sono ancora elementi in questa collezione.';
-    if (CONFIG.home) $('backLink').hidden = false;
-    document.documentElement.style.setProperty('--proporzione', String(CONFIG.proporzione || 7));
-    if (typeof CONFIG.colonne === 'number') document.documentElement.style.setProperty('--colonne', String(CONFIG.colonne));   /* elementi per fila (pagine LEGO) */
-    if (CONFIG.colonne === 'auto') grid.classList.add('auto');
-    /* suggerimenti di hashtag */
-    const sug = $('tagSug');
-    sug.replaceChildren(document.createTextNode('Suggeriti: '));
-    (CONFIG.suggerimenti || []).forEach(t => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.dataset.tag = t; b.textContent = '#' + t;
-      sug.append(b);
-    });
-    sug.hidden = !(CONFIG.suggerimenti || []).length;
-  })();
-
-  /* ---------- elenco delle penne (da PENNE, nell'HTML) ----------
+  /* ---------- elenco (da PENNE, nell'HTML) ----------
      Trasformo le righe scritte nell'HTML (campi in italiano) nel formato
      usato dal resto del programma. L'ordine dell'elenco = ordine sulla pagina. */
 
-  /* Versione dei dati di base: se cambia, chi aveva già aperto la pagina
-     riceve le foto e i colori aggiornati (le sue spunte restano). */
-  const SEED_V = 5;
-  /* Sagoma grigia mostrata al posto delle penne senza foto. */
+  /* Sagoma grigia mostrata al posto degli oggetti senza foto (solo Legami ce l'ha). */
   const SLOT_IMG = 'immagini/slot-vuoto.webp';
 
   const idVisti = new Set();
-  const SEED = (typeof PENNE !== 'undefined' ? PENNE : []).map((r, i) => {
+  const SEED = PENNE.map((r, i) => {
     /* se manca l'id lo ricavo dal nome del file della foto (es. "penna-96-riccio") */
     const id = r.id || ('penna-' + String(r.foto || i).split('/').pop().replace(/\.[a-z]+$/i, ''));
     if (idVisti.has(id)) console.warn('ELENCO PENNE: l\'id "' + id + '" è usato due volte. Cambiane uno!');
@@ -118,139 +61,41 @@
       limited: !!r.limitata,
       tags: Array.isArray(r.hashtag) ? r.hashtag.slice() : [],
       info: r.info || '',                      /* testo fisso "Info": si cambia solo nell'HTML */
-      img: r.foto || ''                        /* percorso della foto, es. "immagini/01.webp" */
+      image: r.foto || ''                      /* percorso della foto, es. "immagini/01.webp" */
     };
   });
-  /* testi "Info" dell'elenco (id → testo): fissi, non vengono salvati nel browser */
-  const INFO = new Map(SEED.map(s => [s.id, s.info]));
 
   /* ---------- stato della pagina ---------- */
   let db = null;           /* archivio del browser (IndexedDB) */
-  let pens = [];           /* tutte le penne, con le spunte di chi guarda */
+  let pens = [];           /* tutti gli oggetti, con le spunte e gli hashtag di chi guarda */
   let filterMode = 'all';  /* filtro scelto: all / owned / missing */
   let sortDir = 1;         /* ordine: 1 = dalla prima, -1 = dalla più recente */
-  let query = '';
-  let editing = null;
-  let pendingImage = null;
-  let queue = [];
-  let queueTotal = 0;
-  let queueDone = 0;
+  let query = '';          /* testo scritto nella ricerca */
+  let editing = null;      /* oggetto aperto nella finestra "Dettagli" */
 
-
-  /* ---------- archivio (IndexedDB) ---------- */
+  /* ---------- archivio (IndexedDB) ----------
+     Ogni collezione ha il suo archivio, con il nome scritto in CONFIG.dbName.
+     Per ogni oggetto salvo solo: id, owned ("Ce l'ho"), tags e tagsTouched
+     (tagsTouched = hashtag cambiati dal visitatore). Gli stessi campi li
+     leggono e scrivono Esporta/Importa (script.js) e la pagina LEGO "Tutte". */
+  const STORE = 'penne';
   function openDB() {
     return new Promise((resolve, reject) => {
-      const r = indexedDB.open(DB_NAME, 1);
+      const r = indexedDB.open(CONFIG.dbName, 1);
       r.onupgradeneeded = () => r.result.createObjectStore(STORE, { keyPath: 'id' });
       r.onsuccess = () => resolve(r.result);
       r.onerror = () => reject(r.error);
     });
   }
-  const store = mode => db.transaction(STORE, mode).objectStore(STORE);
   const wrap = req => new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
-  const loadAll = () => wrap(store('readonly').getAll());
-  const savePen = p => db ? wrap(store('readwrite').put(p)).catch(() => say('Salvataggio non riuscito.')) : Promise.resolve();
-  const removePen = id => db ? wrap(store('readwrite').delete(id)) : Promise.resolve();
-  function saveMany(list) {
-    if (!db) return Promise.resolve();
-    return new Promise((res, rej) => {
-      const t = db.transaction(STORE, 'readwrite');
-      const s = t.objectStore(STORE);
-      list.forEach(p => s.put(p));
-      t.oncomplete = res;
-      t.onerror = () => rej(t.error);
-    });
-  }
+  /* la parte da salvare di un oggetto: solo i dati di chi visita */
+  const datiVisitatore = p => ({ id: p.id, owned: p.owned, tags: p.tags, tagsTouched: p.tagsTouched });
+  const savePen = p => db
+    ? wrap(db.transaction(STORE, 'readwrite').objectStore(STORE).put(datiVisitatore(p))).catch(() => say('Salvataggio non riuscito.'))
+    : Promise.resolve();
 
-  /* ---------- utilità ---------- */
-  /* avviso temporaneo in basso (sparisce dopo 4,5 secondi) */
-  let toastTimer;
-  function say(msg) {
-    const el = $('status');
-    el.textContent = msg;
-    el.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 4500);
-  }
-  /* id casuale per le penne aggiunte da foto */
-  const newId = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
-
-  /* completa una penna con i valori mancanti (utile per dati vecchi o importati) */
-  function normalize(p) {
-    p.pos = typeof p.pos === 'number' ? p.pos : 1000 + (p.order || 0);
-    p.code = p.code || '';
-    p.limited = !!p.limited;
-    p.owned = typeof p.owned === 'boolean' ? p.owned : true;
-    p.name = p.name || '';
-    delete p.notes; delete p.notesTouched;   /* vecchie "Note" dei visitatori (ora c'è "Info", fissa): le tolgo */
-    p.added = p.added || Date.now();
-    p.ep = p.ep || '';
-    p.colorHex = p.colorHex || '';
-    p.colorName = p.colorName || '';
-    p.tags = Array.isArray(p.tags) ? p.tags.map(String) : [];
-    p.metaTouched = !!p.metaTouched;
-    return p;
-  }
-  /* crea le penne "di base" dall'elenco PENNE, tutte ancora da spuntare */
-  const seedPens = () => SEED.map(s => ({
-    id: s.id, seed: true, v: SEED_V, pos: s.pos, code: s.code, limited: s.limited,
-    owned: false, name: s.name || '', image: s.img, added: 0,
-    ep: s.ep || '', colorHex: s.colorHex || '', colorName: s.colorName || '', tags: (s.tags || []).slice(), metaTouched: false
-  }));
-
-  /* Foto caricata da te (modalità proprietario): la rimpicciolisco a max 1400px,
-     tolgo i margini trasparenti e la salvo come WebP (se trasparente) o JPEG. */
-  function resizeImage(file, max = 1400) {
-    return new Promise((resolve, reject) => {
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        const s = Math.min(1, max / Math.max(img.width, img.height));
-        let c = document.createElement('canvas');
-        c.width = Math.max(1, Math.round(img.width * s));
-        c.height = Math.max(1, Math.round(img.height * s));
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        URL.revokeObjectURL(url);
-        const hasAlpha = /png|webp|gif|svg/.test(file.type);
-        if (hasAlpha) {
-          /* tolgo i margini trasparenti, così la penna occupa tutto lo spazio */
-          try {
-            const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-            let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
-            for (let y = 0; y < c.height; y++) {
-              for (let x = 0; x < c.width; x++) {
-                if (d[(y * c.width + x) * 4 + 3] > 12) {
-                  if (x < x0) x0 = x; if (x > x1) x1 = x;
-                  if (y < y0) y0 = y; if (y > y1) y1 = y;
-                }
-              }
-            }
-            if (x1 >= x0 && y1 >= y0) {
-              const w = x1 - x0 + 1, h = y1 - y0 + 1;
-              const c2 = document.createElement('canvas');
-              c2.width = w; c2.height = h;
-              c2.getContext('2d').drawImage(c, x0, y0, w, h, 0, 0, w, h);
-              c = c2;
-            }
-          } catch (e) { /* se il browser non lo permette, tengo l'immagine intera */ }
-          resolve(c.toDataURL('image/webp', 0.92));
-        } else {
-          const c3 = document.createElement('canvas');
-          c3.width = c.width; c3.height = c.height;
-          const ctx = c3.getContext('2d');
-          ctx.fillStyle = '#fff';
-          ctx.fillRect(0, 0, c3.width, c3.height);
-          ctx.drawImage(c, 0, 0);
-          resolve(c3.toDataURL('image/jpeg', 0.88));
-        }
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Immagine non leggibile')); };
-      img.src = url;
-    });
-  }
-
-  /* ---------- ordinamento e filtri ---------- */
-  /* le penne si mostrano sempre nell'ordine dell'elenco PENNE (campo pos) */
+  /* ---------- ricerca e filtri ---------- */
+  /* gli oggetti si mostrano sempre nell'ordine dell'elenco PENNE (campo pos) */
   const byPos = (a, b) => a.pos - b.pos;
   /* parole alternative per gli hashtag: cercando "christmas" escono le penne di Natale, ecc. */
   const TAG_ALIASES = {
@@ -260,10 +105,10 @@
     'pasqua': ['pasqua', 'easter']
   };
   const foldText = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  /* tutto il testo in cui cercare per una penna (numero, EP, nome, info, colore, hashtag) */
+  /* tutto il testo in cui cercare per un oggetto (numero, EP, nome, info, colore, hashtag) */
   function searchText(p) {
-    const parts = [p.code, p.ep, p.name, INFO.get(p.id), p.colorName];
-    (p.tags || []).forEach(t => {
+    const parts = [p.code, p.ep, p.name, p.info, p.colorName];
+    p.tags.forEach(t => {
       parts.push(t, '#' + t);
       const al = TAG_ALIASES[String(t).toLowerCase()];
       if (al) parts.push(...al);
@@ -271,7 +116,7 @@
     if (p.limited) parts.push('edizione limitata', 'limitata', 'limited edition', 'limited');
     return foldText(parts.join(' '));
   }
-  /* penne da mostrare secondo filtro e ricerca, nell'ordine scelto */
+  /* oggetti da mostrare secondo filtro e ricerca, nell'ordine scelto */
   function visiblePens() {
     const terms = foldText(query).replace(/#/g, ' ').split(/\s+/).filter(Boolean);
     return pens
@@ -281,7 +126,7 @@
   }
 
   /* ---------- disegno della pagina ---------- */
-  /* scrive "12 possedute su 103" (le penne senza foto non contano) */
+  /* scrive "12 possedute su 103" (gli oggetti senza foto non contano) */
   function updateCount(shown) {
     const owned = pens.filter(p => p.owned).length;
     const total = pens.filter(p => p.image || p.owned).length;
@@ -290,7 +135,7 @@
     $('count').textContent = t;
   }
 
-  /* ---------- bagliore (UNO SOLO per tutte le penne) ----------
+  /* ---------- bagliore (UNO SOLO per tutti gli oggetti) ----------
      Quando una penna è posseduta, dietro la foto compare un alone arancio-giallo
      che segue la sagoma della penna. Prima c'era un'immagine di bagliore già pronta
      per ogni penna (100 immagini in più): ora lo stesso effetto è calcolato qui,
@@ -305,7 +150,7 @@
      Nota: il calcolo legge i pixel della foto, quindi funziona con la pagina
      aperta dal sito o da un piccolo server locale; aprendo il file con un
      doppio clic (file://) il browser lo vieta: in quel caso si usa un alone
-     di riserva più semplice fatto con il CSS (vedi .no-halo in stile.css). */
+     di riserva più semplice fatto con il CSS (vedi .no-halo in comune/collezione.css). */
   const haloCache = new Map();
   let haloChain = Promise.resolve();
   function makeHalo(src) {
@@ -424,13 +269,14 @@
     }
   }
 
-  /* Crea la scheda <li> di una penna:
+  /* Crea la scheda <li> di un oggetto:
        <li class="pen [owned]">
          <button class="open"> <div class="pic"> [bagliore] <img class="pen-img"> </div> </button>
+         [<div class="nome">Nome</div>]   ← solo se CONFIG.mostraNomi
          <div class="code">01</div>
          <div class="row"> ☐ Ce l'ho   ✎ </div>
        </li>
-     Se la penna non ha foto mostra la sagoma vuota (SLOT_IMG) e non si può spuntare. */
+     Se l'oggetto non ha foto mostra la sagoma vuota (SLOT_IMG) e non si può spuntare. */
   function card(p) {
     const li = document.createElement('li');
     li.className = 'pen' + (p.owned ? ' owned' : '');
@@ -445,24 +291,22 @@
     btn.addEventListener('click', () => { if (p.image) setOwned(p, !p.owned); });
     const pic = document.createElement('div');
     pic.className = 'pic' + (p.image ? '' : ' blank');
+    const img = document.createElement('img');
+    img.draggable = false;
     if (p.image) {
-      const img = document.createElement('img');
       img.className = 'pen-img';
       img.src = p.image;
       img.alt = p.name || (CONFIG.nome + ' ' + p.code);
-      img.title = p.name || (CONFIG.nome + ' ' + p.code);
-      img.draggable = false;
+      if (!CONFIG.mostraNomi) img.title = img.alt;   /* nome come pop-up solo se non è già scritto sotto */
       img.decoding = 'async';
       img.loading = 'lazy';
       pic.append(img);
       if (p.owned) ensureHalo(pic, p);
-    } else if (SLOT_IMG) {
-      const ghost = document.createElement('img');
-      ghost.className = 'ghost';
-      ghost.src = SLOT_IMG;
-      ghost.alt = '';
-      ghost.draggable = false;
-      pic.append(ghost);
+    } else {
+      img.className = 'ghost';
+      img.src = SLOT_IMG;
+      img.alt = '';
+      pic.append(img);
     }
     btn.append(pic);
 
@@ -488,12 +332,21 @@
     edit.type = 'button';
     edit.className = 'edit';
     edit.textContent = '\u270E';
-    edit.setAttribute('aria-label', 'Dettagli e foto');
-    edit.title = 'Dettagli e foto';
-    edit.addEventListener('click', () => openEdit(p.id));
+    edit.setAttribute('aria-label', 'Dettagli');
+    edit.title = 'Dettagli';
+    edit.addEventListener('click', () => openEdit(p));
     row.append(lab, edit);
 
-    li.append(btn, code, row);
+    /* nome scritto sotto la foto: solo se la collezione lo chiede (CONFIG.mostraNomi, es. LEGO) */
+    if (CONFIG.mostraNomi) {
+      const nome = document.createElement('div');
+      nome.className = 'nome';
+      nome.append(document.createElement('span'));
+      nome.firstChild.textContent = p.name;
+      li.append(btn, nome, code, row);
+    } else {
+      li.append(btn, code, row);
+    }
     return li;
   }
 
@@ -506,148 +359,22 @@
     updateCount(list.length);
   }
 
-  /* ---------- nuove penne da foto ---------- */
-  async function addFiles(fileList) {
-    if (!ADMIN) return;
-    const files = [...fileList].filter(f => f.type.startsWith('image/'));
-    if (!files.length) { say('Nessuna immagine riconosciuta. Usa file JPG, PNG o WebP.'); return; }
-    let pos = pens.reduce((m, p) => Math.max(m, p.pos), 999);
-    const created = [];
-    const failed = [];
-    for (const [i, f] of files.entries()) {
-      try {
-        const image = await resizeImage(f);
-        const p = normalize({
-          id: newId(), seed: false, pos: ++pos,
-          code: '', limited: false, owned: true,
-          name: '', image, added: Date.now() + i
-        });
-        await savePen(p);
-        pens.push(p);
-        created.push(p.id);
-      } catch (e) {
-        failed.push(f.name);
-      }
-    }
-    render();
-    if (failed.length) say('Non sono riuscito a leggere: ' + failed.join(', '));
-    if (created.length) {
-      queue = created;
-      queueTotal = created.length;
-      queueDone = 0;
-      openEdit(queue.shift());
-    }
-  }
-
-  /* ---------- finestra di modifica ---------- */
-  function setDlgImage(src) {
-    const img = $('dlgImg');
-    if (src) img.src = src; else img.removeAttribute('src');
-    img.hidden = !src;
-    $('dlgNoPhoto').hidden = !!src;
-  }
-  /* nome del colore a partire dal codice (stesse regole usate per le penne del poster) */
-  function colorNameFromHex(hex) {
-    const m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
-    if (!m) return '';
-    const n = parseInt(m[1], 16);
-    const r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
-    const v = max, s = max === 0 ? 0 : d / max;
-    let h = 0;
-    if (d) {
-      if (max === r) h = ((g - b) / d) % 6; else if (max === g) h = (b - r) / d + 2; else h = (r - g) / d + 4;
-      h *= 60; if (h < 0) h += 360;
-    }
-    if (v < 0.34) return 'Nero';
-    if (s < 0.12) {
-      if (v >= 0.88) {
-        if (s >= 0.07 && (h < 15 || h >= 330)) return 'Rosa';
-        if (s >= 0.07 && h >= 25 && h < 70) return 'Crema';
-        return 'Bianco';
-      }
-      return 'Grigio';
-    }
-    if (h < 12 || h >= 345) return v < 0.55 ? 'Bordeaux' : (s < 0.35 ? 'Rosa' : 'Rosso');
-    if (h < 40) { if (v < 0.62) return 'Marrone'; if (s < 0.55) return v >= 0.8 ? 'Beige' : 'Marrone'; return 'Arancione'; }
-    if (h < 58) { if (s < 0.25) return 'Crema'; return v < 0.6 ? 'Oliva' : 'Giallo'; }
-    if (h < 80) return v >= 0.6 ? 'Verde lime' : 'Oliva';
-    if (h < 165) return 'Verde';
-    if (h < 195) return 'Turchese';
-    if (h < 255) return (v >= 0.75 && s < 0.55) ? 'Azzurro' : 'Blu';
-    if (h < 290) return (v >= 0.7 && s < 0.5) ? 'Lilla' : 'Viola';
-    return s < 0.5 ? 'Rosa' : 'Fucsia';
-  }
-
-  /* colori preimpostati (presi dai cerchi dell'immagine di riferimento) */
-  const COLOR_PRESETS = [
-    ['Nero', '#000000'], ['Blu', '#2c357e'], ['Verde', '#3c8765'], ['Arancione', '#d95a44'],
-    ['Rosa', '#f2cbd3'], ['Viola', '#834687'], ['Rosso', '#c43329'], ['Turchese', '#4aa3a8']
-  ];
-  let editColorHex = '', autoColorName = '', editTags = [];
-  const colorMenu = $('colorMenu'), btnColorMenu = $('btnColorMenu'), colorWrap = $('colorWrap');
-  function closeColorMenu() {
-    colorMenu.hidden = true;
-    btnColorMenu.setAttribute('aria-expanded', 'false');
-  }
-  function openColorMenu() {
-    colorMenu.querySelectorAll('.opt[data-hex]').forEach(o => {
-      o.classList.toggle('sel', !!editColorHex && o.dataset.hex.toLowerCase() === editColorHex.toLowerCase());
-    });
-    colorMenu.hidden = false;
-    btnColorMenu.setAttribute('aria-expanded', 'true');
-    const first = colorMenu.querySelector('.opt.sel') || colorMenu.querySelector('.opt');
-    if (first) first.focus();
-  }
-  function pickPreset(name, hex) {
-    editColorHex = hex;
-    $('fColor').value = hex;
-    $('fColorName').value = name;
-    autoColorName = name;
-    paintDot();
-  }
-  (function buildColorMenu() {
-    COLOR_PRESETS.forEach(([name, hex]) => {
-      const li = document.createElement('li');
-      li.setAttribute('role', 'presentation');
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'opt'; b.setAttribute('role', 'option');
-      b.dataset.hex = hex; b.dataset.name = name;
-      const dot = document.createElement('span');
-      dot.className = 'dot'; dot.style.background = hex;
-      b.append(dot, document.createTextNode(name));
-      b.addEventListener('click', () => { pickPreset(name, hex); closeColorMenu(); $('fColorName').focus(); });
-      li.append(b);
-      colorMenu.append(li);
-    });
-    const li = document.createElement('li');
-    li.setAttribute('role', 'presentation');
+  /* ---------- finestra "Dettagli" (si apre con la matita ✎) ----------
+     Codice, colore, numero, nome e info sono fissi (campi di sola lettura
+     nell'HTML): chi visita cambia solo gli hashtag e "Ce l'ho". */
+  let editTags = [];
+  const tagSug = $('tagSug');
+  /* hashtag suggeriti (da CONFIG.suggerimenti) */
+  tagSug.append('Suggeriti: ');
+  (CONFIG.suggerimenti || []).forEach(t => {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'opt'; b.setAttribute('role', 'option');
-    const dot = document.createElement('span');
-    dot.className = 'dot rainbow';
-    b.append(dot, document.createTextNode('Altro colore\u2026'));
-    b.addEventListener('click', () => { closeColorMenu(); $('fColor').click(); });
-    li.append(b);
-    colorMenu.append(li);
-  })();
-  btnColorMenu.addEventListener('click', () => { colorMenu.hidden ? openColorMenu() : closeColorMenu(); });
-  $('colorDot').addEventListener('click', () => { colorMenu.hidden ? openColorMenu() : closeColorMenu(); });
-  colorMenu.addEventListener('keydown', e => {
-    const opts = [...colorMenu.querySelectorAll('.opt')];
-    const i = opts.indexOf(document.activeElement);
-    if (e.key === 'ArrowDown') { e.preventDefault(); opts[(i + 1) % opts.length].focus(); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); opts[(i - 1 + opts.length) % opts.length].focus(); }
+    b.type = 'button'; b.dataset.tag = t; b.textContent = '#' + t;
+    b.addEventListener('click', () => addTag(t));
+    tagSug.append(b);
   });
-  colorWrap.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && !colorMenu.hidden) { e.preventDefault(); e.stopPropagation(); closeColorMenu(); btnColorMenu.focus(); }
-  });
-  document.addEventListener('click', e => { if (!colorMenu.hidden && !colorWrap.contains(e.target)) closeColorMenu(); });
-  function paintDot() {
-    const d = $('colorDot');
-    d.style.background = editColorHex || 'transparent';
-    d.classList.toggle('empty', !editColorHex);
-  }
+  tagSug.hidden = !(CONFIG.suggerimenti || []).length;
+  const suggeriti = () => [...tagSug.querySelectorAll('button')];
+
   const cleanTag = t => {
     t = String(t).replace(/^#+/, '').trim().replace(/\s+/g, ' ');
     return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
@@ -667,149 +394,66 @@
       chip.append(x);
       box.append(chip);
     });
-    document.querySelectorAll('#tagSug button').forEach(b => {
-      b.hidden = editTags.some(t => t.toLowerCase() === b.dataset.tag.toLowerCase());
-    });
+    /* nascondo i suggerimenti già messi */
+    suggeriti().forEach(b => { b.hidden = editTags.some(t => t.toLowerCase() === b.dataset.tag.toLowerCase()); });
   }
   function addTag(raw) {
     let t = cleanTag(raw);
     if (!t) return;
-    const known = [...document.querySelectorAll('#tagSug button')].find(b => b.dataset.tag.toLowerCase() === t.toLowerCase());
+    const known = suggeriti().find(b => b.dataset.tag.toLowerCase() === t.toLowerCase());
     if (known) t = known.dataset.tag;
     if (!editTags.some(x => x.toLowerCase() === t.toLowerCase())) editTags.push(t);
     renderTags();
   }
-  $('fColor').addEventListener('input', e => {
-    editColorHex = e.target.value;
-    paintDot();
-    const nameEl = $('fColorName');
-    if (!nameEl.value.trim() || nameEl.value === autoColorName) {
-      autoColorName = colorNameFromHex(editColorHex);
-      nameEl.value = autoColorName;
-    }
+  const tagInput = $('fTagInput');
+  tagInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(tagInput.value); tagInput.value = ''; }
+    else if (e.key === 'Backspace' && !tagInput.value && editTags.length) { editTags.pop(); renderTags(); }
   });
-  $('fTagInput').addEventListener('keydown', e => {
-    const inp = $('fTagInput');
-    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(inp.value); inp.value = ''; }
-    else if (e.key === 'Backspace' && !inp.value && editTags.length) { editTags.pop(); renderTags(); }
+  tagInput.addEventListener('blur', () => {
+    if (tagInput.value.trim()) { addTag(tagInput.value); tagInput.value = ''; }
   });
-  $('fTagInput').addEventListener('blur', () => {
-    const inp = $('fTagInput');
-    if (inp.value.trim()) { addTag(inp.value); inp.value = ''; }
-  });
-  document.querySelectorAll('#tagSug button').forEach(b => b.addEventListener('click', () => addTag(b.dataset.tag)));
 
-  /* apre la finestra "Dettagli" di una penna (i visitatori possono cambiare solo hashtag e "Ce l'ho") */
-  function openEdit(id) {
-    const p = pens.find(x => x.id === id);
-    if (!p) return;
+  /* apre la finestra "Dettagli" di un oggetto */
+  function openEdit(p) {
     editing = p;
-    pendingImage = null;
-    setDlgImage(p.image);
+    const img = $('dlgImg');
+    if (p.image) img.src = p.image; else img.removeAttribute('src');
+    img.hidden = !p.image;
+    $('dlgNoPhoto').hidden = !!p.image;
     $('fEp').value = p.ep;
-    editColorHex = p.colorHex;
-    autoColorName = (COLOR_PRESETS.some(c => c[0] === p.colorName) || p.colorName === colorNameFromHex(p.colorHex)) ? p.colorName : '';
-    closeColorMenu();
-    $('fColor').value = p.colorHex || '#888888';
-    $('fColorName').value = p.colorName;
-    paintDot();
-    editTags = p.tags.slice();
-    $('fTagInput').value = '';
-    renderTags();
-    const lock = !ADMIN;
-    ['fEp', 'fColorName', 'fCode', 'fName'].forEach(id => {
-      const el = $(id);
-      el.readOnly = lock;
-      if (lock) {
-        if (el.dataset.ph === undefined) el.dataset.ph = el.placeholder;
-        el.placeholder = '';
-        el.tabIndex = -1;
-      } else {
-        if (el.dataset.ph !== undefined) el.placeholder = el.dataset.ph;
-        el.removeAttribute('tabindex');
-      }
-    });
-    btnColorMenu.hidden = lock;
-    $('colorDot').style.pointerEvents = lock ? 'none' : '';
-    document.querySelector('.colorbox').classList.toggle('locked', lock);
-    $('btnPhoto').hidden = lock;
     $('fCode').value = p.code;
     $('fName').value = p.name;
-    const info = INFO.get(p.id) || '';        /* "Info": nascosta se la penna non ne ha */
-    $('fInfo').textContent = info;
-    $('fInfoBox').hidden = !info;
+    /* colore (solo nelle pagine che hanno il campo Colore, es. Legami Erasable) */
+    const dot = $('colorDot');
+    if (dot) {
+      dot.style.background = p.colorHex || 'transparent';
+      dot.classList.toggle('empty', !p.colorHex);
+      $('fColorName').value = p.colorName;
+    }
+    $('fInfo').textContent = p.info;
+    $('fInfoBox').hidden = !p.info;          /* "Info": nascosta se l'oggetto non ne ha */
+    editTags = p.tags.slice();
+    tagInput.value = '';
+    renderTags();
     $('fOwned').checked = p.owned;
-    $('btnDelete').hidden = !ADMIN || !!p.seed;
-    const step = $('dlgStep');
-    if (queueTotal > 1) {
-      step.hidden = false;
-      step.textContent = 'Foto ' + (queueDone + 1) + ' di ' + queueTotal;
-    } else {
-      step.hidden = true;
-    }
-    $('btnClose').textContent = queue.length ? 'Salta' : 'Chiudi';
     dlg.showModal();
-    if (!ADMIN && document.activeElement && document.activeElement.blur) document.activeElement.blur();   /* nessun campo evidenziato all'apertura */
-    if (ADMIN) $('fCode').focus();
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();   /* nessun campo evidenziato all'apertura */
   }
-
-  $('btnPhoto').addEventListener('click', () => $('photoInput').click());
-  $('photoInput').addEventListener('change', async e => {
-    const f = e.target.files[0];
-    e.target.value = '';
-    if (!f) return;
-    try {
-      pendingImage = await resizeImage(f);
-      setDlgImage(pendingImage);
-    } catch (err) {
-      say('Non riesco a leggere questa immagine.');
-    }
-  });
 
   $('editForm').addEventListener('submit', async e => {
     e.preventDefault();
     if (!editing) return;
-    addTag($('fTagInput').value);
-    $('fTagInput').value = '';
-    if (ADMIN) {
-      editing.ep = $('fEp').value.trim();
-      editing.colorHex = editColorHex;
-      editing.colorName = $('fColorName').value.trim();
-      editing.metaTouched = true;
-      editing.code = $('fCode').value.trim();
-      editing.name = $('fName').value.trim();
-    } else {
-      if (editTags.join('|') !== editing.tags.join('|')) editing.tagsTouched = true;
-    }
+    addTag(tagInput.value);
+    tagInput.value = '';
+    if (editTags.join('|') !== editing.tags.join('|')) editing.tagsTouched = true;
     editing.tags = editTags.slice();
     editing.owned = $('fOwned').checked;
-    if (pendingImage) { editing.image = pendingImage; editing.customImage = true; }
     await savePen(editing);
     dlg.close();
   });
   $('btnClose').addEventListener('click', () => dlg.close());
-  $('btnDelete').addEventListener('click', async () => {
-    if (!editing || editing.seed) return;
-    if (!confirm('Eliminare questo elemento dal catalogo?')) return;
-    const id = editing.id;
-    await removePen(id);
-    pens = pens.filter(p => p.id !== id);
-    editing = null;
-    dlg.close();
-  });
-  dlg.addEventListener('close', () => {
-    closeColorMenu();
-    editing = null;
-    pendingImage = null;
-    render();
-    if (queue.length) {
-      queueDone++;
-      openEdit(queue.shift());
-    } else {
-      queueTotal = 0;
-      queueDone = 0;
-    }
-  });
+  dlg.addEventListener('close', () => { editing = null; render(); });
 
   /* ---------- stampa in PDF ---------- */
   const printDlg = $('printDlg');
@@ -829,12 +473,30 @@
   });
   const pdfText = t => String(t).replace(/[^\x20-\x7E\xA0-\xFF]/g, '?');
 
-  /* la penna ha sempre la stessa altezza; la larghezza segue l'immagine.
-     Le penne si salvano come JPEG su fondo bianco, la sagoma degli slot vuoti come PNG trasparente */
-  /* foto di una penna pronta per il PDF */
-  async function penImage(src, boxH, transparent) {
+  /* foto di un oggetto per il PDF, in due passi:
+     1) ritaglio(): carica la foto e trova il riquadro dove c'è davvero il
+        disegno (toglie il margine trasparente intorno);
+     2) fotoPdf(): disegna solo quel riquadro, alla misura decisa in makePdf.
+     Tutte le foto usano la STESSA scala: restano in proporzione tra loro
+     (le penne lunghe uguali restano lunghe uguali) e nessuna viene tagliata. */
+  async function ritaglio(src) {
     const img = await loadImg(src);
-    const dh = boxH, dw = img.naturalWidth * boxH / img.naturalHeight;
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const a = ctx.getImageData(0, 0, w, h).data;
+    let x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      if (a[(y * w + x) * 4 + 3] > 10) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    }
+    if (x1 < 0) { x0 = 0; y0 = 0; x1 = w - 1; y1 = h - 1; }   // foto tutta trasparente: la tengo intera
+    return { img, x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+  }
+  /* Le foto si salvano come JPEG su fondo bianco (il fondo della scheda: file leggero),
+     la sagoma degli slot vuoti come PNG trasparente. */
+  async function fotoPdf(r, dw, dh, transparent) {
     const K = 3.5; /* pixel per punto: circa 250 dpi */
     const c = document.createElement('canvas');
     c.width = Math.max(1, Math.round(dw * K));
@@ -842,9 +504,9 @@
     const ctx = c.getContext('2d');
     if (!transparent) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); }
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(img, 0, 0, c.width, c.height);
-    const blob = await new Promise(r => c.toBlob(r, transparent ? 'image/png' : 'image/jpeg', 0.92));
-    return { bytes: new Uint8Array(await blob.arrayBuffer()), dw, dh };
+    ctx.drawImage(r.img, r.x, r.y, r.w, r.h, 0, 0, c.width, c.height);
+    const blob = await new Promise(res => c.toBlob(res, transparent ? 'image/png' : 'image/jpeg', 0.92));
+    return new Uint8Array(await blob.arrayBuffer());
   }
 
   /* La libreria dei PDF (comune/pdf-lib.min.js, circa 500 KB) viene scaricata
@@ -871,17 +533,89 @@
     try { if (document.fonts && document.fonts.load) await document.fonts.load(font, text); } catch (e) { /* uso il carattere disponibile */ }
     const c = document.createElement('canvas'), ctx = c.getContext('2d');
     ctx.font = font;
-    const pad = Math.round(size * 0.12);
-    c.width = Math.ceil(ctx.measureText(text).width) + 2 * pad;
-    c.height = Math.round(size * 1.3);
+    const m = ctx.measureText(text), pad = Math.round(size * 0.04);
+    const su = Math.ceil(m.actualBoundingBoxAscent), giu = Math.ceil(m.actualBoundingBoxDescent);
+    c.width = Math.ceil(m.width) + 2 * pad;
+    c.height = su + giu + 2 * pad;                          // alta quanto le lettere: niente spazio vuoto
     ctx.font = font;
     ctx.fillStyle = cs.color;
     ctx.textBaseline = 'alphabetic';
-    ctx.fillText(text, pad, size);
+    ctx.fillText(text, pad, pad + su);
     const blob = await new Promise(r => c.toBlob(r, 'image/png'));
     return new Uint8Array(await blob.arrayBuffer());
   }
-  /* crea il PDF: A4 orizzontale, 25 penne per fila, 2 file per pagina (vedi CONFIG) */
+
+  /* ---- marchio Collection Time: tessera ambra con la spunta ----
+     Stessa forma di favicon.svg (griglia 32×32): i due tratti della spunta
+     hanno la forma delle lancette della "o" a orologio. */
+  const TESSERA = 'M7 0H25Q32 0 32 7V25Q32 32 25 32H7Q0 32 0 25V7Q0 0 7 0Z';   // quadrato arrotondato 32×32
+  const SPUNTA = [[8.22, 16.6], [13.4, 21.6], [24.52, 11.23]];                 // i 3 punti della spunta
+  const SPESSORI = [4.6, 3.8];                                                  // tratto corto più spesso, lungo più sottile
+
+  /* disegna il marchio su un'immagine trasparente (px × px) */
+  function tesseraCanvas(ctx, fondo, spunta) {
+    ctx.fillStyle = fondo;
+    ctx.fill(new Path2D(TESSERA));
+    ctx.strokeStyle = spunta; ctx.lineCap = 'round';
+    for (let i = 0; i < 2; i++) {
+      ctx.lineWidth = SPESSORI[i];
+      ctx.beginPath(); ctx.moveTo(...SPUNTA[i]); ctx.lineTo(...SPUNTA[i + 1]); ctx.stroke();
+    }
+  }
+
+  /* SFONDO DELLE PAGINE: file inclinate di "tessera + collectiontime.com"
+     ripetute su tutta la pagina, molto chiare, come una carta da regalo con il marchio.
+     Disegnato UNA volta e riusato su tutte le pagine (il PDF resta leggero).
+     SFONDO_RIGA = distanza tra una fila e l'altra, SFONDO_TESSERA = grandezza
+     della tessera, SFONDO_SCRITTA = grandezza della scritta (tutto in punti). */
+  const SFONDO_RIGA = 26, SFONDO_TESSERA = 9, SFONDO_SCRITTA = 8;
+  async function sfondoPng(W, H) {
+    const K = 2, c = document.createElement('canvas');   // 2 pixel per punto: basta, è un motivo leggero
+    c.width = Math.round(W * K); c.height = Math.round(H * K);
+    const ctx = c.getContext('2d');
+    ctx.scale(K, K);
+    ctx.translate(W / 2, H / 2);
+    ctx.rotate(-0.26);                                     // tutto inclinato di circa 15 gradi
+    ctx.font = '700 ' + SFONDO_SCRITTA + 'px Helvetica, Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    const testo = 'collectiontime.com';
+    const passo = SFONDO_TESSERA + 4 + ctx.measureText(testo).width + 22;   // un "mattoncino": tessera + scritta + spazio
+    const R = Math.hypot(W, H) / 2 + passo;                // copro anche gli angoli della pagina ruotata
+    for (let r = 0, y = -R; y < R; r++, y += SFONDO_RIGA) {
+      for (let x = -R + (r % 2) * passo / 2; x < R; x += passo) {
+        ctx.save();
+        ctx.translate(x, y - SFONDO_TESSERA / 2);
+        ctx.scale(SFONDO_TESSERA / 32, SFONDO_TESSERA / 32);
+        tesseraCanvas(ctx, 'rgba(242, 169, 0, .24)', 'rgba(26, 33, 64, .16)');
+        ctx.restore();
+        ctx.fillStyle = 'rgba(26, 33, 64, .09)';
+        ctx.fillText(testo, x + SFONDO_TESSERA + 4, y);
+      }
+    }
+    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+    return new Uint8Array(await blob.arrayBuffer());
+  }
+
+  /* spezza un nome su al massimo 2 righe larghe "max" punti (il resto finisce con "…") */
+  function righeNome(testo, fnt, size, max) {
+    const parole = testo.split(/\s+/).filter(Boolean), righe = [];
+    let riga = '';
+    for (const p of parole) {
+      const prova = riga ? riga + ' ' + p : p;
+      if (!riga || fnt.widthOfTextAtSize(prova, size) <= max) riga = prova;
+      else { righe.push(riga); riga = p; }
+    }
+    if (riga) righe.push(riga);
+    if (righe.length > 2) righe.splice(1, righe.length - 1, righe.slice(1).join(' '));
+    return righe.map(t => {
+      if (fnt.widthOfTextAtSize(t, size) <= max) return t;
+      while (t.length > 1 && fnt.widthOfTextAtSize(t + '…', size) > max) t = t.slice(0, -1);
+      return t.trimEnd() + '…';
+    });
+  }
+
+  /* crea il PDF: A4 orizzontale, CONFIG.pdfColonne oggetti per fila, CONFIG.pdfFile file per pagina.
+     Ogni oggetto ha la sua scheda bianca: foto (intera, mai tagliata), [nome], numero, quadratino. */
   async function makePdf(list, kind) {
     await loadPdfLib();
     if (typeof PDFLib === 'undefined') { say('Il modulo per creare il PDF non è disponibile.'); return; }
@@ -897,114 +631,179 @@
     const titlePngBytes = await titlePng();
     const logo = titlePngBytes ? await doc.embedPng(titlePngBytes) : null;
 
-    /* A4 orizzontale, 25 penne per fila come nel poster, 2 file per pagina */
-    const W = 841.89, H = 595.28, MX = 28, COLS = CONFIG.pdfColonne || 25, ROWS = CONFIG.pdfFile || 2;
-    const LOGO_H = 44, LOGO_W = logo ? LOGO_H * logo.width / logo.height : 0, LOGO_TOP = 22;
-    const PH = CONFIG.pdfAltezza || 192, GAP = 3, CODE_H = 13, BOX = 8;
-    const ITEM_H = PH + GAP + CODE_H + GAP + BOX, ROW_GAP = 14;
-    const gridTop = H - LOGO_TOP - LOGO_H - 20;
-    const colPitch = (W - 2 * MX) / COLS;
-    const gray = rgb(0.78, 0.8, 0.85), dark = rgb(0.1, 0.13, 0.25), red = rgb(229 / 255, 10 / 255, 21 / 255), tick = rgb(242 / 255, 169 / 255, 0);
+    /* ---- colori ---- */
+    const ink = rgb(26 / 255, 33 / 255, 64 / 255);          // blu scuro del sito
+    const ambra = rgb(242 / 255, 169 / 255, 0);            // ambra del marchio
+    const carta = rgb(0.957, 0.953, 0.937);                // fondo pagina, avorio chiaro
+    const bianco = rgb(1, 1, 1), gray = rgb(0.78, 0.8, 0.85), grigio = rgb(0.35, 0.38, 0.5);
+    const red = rgb(229 / 255, 10 / 255, 21 / 255);
 
+    /* ---- misure (in punti; A4 orizzontale = 842 × 595) ---- */
+    const W = 841.89, H = 595.28, MX = 28, COLS = CONFIG.pdfColonne || 25, ROWS = CONFIG.pdfFile || 2;
+    const BAND = 30;                                        // banda blu in alto
+    /* titolo su un cartellino bianco, come le schede; TITOLO_H = altezza delle lettere */
+    let TITOLO_H = 32;
+    const TITOLO_MAXW = W - 2 * MX - 40;
+    if (logo && TITOLO_H * logo.width / logo.height > TITOLO_MAXW) TITOLO_H = TITOLO_MAXW * logo.height / logo.width;   // titoli molto lunghi
+    const LOGO_W = logo ? TITOLO_H * logo.width / logo.height : 0;
+    const CART_PX = 26, CART_PY = 12, CART_H = TITOLO_H + 2 * CART_PY;   // margini del cartellino
+    const areaTop = H - BAND - 16, gridBottom = 52;         // spazio tra la banda e il piè di pagina
+    const TITOLO_GAP = 18;                                  // spazio tra titolo e schede
+    const gridTop = areaTop - CART_H - TITOLO_GAP;          // spazio massimo per le schede
+    const ROW_GAP = 12;
+    const colPitch = (W - 2 * MX) / COLS;
+    const CARD_GAP = Math.min(6, colPitch * 0.06);          // spazio tra una scheda e l'altra
+    const cardW = colPitch - CARD_GAP;
+    const PAD = Math.min(5, cardW * 0.06);                  // margine interno della scheda
+    const GAP = 3, CODE_H = 13, BOX = 8;
+    const NOME_SIZE = 7.5, NOME_RIGA = 9;
+    const nomi = !!CONFIG.mostraNomi;                       // LEGO sì, Legami no
+    const NOME_H = nomi ? 2 * NOME_RIGA + GAP : 0;
+    const TESTO_H = GAP + NOME_H + CODE_H + GAP + BOX;       // tutto quello che sta sotto la foto
+    const fotoW = cardW - 2 * PAD;
+    const fotoMaxH = (gridTop - gridBottom - (ROWS - 1) * ROW_GAP) / ROWS - 2 * PAD - TESTO_H;
+
+    /* carico e ritaglio tutte le foto e scelgo la misura:
+       • oggetti alti e stretti (CONFIG.proporzione > 1: penne, lampade) → tutti ALTI UGUALI;
+       • foto quadrate (LEGO) → tutte con la STESSA scala, scelta in modo che la foto
+         più larga e quella più alta entrino nella scheda (restano in proporzione). */
+    const foto = await Promise.all(list.map(p => (p.image || SLOT_IMG) ? ritaglio(p.image || SLOT_IMG).catch(() => null) : null));
+    const altiUguali = (CONFIG.proporzione || 7) > 1;
+    const maxW = Math.max(1, ...foto.map(f => f ? f.w : 0)), maxH = Math.max(1, ...foto.map(f => f ? f.h : 0));
+    const scala = Math.min(fotoW / maxW, fotoMaxH / maxH);
+    const misura = f => {                                   // larghezza e altezza di una foto nel PDF
+      const k = altiUguali ? Math.min(fotoW / f.w, fotoMaxH / f.h) : scala;
+      return [f.w * k, f.h * k];
+    };
+    const fotoH = altiUguali ? fotoMaxH : maxH * scala;     // altezza della zona foto
+    const cardH = fotoH + 2 * PAD + TESTO_H;
+    /* titolo + schede formano un blocco unico, centrato in altezza nella pagina */
+    const righe = Math.min(ROWS, Math.ceil(list.length / COLS));
+    const avanzo = (gridTop - gridBottom - righe * cardH - (righe - 1) * ROW_GAP) / 2;
+    const cartTop = areaTop - avanzo, primaFila = gridTop - avanzo;
+
+    /* scheda bianca con gli angoli arrotondati */
+    const R = Math.min(6, cardW * 0.12);
+    const scheda = (w, h) => `M${R} 0H${w - R}Q${w} 0 ${w} ${R}V${h - R}Q${w} ${h} ${w - R} ${h}H${R}Q0 ${h} 0 ${h - R}V${R}Q0 0 ${R} 0Z`;
+    const schedaPath = scheda(cardW, cardH);
+
+    /* piccolo marchio pieno, disegnato a vettori */
+    function marchio(pg, x, y, size, spunta) {
+      const scale = size / 32;
+      pg.drawSvgPath(TESSERA, { x, y, scale, color: ambra });
+      const P = SPUNTA.map(([px, py]) => ({ x: x + px * scale, y: y - py * scale }));
+      for (let k = 0; k < 2; k++) pg.drawLine({ start: P[k], end: P[k + 1], thickness: SPESSORI[k] * scale, color: spunta, lineCap: LineCapStyle.Round });
+    }
+
+    /* scritta nella banda in alto: che cosa è stato stampato */
+    const cosa = { owned: 'La mia collezione', missing: 'Quelle che mi mancano', all: 'Checklist da compilare' }[kind];
+
+    const sfondo = await doc.embedPng(await sfondoPng(W, H));
     const pages = [];
-    let ghost = null;
+    let ghost = null;      // sagoma degli slot vuoti: inserita una volta sola
     const perPage = COLS * ROWS;
     for (let start = 0; start < list.length; start += perPage) {
       const page = doc.addPage([W, H]);
       pages.push(page);
-      if (logo) {
-        page.drawImage(logo, { x: (W - LOGO_W) / 2, y: H - LOGO_TOP - LOGO_H, width: LOGO_W, height: LOGO_H });
-      } else {
-        const title = pdfText(CONFIG.titolo);
-        const tw = bold.widthOfTextAtSize(title, 26);
-        page.drawText(title, { x: (W - tw) / 2, y: H - LOGO_TOP - 32, size: 26, font: bold, color: rgb(0.1, 0.13, 0.25) });
-      }
+
+      /* sfondo: carta avorio + motivo di tessere Collection Time */
+      page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: carta });
+      page.drawImage(sfondo, { x: 0, y: 0, width: W, height: H });
+
+      /* banda blu in alto con il marchio e la scelta di stampa */
+      page.drawRectangle({ x: 0, y: H - BAND, width: W, height: BAND, color: ink });
+      page.drawRectangle({ x: 0, y: H - BAND - 2.5, width: W, height: 2.5, color: ambra });
+      marchio(page, MX, H - 7, 16, ink);
+      page.drawText('Collection Time', { x: MX + 22, y: H - 20, size: 12, font: bold, color: bianco });
+      const cw = font.widthOfTextAtSize(cosa, 10);
+      page.drawText(cosa, { x: W - MX - cw, y: H - 19.5, size: 10, font, color: bianco });
+
+      /* titolo della collezione sul suo cartellino (bordo ambra sotto) */
+      const title = pdfText(CONFIG.titolo);
+      const tw = logo ? LOGO_W : bold.widthOfTextAtSize(title, TITOLO_H * 1.35);
+      const cartW = tw + 2 * CART_PX;
+      page.drawSvgPath(scheda(cartW, CART_H), { x: (W - cartW) / 2, y: cartTop, color: bianco, borderColor: gray, borderWidth: 0.6 });
+      page.drawRectangle({ x: (W - cartW) / 2 + R, y: cartTop - CART_H, width: cartW - 2 * R, height: 2.5, color: ambra });
+      if (logo) page.drawImage(logo, { x: (W - LOGO_W) / 2, y: cartTop - CART_PY - TITOLO_H, width: LOGO_W, height: TITOLO_H });
+      else page.drawText(title, { x: (W - tw) / 2, y: cartTop - CART_PY - TITOLO_H, size: TITOLO_H * 1.35, font: bold, color: ink });
+
       const chunk = list.slice(start, start + perPage);
       for (let i = 0; i < chunk.length; i++) {
         const p = chunk[i];
         const r = Math.floor(i / COLS), c = i % COLS;
-        const cx = MX + c * colPitch + colPitch / 2;
-        const top = gridTop - r * (ITEM_H + ROW_GAP);
+        const cx = MX + c * colPitch + colPitch / 2;        // centro della colonna
+        const top = primaFila - r * (cardH + ROW_GAP);        // bordo alto della scheda
+        const spuntata = kind === 'owned' && p.owned;
 
-        if (p.image) {
-          const { bytes, dw, dh } = await penImage(p.image, PH, false);
-          const img = await doc.embedJpg(bytes);
-          page.drawImage(img, { x: cx - dw / 2, y: top - PH, width: dw, height: dh });
-        } else if (SLOT_IMG) {
-          if (!ghost) ghost = await penImage(SLOT_IMG, PH, true).then(async g => ({ img: await doc.embedPng(g.bytes), dw: g.dw, dh: g.dh }));
-          page.drawImage(ghost.img, { x: cx - ghost.dw / 2, y: top - PH, width: ghost.dw, height: ghost.dh });
+        /* scheda: bordo ambra se ce l'hai, grigio se no */
+        page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, color: bianco,
+          borderColor: spuntata ? ambra : gray, borderWidth: spuntata ? 1.4 : 0.6 });
+
+        /* foto appoggiata in basso nella sua zona, come su uno scaffale */
+        const fotoTop = top - PAD, f = foto[start + i];
+        if (f) {
+          const [dw, dh] = misura(f), x = cx - dw / 2, y = fotoTop - fotoH;
+          if (p.image) page.drawImage(await doc.embedJpg(await fotoPdf(f, dw, dh, false)), { x, y, width: dw, height: dh });
+          else {
+            if (!ghost) ghost = await doc.embedPng(await fotoPdf(f, dw, dh, true));
+            page.drawImage(ghost, { x, y, width: dw, height: dh });
+          }
+        }
+        let y = fotoTop - fotoH - GAP;
+
+        /* nome (solo se la collezione lo chiede: CONFIG.mostraNomi), su 1 o 2 righe */
+        if (nomi) {
+          const righe = righeNome(pdfText(p.name || ''), bold, NOME_SIZE, cardW - 2 * PAD);
+          const y0 = y - NOME_RIGA + 2 - (2 - righe.length) * NOME_RIGA / 2;   // 1 riga = centrata nello spazio di 2
+          righe.forEach((t, k) => {
+            const tw = bold.widthOfTextAtSize(t, NOME_SIZE);
+            page.drawText(t, { x: cx - tw / 2, y: y0 - k * NOME_RIGA, size: NOME_SIZE, font: bold, color: ink });
+          });
+          y -= NOME_H;
         }
 
         /* riquadro con il numero */
-        const boxY = top - PH - GAP - CODE_H;
-        page.drawRectangle({ x: cx - 13, y: boxY, width: 26, height: CODE_H, borderColor: gray, borderWidth: 0.6 });
+        const boxY = y - CODE_H;
+        page.drawRectangle({ x: cx - 13, y: boxY, width: 26, height: CODE_H, color: carta, borderColor: gray, borderWidth: 0.6 });
         const code = pdfText(p.code || '');
         if (code) {
           const tw = bold.widthOfTextAtSize(code, 7.5);
-          page.drawText(code, { x: cx - tw / 2, y: boxY + 3.6, size: 7.5, font: bold, color: p.limited ? red : dark });
+          page.drawText(code, { x: cx - tw / 2, y: boxY + 3.6, size: 7.5, font: bold, color: p.limited ? red : ink });
         }
 
-        /* quadratino della checklist */
+        /* quadratino della checklist (spunta ambra se ce l'hai) */
         const qy = boxY - GAP - BOX;
-        page.drawRectangle({ x: cx - BOX / 2, y: qy, width: BOX, height: BOX, borderColor: rgb(0.4, 0.42, 0.5), borderWidth: 0.8 });
-        if (kind === 'owned' && p.owned) {
-          page.drawLine({ start: { x: cx - 2.6, y: qy + 3.9 }, end: { x: cx - 0.7, y: qy + 1.7 }, thickness: 1.3, color: tick });
-          page.drawLine({ start: { x: cx - 0.7, y: qy + 1.7 }, end: { x: cx + 3, y: qy + 6.4 }, thickness: 1.3, color: tick });
+        page.drawRectangle({ x: cx - BOX / 2, y: qy, width: BOX, height: BOX, color: bianco, borderColor: grigio, borderWidth: 0.8 });
+        if (spuntata) {
+          page.drawLine({ start: { x: cx - 2.6, y: qy + 3.9 }, end: { x: cx - 0.7, y: qy + 1.7 }, thickness: 1.3, color: ambra });
+          page.drawLine({ start: { x: cx - 0.7, y: qy + 1.7 }, end: { x: cx + 3, y: qy + 6.4 }, thickness: 1.3, color: ambra });
         }
       }
     }
 
-    /* ---- marchio Collection Time: tessera ambra con la spunta ----
-       Stessa forma di favicon.svg (griglia 32×32): i due tratti della spunta
-       hanno la forma delle lancette della "o" a orologio.
+    /* filigrana: il marchio grande al centro, disegnato una volta su un'immagine
+       trasparente e poi messo su ogni pagina SOPRA le foto (così non si toglie ritagliando).
        FILIGRANA_OPACITA: 0 = invisibile, 1 = piena. Più è alta, più protegge dalle copie. */
     const FILIGRANA_OPACITA = 0.12;
-    const TESSERA = 'M7 0H25Q32 0 32 7V25Q32 32 25 32H7Q0 32 0 25V7Q0 0 7 0Z';   // quadrato arrotondato 32×32
-    const SPUNTA = [[8.22, 16.6], [13.4, 21.6], [24.52, 11.23]];                 // i 3 punti della spunta
-    const SPESSORI = [4.6, 3.8];                                                  // tratto corto più spesso, lungo più sottile
-    const ink = rgb(26 / 255, 33 / 255, 64 / 255);
-
-    /* piccolo, pieno (piè di pagina): disegnato a vettori */
-    function marchio(pg, x, y, size) {
-      const scale = size / 32;
-      pg.drawSvgPath(TESSERA, { x, y, scale, color: tick });
-      const P = SPUNTA.map(([px, py]) => ({ x: x + px * scale, y: y - py * scale }));
-      for (let k = 0; k < 2; k++) pg.drawLine({ start: P[k], end: P[k + 1], thickness: SPESSORI[k] * scale, color: ink, lineCap: LineCapStyle.Round });
-    }
-
-    /* filigrana: disegnata una volta su un'immagine trasparente e poi messa
-       su ogni pagina (così i tratti che si sovrappongono non fanno macchie).
-       Tessera a metà intensità, spunta piena: nel PDF la spunta risulta più scura. */
-    async function filigranaPng() {
-      const px = 512, k = px / 32, c = document.createElement('canvas');
-      c.width = c.height = px;
-      const ctx = c.getContext('2d');
-      ctx.scale(k, k);
-      ctx.fillStyle = 'rgba(26, 33, 64, .5)';
-      ctx.fill(new Path2D(TESSERA));
-      ctx.strokeStyle = '#1A2140'; ctx.lineCap = 'round';   // spunta piena: copre la tessera, nessuna macchia
-      for (let i = 0; i < 2; i++) {
-        ctx.lineWidth = SPESSORI[i];
-        ctx.beginPath(); ctx.moveTo(...SPUNTA[i]); ctx.lineTo(...SPUNTA[i + 1]); ctx.stroke();
-      }
-      const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-      return doc.embedPng(new Uint8Array(await blob.arrayBuffer()));
-    }
-    const filigrana = await filigranaPng();
+    const fc = document.createElement('canvas');
+    fc.width = fc.height = 512;
+    const fctx = fc.getContext('2d');
+    fctx.scale(16, 16);
+    tesseraCanvas(fctx, 'rgba(26, 33, 64, .5)', '#1A2140');   // tessera a metà, spunta piena: nessuna macchia
+    const filigrana = await doc.embedPng(new Uint8Array(await (await new Promise(r => fc.toBlob(r, 'image/png'))).arrayBuffer()));
 
     pages.forEach((pg, i) => {
-      /* filigrana grande al centro, SOPRA le penne (così non si toglie ritagliando) */
       const WM = 250;
-      pg.drawImage(filigrana, { x: (W - WM) / 2, y: (H - WM) / 2 + 10, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
+      pg.drawImage(filigrana, { x: (W - WM) / 2, y: primaFila - (righe * cardH + (righe - 1) * ROW_GAP + WM) / 2, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
 
       /* piè di pagina a sinistra: tessera piccola + indirizzo del sito */
-      marchio(pg, MX, 36, 18);                                                     // tessera 18 pt
+      marchio(pg, MX, 36, 18, ink);
       pg.drawText('collectiontime.com', { x: MX + 24, y: 22, size: 14, font: bold, color: ink });
 
       /* numero di pagina in basso a destra */
       const t = (i + 1) + ' su ' + pages.length;
       const tw = font.widthOfTextAtSize(t, 9);
-      pg.drawText(t, { x: W - MX - tw, y: 22, size: 9, font, color: rgb(0.35, 0.38, 0.5) });
+      pg.drawText(t, { x: W - MX - tw, y: 22, size: 9, font, color: grigio });
     });
 
     const bytes = await doc.save();
@@ -1049,176 +848,63 @@
     }
   });
 
-  /* ---------- controlli ---------- */
-  $('btnAdd').addEventListener('click', () => $('fileInput').click());
-  $('fileInput').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
-  const searchBox = $('searchBox'), searchInput = $('search'), btnSearch = $('btnSearch');
-  function openSearch() {
-    searchBox.classList.add('open');
-    btnSearch.setAttribute('aria-expanded', 'true');
-    searchInput.tabIndex = 0;
-    searchInput.focus();
-  }
-  function closeSearch() {
-    if (searchInput.value.trim()) return;
-    searchBox.classList.remove('open');
-    btnSearch.setAttribute('aria-expanded', 'false');
-    searchInput.tabIndex = -1;
-  }
-  btnSearch.addEventListener('click', () => {
-    if (searchBox.classList.contains('open') && !searchInput.value.trim()) closeSearch();
-    else openSearch();
-  });
-  searchInput.addEventListener('input', e => { query = e.target.value; render(); });
-  searchInput.addEventListener('blur', () => {
-    setTimeout(() => { if (document.activeElement !== btnSearch && document.activeElement !== searchInput) closeSearch(); }, 120);
-  });
-  searchInput.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      searchInput.value = '';
-      query = '';
-      render();
-      closeSearch();
-      btnSearch.focus();
-    }
-  });
+  /* ---------- controlli ----------
+     La lente apre e chiude il campo (lo fa script.js, come nelle altre pagine);
+     qui scrivendo si filtrano gli oggetti. */
+  $('search').addEventListener('input', e => { query = e.target.value; render(); });
   $('filter').addEventListener('change', e => { filterMode = e.target.value; render(); });
   $('sort').addEventListener('change', e => { sortDir = e.target.value === 'desc' ? -1 : 1; render(); });
-
-  /* ---------- trascinare foto sulla pagina ---------- */
-  const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
-  let fileDepth = 0;
-  window.addEventListener('dragenter', e => { if (ADMIN && hasFiles(e)) { fileDepth++; document.body.classList.add('dragging-files'); } });
-  window.addEventListener('dragleave', e => { if (hasFiles(e)) { fileDepth = Math.max(0, fileDepth - 1); if (!fileDepth) document.body.classList.remove('dragging-files'); } });
-  window.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
-  window.addEventListener('drop', e => {
-    if (!hasFiles(e)) return;
-    e.preventDefault();
-    if (!ADMIN) { fileDepth = 0; document.body.classList.remove('dragging-files'); return; }
-    fileDepth = 0;
-    document.body.classList.remove('dragging-files');
-    addFiles(e.dataTransfer.files);
-  });
-
-  /* ---------- pubblicazione ----------
-     (Esporta e Importa sono nella banda in alto: li gestisce ../../script.js per tutto il sito) */
-  /* scarica un oggetto come file .json */
-  function download(name, obj) {
-    const blob = new Blob([JSON.stringify(obj)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  }
-
-  /* Pubblica: salva i dati "fissi" (numero, colore, nome, hashtag, penne aggiunte) da caricare sul sito */
-  $('btnPublish').addEventListener('click', () => {
-    const seedImg = new Map(SEED.map(x => [x.id, x.img]));
-    const list = [...pens].sort((a, b) => a.pos - b.pos).filter(p => p.seed || p.image).map(p => {
-      const r = {
-        id: p.id, seed: !!p.seed, pos: p.pos, code: p.code, ep: p.ep, colorHex: p.colorHex, colorName: p.colorName,
-        name: p.name, tags: p.tags, limited: !!p.limited
-      };
-      if (!p.seed || (p.image && p.image !== seedImg.get(p.id))) r.image = p.image;
-      return r;
-    });
-    download('catalogo-dati.json', { version: 1, published: new Date().toISOString(), pens: list });
-    say('Salvato catalogo-dati.json: caricalo sul sito, accanto alla pagina, al posto del vecchio.');
-  });
-
-  /* Vista pubblica: l'elenco PENNE dell'HTML è l'unica fonte dei dati fissi.
-     Ad ogni apertura allineo l'archivio del browser all'elenco:
-       - penna nuova nell'elenco      → la aggiungo
-       - numero/nome/foto cambiati    → li aggiorno
-       - penna tolta dall'elenco      → la tolgo
-     Le spunte "Ce l'ho" e gli hashtag cambiati dal visitatore restano. */
-  async function applyMaster() {
-    const master = new Map(seedPens().map(x => [x.id, x]));
-    const byId = new Map(pens.map(x => [x.id, x]));
-    const toSave = [], toDelete = [];
-    const fields = ['pos', 'code', 'ep', 'colorHex', 'colorName', 'name', 'limited'];
-    master.forEach((m, id) => {
-      const cur = byId.get(id);
-      if (!cur) { pens.push(m); toSave.push(m); return; }
-      let changed = false;
-      fields.forEach(k => { if (cur[k] !== m[k]) { cur[k] = m[k]; changed = true; } });
-      if (cur.seed !== m.seed) { cur.seed = m.seed; changed = true; }
-      if (cur.customImage) { cur.customImage = false; changed = true; }   /* nella vista pubblica le foto sono fisse */
-      if (cur.image !== m.image) { cur.image = m.image; changed = true; }
-      if (!cur.tagsTouched && cur.tags.join('|') !== m.tags.join('|')) { cur.tags = m.tags.slice(); changed = true; }
-      if (changed) toSave.push(cur);
-    });
-    pens.forEach(x => { if (!master.has(x.id)) toDelete.push(x.id); });
-    pens = pens.filter(x => master.has(x.id));
-    if (toSave.length) await saveMany(toSave);
-    for (const id of toDelete) await removePen(id);
-  }
 
   /* ---------- id rinumerati (settembre 2026) ----------
      Gli id dell'elenco PENNE sono stati rimessi in ordine (seed-001, seed-002…).
      Chi aveva già aperto la pagina ha le spunte salvate con gli id vecchi:
-     le sposto sugli id nuovi riconoscendo la penna da numero + nome.
+     le sposto sugli id nuovi riconoscendo la penna da numero + nome
+     (le schede vecchie avevano anche questi campi).
      Quando tutti avranno riaperto la pagina puoi togliere questa funzione
-     e la riga "await rinumera();" in "avvio". */
-  async function rinumera() {
+     e la riga "salvate = rinumera(salvate);" in "avvio". */
+  function rinumera(salvate) {
     const idNuovo = new Map(SEED.map(s => [s.code + '|' + s.name, s.id]));
-    const nuovoDi = p => p.seed && idNuovo.get(p.code + '|' + p.name);
-    const spostate = pens.filter(p => nuovoDi(p) && nuovoDi(p) !== p.id);
-    if (!spostate.length) return;
-    const t = db.transaction(STORE, 'readwrite'), s = t.objectStore(STORE);
-    spostate.forEach(p => s.delete(p.id));                    /* prima tolgo gli id vecchi… */
-    spostate.forEach(p => { p.id = nuovoDi(p); s.put(p); });  /* …poi salvo con quelli nuovi */
-    await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
-    /* in memoria tengo una sola scheda per id (vincono quelle appena spostate) */
-    const perId = new Map(pens.filter(p => !spostate.includes(p)).map(p => [p.id, p]));
+    const spostate = [];
+    const altre = salvate.filter(p => {
+      const nuovo = p.seed && idNuovo.get(p.code + '|' + p.name);
+      if (!nuovo || nuovo === p.id) return true;
+      spostate.push(Object.assign(p, { id: nuovo }));
+      return false;
+    });
+    /* una sola scheda per id: vincono quelle appena spostate */
+    const perId = new Map(altre.map(p => [p.id, p]));
     spostate.forEach(p => perId.set(p.id, p));
-    pens = [...perId.values()];
+    return [...perId.values()];
   }
 
-  /* ---------- avvio ---------- */
-  (async function init() {
+  /* ---------- avvio ----------
+     1. leggo dal browser le spunte e gli hashtag di chi visita
+     2. li unisco all'elenco PENNE (oggetti nuovi, tolti o cambiati: vale l'elenco)
+     3. riscrivo l'archivio con i soli oggetti dell'elenco e i soli dati del visitatore */
+  (async function avvio() {
+    const nuovo = s => Object.assign({}, s, { owned: false, tags: s.tags.slice(), tagsTouched: false });
     try {
       db = await openDB();
-      pens = (await loadAll()).map(normalize);
-      await rinumera();
-      /* penne dell'elenco: aggiungo quelle nuove; se SEED_V è cambiato aggiorno
-         foto e colori (non le foto che hai cambiato tu, non i dati che hai modificato) */
-      const fresh = seedPens();
-      const byId = new Map(pens.map(p => [p.id, p]));
-      const toSave = [];
-      fresh.forEach(f => {
-        const cur = byId.get(f.id);
-        if (!cur) { pens.push(f); toSave.push(f); return; }
-        /* scheda creata da "Importa" prima di aprire questa pagina: ha solo spunta e hashtag */
-        if (cur.v === undefined) {
-          Object.assign(cur, f, { owned: cur.owned },
-            cur.tagsTouched ? { tags: cur.tags, tagsTouched: true } : {});
-          toSave.push(cur);
-          return;
+      let salvate = await wrap(db.transaction(STORE).objectStore(STORE).getAll());
+      salvate = rinumera(salvate);
+      const perId = new Map(salvate.map(v => [v.id, v]));
+      pens = SEED.map(s => {
+        const p = nuovo(s), v = perId.get(s.id);
+        if (v) {
+          p.owned = v.owned === true;
+          if (v.tagsTouched && Array.isArray(v.tags)) { p.tags = v.tags.map(String); p.tagsTouched = true; }
         }
-        if (cur.v !== SEED_V) {
-          if (!cur.customImage) cur.image = f.image;
-          if (!cur.metaTouched) {
-            /* colore e hashtag proposti dal poster, solo se non li hai già modificati tu */
-            cur.colorHex = f.colorHex;
-            cur.colorName = f.colorName;
-            cur.tags = f.tags.slice();
-          }
-          cur.seed = true;
-          cur.v = SEED_V;
-          toSave.push(cur);
-        }
+        return p;
       });
-      if (toSave.length) await saveMany(toSave);
-      if (!ADMIN) await applyMaster();
+      const t = db.transaction(STORE, 'readwrite'), st = t.objectStore(STORE);
+      st.clear();
+      pens.filter(p => p.owned || p.tagsTouched).forEach(p => st.put(datiVisitatore(p)));
+      await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
       if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
     } catch (e) {
       db = null;
-      pens = seedPens();
-      say('Questo browser non permette di salvare il catalogo. Apri il file con Chrome, Edge o Firefox.');   /* es. navigazione privata */
+      pens = SEED.map(nuovo);
+      say('Questo browser non permette di salvare la collezione (per esempio in navigazione privata).');
     }
     render();
   })();

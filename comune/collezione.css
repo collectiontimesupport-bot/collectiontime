@@ -1,0 +1,353 @@
+/* =====================================================================
+   collezione.css — pagine delle collezioni (Collection Time)
+   ---------------------------------------------------------------------
+   UN SOLO FILE per l'aspetto di tutte le pagine delle collezioni
+   (Legami Erasable, Bulb Fiction, tutte le serie LEGO…), come app.js.
+   Ogni pagina lo richiama nel <head>, dopo sito.css:
+     <link rel="stylesheet" href="../../comune/collezione.css?v=1">
+   e poi carica il file della sua collezione, con le poche cose che
+   cambiano (colore e carattere del titolo, misure della griglia):
+     Legami → legami/css/stile.css      LEGO → lego/css/stile.css
+   Base della pagina, banda in alto e in basso, ricerca e avviso in
+   basso sono in sito.css (uguali in tutto il sito).
+
+   Sezioni, nello stesso ordine in cui compaiono sulla pagina:
+     1. Misure generali
+     2. Base della pagina e pulsanti
+     3. Titolo e barra degli strumenti (conteggio, ricerca, filtri)
+     4. Griglia
+     5. Singolo oggetto: foto, bagliore, nome, numero, "Ce l'ho"
+     6. Messaggi vuoti e piè di pagina
+     7. Finestra "Dettagli"
+     8. Colore e hashtag
+     9. Finestra "Stampa"
+    10. Adattamenti per schermi piccoli
+   ===================================================================== */
+
+
+/* =====================================================================
+   1. MISURE GENERALI
+   I colori (--ink, --muted, --line, --amber, --white) sono in sito.css;
+   il colore del titolo (--titolo) nel file della collezione.
+   ===================================================================== */
+:root {
+  /* Altezza di ogni oggetto nella griglia: 3/7 dello spazio verticale
+     libero (schermo meno bande e barre), mai oltre 400px. */
+  --pen-vh: min(calc(3 * (100vh - 264px) / 7), 400px);
+  /* Altezza della zona del titolo, proporzionata agli oggetti. */
+  --logo-h: clamp(40px, calc(var(--pen-vh) / 3), 135px);
+}
+
+/* =====================================================================
+   2. BASE DELLA PAGINA E PULSANTI
+   ===================================================================== */
+/* contenitore centrale della pagina */
+.wrap { width: 100%; max-width: 1600px; margin: 0 auto; padding: 12px 16px 48px; }
+
+/* controlli dei moduli: stesso carattere del resto della pagina */
+input, select, button { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }   /* contorno quando si naviga con la tastiera */
+
+/* pulsanti generici ("Stampa", "Chiudi"…); .primary = pieno in ambra */
+.btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+.btn.primary { background: var(--amber); color: var(--white); border-color: var(--amber); font-weight: 600; }
+
+/* link "← Legami" / "← LEGO Minifigures" (st-back, in sito.css): qui attaccato al titolo
+   e, al passaggio del mouse, del colore del titolo */
+.st-back { margin-bottom: 0; }
+.st-back:hover { color: var(--titolo); }
+
+/* =====================================================================
+   3. TITOLO E BARRA DEGLI STRUMENTI
+   ===================================================================== */
+header { margin-bottom: 12px; }
+
+h1 {
+  margin: 0 0 22px;
+  display: flex; justify-content: center; align-items: center;
+  min-height: var(--logo-h);
+}
+/* Titolo nel colore --titolo; il carattere è nel file della collezione.
+   Lo stesso stile viene ricopiato nel titolo del PDF. */
+h1 .titolo-testo {
+  display: block; max-width: 100%; text-align: center; text-wrap: balance;
+  line-height: 1.1;
+  font-size: min(calc(var(--logo-h) * .56), 6.6vw);
+  color: var(--titolo);
+}
+
+/* riga sotto il titolo: conteggio a sinistra, strumenti a destra */
+.bar { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; }
+.sub { margin: 0; color: var(--muted); }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* menu a tendina e campi di testo */
+select, .field input[type=text] {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.hint { color: var(--muted); font-size: .875rem; margin: 0 0 14px; }
+
+/* =====================================================================
+   4. GRIGLIA
+   Colonne = CONFIG.colonne della pagina (app.js lo scrive in --colonne).
+   Distanze, larghezza massima e colonne sui telefoni sono nel file
+   della collezione.
+   ===================================================================== */
+.grid {
+  list-style: none; margin: 0 auto; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--colonne, 8), minmax(0, 1fr));
+}
+
+/* =====================================================================
+   5. SINGOLO OGGETTO
+   Ogni oggetto è un <li class="pen"> (creato da app.js) con dentro:
+     - il pulsante .open con la foto (.pic) → segna/toglie "Ce l'ho"
+     - il nome (.nome), solo se CONFIG.mostraNomi (LEGO)
+     - il riquadro con il numero (.code)
+     - la riga con la casella "Ce l'ho" e la matita ✎ (.row)
+   ===================================================================== */
+.pen {
+  container-type: inline-size; container-name: pen;   /* permette di adattare l'oggetto alla sua larghezza (vedi sezione 10) */
+  min-width: 0;
+  display: grid; gap: 6px; justify-items: stretch;
+}
+.pen .open {
+  all: unset;
+  display: block; width: 100%;
+  cursor: pointer; border-radius: 10px;
+}
+.pen .open:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.pen .open:disabled { cursor: default; }
+
+/* riquadro della foto: altezza uguale per tutti gli oggetti.
+   --proporzione (da CONFIG) = quante volte l'altezza supera la larghezza. */
+.pic {
+  position: relative;
+  display: block;
+  height: 300px;   /* valore di riserva per i browser vecchi */
+  height: clamp(150px, var(--pen-vh), calc(var(--proporzione, 7) * 100cqw));
+}
+.pic img {
+  position: absolute; left: 50%; top: 6px;
+  height: calc(100% - 12px); width: auto; max-width: none;
+  transform: translateX(-50%);
+  display: block;
+}
+
+/* oggetto NON posseduto: grigio e sbiadito */
+.pic img.pen-img { filter: grayscale(1); opacity: .32; transition: opacity .3s ease; }
+@media (hover: hover) { .pen .open:hover .pic img.pen-img { opacity: .6; } }
+/* oggetto posseduto: a colori */
+.pen.owned .pic img.pen-img,
+.pen.owned .open:hover .pic img.pen-img { filter: none; opacity: 1; }
+
+/* BAGLIORE (uno solo per tutti gli oggetti).
+   È un'immagine trasparente arancio-gialla creata da app.js partendo
+   dalla sagoma dell'oggetto (funzione buildHalo) e messa DIETRO la foto.
+   È più grande dell'oggetto del fattore --k (circa 1.3).
+   Niente filtri CSS (drop-shadow ecc.): su iPhone vengono tagliati. */
+.pic img.halo {
+  top: 50%; transform: translate(-50%, -50%);
+  height: calc((100% - 12px) * var(--k, 1.3));
+  opacity: 0; transition: opacity .3s ease; pointer-events: none;
+}
+.pen.owned .pic img.halo { opacity: 1; }
+/* Alone di riserva, usato SOLO se il bagliore non si può calcolare
+   (pagina aperta con doppio clic dal computer, senza server). */
+.pen.owned .pic.no-halo img.pen-img { filter: drop-shadow(0 0 5px rgba(255, 196, 40, .95)) drop-shadow(0 0 12px rgba(255, 150, 20, .55)); }
+
+/* nome sotto l'oggetto (LEGO): spazio fisso di 2 righe, così le caselle
+   "Ce l'ho" restano allineate; il nome sta in basso, attaccato al suo numero. */
+.nome {
+  display: flex; align-items: flex-end; justify-content: center;
+  min-height: 2.5em;
+  text-align: center;
+  font-size: clamp(.72rem, .5rem + .35vw, .875rem);
+  line-height: 1.25;
+  color: var(--ink);
+}
+.nome span {   /* nomi lunghissimi: al massimo 2 righe */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+  overflow: hidden; overflow-wrap: anywhere;
+}
+
+/* riquadro con il numero sotto l'oggetto */
+.code {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  font-size: clamp(.68rem, .4rem + .45vw, .9rem);
+  line-height: 1.4;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 4px 2px;
+  color: var(--ink);
+  white-space: nowrap; overflow: hidden;
+  user-select: none;
+}
+.code.limited { color: var(--titolo); }                 /* edizione limitata: numero del colore del titolo */
+.code.none { color: var(--muted); font-weight: 400; }   /* oggetto senza numero: "N°" grigio */
+
+/* riga "☐ Ce l'ho   ✎" */
+.row { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.have { display: flex; align-items: center; gap: 4px; font-size: .8125rem; color: var(--muted); cursor: pointer; }
+.have input { accent-color: var(--amber); margin: 0; width: 16px; height: 16px; }
+.pen.owned .have { color: var(--ink); font-weight: 600; }
+.edit {
+  background: transparent; border: 0; border-radius: 6px;
+  padding: 2px 6px; color: var(--muted); font-size: 1rem; line-height: 1;
+}
+.edit:hover { color: var(--amber); }
+
+/* =====================================================================
+   6. MESSAGGI VUOTI E PIÈ DI PAGINA
+   ===================================================================== */
+.empty {
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+footer { margin-top: 48px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: .875rem; }
+footer .hint { flex-basis: 100%; margin: 0 0 4px; }
+
+/* =====================================================================
+   7. FINESTRA "DETTAGLI" (si apre con la matita ✎)
+   ===================================================================== */
+dialog {
+  border: 1px solid var(--line); border-radius: 14px;
+  background: var(--white); color: var(--ink);
+  padding: 0; width: min(440px, 92vw);
+}
+dialog::backdrop { background: rgba(10, 14, 30, .55); }   /* sfondo scuro dietro la finestra */
+
+/* foto grande in alto */
+.dlg-pic { position: relative; background: #fff; height: min(320px, 42vh); padding: 12px; display: block; }
+.dlg-pic img { width: 100%; height: 100%; object-fit: contain; }
+.nophoto { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; color: var(--muted); font-size: .9rem; }
+
+.dlg-body { padding: 16px 20px 20px; display: grid; gap: 12px; }
+.dlg-title { margin: 0; font: 600 1.35rem/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+
+/* etichetta + campo */
+.field { display: grid; gap: 4px; font-size: .875rem; color: var(--muted); }
+.field input[type=text] { color: var(--ink); font-size: 1rem; width: 100%; }
+/* testo "Info" (fisso, non modificabile) */
+.info { margin: 0; color: var(--ink); font-size: 1rem; white-space: pre-line; }
+.check { display: flex; align-items: center; gap: 8px; }
+.check input { accent-color: var(--titolo); width: 18px; height: 18px; margin: 0; }
+
+/* prima riga: Codice e Numero (+ Colore in mezzo, se la pagina ce l'ha) */
+.trio { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; align-items: end; }
+.trio:has(.colorbox) { grid-template-columns: 1.15fr 1.25fr 0.7fr; }
+.trio .field input[type=text] { width: 100%; min-width: 0; }
+
+/* campo degli hashtag attivo con cornice ambra */
+dialog :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+dialog input:focus-visible { outline-offset: 0; border-color: var(--amber); }
+#editForm .btn.primary:hover { background: color-mix(in srgb, var(--amber) 88%, #000); border-color: color-mix(in srgb, var(--amber) 88%, #000); }
+
+/* campi di sola lettura (codice, colore, numero, nome): non si cliccano */
+input[readonly] { pointer-events: none; }
+
+/* pulsanti in fondo alla finestra */
+.actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.spacer { flex: 1; }   /* spinge i pulsanti successivi a destra */
+
+/* =====================================================================
+   8. COLORE E HASHTAG
+   ===================================================================== */
+/* riquadro del colore: pallino + nome */
+.colorbox {
+  display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--white);
+}
+.colorbox input[type=text] {
+  flex: 1; min-width: 0; height: 100%; border: 0; border-radius: 0; padding: 0;
+  background: transparent; outline: none; color: var(--ink); font-size: 1rem;
+}
+/* pallino del colore */
+.dot {
+  flex: none; width: 16px; height: 16px; border-radius: 50%;
+  border: 1px solid var(--line); background: transparent;
+}
+.dot.empty { border-style: dashed; border-color: var(--muted); }   /* nessun colore */
+
+/* hashtag: "chip" arrotondati dentro il riquadro */
+.tagbox {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 38px; padding: 4px 8px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--white);
+}
+.tagbox:focus-within { border-color: var(--amber); }
+.tagbox input[type=text] {
+  flex: 1; min-width: 110px; border: 0; border-radius: 0; padding: 4px 2px;
+  background: transparent; outline: none; color: var(--ink); font-size: 1rem;
+}
+.tagbox input[type=text]:focus-visible { outline: none; }
+.chips { display: contents; }
+.chip {
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--amber) 12%, #fff); color: var(--amber); font-size: .8125rem;
+}
+.chip button { all: unset; cursor: pointer; padding: 0 6px; font-size: 1rem; line-height: 1; border-radius: 999px; }
+.chip button:hover { background: color-mix(in srgb, var(--amber) 20%, #fff); }
+
+/* hashtag suggeriti (#Halloween, #Natale…) */
+.tagsug { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .75rem; color: var(--muted); }
+.tagsug button {
+  background: transparent; border: 1px dashed var(--line); border-radius: 999px;
+  padding: 2px 9px; color: var(--muted); cursor: pointer; font-size: .75rem;
+}
+.tagsug button:hover { color: var(--amber); border-color: var(--amber); }
+
+/* =====================================================================
+   9. FINESTRA "STAMPA"
+   ===================================================================== */
+/* le tre scelte (collezione / mancanti / tutte) */
+.choice {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer;
+}
+.choice:has(input:checked) { border-color: var(--amber); }
+.choice input { margin: 4px 0 0; accent-color: var(--amber); width: 16px; height: 16px; flex: none; }
+.choice small { display: block; color: var(--muted); font-size: .8125rem; line-height: 1.35; }
+#printDlg .dlg-body:focus { outline: none; }
+
+/* =====================================================================
+   10. ADATTAMENTI
+   ===================================================================== */
+/* oggetti molto stretti: nascondo la scritta "Ce l'ho" e lascio la casella */
+@container pen (max-width: 90px) {
+  .have-text { display: none; }
+  .row { justify-content: center; gap: 6px; }
+  .edit { padding: 2px 3px; font-size: .9rem; }
+}
+
+/* telefoni */
+@media (max-width: 520px) {
+  h1 .titolo-testo { font-size: 9vw; }   /* titolo più grande: se serve va su due righe */
+  .trio { gap: 8px; }
+  .trio:has(.colorbox) { grid-template-columns: minmax(0, .85fr) minmax(0, 1.55fr) minmax(0, .6fr); }
+  .trio .field input[type=text] { padding-left: 8px; padding-right: 6px; }
+  .colorbox { padding: 0 6px 0 8px; gap: 6px; }
+}
+
+/* chi ha chiesto meno animazioni nel sistema non le vede */
+@media (prefers-reduced-motion: reduce) {
+  .pic img { transition: none !important; }
+}

@@ -22,21 +22,15 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../sito.css?v=9">
+<link rel="stylesheet" href="../../sito.css?v=11">
 <style>
-  /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
-  * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  .wrap { width: 100%; max-width: 700px; margin: 0 auto; padding: 12px 20px 72px; }
-  /* link per tornare indietro: grande e facile da toccare, su telefono e su PC */
-  .backlink { display: inline-block; margin: 0 0 22px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
-  .backlink:hover { color: var(--ink); }
-  h1 { margin: 0; text-align: center; font: 600 clamp(1.8rem, 3.6vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
-  h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
+  /* Base della pagina, link "indietro" e titolo (st-wrap, st-back, st-titolo) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  .st-wrap { max-width: 700px; }
+  .st-titolo { font-size: clamp(1.8rem, 3.6vw, 2.6rem); }
   .sub { margin: 18px 0 0; text-align: center; color: var(--muted); }
   /* telefoni: titolo più grande */
-  @media (max-width: 520px) { h1 { font-size: 2.5rem; } }
+  @media (max-width: 520px) { .st-titolo { font-size: 2.5rem; } }
 </style>
 </head>
 <body>
@@ -44,9 +38,9 @@
 <div id="header-placeholder"></div>
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
-<main class="wrap">
-  <a class="backlink" href="../index.html">&larr; Legami</a>
-  <h1>Righello</h1>
+<main class="st-wrap">
+  <a class="st-back" href="../index.html">&larr; Legami</a>
+  <h1 class="st-titolo">Righello</h1>
   <p class="sub">Questa collezione arriverà presto.</p>
 </main>
 
@@ -54,8 +48,8 @@
 <div id="footer-placeholder"></div>
 
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
-<!-- "?v=7" è il numero di versione: quando cambi un file .js o .css aumentalo (v=7 → v=8)
+<!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../../script.js?v=7"></script>
+<script src="../../script.js?v=8"></script>
 </body>
 </html>

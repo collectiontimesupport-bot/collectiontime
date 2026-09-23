@@ -5,17 +5,19 @@
    2) fa funzionare Esporta e Importa della banda in alto:
       valgono per TUTTE le collezioni del sito insieme
    3) fa funzionare "Aggiungi alla Home" della banda in basso
-   4) la ricerca tra le categorie (lente nelle pagine con le card)
+   4) apre e chiude la ricerca (la lente) e filtra le card
+   5) avviso(testo): l'avviso temporaneo in basso, usato anche da app.js
    Da richiamare in ogni pagina con una sola riga:
-   <script src="script.js"></script>
-   (dentro una sottocartella: <script src="../script.js"></script>)
+   <script src="script.js?v=8"></script>
+   (dentro una sottocartella: <script src="../script.js?v=8"></script>)
+   Nelle pagine delle collezioni va PRIMA di comune/app.js.
    ========================================================== */
 
 /* Cartella in cui si trova questo file: header.html, footer.html
    e i link vengono cercati da qui, quindi funzionano anche dalle
    pagine dentro le sottocartelle. */
 const BASE = new URL('.', document.currentScript.src);
-/* Numero di versione scritto nella pagina (script.js?v=3): lo aggiungo anche
+/* Numero di versione scritto nella pagina (script.js?v=8): lo aggiungo anche
    a header.html e footer.html, così anche loro si aggiornano subito. */
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
@@ -48,8 +50,8 @@ function sistemaLink(box) {
 
 /* ---------- Esporta / Importa (tutte le collezioni) ----------
    Ogni collezione salva le spunte nel browser, in un archivio
-   IndexedDB che si chiama "catalogo-…" (per le penne: "catalogo-penne";
-   aperto dal tuo computer: "catalogo-penne-anteprima").
+   IndexedDB che si chiama "catalogo-…" (per le penne: "catalogo-penne"),
+   il nome scritto in CONFIG.dbName della sua pagina.
    Esporta legge tutti questi archivi e salva UN solo file leggero con,
    per ogni collezione, solo:
      possedute → gli id di ciò che hai segnato "Ce l'ho"
@@ -62,10 +64,9 @@ function sistemaLink(box) {
    Importa rimette tutto a posto, anche nelle collezioni che in
    questo browser non sono mai state aperte. */
 
-const PREFISSO = 'catalogo-', ANTEPRIMA = '-anteprima', STORE = 'penne';
-const sulMioComputer = location.protocol === 'file:' || /\.local$/.test(location.hostname) ||
-  /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
+const PREFISSO = 'catalogo-', STORE = 'penne';
 
+/* avviso temporaneo in basso (sparisce dopo 4,5 secondi); l'aspetto è in sito.css */
 let avvisoTimer;
 function avviso(testo) {
   let el = document.querySelector('.st-avviso');
@@ -104,7 +105,6 @@ function scrivi(db, elenco) {
 async function archivi() {
   return (await indexedDB.databases()).map(d => d.name).filter(n => n && n.startsWith(PREFISSO));
 }
-const nomeCollezione = n => n.endsWith(ANTEPRIMA) ? n.slice(0, -ANTEPRIMA.length) : n;
 const oggi = () => new Date().toISOString().slice(0, 10);
 
 /* dalle schede salvate nel browser tiene solo spunte e hashtag */
@@ -120,18 +120,12 @@ function riassumi(penne) {
 }
 
 async function esporta() {
-  /* per ogni collezione uso l'archivio di questo browser (quello "-anteprima" se c'è) */
-  const scelti = new Map();
-  (await archivi()).forEach(n => {
-    const c = nomeCollezione(n);
-    if (!scelti.has(c) || n.endsWith(ANTEPRIMA)) scelti.set(c, n);
-  });
   const collezioni = {};
-  for (const [c, n] of scelti) {
+  for (const n of await archivi()) {
     const db = await apriArchivio(n);
     const dati = riassumi(await leggi(db));
     db.close();
-    if (Object.keys(dati).length) collezioni[c] = dati;
+    if (Object.keys(dati).length) collezioni[n] = dati;
   }
   if (!Object.keys(collezioni).length) return avviso('Non c\'è ancora niente da esportare.');
   const blob = new Blob([JSON.stringify({ sito: 'Collection Time', versione: 1, data: oggi(), collezioni })], { type: 'application/json' });
@@ -168,25 +162,14 @@ async function applica(db, dati) {
 async function importa(file) {
   let dati = null;
   try { dati = JSON.parse(await file.text()); } catch (e) { /* non è un file JSON */ }
-  let collezioni = dati && dati.collezioni;
-  /* vecchi file salvati dalla pagina delle penne ("mie-legami-erasable-….json") */
-  if (!collezioni && dati && dati.mode === 'visitor' && Array.isArray(dati.pens)) {
-    collezioni = { 'catalogo-penne': riassumi(dati.pens.filter(p => p && typeof p.id === 'string')) };
-  }
+  const collezioni = dati && dati.collezioni;
   if (!collezioni || typeof collezioni !== 'object') return avviso('Questo file non è un backup di Collection Time.');
-  const esistenti = new Set(await archivi());
   let tot = 0;
   for (const [c, d] of Object.entries(collezioni)) {
-    if (!c.startsWith(PREFISSO) || c.endsWith(ANTEPRIMA) || !d || typeof d !== 'object') continue;
-    let nomi = [c, c + ANTEPRIMA].filter(n => esistenti.has(n));
-    if (!nomi.length) nomi = sulMioComputer ? [c, c + ANTEPRIMA] : [c];
-    let n = 0;
-    for (const nome of nomi) {
-      const db = await apriArchivio(nome);
-      n = await applica(db, d);
-      db.close();
-    }
-    tot += n;
+    if (!c.startsWith(PREFISSO) || !d || typeof d !== 'object') continue;
+    const db = await apriArchivio(c);
+    tot += await applica(db, d);
+    db.close();
   }
   avviso('Importato: ' + tot + (tot === 1 ? ' oggetto segnato' : ' oggetti segnati') + ' "Ce l\'ho".');
   /* nella pagina di una collezione ricarico, così le spunte si vedono subito */
@@ -268,16 +251,18 @@ async function aggiungiHome() {
 }
 document.addEventListener('click', e => { if (e.target.closest('#stHome')) aggiungiHome(); });
 
-/* ---------- Cerca tra le categorie ----------
-   Nelle pagine con le card (Home, Legami): la lente accanto alla frase
-   apre il campo; scrivendo restano visibili solo le card che contengono
-   quelle parole (nel testo della card o nel suo data-cerca="..."). */
+/* ---------- Ricerca (la lente) ----------
+   La lente apre il campo; con Esc o uscendo dal campo vuoto si richiude.
+   Nelle pagine con le card (Home, Legami, LEGO) scrivendo restano visibili
+   solo le card che contengono quelle parole (nel testo della card o nel
+   suo data-cerca="..."). Nelle pagine delle collezioni il filtro lo fa
+   app.js, che ascolta lo stesso campo. */
 
 function avviaCerca() {
   const box = document.getElementById('stCerca');
   if (!box) return;                          // la pagina non ha la ricerca
   const btn = box.querySelector('button'), campo = box.querySelector('input');
-  const card = [...document.querySelectorAll('.cards > li')];
+  const card = [...document.querySelectorAll('.st-cards > li')];
   const nessuna = document.querySelector('.st-nessuna');
   const semplice = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');   // senza accenti
 
@@ -300,7 +285,7 @@ function avviaCerca() {
   campo.addEventListener('input', filtra);
   campo.addEventListener('blur', () => setTimeout(() => { if (!box.contains(document.activeElement)) chiudi(); }, 120));
   campo.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { campo.value = ''; filtra(); chiudi(); btn.focus(); }
+    if (e.key === 'Escape') { campo.value = ''; campo.dispatchEvent(new Event('input')); chiudi(); btn.focus(); }
   });
 }
 

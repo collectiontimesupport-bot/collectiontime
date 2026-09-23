@@ -22,35 +22,25 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=9">
+<link rel="stylesheet" href="sito.css?v=11">
+<!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
+<link rel="preload" href="comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
-  * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-
-  .wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 56px 20px 72px; }
-  h1 { margin: 0; text-align: center; font: 600 clamp(2rem, 4vw, 3rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
-  h1::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
-  .sub { margin: 14px 0 40px; text-align: center; color: var(--muted); }
-  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-  .card { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: inherit; text-decoration: none; background: var(--white); transition: border-color .15s, box-shadow .15s; }
-  .card:hover, .card:focus-visible { border-color: var(--amber); box-shadow: 0 6px 20px rgba(242, 169, 0, .16); outline: none; }
-  .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  .st-wrap { padding-top: 56px; }   /* niente link "indietro" in alto: più spazio sopra il titolo */
   /* Logo scritto della collezione nella card (es. "Legami / Milano"),
-     nello stesso carattere del titolo della collezione: Comic Sans MS Bold.
+     nello stesso carattere del titolo della collezione (var(--font-legami), in sito.css).
      Il colore è a parte, nella voce --titolo di ogni card. */
   /* margin-top negativo: la scritta parte a circa 5 mm dal bordo alto della card */
   .logo-coll { display: grid; justify-items: center; margin: -3px 0 6px; line-height: 1; color: var(--titolo);
-               font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", "Marker Felt", cursive; font-weight: 700; }
+               font-family: var(--font-legami); font-weight: 700; }
   .logo-coll span { font-size: 3.6rem; }   /* grandezza di "Legami" */
   /* "Milano": grandezza (font-size) e distanza da "Legami" (margin-top) */
   .logo-coll small { font-size: 1.7rem; letter-spacing: .18em; text-transform: uppercase; margin-top: 14px; }
   /* card LEGO: stesso carattere delle pagine LEGO (carattere di sistema molto grosso) */
   .logo-coll.lego { font-family: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; font-weight: 900; }
   .logo-coll.lego small { font-size: 1.15rem; letter-spacing: .12em; }
-  .card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
-  .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 </style>
 </head>
 <body>
@@ -58,11 +48,11 @@
 <div id="header-placeholder"></div>
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
-<main class="wrap">
-  <h1>Le mie collezioni</h1>
+<main class="st-wrap">
+  <h1 class="st-titolo">Le mie collezioni</h1>
   <!-- Frase + lente: la lente apre il campo per cercare tra le categorie (funziona con script.js) -->
   <div class="st-sub">
-    <p class="sub">Scegli una categoria</p>
+    <p class="sub">Cerca una categoria</p>
     <div class="st-cerca" id="stCerca">
       <button type="button" aria-label="Cerca una categoria" aria-expanded="false" title="Cerca">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -73,21 +63,21 @@
   <p class="st-nessuna" hidden>Nessuna categoria trovata.</p>
   <!-- Una card per ogni categoria: per aggiungerne una, copia un <li> ... </li> e cambia link e testi.
        data-cerca = parole in più che la ricerca trova (es. le collezioni che ci sono dentro). -->
-  <ul class="cards">
+  <ul class="st-cards">
     <li data-cerca="Erasable Pens penne cancellabili Bulb Fiction lampade lampada Righello">
-      <a class="card" href="legami/index.html" aria-label="Legami Milano">
+      <a class="st-card" href="legami/index.html" aria-label="Legami Milano">
         <!-- logo scritto: --titolo = colore della collezione (rosso Legami) -->
         <div class="logo-coll" style="--titolo: #E50A15" aria-hidden="true"><span>Legami</span><small>Milano</small></div>
         <p>Tutte le mie collezioni a tema Legami.</p>
-        <span class="open">Apri</span>
+        <span class="st-apri">Apri</span>
       </a>
     </li>
     <li data-cerca="LEGO Minifigures minifigure minifig Serie DC Super Heroes DFB Disney Disney 100 Dungeons &amp; Dragons F1 Collectible Race Cars Harry Potter Harry Potter e Animali Fantastici Looney Tunes Marvel Studios Shrek Spider-Man: Across the Spider-Verse Team GB Technic Mighty Machines The LEGO Batman Movie The LEGO Movie The LEGO Movie 2 The LEGO Ninjago Movie The Muppets The Simpsons">
-      <a class="card" href="lego/index.html" aria-label="LEGO Minifigures">
+      <a class="st-card" href="lego/index.html" aria-label="LEGO Minifigures">
         <!-- logo scritto: --titolo = colore della collezione (blu scuro del sito, quasi nero) -->
         <div class="logo-coll lego" style="--titolo: #1A2140" aria-hidden="true"><span>LEGO</span><small>Minifigures</small></div>
         <p>Le serie di minifigure da collezione.</p>
-        <span class="open">Apri</span>
+        <span class="st-apri">Apri</span>
       </a>
     </li>
   </ul>
@@ -97,8 +87,8 @@
 <div id="footer-placeholder"></div>
 
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
-<!-- "?v=7" è il numero di versione: quando cambi un file .js o .css aumentalo (v=7 → v=8)
+<!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=7"></script>
+<script src="script.js?v=8"></script>
 </body>
 </html>

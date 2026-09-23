@@ -30,18 +30,15 @@
 <meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../sito.css?v=9">
+<link rel="stylesheet" href="../../sito.css?v=11">
 <style>
-  /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
+  /* Base della pagina, link "indietro" e avviso in basso sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
   :root {
     /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
     --titolo: #1A2140; }   /* blu scuro del sito, quasi nero */
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  .wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 12px 16px 60px; }
-  .backlink { display: inline-block; margin: 0 0 18px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
-  .backlink:hover { color: var(--titolo); }
+  .st-wrap { max-width: 1400px; padding: 12px 16px 60px; }
+  .st-back { margin-bottom: 18px; }
   h1 { margin: 0; text-align: center; font: 900 clamp(1.8rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
   @media (max-width: 520px) { h1 { font-size: 8.5vw; } }
 
@@ -67,16 +64,14 @@
   @media (hover: hover) { .tutte li:not(.ce) button:hover img { opacity: .6; } }
   .attesa { text-align: center; color: var(--muted); padding: 40px 0; }
   .hint { color: var(--muted); font-size: .875rem; margin: 20px 0 0; }
-  #status { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--white); padding: 10px 16px; border-radius: 10px; max-width: 90vw; opacity: 0; pointer-events: none; transition: opacity .2s; }
-  #status.show { opacity: 1; }
 </style>
 </head>
 <body>
 <!-- Banda in alto: la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
-<main class="wrap">
-  <a class="backlink" href="../index.html">&larr; LEGO Minifigures</a>
+<main class="st-wrap">
+  <a class="st-back" href="../index.html">&larr; LEGO Minifigures</a>
   <h1>TUTTE LE MINIFIGURES</h1>
   <div class="bar">
     <p class="conta" id="conta"></p>
@@ -94,25 +89,16 @@
 
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
-<div id="status" role="status" aria-live="polite"></div>
 
 <script>
 (() => {
   const $ = id => document.getElementById(id);
   const lista = $('tutte');
   const STORE = 'penne';
-  /* Sul tuo computer (file, localhost, rete di casa) le pagine delle serie usano l'archivio
-     "…-anteprima": qui faccio lo stesso, così le spunte coincidono (vedi comune/app.js). */
-  const privato = location.protocol === 'file:' ||
-    /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname) || /\.local$/.test(location.hostname);
   const archivi = new Map();   /* nome dell'archivio → archivio aperto */
   let tutte = [];              /* { id, nome, serie, foto, db, ce } */
   let filtro = 'tutte';
 
-  function avviso(t) {
-    const s = $('status'); s.textContent = t; s.classList.add('show');
-    clearTimeout(avviso.t); avviso.t = setTimeout(() => s.classList.remove('show'), 3500);
-  }
   const richiesta = r => new Promise((ok, ko) => { r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
   function apri(nome) {
     if (!archivi.has(nome)) {
@@ -127,7 +113,7 @@
   async function collezioni() {
     const html = await (await fetch('../index.html')).text();
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    return [...doc.querySelectorAll('.cards a.card')].map(a => ({
+    return [...doc.querySelectorAll('.st-cards a.st-card')].map(a => ({
       cartella: a.getAttribute('href').replace(/\/?index\.html$/, ''),
       titolo: (a.querySelector('h2') || a).textContent.trim()
     }));
@@ -135,7 +121,7 @@
   /* 2) le minifigure di una collezione, lette dall'ELENCO della sua pagina */
   async function minifigure(c) {
     const html = await (await fetch('../' + c.cartella + '/index.html')).text();
-    const db = ((html.match(/dbName:\s*"([^"]+)"/) || [])[1] || ('catalogo-' + c.cartella)) + (privato ? '-anteprima' : '');
+    const db = (html.match(/dbName:\s*"([^"]+)"/) || [])[1] || ('catalogo-' + c.cartella);   /* archivio della serie (CONFIG.dbName) */
     const righe = [...html.matchAll(/\{\s*id:\s*"([^"]+)"[^}]*?numero:\s*"([^"]*)"[^}]*?nome:\s*"((?:[^"\\]|\\.)*)"[^}]*?foto:\s*"([^"]+)"/g)];
     return righe.map(m => ({
       id: m[1], nome: m[3].replace(/\\(.)/g, '$1'), serie: c.titolo + ' · ' + m[2],
@@ -182,10 +168,8 @@
     disegna();
     try {
       const db = await apri(p.db);
-      const s = db.transaction(STORE, 'readwrite').objectStore(STORE);
-      const vecchia = await richiesta(s.get(p.id));
-      /* se la pagina della serie non è mai stata aperta, salvo solo la spunta:
-         il resto lo completa la pagina della serie la prima volta che la apri */
+      const vecchia = await richiesta(db.transaction(STORE).objectStore(STORE).get(p.id));
+      /* tengo gli hashtag già salvati e cambio solo la spunta (come la pagina della serie) */
       await richiesta(db.transaction(STORE, 'readwrite').objectStore(STORE).put(Object.assign(vecchia || { id: p.id }, { owned: p.ce })));
     } catch (e) { avviso('Questo browser non permette di salvare le spunte.'); }
   }
@@ -223,6 +207,6 @@
 })();
 </script>
 <!-- Banda in alto e in basso, Esporta/Importa: questa riga serve in ogni pagina -->
-<script src="../../script.js?v=7"></script>
+<script src="../../script.js?v=8"></script>
 </body>
 </html>

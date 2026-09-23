@@ -328,8 +328,7 @@ $('btnCrea').addEventListener('click', async () => {
          .replace(/dbName: "[^"]+",/, 'dbName: "catalogo-lego-' + slug + '",')
          .replace(/titolo: "[^"]+",/, 'titolo: ' + js(titoloPagina) + ',')
          .replace(/possedute: "possedute",\s*\/\/[^\n]*/, 'possedute: "possedute",          // "5 possedute su ' + n + '"')
-         .replace(/colonne: \d+,\s*\/\/[^\n]*/, 'colonne: ' + colonne + ',                      // elementi per fila sugli schermi larghi (' + n + ' in ' + (n <= colonne ? 1 : 2) + (n <= colonne ? ' fila)' : ' file)'))
-         .replace(/\(es\. "\d+"\)/, '(es. "' + set + '")');
+         .replace(/colonne: \d+,\s*\/\/[^\n]*/, 'colonne: ' + colonne + ',                      // elementi per fila sugli schermi larghi (' + n + ' in ' + (n <= colonne ? 1 : 2) + (n <= colonne ? ' fila)' : ' file)'));
     const righe = elenco.map((nome, i) => {
       const k = String(i + 1).padStart(2, '0');
       return '  { id: "' + prefisso + k + '", numero: "' + k + '", ep: "' + set + '", nome: ' + js(nome) + ', foto: "immagini/' + k + '.webp" },';
@@ -338,12 +337,11 @@ $('btnCrea').addEventListener('click', async () => {
     const d = await dir('lego/' + slug, true);
     await scrivi(d, 'index.html', t);
     await dir('lego/' + slug + '/immagini/mini', true);
-    /* 2) card nella home LEGO, in fondo al gruppo scelto (copia di sicurezza prima) */
+    /* 2) card nella home LEGO, IN CIMA (le serie vanno dalla più recente) (copia di sicurezza prima) */
     const home = await (await leggi(await dir('lego'), 'index.html')).text();
-    const titoloGruppo = '<h2 class="gruppo">' + gruppo() + '</h2>';
-    const i = home.indexOf(titoloGruppo), fine = i < 0 ? -1 : home.indexOf('\n  </ul>', i);
-    if (fine < 0) throw new Error('Non trovo il gruppo "' + gruppo() + '" in lego/index.html: la pagina è stata creata, la card aggiungila a mano.');
-    const card = '\n    <li data-cerca="' + html(elenco.join(' ')) + '"><a class="card" href="' + slug + '/index.html"><div class="thumb"><img src="' + slug + '/immagini/copertina.webp" alt="" loading="lazy"></div><h2>' + html(titolo) + '</h2><p>' + n + ' minifigure<br>Set LEGO ' + set + '</p><span class="open">Apri</span></a></li>';
+    const inizio = '<ul class="st-cards">', i = home.indexOf(inizio), fine = i < 0 ? -1 : i + inizio.length;
+    if (fine < 0) throw new Error('Non trovo l\'elenco delle serie in lego/index.html: la pagina è stata creata, la card aggiungila a mano.');
+    const card = '\n    <li data-cerca="' + html(elenco.join(' ')) + '"><a class="st-card" href="' + slug + '/index.html"><div class="thumb"><img src="' + slug + '/immagini/copertina.webp" alt="" loading="lazy"></div><h2>' + html(titolo) + '</h2><p>' + n + ' minifigure<br>Set LEGO ' + set + '</p><span class="st-apri">Apri</span></a></li>';
     await scriviConCopia('lego', 'index.html', home.slice(0, fine) + card + home.slice(fine));
     await elencoSerie(slug);
     messaggio(msg, '✓ Serie creata: lego/' + slug + '/ (' + n + ' minifigure) e card aggiunta nella home LEGO.\nOra carica le foto con la sezione 2 e la copertina con la sezione 3 (sono già impostate su questa serie).', 'ok');
