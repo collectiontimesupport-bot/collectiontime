@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=7">
+<link rel="stylesheet" href="sito.css?v=8">
 <style>
   /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
   * { box-sizing: border-box; }
@@ -40,11 +40,11 @@
   /* Logo scritto della collezione nella card (es. "Legami / Milano"),
      nello stesso carattere del titolo della collezione: Comic Sans MS Bold.
      Il colore è a parte, nella voce --titolo di ogni card. */
-  .logo-coll { display: grid; place-content: center; justify-items: center; height: 96px; line-height: 1; color: var(--titolo);
+  .logo-coll { display: grid; place-content: center; justify-items: center; height: 120px; line-height: 1; color: var(--titolo);
                font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", "Marker Felt", cursive; font-weight: 700; }
   .logo-coll span { font-size: 2.6rem; }
-  .logo-coll small { font-size: .95rem; letter-spacing: .18em; text-transform: uppercase; margin-top: 4px; }
-  .card h2 { margin: 0; font-size: 1.125rem; }
+  /* "Milano": grandezza (font-size) e distanza da "Legami" (margin-top) */
+  .logo-coll small { font-size: 1.3rem; letter-spacing: .18em; text-transform: uppercase; margin-top: 12px; }
   .card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
   .open { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 </style>
@@ -56,14 +56,24 @@
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="wrap">
   <h1>Le mie collezioni</h1>
-  <p class="sub">Scegli una categoria</p>
-  <!-- Una card per ogni categoria: per aggiungerne una, copia un <li> ... </li> e cambia link e testi. -->
+  <!-- Frase + lente: la lente apre il campo per cercare tra le categorie (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Scegli una categoria</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una categoria" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una categoria" aria-label="Cerca una categoria" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna categoria trovata.</p>
+  <!-- Una card per ogni categoria: per aggiungerne una, copia un <li> ... </li> e cambia link e testi.
+       data-cerca = parole in più che la ricerca trova (es. le collezioni che ci sono dentro). -->
   <ul class="cards">
-    <li>
-      <a class="card" href="legami/index.html">
+    <li data-cerca="Erasable Pens penne cancellabili Bulb Fiction lampade lampada Righello">
+      <a class="card" href="legami/index.html" aria-label="Legami Milano">
         <!-- logo scritto: --titolo = colore della collezione (rosso Legami) -->
         <div class="logo-coll" style="--titolo: #E50A15" aria-hidden="true"><span>Legami</span><small>Milano</small></div>
-        <h2>Legami</h2>
         <p>Tutte le mie collezioni a tema Legami.</p>
         <span class="open">Apri</span>
       </a>
@@ -77,6 +87,6 @@
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
 <!-- "?v=6" è il numero di versione: quando cambi un file .js o .css aumentalo (v=6 → v=7)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=5"></script>
+<script src="script.js?v=6"></script>
 </body>
 </html>

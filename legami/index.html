@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../sito.css?v=7">
+<link rel="stylesheet" href="../sito.css?v=8">
 <style>
   /* I colori (--ink, --muted, --line, --amber, --white) vengono da sito.css */
   :root {
@@ -70,8 +70,19 @@
 <main class="wrap">
   <a class="backlink" href="../index.html">&larr; Tutte le collezioni</a>
   <h1>LEGAMI</h1>
-  <p class="sub">Seleziona la collezione</p>
-  <!-- Una card per ogni oggetto: per aggiungerne uno, copia un <li> ... </li> e cambia link e testi. -->
+  <!-- Frase + lente: la lente apre il campo per cercare tra le collezioni (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Seleziona la collezione</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una collezione" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una collezione" aria-label="Cerca una collezione" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna collezione trovata.</p>
+  <!-- Una card per ogni oggetto: per aggiungerne uno, copia un <li> ... </li> e cambia link e testi.
+       Se serve, data-cerca="..." sul <li> aggiunge parole che la ricerca trova. -->
   <ul class="cards">
      <li><a class="card" href="legami-erasable/index.html"><div class="thumb"><img src="legami-erasable/immagini/copertina.webp" alt=""></div><h2>Erasable Pens</h2><p>Penne cancellabili </p><span class="open">Apri</span></a></li>
      <li><a class="card" href="legami-righello/index.html"><h2>Righello</h2><p>La collezione Legami Righello.</p><span class="open">Apri</span></a></li>
@@ -85,6 +96,6 @@
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
 <!-- "?v=6" è il numero di versione: quando cambi un file .js o .css aumentalo (v=6 → v=7)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../script.js?v=5"></script>
+<script src="../script.js?v=6"></script>
 </body>
 </html>

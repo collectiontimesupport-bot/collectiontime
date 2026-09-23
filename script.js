@@ -208,7 +208,44 @@ document.addEventListener('change', e => {
   if (file) protetto(importa)(file);
 });
 
+/* ---------- Cerca tra le categorie ----------
+   Nelle pagine con le card (Home, Legami): la lente accanto alla frase
+   apre il campo; scrivendo restano visibili solo le card che contengono
+   quelle parole (nel testo della card o nel suo data-cerca="..."). */
+
+function avviaCerca() {
+  const box = document.getElementById('stCerca');
+  if (!box) return;                          // la pagina non ha la ricerca
+  const btn = box.querySelector('button'), campo = box.querySelector('input');
+  const card = [...document.querySelectorAll('.cards > li')];
+  const nessuna = document.querySelector('.st-nessuna');
+  const semplice = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');   // senza accenti
+
+  function filtra() {
+    const parole = semplice(campo.value).split(/\s+/).filter(Boolean);
+    let visibili = 0;
+    card.forEach(li => {
+      const testo = semplice(li.textContent + ' ' + (li.dataset.cerca || ''));
+      li.hidden = !parole.every(p => testo.includes(p));
+      if (!li.hidden) visibili++;
+    });
+    if (nessuna) nessuna.hidden = visibili > 0;
+  }
+  function apri() { box.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); campo.tabIndex = 0; campo.focus(); }
+  function chiudi() {
+    if (campo.value.trim()) return;          // se c'è scritto qualcosa resta aperto
+    box.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); campo.tabIndex = -1;
+  }
+  btn.addEventListener('click', () => box.classList.contains('open') && !campo.value.trim() ? chiudi() : apri());
+  campo.addEventListener('input', filtra);
+  campo.addEventListener('blur', () => setTimeout(() => { if (!box.contains(document.activeElement)) chiudi(); }, 120));
+  campo.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { campo.value = ''; filtra(); chiudi(); btn.focus(); }
+  });
+}
+
 /* ---------- Avvio ---------- */
 
 caricaParte('header-placeholder', 'header.html');
 caricaParte('footer-placeholder', 'footer.html');
+avviaCerca();

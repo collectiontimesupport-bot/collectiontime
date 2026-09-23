@@ -3,7 +3,7 @@
    Stile comune a TUTTE le pagine: colori del sito, banda in alto
    (header.html), banda in basso (footer.html) e avviso di
    Esporta/Importa. Ogni pagina lo richiama nel <head> con:
-   <link rel="stylesheet" href="sito.css?v=7">
+   <link rel="stylesheet" href="sito.css?v=8">
    (dentro una sottocartella: "../sito.css", "../../sito.css")
    ========================================================== */
 
@@ -66,3 +66,23 @@
   opacity: 0; pointer-events: none; transition: opacity .2s;
 }
 .st-avviso.show { opacity: 1; }
+
+/* ---------- ricerca delle categorie (Home e pagine con le card) ----------
+   Si vede solo la lente accanto alla frase ("Scegli una categoria");
+   premendola il campo si allarga. Il funzionamento è in script.js. */
+.st-sub { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 4px; margin: 14px 0 40px; }
+.st-sub .sub { margin: 0; }
+.st-cerca { display: flex; align-items: center; border: 1px solid transparent; border-radius: 8px; }
+.st-cerca.open { border-color: var(--line); }
+.st-cerca button { display: grid; place-items: center; padding: 8px 10px; border: 0; border-radius: 8px; background: none; color: var(--ink); cursor: pointer; }
+.st-cerca button:hover { color: var(--amber); }
+.st-cerca svg { width: 20px; height: 20px; display: block; }
+.st-cerca input {
+  -webkit-appearance: none; appearance: none;
+  width: 0; padding: 8px 0; border: 0; opacity: 0; background: none; color: var(--ink);
+  font: inherit; font-size: 16px;   /* 16px: così l'iPhone non ingrandisce la pagina */
+  outline: none; transition: width .25s ease, opacity .2s ease, padding .25s ease;
+}
+.st-cerca.open input { width: min(220px, 50vw); padding: 8px 10px 8px 0; opacity: 1; }
+.st-nessuna { margin: 0 0 20px; text-align: center; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .st-cerca input { transition: none; } }
