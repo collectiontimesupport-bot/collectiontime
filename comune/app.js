@@ -78,6 +78,7 @@
       : 'Non ci sono ancora elementi in questa collezione.';
     if (CONFIG.home) $('backLink').hidden = false;
     document.documentElement.style.setProperty('--proporzione', String(CONFIG.proporzione || 7));
+    if (typeof CONFIG.colonne === 'number') document.documentElement.style.setProperty('--colonne', String(CONFIG.colonne));   /* elementi per fila (pagine LEGO) */
     if (CONFIG.colonne === 'auto') grid.classList.add('auto');
     /* suggerimenti di hashtag */
     const sug = $('tagSug');

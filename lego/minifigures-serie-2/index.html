@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- =====================================================================
-     LEGO MINIFIGURES SERIE 2 — pagina della serie (Collection Time)
+     LEGO MINIFIGURES SERIE 2 — pagina della collezione (Collection Time)
      ---------------------------------------------------------------------
      Com'è fatta questa cartella:
 
@@ -43,7 +43,7 @@
 <!-- Aspetto grafico: un solo file per tutte le serie LEGO -->
 <!-- "?v=7" è il numero di versione: quando cambi un file .js o .css aumentalo (v=7 → v=8)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<link rel="stylesheet" href="../css/stile.css?v=1">
+<link rel="stylesheet" href="../css/stile.css?v=2">
 </head>
 <body>
 
@@ -210,13 +210,13 @@ const CONFIG = {
   tuttiTesto: "Tutte le minifigure",
   mancanti: "Quelle che mi mancano",
   aggiungi: "Aggiungi minifigura",
-  etichettaEp: "Codice set",       // numero LEGO della serie sulla bustina (es. "8683")
+  etichettaEp: "Codice set",       // numero LEGO della collezione sulla bustina (es. "8684")
   etichettaNumero: "Numero",
-  colonne: 8,                      // minifigure per fila sugli schermi larghi: 16 = 2 file ("auto" = si adattano)
+  colonne: 8,                      // elementi per fila sugli schermi larghi (16 in 2 file)
   proporzione: 1,                  // altezza ÷ larghezza di una foto (le foto sono quadrate)
-  pdfColonne: 8,                   // minifigure per fila nel PDF
-  pdfFile: 2,                      // file per pagina del PDF (16 minifigure = 1 pagina)
-  pdfAltezza: 150,                 // altezza di una minifigura nel PDF (in punti)
+  pdfColonne: 8,                   // elementi per fila nel PDF
+  pdfFile: 2,                      // file per pagina del PDF (16 = 1 pagina)
+  pdfAltezza: 150,                 // altezza di un elemento nel PDF (in punti)
   suggerimenti: ["Halloween", "Natale", "Sport", "Fantasy", "Spazio"],   // hashtag proposti nei dettagli
   home: "../index.html",           // pagina del link "← LEGO Minifigures"
   modalita: "pubblica"             // "pubblica" = nessuno può modificare i dati fissi (versione del sito)
@@ -247,8 +247,6 @@ const CONFIG = {
      ep        numero LEGO della serie (lo stesso per tutta la serie)
      nome      nome della minifigura
      foto      percorso della foto: "immagini/NOMEFILE.webp"
-               Finché non hai la foto vera usa "immagini/in-arrivo.webp"
-               (sagoma nera con il "?").
      hashtag   tema: ["Halloween"], ["Sport"]… — facoltativo
      info      informazioni fisse — facoltativo
 
@@ -258,17 +256,17 @@ const CONFIG = {
 const PENNE = [
   { id: "minifig-s2-01", numero: "01", ep: "8684", nome: "Mariachi", foto: "immagini/01.webp" },
   { id: "minifig-s2-02", numero: "02", ep: "8684", nome: "Spartan Warrior", foto: "immagini/02.webp" },
-  { id: "minifig-s2-03", numero: "03", ep: "8684", nome: "Ringmaster", foto: "immagini/03.webp" },
+  { id: "minifig-s2-03", numero: "03", ep: "8684", nome: "Circus Ringmaster", foto: "immagini/03.webp" },
   { id: "minifig-s2-04", numero: "04", ep: "8684", nome: "Witch", foto: "immagini/04.webp", hashtag: ["Halloween"] },
   { id: "minifig-s2-05", numero: "05", ep: "8684", nome: "Vampire", foto: "immagini/05.webp", hashtag: ["Halloween"] },
   { id: "minifig-s2-06", numero: "06", ep: "8684", nome: "Traffic Cop", foto: "immagini/06.webp" },
-  { id: "minifig-s2-07", numero: "07", ep: "8684", nome: "Explorer", foto: "immagini/in-arrivo.webp", info: "Foto in arrivo" },
+  { id: "minifig-s2-07", numero: "07", ep: "8684", nome: "Explorer", foto: "immagini/07.webp" },
   { id: "minifig-s2-08", numero: "08", ep: "8684", nome: "Lifeguard", foto: "immagini/08.webp" },
   { id: "minifig-s2-09", numero: "09", ep: "8684", nome: "Mime", foto: "immagini/09.webp" },
-  { id: "minifig-s2-10", numero: "10", ep: "8684", nome: "Weight Lifter", foto: "immagini/10.webp" },
+  { id: "minifig-s2-10", numero: "10", ep: "8684", nome: "Weightlifter", foto: "immagini/10.webp" },
   { id: "minifig-s2-11", numero: "11", ep: "8684", nome: "Pop Star", foto: "immagini/11.webp" },
   { id: "minifig-s2-12", numero: "12", ep: "8684", nome: "Skier", foto: "immagini/12.webp" },
-  { id: "minifig-s2-13", numero: "13", ep: "8684", nome: "Disco Dancer", foto: "immagini/13.webp" },
+  { id: "minifig-s2-13", numero: "13", ep: "8684", nome: "Disco Dude", foto: "immagini/13.webp" },
   { id: "minifig-s2-14", numero: "14", ep: "8684", nome: "Karate Master", foto: "immagini/14.webp" },
   { id: "minifig-s2-15", numero: "15", ep: "8684", nome: "Surfer", foto: "immagini/15.webp" },
   { id: "minifig-s2-16", numero: "16", ep: "8684", nome: "Pharaoh", foto: "immagini/16.webp" },
@@ -276,7 +274,7 @@ const PENNE = [
 </script>
 
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../comune/app.js?v=10"></script>
+<script src="../../comune/app.js?v=11"></script>
 <!-- Header, footer e menu comuni a tutto il sito -->
 <script src="../../script.js?v=7"></script>
 </body>

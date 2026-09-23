@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- =====================================================================
-     LEGO MINIFIGURES SERIE 1 — pagina della serie (Collection Time)
+     LEGO MINIFIGURES SERIE 1 — pagina della collezione (Collection Time)
      ---------------------------------------------------------------------
      Com'è fatta questa cartella:
 
@@ -43,7 +43,7 @@
 <!-- Aspetto grafico: un solo file per tutte le serie LEGO -->
 <!-- "?v=7" è il numero di versione: quando cambi un file .js o .css aumentalo (v=7 → v=8)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<link rel="stylesheet" href="../css/stile.css?v=1">
+<link rel="stylesheet" href="../css/stile.css?v=2">
 </head>
 <body>
 
@@ -210,13 +210,13 @@ const CONFIG = {
   tuttiTesto: "Tutte le minifigure",
   mancanti: "Quelle che mi mancano",
   aggiungi: "Aggiungi minifigura",
-  etichettaEp: "Codice set",       // numero LEGO della serie sulla bustina (es. "8683")
+  etichettaEp: "Codice set",       // numero LEGO della collezione sulla bustina (es. "8683")
   etichettaNumero: "Numero",
-  colonne: 8,                      // minifigure per fila sugli schermi larghi: 16 = 2 file ("auto" = si adattano)
+  colonne: 8,                      // elementi per fila sugli schermi larghi (16 in 2 file)
   proporzione: 1,                  // altezza ÷ larghezza di una foto (le foto sono quadrate)
-  pdfColonne: 8,                   // minifigure per fila nel PDF
-  pdfFile: 2,                      // file per pagina del PDF (16 minifigure = 1 pagina)
-  pdfAltezza: 150,                 // altezza di una minifigura nel PDF (in punti)
+  pdfColonne: 8,                   // elementi per fila nel PDF
+  pdfFile: 2,                      // file per pagina del PDF (16 = 1 pagina)
+  pdfAltezza: 150,                 // altezza di un elemento nel PDF (in punti)
   suggerimenti: ["Halloween", "Natale", "Sport", "Fantasy", "Spazio"],   // hashtag proposti nei dettagli
   home: "../index.html",           // pagina del link "← LEGO Minifigures"
   modalita: "pubblica"             // "pubblica" = nessuno può modificare i dati fissi (versione del sito)
@@ -247,8 +247,6 @@ const CONFIG = {
      ep        numero LEGO della serie (lo stesso per tutta la serie)
      nome      nome della minifigura
      foto      percorso della foto: "immagini/NOMEFILE.webp"
-               Finché non hai la foto vera usa "immagini/in-arrivo.webp"
-               (sagoma nera con il "?").
      hashtag   tema: ["Halloween"], ["Sport"]… — facoltativo
      info      informazioni fisse — facoltativo
 
@@ -276,7 +274,7 @@ const PENNE = [
 </script>
 
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../comune/app.js?v=10"></script>
+<script src="../../comune/app.js?v=11"></script>
 <!-- Header, footer e menu comuni a tutto il sito -->
 <script src="../../script.js?v=7"></script>
 </body>

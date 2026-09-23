@@ -147,7 +147,7 @@ input[type=search], select, .field input[type=text] {
 
 /* =====================================================================
    5. GRIGLIA DELLE MINIFIGURE
-   8 colonne: le 16 minifigure di una serie stanno in 2 file; sotto i 1000px le colonne si
+   Colonne = CONFIG.colonne della pagina (es. 8: 16 minifigure in 2 file); sotto i 1000px le colonne si
    adattano da sole alla larghezza dello schermo.
    Con CONFIG.colonne = "auto" (nell'HTML) si usa la griglia ".auto".
    ===================================================================== */
@@ -155,7 +155,7 @@ input[type=search], select, .field input[type=text] {
   list-style: none; margin: 0 auto; padding: 0;
   max-width: 1400px;   /* oltre questa misura le minifigure resterebbero troppo distanti */
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--colonne, 8), minmax(0, 1fr));
   gap: 28px 16px;
 }
 @media (max-width: 1000px) {
