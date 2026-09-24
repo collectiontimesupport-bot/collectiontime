@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Squishmallows · Collection Time</title>
+<meta name="description" content="Squishmallows Happy Meal McDonald's: le serie di peluche, con quelli che ho e quelli che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Squishmallows · Collection Time">
+<meta property="og:description" content="Squishmallows Happy Meal McDonald's: le serie di peluche, con quelli che ho e quelli che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/mcdonalds/happy-meal/squishmallows/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../../sito.css?v=11">
+<style>
+  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  :root {
+    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+    --titolo: #1A2140; }   /* blu scuro del sito, quasi nero (il rosso è solo per Legami) */
+  /* Titolo in carattere di sistema molto grosso (nessun file da scaricare: pagina leggera) */
+  .st-titolo { font: 900 clamp(2rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
+  /* telefoni: titolo grande come nelle altre sezioni */
+  @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
+  /* Card con la foto IN ALTO, come nella sezione LEGO.
+     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
+  .st-card { --foto-h: 170px; }
+  .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
+  .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
+  /* collegamento "Vedi tutti gli Squishmallows insieme" (come nella home LEGO) */
+  .tutte-link { text-align: center; margin: -18px 0 28px; }
+  .tutte-link a { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--amber); color: var(--ink); font-weight: 600; text-decoration: none; }
+  .tutte-link a:hover { filter: brightness(1.06); }
+</style>
+</head>
+<body>
+<!-- Banda in alto (logo, Esporta, Importa): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
+<main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Happy Meal</a>
+  <!-- ! MODIFICA: titolo della pagina -->
+  <h1 class="st-titolo">SQUISHMALLOWS</h1>
+  <!-- Frase + lente: la lente apre il campo per cercare tra le serie (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Cerca una serie</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una serie" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una serie" aria-label="Cerca una serie" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
+  <!-- collegamento alla pagina con TUTTI gli Squishmallows insieme (cartella "tutti") -->
+  <p class="tutte-link"><a href="tutti/index.html">Vedi tutti gli Squishmallows insieme &rarr;</a></p>
+  <!-- TUTTE LE SERIE in ordine di uscita, DALLA PIÙ RECENTE: una serie nuova va aggiunta IN CIMA.
+       Una card per ogni serie: per aggiungerne una, copia l'esempio qui sotto,
+       togli i segni di commento e cambia cartella, foto e testi.
+       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi dei peluche).
+       Esempio:
+       <li data-cerca="nomi dei peluche"><a class="st-card" href="nome-cartella/index.html"><div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Squishmallows - Nome della serie</h2><p>12 peluche<br>2025</p><span class="st-apri">Apri</span></a></li>
+  -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
+  <ul class="st-cards">
+    <li data-cerca="FIFA World Cup 2026 Mondiali calcio maglia Monty Lindsay Clutch Zayu Maple Boyle Barella Nya Gordon Jim Cam Maui Benny Debra Avery Monica Donny Olma Waverly Jude Erica Dolan Winnie mascotte"><a class="st-card" href="squishmallows-fifa-2026/index.html"><div class="thumb"><img src="squishmallows-fifa-2026/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Squishmallows - FIFA World Cup 2026</h2><p>23 peluche<br>2026</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="2025 Cam Maritza Rorty Cookie Rossi Junie Zumirez Mirren Charles Halley Babs Stevon ghiandaia cane gatto cactus mostro fenicottero leopardo banana pipistrello cetriolino assolotto"><a class="st-card" href="squishmallows-2025/index.html"><div class="thumb"><img src="squishmallows-2025/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Squishmallows - 2025</h2><p>12 peluche<br>2025</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Halloween 2023 Drake Autumn Brock Wade Stump Bella vampiro gatto cane pipistrello lupo mannaro scheletro ragno"><a class="st-card" href="squishmallows-halloween-2023/index.html"><div class="thumb"><img src="squishmallows-halloween-2023/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Squishmallows - Halloween 2023</h2><p>6 peluche<br>2023</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="2023 musica Archie Cam Fifi Gordon Hans Kevin Maui Micaela Prince Winston assolotto gatto volpe squalo riccio koala ananas leopardo carlino gufo"><a class="st-card" href="squishmallows-2023/index.html"><div class="thumb"><img src="squishmallows-2023/immagini/copertina.webp?v=2" alt="" loading="lazy"></div><h2>Squishmallows - 2023</h2><p>10 peluche<br>2023</p><span class="st-apri">Apri</span></a></li>
+  </ul>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
+<!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
+     in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
+<script src="../../../script.js?v=8"></script>
+</body>
+</html>

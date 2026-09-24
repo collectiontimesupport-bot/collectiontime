@@ -51,6 +51,8 @@
      con lo spazio tra le due parole ristretto (word-spacing: più negativo = più vicine),
      nel carattere Legami (var(--font-legami)): nessun file in più, è già scaricato per la card Legami */
   .logo-coll.cool span { font-size: 1.8rem; white-space: nowrap; word-spacing: -.15em; }
+  /* card McDonald's: "McDonald's" su una riga, più piccolo (se no esce dalla card) */
+  .logo-coll.mcd span { font-size: 2.1rem; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -113,6 +115,14 @@
         <!-- logo scritto: --titolo = colore di "Lidl" (blu) -->
         <div class="logo-coll kinder" style="--titolo: #1d1d86" aria-hidden="true"><span>Lidl</span></div>
         <p>Le collezioni dei supermercati Lidl.</p>
+        <span class="st-apri">Apri</span>
+      </a>
+    </li>
+    <li data-cerca="McDonald's McDonalds Mc Happy Meal sorprese giocattoli Gadget The Minecraft Movie Creeper Steve Squishmallows peluche Lil McDonald's miniature Disneyland 70 Disney Hello Kitty Ninja Turtles Super Mario Stranger Things SpongeBob One Piece UNO Anime Naruto Back to School scuola Spider-Man Friends tazze bicchieri PLAYMOBIL Crayola Adopt Me Roblox Libri Grinch Little People Big Dreams TinyTAN BTS Care Bears Orsetti del Cuore Merry Grinchmas calze Back to School 2025 teli mare Minecraft Movie Meal Jurassic World dinosauri Sonic Mario Kart Cattivissimo Me 4 Minions Pet Simulator Panini Family Wiltopia Yu-Gi-Oh Dobble MultiVersus Elf on the Shelf Hot Wheels Karma palloni calcio pallavolo">
+      <a class="st-card" href="mcdonalds/index.html" aria-label="McDonald's">
+        <!-- logo scritto: --titolo = colore di "McDonald's" (rosso McDonald's) -->
+        <div class="logo-coll kinder mcd" style="--titolo: #DA291C" aria-hidden="true"><span>McDonald's</span></div>
+        <p>Happy Meal e gadget da collezione.</p>
         <span class="st-apri">Apri</span>
       </a>
     </li>

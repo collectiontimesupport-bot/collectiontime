@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Figure 3D · Collection Time</title>
+<meta name="description" content="Figure 3D: le serie di figure 3D, con quelle che ho e quelle che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Figure 3D · Collection Time">
+<meta property="og:description" content="Figure 3D: le serie di figure 3D, con quelle che ho e quelle che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/coolthings/figure-3d/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../sito.css?v=11">
+<style>
+  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  :root {
+    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+    --titolo: #1A2140; }   /* blu scuro del sito, quasi nero (il rosso è solo per Legami) */
+  /* Titolo in carattere di sistema molto grosso (nessun file da scaricare: pagina leggera) */
+  .st-titolo { font: 900 clamp(2rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
+  /* telefoni: titolo grande come nelle altre sezioni */
+  @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
+  /* Card con la foto IN ALTO, come nella sezione LEGO.
+     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
+  .st-card { --foto-h: 170px; }
+  .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
+  /* collegamento "Vedi tutte le figure insieme" (come nella home LEGO) */
+  .tutte-link { text-align: center; margin: -18px 0 28px; }
+  .tutte-link a { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--amber); color: var(--ink); font-weight: 600; text-decoration: none; }
+  .tutte-link a:hover { filter: brightness(1.06); }
+  .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
+</style>
+</head>
+<body>
+<!-- Banda in alto (logo, Esporta, Importa): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
+<main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Cool Things</a>
+  <!-- ! MODIFICA: titolo della pagina -->
+  <h1 class="st-titolo">FIGURE 3D</h1>
+  <!-- Frase + lente: la lente apre il campo per cercare tra le serie (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Cerca una serie</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una serie" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una serie" aria-label="Cerca una serie" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
+  <!-- collegamento alla pagina con TUTTE le figure insieme (cartella "tutti") -->
+  <p class="tutte-link"><a href="tutti/index.html">Vedi tutte le figure insieme &rarr;</a></p>
+  <!-- TUTTE LE SERIE in ordine di uscita, DALLA PIÙ RECENTE: una serie nuova va aggiunta IN CIMA.
+       Una card per ogni serie: per aggiungerne una, copia l'esempio qui sotto,
+       togli i segni di commento e cambia cartella, foto e testi.
+       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi delle figure).
+       Esempio:
+       <li data-cerca="nomi delle figure"><a class="st-card" href="nome-cartella/index.html"><div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Nome della serie</h2><p>numero di figure</p><span class="st-apri">Apri</span></a></li>
+  -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
+  <ul class="st-cards">
+    <li data-cerca="Ninja Turtles Leonardo con le spade Donatello sorridente Michelangelo con i nunchaku Michelangelo con la pizza Raffaello sorridente Leonardo Raffaello con i sai Donatello con il bastone Splinter 2026"><a class="st-card" href="ninja-turtles/index.html"><div class="thumb"><img src="ninja-turtles/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Ninja Turtles</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Fall Guys Cactus Pigeon Sprinkles La Luz French Fries Feisty Dwarf Twoo Pineapple Hotrod Flames 2026"><a class="st-card" href="fall-guys/index.html"><div class="thumb"><img src="fall-guys/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Fall Guys</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Garfield Garfield con il sorriso gigante Garfield che parla Garfield con il cuore Garfield sdraiato Garfield a braccia conserte Garfield a braccia alzate Garfield annoiato Garfield che alza le spalle 2026"><a class="st-card" href="garfield/index.html"><div class="thumb"><img src="garfield/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Garfield</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Care Bears Besties Orsetta rosa che fa l'occhiolino Grumpy Bear Orsetto giallo con la stella Tenderheart Bear Orsetta viola con il pianeta Cheer Bear Secret Bear Orsetto Terra con l'arcobaleno 2026"><a class="st-card" href="care-bears-besties/index.html"><div class="thumb"><img src="care-bears-besties/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Care Bears Besties</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Scooby-Doo Scooby-Doo seduto Daphne Scooby-Doo Shaggy Scooby-Doo in piedi Velma Scooby-Doo con la lente Fred Mystery Machine 2026"><a class="st-card" href="scooby-doo/index.html"><div class="thumb"><img src="scooby-doo/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Scooby-Doo</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Cartoon Network Original Mix Edd (Doppia D) Mucca Eddy Johnny Bravo Leone il cane fifone Dexter Ed Dee Dee Pollo 2026"><a class="st-card" href="cartoon-network-original-mix/index.html"><div class="thumb"><img src="cartoon-network-original-mix/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Cartoon Network Original Mix</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Regular Show Margaret Skips Mordecai Eileen Hi Five Ghost Pops Rigby Muscle Man Benson 2026"><a class="st-card" href="regular-show/index.html"><div class="thumb"><img src="regular-show/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Regular Show</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Over the Garden Wall Wirt con Beatrice Greg con la rana Rana nella teiera Wirt Greg con la teiera Beatrice Il Taglialegna 2026"><a class="st-card" href="over-the-garden-wall/index.html"><div class="thumb"><img src="over-the-garden-wall/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Over the Garden Wall</h2><p>7 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Hello Kitty Pajama Party Pompompurin scimmietta Hello Kitty koala Hello Kitty unicorno Kuromi pipistrello My Melody coniglietta My Melody giraffa Cinnamoroll orsetto Kuromi gatto 2026"><a class="st-card" href="hello-kitty-pajama-party/index.html"><div class="thumb"><img src="hello-kitty-pajama-party/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Hello Kitty Pajama Party</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Paw Patrol Rubble Skye Zuma Rocky Liberty Chase Everest Marshall 2026"><a class="st-card" href="paw-patrol/index.html"><div class="thumb"><img src="paw-patrol/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Paw Patrol</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Hello Kitty Yoga Hello Kitty Kuromi My Melody Cinnamoroll Kerokerokeroppi Pompompurin Bad Badtz-Maru 2026"><a class="st-card" href="hello-kitty-yoga/index.html"><div class="thumb"><img src="hello-kitty-yoga/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Hello Kitty Yoga</h2><p>11 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Teen Titans Go! Raven Starfire Red X Cyborg Beast Boy Robin Trigon 2025"><a class="st-card" href="teen-titans-go/index.html"><div class="thumb"><img src="teen-titans-go/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Teen Titans Go!</h2><p>10 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="The Amazing World of Gumball Tobias Darwin Anais Gumball Nicole Richard Banana Joe Darwin a testa in giù 2026"><a class="st-card" href="gumball/index.html"><div class="thumb"><img src="gumball/immagini/copertina.webp" alt="" loading="lazy"></div><h2>The Amazing World of Gumball</h2><p>10 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Molang Pajanimals Squalo Coniglio Pipistrello Cervo Unicorno Rana Ape Pinguino Orso Criceto Gatto Topo 2026"><a class="st-card" href="molang-pajanimals/index.html"><div class="thumb"><img src="molang-pajanimals/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Molang Pajanimals</h2><p>12 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Hello Kitty Japanese Food Kuromi con i dango Hello Kitty in kimono Kuromi nella ciotola Kuromi in kimono bianco My Melody nella ciotola My Melody con i dango Hello Kitty nella ciotola Hello Kitty con la granita Kuromi che fa l'occhiolino My Melody con il dolcetto 2026"><a class="st-card" href="hello-kitty-japanese-food/index.html"><div class="thumb"><img src="hello-kitty-japanese-food/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Hello Kitty Japanese Food</h2><p>10 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Hello Kitty Summer Time Cinnamoroll Kerokerokeroppi Bad Badtz-Maru Hello Kitty con la tavola da surf Kuromi sdraiata My Melody sdraiata My Melody sulla sdraio Hello Kitty con il salvagente Kuromi sulla sdraio Pompompurin sdraiato 2026"><a class="st-card" href="hello-kitty-summer-time/index.html"><div class="thumb"><img src="hello-kitty-summer-time/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Hello Kitty Summer Time</h2><p>10 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Harry Potter Buddies Silente Voldemort Harry Potter Dobby Severus Piton Sirius Black Ron Weasley Hermione Draco Malfoy 2024"><a class="st-card" href="harry-potter/index.html"><div class="thumb"><img src="harry-potter/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Harry Potter Buddies</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="South Park Cartman Cows Cartman con la tuta arancione Cartman con Clyde Frog Cartman in smoking Cartman con la torta Cartman in canottiera Cartman con gli occhiali Cartman Chase Model Cartman poliziotto Cartman Burger Cartman con gli occhiali da sole 2025"><a class="st-card" href="south-park/index.html"><div class="thumb"><img src="south-park/immagini/copertina.webp" alt="" loading="lazy"></div><h2>South Park</h2><p>11 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="SpongeBob SpongeBob con gli occhiali da sole Patrick con la lingua fuori SpongeBob Squiddi Mr. Krab SpongeBob con gli occhiali Patrick 2025"><a class="st-card" href="spongebob/index.html"><div class="thumb"><img src="spongebob/immagini/copertina.webp" alt="" loading="lazy"></div><h2>SpongeBob</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Tokidoki Donutella Bombolini Charlotte Donutella &amp; Dolce Biscotti Super Donutella Choco Ninja Creamolo Donutino Caramella Split Wafflelina Sprinkle Cycle 2026"><a class="st-card" href="tokidoki-donutella/index.html"><div class="thumb"><img src="tokidoki-donutella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Tokidoki Donutella</h2><p>12 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Cinnamoroll Friends Pompompurin Kuromi Kerokerokeroppi Kiki Lala Hello Kitty My Melody Bad Badtz-Maru 2026"><a class="st-card" href="cinnamoroll-friends/index.html"><div class="thumb"><img src="cinnamoroll-friends/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Cinnamoroll Friends</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Hello Kitty Sweet Times Cinnamoroll My Melody Kerokerokeroppi Kuromi Hello Kitty nel cupcake Pompompurin Bad Badtz-Maru Hello Kitty ghiacciolo 2025"><a class="st-card" href="hello-kitty-sweet-times/index.html"><div class="thumb"><img src="hello-kitty-sweet-times/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Hello Kitty Sweet Times</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Hello Kitty Tutty Frutty My Melody mela Hello Kitty arancia Kuromi uva Kuromi Pompompurin carambola Cinnamoroll anguria Cinnamoroll ananas Hello Kitty kiwi My Melody fragola 2025"><a class="st-card" href="hello-kitty-tutty-frutty/index.html"><div class="thumb"><img src="hello-kitty-tutty-frutty/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Hello Kitty Tutty Frutty</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Ben 10 Omniverse Rook Azmuth Ben Diamondhead Rath Mayaxx Fourarms Humungousaur Implants 2025"><a class="st-card" href="ben-10-omniverse/index.html"><div class="thumb"><img src="ben-10-omniverse/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Ben 10 Omniverse</h2><p>10 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Tokidoki Moofia Breakfast Besties Study Buddy Strawberry Milk Mozzarella Juicy Juice Berry Jamz Latte Bee Sweet Tokipops Bulletto Pup Tart Macchiato PB Boy Nana 2025"><a class="st-card" href="tokidoki-moofia/index.html"><div class="thumb"><img src="tokidoki-moofia/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Tokidoki Moofia Breakfast Besties</h2><p>13 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Hello Kitty Western My Melody con il cappello bianco Kuromi che fa l'occhiolino Hello Kitty con il cappello marrone Kuromi Hello Kitty My Melody sulla cassa Hello Kitty sul cavallo a dondolo My Melody con il cappello blu Kuromi nello stivale 2025"><a class="st-card" href="hello-kitty-western/index.html"><div class="thumb"><img src="hello-kitty-western/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Hello Kitty Western</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Tokidoki Till Death Do Us Part Adieu Sayo Nara Adios con il fiore Scheletro glow in the dark Ciao Ciao Skeletrina Skeletrino Adios con la falce 2025"><a class="st-card" href="tokidoki-till-death/index.html"><div class="thumb"><img src="tokidoki-till-death/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Tokidoki Till Death Do Us Part</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Steven Universe Steven Diamante Bianco Bismuto Lapislazuli Ametista Leone Garnet Peridot Perla Diaspro"><a class="st-card" href="steven-universe/index.html"><div class="thumb"><img src="steven-universe/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Steven Universe</h2><p>10 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Adventure Time Principessa dello Spazio Bitorzoluto BMO Gunter Jake Tronchetta Principessa Fiamma Principessa Gommarosa Marceline Re Ghiaccio Finn"><a class="st-card" href="adventure-time/index.html"><div class="thumb"><img src="adventure-time/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Adventure Time</h2><p>10 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Tokidoki Cactus Friends Sabochan SANDy Bruttino Truffle Cactus Dog Carina Dreamer Polpettina Cactus Rocker 2025"><a class="st-card" href="tokidoki-cactus-friends/index.html"><div class="thumb"><img src="tokidoki-cactus-friends/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Tokidoki Cactus Friends</h2><p>9 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="DC Justice League Joker Lanterna Verde Pinguino Wonder Woman Harley Quinn Flash Superman Batman 2024"><a class="st-card" href="dc-justice-league/index.html"><div class="thumb"><img src="dc-justice-league/immagini/copertina.webp" alt="" loading="lazy"></div><h2>DC Justice League</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Molang Buddies Avocado Ananas Cupcake Hot dog Ciliegia Patatine Hamburger Popcorn 2024"><a class="st-card" href="molang-charm-friends/index.html"><div class="thumb"><img src="molang-charm-friends/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Molang Buddies</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Pudgy Penguins Pengu con il cuore GM Pengu con il telefono Pengu pescatore Pengu nella ciotola Pengu abbraccio Pengu con il fiore Pengu con il salvagente Pengu con il pesce Pengu con il bubble tea Pengu travestito da gallina Pengu travestito da squalo Pengu cuoco"><a class="st-card" href="pudgy-penguins/index.html"><div class="thumb"><img src="pudgy-penguins/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Pudgy Penguins</h2><p>12 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Tasty Mao Mao sulla coscia di pollo Mao nelle patatine Mao con la crocchetta Mao con la pizza Mao nell'hot dog Mao nel panino Mao sull'hamburger Mao dorato Mao con i gattini nell'hamburger Mao nella scatola del menu Mao nel secchiello di pollo Mao con il sombrero"><a class="st-card" href="tasty-mao/index.html"><div class="thumb"><img src="tasty-mao/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Tasty Mao</h2><p>12 figure</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Snoopy Snoopy scout Snoopy seduto Snoopy mascherato Snoopy con la ciotola Snoopy con Woodstock Snoopy aviatore Snoopy Snoopy giocatore di baseball"><a class="st-card" href="snoopy/index.html"><div class="thumb"><img src="snoopy/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Snoopy</h2><p>8 figure</p><span class="st-apri">Apri</span></a></li>
+  </ul>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
+<!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
+     in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
+<script src="../../script.js?v=8"></script>
+</body>
+</html>

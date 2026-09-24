@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Gadget · Collection Time</title>
+<meta name="description" content="Gadget McDonald's: gli oggetti da collezione, con quelli che ho e quelli che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gadget · Collection Time">
+<meta property="og:description" content="Gadget McDonald's: gli oggetti da collezione, con quelli che ho e quelli che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/mcdonalds/gadget/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../sito.css?v=11">
+<style>
+  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  :root {
+    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+    --titolo: #1A2140; }   /* blu scuro del sito, quasi nero (il rosso è solo per Legami) */
+  /* Titolo in carattere di sistema molto grosso (nessun file da scaricare: pagina leggera) */
+  .st-titolo { font: 900 clamp(2rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
+  /* telefoni: titolo grande come nelle altre sezioni */
+  @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
+  /* Card con la foto IN ALTO, come nella sezione LEGO.
+     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
+  .st-card { --foto-h: 170px; }
+  .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
+  .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
+</style>
+</head>
+<body>
+<!-- Banda in alto (logo, Esporta, Importa): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
+<main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; McDonald's</a>
+  <!-- ! MODIFICA: titolo della pagina -->
+  <h1 class="st-titolo">GADGET</h1>
+  <!-- Frase + lente: la lente apre il campo per cercare tra le serie (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Cerca una serie</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una serie" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una serie" aria-label="Cerca una serie" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
+  <!-- TUTTE LE SERIE in ordine di uscita, DALLA PIÙ RECENTE: una serie nuova va aggiunta IN CIMA.
+       Una card per ogni serie: per aggiungerne una, copia l'esempio qui sotto,
+       togli i segni di commento e cambia cartella, foto e testi.
+       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi delle sorprese).
+       Esempio:
+       <li data-cerca="nomi delle sorpresine"><a class="st-card" href="nome-cartella/index.html"><div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Nome della serie</h2><p>Anno · numero di sorpresine</p><span class="st-apri">Apri</span></a></li>
+  -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
+  <ul class="st-cards">
+    <li data-cerca="Back to School 2026 scuola astucci penne righelli matite segnapagina toppa etichette gatto cane coniglio"><a class="st-card" href="back-to-school-2026/index.html"><div class="thumb"><img src="back-to-school-2026/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Back to School 2026</h2><p>18 gadget<br>2026</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Spider-Man statuine insegna Marvel"><a class="st-card" href="spider-man-brand-new-day/index.html"><div class="thumb"><img src="spider-man-brand-new-day/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Spider-Man: Brand New Day</h2><p>4 statuine<br>2026 · Estero</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Super Mario monete Fiore di fuoco Luma Yoshi Nintendo"><a class="st-card" href="super-mario-galaxy-monete/index.html"><div class="thumb"><img src="super-mario-galaxy-monete/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>The Super Mario Galaxy Movie - Monete</h2><p>4 monete<br>2026 · Estero</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Mondiali calcio bicchieri Ronaldinho Son Lamine Yamal Henry Grimace Beckham"><a class="st-card" href="fifa-world-cup-2026-bicchieri/index.html"><div class="thumb"><img src="fifa-world-cup-2026-bicchieri/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>FIFA World Cup 2026 - Bicchieri</h2><p>6 bicchieri<br>2026</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Friends personaggi Ross Monica Chandler Rachel Joey Phoebe menu Large"><a class="st-card" href="friends-personaggi/index.html"><div class="thumb"><img src="friends-personaggi/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Friends - Personaggi</h2><p>6 personaggi<br>2026</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Friends tazze Central Perk fontana divano cornice"><a class="st-card" href="friends-tazze/index.html"><div class="thumb"><img src="friends-tazze/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Friends - Tazze</h2><p>4 tazze<br>2026</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Merry Grinchmas Grinch calze calzini spaiate Natale Box"><a class="st-card" href="merry-grinchmas-calze/index.html"><div class="thumb"><img src="merry-grinchmas-calze/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Merry Grinchmas - Calze</h2><p>1 paio di calze<br>2025</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Back to School 2025 kit scuola astuccio righello matite matita arcobaleno maxi matita evidenziatore segnalibri adesivi etichette tag zaino Driiin"><a class="st-card" href="back-to-school-2025/index.html"><div class="thumb"><img src="back-to-school-2025/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Back to School 2025</h2><p>8 gadget<br>2025</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Minecraft Movie Meal Un film Minecraft Zombie Hamburglar Grimace Egg Birdie Wings Fry Helmet Soda Potion Big Mac Crystal skin"><a class="st-card" href="the-minecraft-movie-meal/index.html"><div class="thumb"><img src="the-minecraft-movie-meal/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>The Minecraft Movie Meal</h2><p>6 gadget<br>2025</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Teli mare telo spiaggia asciugamano estate Go Big Stay fresh On fire So cool Big Mac bibita patatine gelato cono Happy Meal"><a class="st-card" href="teli-mare/index.html"><div class="thumb"><img src="teli-mare/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Teli mare</h2><p>8 teli</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Palloni pallone calcio pallavolo volley Vivi l'estate a palla Menu a Palla estate"><a class="st-card" href="palloni/index.html"><div class="thumb"><img src="palloni/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Palloni</h2><p>2 palloni</p><span class="st-apri">Apri</span></a></li>
+  </ul>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
+<!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
+     in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
+<script src="../../script.js?v=8"></script>
+</body>
+</html>

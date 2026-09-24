@@ -1,0 +1,299 @@
+<!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
+<!-- =====================================================================
+     DISNEYLAND 70 (McDonald's Happy Meal, 2025) — pagina della collezione
+     ---------------------------------------------------------------------
+     Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI ed
+                              ELENCO DEI GIOCHI (le uniche parti da
+                              toccare per aggiungere o cambiare giochi)
+       immagini/            ← le foto in WebP trasparente (01.webp, 02.webp…)
+                              e copertina.webp (la foto della card)
+       (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
+        collezioni, e in mcdonalds/css/stile.css, UNO per tutte le serie McDonald's;
+        il funzionamento, app.js, sta nella cartella "comune" del sito)
+
+     ▸ PER UNA NUOVA SERIE: copia questa cartella, cambia titolo,
+       IMPOSTAZIONI ed ELENCO qui in fondo e aggiungi la sua card
+       in ../index.html (in cima: dalla serie più recente).
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Disneyland 70 · Collection Time</title>
+<meta name="description" content="Happy Meal McDonald's Disneyland 70 (2025): i 70 giochi per i 70 anni di Disneyland, con quelli che ho e quelli che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Disneyland 70 · Collection Time">
+<meta property="og:description" content="Happy Meal McDonald's Disneyland 70 (2025): i 70 giochi per i 70 anni di Disneyland, con quelli che ho e quelli che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/mcdonalds/happy-meal/disneyland-70/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../../sito.css?v=11">
+
+<!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie McDonald's -->
+<!-- "?v=…" è il numero di versione: quando cambi un file .js o .css aumentalo (v=1 → v=2)
+     in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
+<link rel="stylesheet" href="../../../comune/collezione.css?v=5">
+<link rel="stylesheet" href="../../css/stile.css?v=2">
+</head>
+<body>
+
+<!-- Header del sito: viene riempito con header.html da ../../../script.js -->
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <!-- Link per tornare alla pagina Happy Meal -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Happy Meal</a>
+
+  <!-- ============ TITOLO E STRUMENTI ============ -->
+  <header>
+    <!-- titolo scritto (questa serie non ha un logo): va anche nel PDF -->
+    <!-- ! MODIFICA: titolo della pagina -->
+    <h1 id="pageTitle"><span class="titolo-testo">DISNEYLAND 70</span></h1>
+    <div class="bar">
+      <!-- "5 posseduti su 70": il testo lo scrive app.js -->
+      <p class="sub" id="count"></p>
+      <div class="tools">
+        <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
+        <div class="st-cerca" id="stCerca">
+          <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <!-- Filtro: tutti / posseduti / mancanti -->
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutti</option>
+          <option value="owned" id="optOwned">Ce li ho</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <!-- Ordine: dalla n° 1 o al contrario -->
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dal primo</option>
+          <option value="desc">Dal più recente</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ GRIGLIA DEI GIOCHI ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni gioco
+       dell'ELENCO DEI GIOCHI (in fondo a questa pagina). -->
+  <ul class="grid" id="grid"></ul>
+
+  <!-- Messaggi quando non c'è nulla da mostrare -->
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p>Non ci sono ancora elementi in questa collezione.</p>
+  </section>
+
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       Esporta e Importa sono nella banda in alto e valgono per tutto il sito. -->
+  <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (gioco, sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
+    <p class="hint">Premi su un gioco per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
+    <button class="btn" id="btnPrint" type="button">Stampa</button>
+  </footer>
+</div>
+
+<!-- Footer del sito: viene riempito con footer.html da ../../../script.js -->
+<div id="footer-placeholder"></div>
+
+
+<!-- ============ FINESTRA "STAMPA" ============ -->
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Verrà creato un PDF da salvare o stampare.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutti i giochi, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="missing">
+      <span><strong>Quelli che mi mancano</strong> (<span id="cnt-missing"></span>)<small>Solo ciò che non hai ancora segnato, con il quadratino vuoto.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong>Tutti i giochi</strong> (<span id="cnt-all"></span>)<small>Tutto l'elenco con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn primary" id="printGo">Crea PDF</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ FINESTRA "DETTAGLI" (si apre con ✎) ============ -->
+<dialog id="dlg">
+  <form id="editForm">
+    <!-- foto grande -->
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
+    <div class="dlg-body">
+      <!-- Anno e Numero (fissi, non si modificano) -->
+      <div class="trio">
+        <div class="field"><span id="lblCodice">Anno</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
+      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+/* =====================================================================
+   IMPOSTAZIONI DELLA COLLEZIONE
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra serie basta
+   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
+   ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
+const CONFIG = {
+  id: "mcdonalds-happy-meal-disneyland-70",             // nome usato nei PDF
+  dbName: "catalogo-mcdonalds-happy-meal-disneyland-70", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "Disneyland 70",              // titolo della scheda del browser e del PDF
+  nome: "gioco",              // come si chiama un elemento
+  possedute: "posseduti",          // "5 posseduti su 70"
+  colonne: 8,                     // elementi per fila sugli schermi larghi (70 in 9 file)
+  proporzione: 1,                  // altezza ÷ larghezza di una foto (le foto sono quadrate)
+  pdfColonne: 8,                   // elementi per fila nel PDF
+  pdfFile: 3,                      // file per pagina del PDF (24 per pagina: 70 giochi = 3 pagine)
+  suggerimenti: ["Disney", "Pixar", "Marvel", "Star Wars"], // hashtag proposti nei dettagli; [] = nessuno
+  mostraNomi: true                 // nome scritto sotto ogni gioco (ogni gioco ha un nome)
+};
+
+/* =====================================================================
+   ELENCO DEI GIOCHI  ★ QUI SI AGGIUNGONO O CAMBIANO ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è UN gioco, nello stesso ordine della pagina
+   (stesso ordine della foto di gruppo).
+
+   I CAMPI
+     id        codice unico: "happy-meal-disneyland-70-01", "happy-meal-disneyland-70-02"…
+               Serve al browser per ricordare se ce l'hai: non cambiarlo
+               e non usare lo stesso id due volte.
+     numero    numero del gioco nella serie ("01" … "70")
+     codice    codice dell'oggetto: se non c'è un codice, metti l'anno
+               (qui c'è l'anno di uscita: nei dettagli si legge "Anno")
+     nome      nome del gioco
+     foto      percorso della foto: "immagini/NOMEFILE.webp?v=2"
+               "?v=2" obbliga il browser a scaricare la foto nuova: se
+               sostituisci un file con uno con lo stesso nome, aumentalo (v=3…)
+     hashtag   es. ["Disney"], ["Pixar"], ["Marvel"], ["Star Wars"] — facoltativo
+     info      informazioni fisse — facoltativo
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…".
+   ===================================================================== */
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  { id: "happy-meal-disneyland-70-01", numero: "01", codice: "2025", nome: "Malefica", foto: "immagini/01.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-02", numero: "02", codice: "2025", nome: "Iron Man", foto: "immagini/02.webp?v=1", hashtag: ["Marvel"] },
+  { id: "happy-meal-disneyland-70-03", numero: "03", codice: "2025", nome: "Alieno", foto: "immagini/03.webp?v=1", hashtag: ["Pixar"], info: "Toy Story" },
+  { id: "happy-meal-disneyland-70-04", numero: "04", codice: "2025", nome: "Dumbo", foto: "immagini/04.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-05", numero: "05", codice: "2025", nome: "Tiana", foto: "immagini/05.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-06", numero: "06", codice: "2025", nome: "Scorza", foto: "immagini/06.webp?v=1", hashtag: ["Pixar"], info: "Alla ricerca di Nemo" },
+  { id: "happy-meal-disneyland-70-07", numero: "07", codice: "2025", nome: "Minni", foto: "immagini/07.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-08", numero: "08", codice: "2025", nome: "Castello della Bella Addormentata d'oro", foto: "immagini/08.webp?v=1", hashtag: ["Disney"], info: "Castello d'oro del 70° anniversario" },
+  { id: "happy-meal-disneyland-70-09", numero: "09", codice: "2025", nome: "Topolino", foto: "immagini/09.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-10", numero: "10", codice: "2025", nome: "Castello della Bella Addormentata", foto: "immagini/10.webp?v=1", hashtag: ["Disney"], info: "Castello rosa del 70° anniversario" },
+  { id: "happy-meal-disneyland-70-11", numero: "11", codice: "2025", nome: "Aurora", foto: "immagini/11.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-12", numero: "12", codice: "2025", nome: "Darth Vader", foto: "immagini/12.webp?v=1", hashtag: ["Star Wars"] },
+  { id: "happy-meal-disneyland-70-13", numero: "13", codice: "2025", nome: "Baymax", foto: "immagini/13.webp?v=1", hashtag: ["Disney"], info: "Big Hero 6" },
+  { id: "happy-meal-disneyland-70-14", numero: "14", codice: "2025", nome: "Bing Bong", foto: "immagini/14.webp?v=1", hashtag: ["Pixar"], info: "Inside Out" },
+  { id: "happy-meal-disneyland-70-15", numero: "15", codice: "2025", nome: "Pippo", foto: "immagini/15.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-16", numero: "16", codice: "2025", nome: "Mike Wazowski", foto: "immagini/16.webp?v=1", hashtag: ["Pixar"], info: "Monsters & Co." },
+  { id: "happy-meal-disneyland-70-17", numero: "17", codice: "2025", nome: "Mr. Incredibile", foto: "immagini/17.webp?v=1", hashtag: ["Pixar"], info: "Gli Incredibili" },
+  { id: "happy-meal-disneyland-70-18", numero: "18", codice: "2025", nome: "Rey", foto: "immagini/18.webp?v=1", hashtag: ["Star Wars"], info: "Con il Millennium Falcon" },
+  { id: "happy-meal-disneyland-70-19", numero: "19", codice: "2025", nome: "La Bestia", foto: "immagini/19.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-20", numero: "20", codice: "2025", nome: "Saetta McQueen", foto: "immagini/20.webp?v=1", hashtag: ["Pixar"], info: "Cars" },
+  { id: "happy-meal-disneyland-70-21", numero: "21", codice: "2025", nome: "Flounder", foto: "immagini/21.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-22", numero: "22", codice: "2025", nome: "Tristezza", foto: "immagini/22.webp?v=1", hashtag: ["Pixar"], info: "Inside Out" },
+  { id: "happy-meal-disneyland-70-23", numero: "23", codice: "2025", nome: "Ansia", foto: "immagini/23.webp?v=1", hashtag: ["Pixar"], info: "Inside Out 2" },
+  { id: "happy-meal-disneyland-70-24", numero: "24", codice: "2025", nome: "Paperino", foto: "immagini/24.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-25", numero: "25", codice: "2025", nome: "Biancaneve", foto: "immagini/25.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-26", numero: "26", codice: "2025", nome: "Cricchetto", foto: "immagini/26.webp?v=1", hashtag: ["Pixar"], info: "Cars" },
+  { id: "happy-meal-disneyland-70-27", numero: "27", codice: "2025", nome: "R2-D2", foto: "immagini/27.webp?v=1", hashtag: ["Star Wars"] },
+  { id: "happy-meal-disneyland-70-28", numero: "28", codice: "2025", nome: "Pluto", foto: "immagini/28.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-29", numero: "29", codice: "2025", nome: "Ahsoka Tano", foto: "immagini/29.webp?v=1", hashtag: ["Star Wars"] },
+  { id: "happy-meal-disneyland-70-30", numero: "30", codice: "2025", nome: "Trilli", foto: "immagini/30.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-31", numero: "31", codice: "2025", nome: "Kylo Ren", foto: "immagini/31.webp?v=1", hashtag: ["Star Wars"] },
+  { id: "happy-meal-disneyland-70-32", numero: "32", codice: "2025", nome: "Timon", foto: "immagini/32.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-33", numero: "33", codice: "2025", nome: "Miguel", foto: "immagini/33.webp?v=1", hashtag: ["Pixar"], info: "Coco" },
+  { id: "happy-meal-disneyland-70-34", numero: "34", codice: "2025", nome: "Mufasa", foto: "immagini/34.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-35", numero: "35", codice: "2025", nome: "Lilo", foto: "immagini/35.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-36", numero: "36", codice: "2025", nome: "Jack-Jack", foto: "immagini/36.webp?v=1", hashtag: ["Pixar"], info: "Gli Incredibili" },
+  { id: "happy-meal-disneyland-70-37", numero: "37", codice: "2025", nome: "BB-8", foto: "immagini/37.webp?v=1", hashtag: ["Star Wars"] },
+  { id: "happy-meal-disneyland-70-38", numero: "38", codice: "2025", nome: "Nebula", foto: "immagini/38.webp?v=1", hashtag: ["Marvel"] },
+  { id: "happy-meal-disneyland-70-39", numero: "39", codice: "2025", nome: "Nick Wilde", foto: "immagini/39.webp?v=1", hashtag: ["Disney"], info: "Zootropolis" },
+  { id: "happy-meal-disneyland-70-40", numero: "40", codice: "2025", nome: "Judy Hopps", foto: "immagini/40.webp?v=1", hashtag: ["Disney"], info: "Zootropolis" },
+  { id: "happy-meal-disneyland-70-41", numero: "41", codice: "2025", nome: "Boo", foto: "immagini/41.webp?v=1", hashtag: ["Pixar"], info: "Monsters & Co." },
+  { id: "happy-meal-disneyland-70-42", numero: "42", codice: "2025", nome: "Cip e Ciop", foto: "immagini/42.webp?v=1", hashtag: ["Disney"], info: "Nella tazza da tè" },
+  { id: "happy-meal-disneyland-70-43", numero: "43", codice: "2025", nome: "Dory", foto: "immagini/43.webp?v=1", hashtag: ["Pixar"], info: "Alla ricerca di Dory" },
+  { id: "happy-meal-disneyland-70-44", numero: "44", codice: "2025", nome: "Mirabel", foto: "immagini/44.webp?v=1", hashtag: ["Disney"], info: "Encanto" },
+  { id: "happy-meal-disneyland-70-45", numero: "45", codice: "2025", nome: "Sulley", foto: "immagini/45.webp?v=1", hashtag: ["Pixar"], info: "Monsters & Co." },
+  { id: "happy-meal-disneyland-70-46", numero: "46", codice: "2025", nome: "Crudelia De Mon", foto: "immagini/46.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-47", numero: "47", codice: "2025", nome: "Paperina", foto: "immagini/47.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-48", numero: "48", codice: "2025", nome: "Stitch", foto: "immagini/48.webp?v=1", hashtag: ["Disney"], info: "Lilo & Stitch" },
+  { id: "happy-meal-disneyland-70-49", numero: "49", codice: "2025", nome: "Elsa", foto: "immagini/49.webp?v=1", hashtag: ["Disney"], info: "Frozen" },
+  { id: "happy-meal-disneyland-70-50", numero: "50", codice: "2025", nome: "Vaiana", foto: "immagini/50.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-51", numero: "51", codice: "2025", nome: "Vedova Nera", foto: "immagini/51.webp?v=1", hashtag: ["Marvel"] },
+  { id: "happy-meal-disneyland-70-52", numero: "52", codice: "2025", nome: "Groot", foto: "immagini/52.webp?v=1", hashtag: ["Marvel"], info: "Guardiani della Galassia" },
+  { id: "happy-meal-disneyland-70-53", numero: "53", codice: "2025", nome: "Chewbacca", foto: "immagini/53.webp?v=1", hashtag: ["Star Wars"], info: "Con il Millennium Falcon" },
+  { id: "happy-meal-disneyland-70-54", numero: "54", codice: "2025", nome: "Isabela", foto: "immagini/54.webp?v=1", hashtag: ["Disney"], info: "Encanto" },
+  { id: "happy-meal-disneyland-70-55", numero: "55", codice: "2025", nome: "Anna", foto: "immagini/55.webp?v=1", hashtag: ["Disney"], info: "Frozen" },
+  { id: "happy-meal-disneyland-70-56", numero: "56", codice: "2025", nome: "Pantera Nera", foto: "immagini/56.webp?v=1", hashtag: ["Marvel"] },
+  { id: "happy-meal-disneyland-70-57", numero: "57", codice: "2025", nome: "Boba Fett", foto: "immagini/57.webp?v=1", hashtag: ["Star Wars"] },
+  { id: "happy-meal-disneyland-70-58", numero: "58", codice: "2025", nome: "Ariel", foto: "immagini/58.webp?v=1", hashtag: ["Disney"], info: "La Sirenetta" },
+  { id: "happy-meal-disneyland-70-59", numero: "59", codice: "2025", nome: "Frozone", foto: "immagini/59.webp?v=1", hashtag: ["Pixar"], info: "Gli Incredibili" },
+  { id: "happy-meal-disneyland-70-60", numero: "60", codice: "2025", nome: "Regina Cattiva", foto: "immagini/60.webp?v=1", hashtag: ["Disney"], info: "Biancaneve" },
+  { id: "happy-meal-disneyland-70-61", numero: "61", codice: "2025", nome: "Nemo", foto: "immagini/61.webp?v=1", hashtag: ["Pixar"], info: "Alla ricerca di Nemo" },
+  { id: "happy-meal-disneyland-70-62", numero: "62", codice: "2025", nome: "Hatbox Ghost", foto: "immagini/62.webp?v=1", hashtag: ["Disney"], info: "Il fantasma con la cappelliera della Haunted Mansion" },
+  { id: "happy-meal-disneyland-70-63", numero: "63", codice: "2025", nome: "Rapunzel", foto: "immagini/63.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-64", numero: "64", codice: "2025", nome: "Thanos", foto: "immagini/64.webp?v=1", hashtag: ["Marvel"] },
+  { id: "happy-meal-disneyland-70-65", numero: "65", codice: "2025", nome: "Stormtrooper", foto: "immagini/65.webp?v=1", hashtag: ["Star Wars"] },
+  { id: "happy-meal-disneyland-70-66", numero: "66", codice: "2025", nome: "Clarabella", foto: "immagini/66.webp?v=1", hashtag: ["Disney"] },
+  { id: "happy-meal-disneyland-70-67", numero: "67", codice: "2025", nome: "Simba", foto: "immagini/67.webp?v=1", hashtag: ["Disney"], info: "Il Re Leone" },
+  { id: "happy-meal-disneyland-70-68", numero: "68", codice: "2025", nome: "Rex", foto: "immagini/68.webp?v=1", hashtag: ["Pixar"], info: "Toy Story" },
+  { id: "happy-meal-disneyland-70-69", numero: "69", codice: "2025", nome: "Okoye", foto: "immagini/69.webp?v=1", hashtag: ["Marvel"], info: "Black Panther" },
+  { id: "happy-meal-disneyland-70-70", numero: "70", codice: "2025", nome: "Olaf", foto: "immagini/70.webp?v=1", hashtag: ["Disney"], info: "Frozen" },
+];
+</script>
+
+<!-- Banda in alto e in basso, ricerca, avvisi, Esporta/Importa: comuni a tutto il sito -->
+<script src="../../../script.js?v=8"></script>
+<!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
+<script src="../../../comune/app.js?v=22"></script>
+</body>
+</html>
