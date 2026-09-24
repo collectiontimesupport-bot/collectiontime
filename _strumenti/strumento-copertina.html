@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strumento copertina · Collection Time</title>
+<meta name="robots" content="noindex">
+<!-- =====================================================================
+     STRUMENTO PER CREARE LA COPERTINA DI UNA CARD (copertina.webp)
+     Funziona da solo, anche senza Internet: aprilo con doppio clic.
+     Usa Chrome (Safari non sa salvare in .webp e salverebbe un .png).
+
+     COME SI USA
+     1. Premi "Scegli le immagini" e seleziona 2, 3 o 4 immagini già
+        scontornate (senza sfondo), per esempio da .../immagini/01.webp
+        di serie diverse. L'ordine è quello in cui le scegli
+        (se non ti piace, usa le frecce ◀ ▶ sotto ogni immagine).
+     2. Guarda l'anteprima: quella in mezzo sta davanti alle altre.
+     3. Premi "Scarica copertina.webp" e mettila nella cartella
+        "immagini" della collezione (es. coolthings/charm-portachiavi/immagini/),
+        sostituendo quella vecchia.
+     4. Nella card aggiungi (se non c'è già) dentro il suo <a>:
+        <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+     ===================================================================== -->
+<style>
+  body { margin: 0; padding: 24px 16px 48px; font: 16px/1.5 system-ui, -apple-system, sans-serif; color: #1A2140; background: #fff; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  p { color: #5b6275; margin: 0 0 16px; }
+  .btn { display: inline-block; padding: 10px 18px; border-radius: 8px; border: 0; background: #1A2140; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+  .btn.ambra { background: #F2A900; color: #1A2140; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  #scelte { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+  #scelte figure { margin: 0; width: 96px; text-align: center; }
+  #scelte img { width: 96px; height: 96px; object-fit: contain; background: #f3f4f7; border-radius: 8px; }
+  #scelte button { border: 1px solid #d8dbe3; background: #fff; border-radius: 6px; cursor: pointer; padding: 2px 8px; }
+  label { display: block; margin: 12px 0 4px; font-weight: 600; }
+  /* la scacchiera fa vedere le parti trasparenti */
+  #anteprima { max-width: 100%; height: auto; display: block; margin: 16px 0;
+               background: repeating-conic-gradient(#eee 0 25%, #fff 0 50%) 0 0 / 16px 16px; border-radius: 8px; }
+  #info { font-size: .9rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Copertina della card</h1>
+  <p>Scegli 2–4 immagini senza sfondo: vengono messe una accanto all'altra, alla stessa altezza.</p>
+
+  <input type="file" id="file" accept="image/*" multiple hidden>
+  <button class="btn" id="scegli">Scegli le immagini</button>
+
+  <div id="scelte"></div>
+
+  <!-- quanto si sovrappongono le immagini: 0 = staccate, 20 = molto sovrapposte -->
+  <label for="sovrapponi">Sovrapposizione: <span id="sovrVal">10</span>%</label>
+  <input type="range" id="sovrapponi" min="0" max="25" value="10">
+
+  <canvas id="anteprima" width="10" height="10"></canvas>
+  <button class="btn ambra" id="scarica" disabled>Scarica copertina.webp</button>
+  <p id="info"></p>
+</main>
+
+<script>
+  /* ---------- IMPOSTAZIONI (si possono cambiare) ---------- */
+  const ALTEZZA = 260;     // altezza della copertina in pixel (va bene per le card)
+  const QUALITA = 0.7;     // qualità del .webp: 0.7 = file leggero ma nitido
+
+  const immagini = [];     // le immagini scelte, già ritagliate
+  const $ = id => document.getElementById(id);
+  const tela = $('anteprima'), ctx = tela.getContext('2d');
+
+  $('scegli').onclick = () => $('file').click();
+  $('file').onchange = async e => {
+    immagini.length = 0;
+    for (const f of [...e.target.files].slice(0, 4)) immagini.push(ritaglia(await carica(f)));
+    e.target.value = '';
+    disegna();
+  };
+  $('sovrapponi').oninput = e => { $('sovrVal').textContent = e.target.value; disegna(); };
+
+  // apre un file immagine
+  function carica(file) {
+    return new Promise(ok => { const img = new Image(); img.onload = () => ok(img); img.src = URL.createObjectURL(file); });
+  }
+
+  // toglie il bordo trasparente intorno all'immagine (come "ritaglia" automatico)
+  function ritaglia(img) {
+    const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+    const x = c.getContext('2d'); x.drawImage(img, 0, 0);
+    const d = x.getImageData(0, 0, c.width, c.height).data;
+    let t = c.height, b = -1, l = c.width, r = -1;
+    for (let y = 0; y < c.height; y++) for (let xx = 0; xx < c.width; xx++)
+      if (d[(y * c.width + xx) * 4 + 3] > 8) { if (y < t) t = y; if (y > b) b = y; if (xx < l) l = xx; if (xx > r) r = xx; }
+    if (b < 0) return c;   // immagine tutta trasparente: la lascia com'è
+    const o = document.createElement('canvas'); o.width = r - l + 1; o.height = b - t + 1;
+    o.getContext('2d').drawImage(c, l, t, o.width, o.height, 0, 0, o.width, o.height);
+    return o;
+  }
+
+  // mette le immagini una accanto all'altra; quella in mezzo sta davanti
+  function disegna() {
+    mostraScelte();
+    $('scarica').disabled = immagini.length < 2;
+    if (!immagini.length) return;
+    const sovr = Math.round(ALTEZZA * $('sovrapponi').value / 100);
+    const larghe = immagini.map(i => Math.round(i.width * ALTEZZA / i.height));
+    tela.width = larghe.reduce((a, b) => a + b, 0) - sovr * (immagini.length - 1);
+    tela.height = ALTEZZA;
+    const xs = []; let x = 0;
+    larghe.forEach(w => { xs.push(x); x += w - sovr; });
+    // ordine di disegno: prima gli esterni, per ultimo quello in mezzo (davanti)
+    const mezzo = Math.floor((immagini.length - 1) / 2);
+    const ordine = immagini.map((_, i) => i).sort((a, b) => Math.abs(b - mezzo) - Math.abs(a - mezzo));
+    ctx.imageSmoothingQuality = 'high';
+    for (const i of ordine) ctx.drawImage(immagini[i], xs[i], 0, larghe[i], ALTEZZA);
+    tela.toBlob(bl => { $('info').textContent = `Dimensioni: ${tela.width} × ${tela.height} px · peso circa ${Math.round(bl.size / 1024)} KB`; }, 'image/webp', QUALITA);
+  }
+
+  // miniature delle immagini scelte, con le frecce per cambiare l'ordine
+  function mostraScelte() {
+    $('scelte').innerHTML = '';
+    immagini.forEach((img, i) => {
+      const f = document.createElement('figure');
+      const p = document.createElement('img'); p.src = img.toDataURL(); f.append(p, document.createElement('br'));
+      [['◀', -1], ['▶', 1]].forEach(([t, d]) => {
+        const b = document.createElement('button'); b.textContent = t;
+        b.disabled = !immagini[i + d];
+        b.onclick = () => { [immagini[i], immagini[i + d]] = [immagini[i + d], immagini[i]]; disegna(); };
+        f.append(b);
+      });
+      $('scelte').append(f);
+    });
+  }
+
+  // salva il file copertina.webp
+  $('scarica').onclick = () => tela.toBlob(bl => {
+    if (bl.type !== 'image/webp') { alert('Questo browser non sa salvare in .webp: apri lo strumento con Chrome.'); return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = 'copertina.webp'; a.click();
+  }, 'image/webp', QUALITA);
+</script>
+</body>
+</html>

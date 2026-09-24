@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
 <!-- =====================================================================
      LEGO MINIFIGURES SERIE 23 — pagina della collezione (Collection Time)
      ---------------------------------------------------------------------
@@ -20,6 +21,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>LEGO Minifigures Serie 23 · Collection Time</title>
 <meta name="description" content="LEGO Minifigures Serie 23: le 12 minifigure, con quelle che ho e quelle che mi mancano.">
 <meta name="theme-color" content="#1A2140">
@@ -44,7 +46,7 @@
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie LEGO -->
 <!-- "?v=…" è il numero di versione: quando cambi un file .js o .css aumentalo (v=1 → v=2)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../comune/collezione.css?v=3">
+<link rel="stylesheet" href="../../comune/collezione.css?v=5">
 <link rel="stylesheet" href="../css/stile.css?v=5">
 </head>
 <body>
@@ -54,10 +56,12 @@
 
 <div class="wrap">
   <!-- Link per tornare alla pagina LEGO Minifigures -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; LEGO Minifigures</a>
 
   <!-- ============ TITOLO E STRUMENTI ============ -->
   <header>
+    <!-- ! MODIFICA: titolo della pagina -->
     <h1 id="pageTitle"><span class="titolo-testo">LEGO MINIFIGURES SERIE 23</span></h1>
     <div class="bar">
       <!-- "5 possedute su 12": il testo lo scrive app.js -->
@@ -101,6 +105,7 @@
   <!-- ============ PIÈ DI PAGINA: STAMPA ============
        Esporta e Importa sono nella banda in alto e valgono per tutto il sito. -->
   <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
     <p class="hint">Premi su una minifigura per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
     <button class="btn" id="btnPrint" type="button">Stampa</button>
   </footer>
@@ -143,7 +148,7 @@
     <div class="dlg-body">
       <!-- Codice e Numero (fissi, non si modificano) -->
       <div class="trio">
-        <div class="field"><span id="lblEp">Codice set</span><input type="text" id="fEp" readonly tabindex="-1" aria-labelledby="lblEp"></div>
+        <div class="field"><span id="lblCodice">Codice set</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
         <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
       </div>
       <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
@@ -171,6 +176,7 @@
    Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra collezione basta
    copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
    ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
 const CONFIG = {
   id: "lego-minifigures-serie-23",            // nome usato nei PDF
   dbName: "catalogo-lego-minifigures-serie-23", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
@@ -190,8 +196,6 @@ const CONFIG = {
    ---------------------------------------------------------------------
    Ogni riga { … } è UNA minifigura, nello stesso ordine della pagina
    (dalla n° 1 alla n° 12).
-   (L'elenco si chiama PENNE perché comune/app.js è lo stesso per tutte
-   le collezioni: il nome non va cambiato.)
 
    COME CAMBIARE UNA FOTO (senza toccare questo file)
      Usa lo Strumento LEGO:  lego/_strumenti/strumento-lego.html
@@ -203,7 +207,8 @@ const CONFIG = {
                Serve al browser per ricordare se ce l'hai: non cambiarlo
                e non usare lo stesso id due volte.
      numero    numero della minifigura nella serie ("01" … "12")
-     ep        numero LEGO della serie (lo stesso per tutta la serie)
+     codice    numero LEGO della serie (lo stesso per tutta la serie)
+               (se non c'è un codice, metti l'anno)
      nome      nome della minifigura
      foto      percorso della foto: "immagini/NOMEFILE.webp"
      hashtag   tema: ["Halloween"], ["Sport"]… — facoltativo
@@ -212,25 +217,26 @@ const CONFIG = {
    Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
    virgolette "…".
    ===================================================================== */
-const PENNE = [
-  { id: "minifig-s23-01", numero: "01", ep: "71034", nome: "Nutcracker", foto: "immagini/01.webp", hashtag: ["Natale"] },
-  { id: "minifig-s23-02", numero: "02", ep: "71034", nome: "Sugar Fairy", foto: "immagini/02.webp", hashtag: ["Natale"] },
-  { id: "minifig-s23-03", numero: "03", ep: "71034", nome: "Snowman", foto: "immagini/03.webp", hashtag: ["Natale"] },
-  { id: "minifig-s23-04", numero: "04", ep: "71034", nome: "Reindeer Costume", foto: "immagini/04.webp", hashtag: ["Natale"] },
-  { id: "minifig-s23-05", numero: "05", ep: "71034", nome: "Holiday Elf", foto: "immagini/05.webp", hashtag: ["Natale"] },
-  { id: "minifig-s23-06", numero: "06", ep: "71034", nome: "Cardboard Robot", foto: "immagini/06.webp" },
-  { id: "minifig-s23-07", numero: "07", ep: "71034", nome: "Popcorn Costume", foto: "immagini/07.webp" },
-  { id: "minifig-s23-08", numero: "08", ep: "71034", nome: "Wolf Costume", foto: "immagini/08.webp" },
-  { id: "minifig-s23-09", numero: "09", ep: "71034", nome: "Turkey Costume", foto: "immagini/09.webp" },
-  { id: "minifig-s23-10", numero: "10", ep: "71034", nome: "Ferry Captain", foto: "immagini/10.webp" },
-  { id: "minifig-s23-11", numero: "11", ep: "71034", nome: "Knight of the Yellow Castle", foto: "immagini/11.webp" },
-  { id: "minifig-s23-12", numero: "12", ep: "71034", nome: "Green Dragon Costume", foto: "immagini/12.webp" },
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  { id: "minifig-s23-01", numero: "01", codice: "71034", nome: "Nutcracker", foto: "immagini/01.webp", hashtag: ["Natale"] },
+  { id: "minifig-s23-02", numero: "02", codice: "71034", nome: "Sugar Fairy", foto: "immagini/02.webp", hashtag: ["Natale"] },
+  { id: "minifig-s23-03", numero: "03", codice: "71034", nome: "Snowman", foto: "immagini/03.webp", hashtag: ["Natale"] },
+  { id: "minifig-s23-04", numero: "04", codice: "71034", nome: "Reindeer Costume", foto: "immagini/04.webp", hashtag: ["Natale"] },
+  { id: "minifig-s23-05", numero: "05", codice: "71034", nome: "Holiday Elf", foto: "immagini/05.webp", hashtag: ["Natale"] },
+  { id: "minifig-s23-06", numero: "06", codice: "71034", nome: "Cardboard Robot", foto: "immagini/06.webp" },
+  { id: "minifig-s23-07", numero: "07", codice: "71034", nome: "Popcorn Costume", foto: "immagini/07.webp" },
+  { id: "minifig-s23-08", numero: "08", codice: "71034", nome: "Wolf Costume", foto: "immagini/08.webp" },
+  { id: "minifig-s23-09", numero: "09", codice: "71034", nome: "Turkey Costume", foto: "immagini/09.webp" },
+  { id: "minifig-s23-10", numero: "10", codice: "71034", nome: "Ferry Captain", foto: "immagini/10.webp" },
+  { id: "minifig-s23-11", numero: "11", codice: "71034", nome: "Knight of the Yellow Castle", foto: "immagini/11.webp" },
+  { id: "minifig-s23-12", numero: "12", codice: "71034", nome: "Green Dragon Costume", foto: "immagini/12.webp" },
 ];
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Esporta/Importa: comuni a tutto il sito -->
 <script src="../../script.js?v=8"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../comune/app.js?v=19"></script>
+<script src="../../comune/app.js?v=22"></script>
 </body>
 </html>

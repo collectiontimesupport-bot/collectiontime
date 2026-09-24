@@ -7,11 +7,10 @@
    ognuna lo richiama con  <link rel="stylesheet" href="../../css/stile.css?v=…">
    ===================================================================== */
 
-/* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice.
-   (Nelle serie con il logo come titolo, --titolo colora spunte e dettagli.) */
+/* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
 :root { --titolo: #1A2140; }   /* blu scuro del sito, quasi nero (il rosso è solo per Legami) */
 
-/* Titolo scritto (serie senza logo): carattere di sistema molto grosso, niente font da scaricare */
+/* Titolo scritto: carattere di sistema molto grosso, niente font da scaricare */
 h1 .titolo-testo {
   font-family: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif;
   font-weight: 900; letter-spacing: .02em;

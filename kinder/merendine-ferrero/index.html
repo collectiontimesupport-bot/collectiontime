@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>Merendine Ferrero · Collection Time</title>
 <meta name="description" content="Merendine Ferrero: le serie di sorpresine delle merendine Ferrero, con quelle che ho e quelle che mi mancano.">
 <meta name="theme-color" content="#1A2140">
@@ -46,7 +47,9 @@
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Kinder Ferrero</a>
+  <!-- ! MODIFICA: titolo della pagina -->
   <h1 class="st-titolo">MERENDINE FERRERO</h1>
   <!-- Frase + lente: la lente apre il campo per cercare tra le serie (funziona con script.js) -->
   <div class="st-sub">
@@ -66,8 +69,29 @@
        Esempio:
        <li data-cerca="nomi delle sorpresine"><a class="st-card" href="nome-cartella/index.html"><div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Nome della serie</h2><p>Anno · numero di sorpresine</p><span class="st-apri">Apri</span></a></li>
   -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
   <ul class="st-cards">
+    <li data-cerca="Bombo Elena Patata Zick Gingi Theo Tessa Bobak Magnacat Timothy Snyakutz Zamurro Barbaruffa mostri mostro 2006"><a class="st-card" href="monster-allergy/index.html"><div class="thumb"><img src="monster-allergy/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Monster Allergy</h2><p>12 sorpresine<br>2006</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Vincenzone Scorfanette Strega Vesuvia Mestolon Fefè Totò Sapore Cofiance Pulcinella Sora Pasta Pentolito Tegamino Marmittone 2004"><a class="st-card" href="toto-sapore/index.html"><div class="thumb"><img src="toto-sapore/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Totò Sapore</h2><p>12 sorpresine<br>2004</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Badabé Feliza Rubio Tragotto Iki Benny Plap Gemma Trufo Civa Stizza Zabù Flamba Lepo 2003"><a class="st-card" href="magicanti/index.html"><div class="thumb"><img src="magicanti/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Magicanti</h2><p>14 sorpresine<br>2003</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Radames Aida Kak Amneris Amonasro Moud Diaspron Ramfis Gik Kanak cammello Goa Raz coccodrillo cartone animato 2003"><a class="st-card" href="aida-degli-alberi/index.html"><div class="thumb"><img src="aida-degli-alberi/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Aida degli Alberi</h2><p>12 sorpresine<br>2003</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Tobe Assalemme Tika Zidora Otha Zufi Ashi Ehl Icsics Imor Al Baamb Tupa Shama egiziani Egitto 2002"><a class="st-card" href="lunes/index.html"><div class="thumb"><img src="lunes/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Lunes</h2><p>13 sorpresine<br>2002</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Porky Pig Pepé la Puzzola Taz Bugs Bunny Silvestro Speedy Gonzales Beep Beep Daffy Duck Titti Willy il Coyote mollette molletta Looney Tunes Warner 2002"><a class="st-card" href="matte-mollette/index.html"><div class="thumb"><img src="matte-mollette/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Le Matte Mollette</h2><p>10 sorpresine<br>2002</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Noga Nero Cabalone Coccante Babamas Deta Tetè Zullo Vanvar Pisco Liva Sciol maghi mago Quilà 2001"><a class="st-card" href="magotti/index.html"><div class="thumb"><img src="magotti/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Magotti</h2><p>12 sorpresine<br>2001</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Ridorido Al Calduccio Fuori di Bottiglia Metallara Frizzissimo Doremilla Mr Gelosia Baby Bottle Timi Dino Franco Boll Sbada Tina Gancio Destro bottiglie bottiglia portamessaggi messaggi 2001"><a class="st-card" href="sbottigliati/index.html"><div class="thumb"><img src="sbottigliati/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Gli Sbottigliati</h2><p>12 sorpresine<br>2001</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Cuoricina Pronto blà blà Troppo Giusto Tutto Ritmo Mille Idee Dormiglione bottiglie bottigliette latte timbri merendine frigo Pinguì 2000"><a class="st-card" href="lattimbri/index.html"><div class="thumb"><img src="lattimbri/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Lattimbri</h2><p>6 sorpresine<br>2000 · merendine da frigo</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Sherl&#x27;O Cozz Scozza Elettrica Cozza Campestre Medicozza Innamorata Cozza Flamencozza Cozza Nostra Fattuccozza Magicozza Miss Cozza Azzurra Ciccicozza Cozzai Kingkozz Nonna Cozza cozze cozza 2000"><a class="st-card" href="amicozze/index.html"><div class="thumb"><img src="amicozze/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Le Amicozze</h2><p>14 sorpresine<br>2000</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Pino Tubettino Albertino Cuocofino Tina Ondina Rino Chiacchierino Nina Spaghettina Leone Grancampione penne penna merendine frigo Pinguì 2000"><a class="st-card" href="penne-pazze/index.html"><div class="thumb"><img src="penne-pazze/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Le Penne Pazze</h2><p>6 sorpresine<br>2000 · merendine da frigo</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Il + Ganzo Il + Innamorato Il + Appiccicoso Genio al 100% Il + Magico Il + Schizzato Il + Vanitoso Il + Sottosopra Il + Cattivo Il + Tenerone Garfield gatto dorati oro 2000"><a class="st-card" href="golden-garfield/index.html"><div class="thumb"><img src="golden-garfield/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Golden Garfield</h2><p>10 sorpresine<br>2000</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Rosa Spinosa Bidon Furioso Morby Hillo Bidone Pennellone Pablo el Diablo Mr. Tirabidon Bidona Precisona Gnam Bidon Baby Bidon Bidon Brillo Dante Furfante Romeo Piagnisteo Bidona Fatalona Bidi Bomber Tam Tam Bidon Bidone Secchione Saggio Bidon Bidon Pesto Bidone Impiccione bidoni bidone 1999"><a class="st-card" href="banda-bidon/index.html"><div class="thumb"><img src="banda-bidon/immagini/copertina.webp" alt="" loading="lazy"></div><h2>La Banda Bidon</h2><p>19 sorpresine<br>1999</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Lele Succodimele Pillo Zampillo Otto Strambotto Oro Sogni d&#x27;Oro Pio Pratolino Barba Birba Giordy Giardino Poppy Cielsereno Serafino Occhiofino Zac Tagliaerba Pin Pinetto Buffo Sbruffo Giglio Pungiglio Ronfi Poltrone Trillo Mirtillo Meo Marcialonga gnomi gnomo 1993"><a class="st-card" href="gnomburloni/index.html"><div class="thumb"><img src="gnomburloni/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Gnomburloni</h2><p>16 sorpresine<br>1993</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Bufalo Bol Dino Elefantino Vera Bianconera Ippopasticcio Uzzo Struzzo Pardogagliardo Etta Scimmietta Rinocalpesta Leofifone Coccobrillo animali 1993"><a class="st-card" href="svitatelli/index.html"><div class="thumb"><img src="svitatelli/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Svitatelli</h2><p>10 sorpresine<br>1993</p><span class="st-apri">Apri</span></a></li>

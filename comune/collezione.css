@@ -58,9 +58,8 @@ button { cursor: pointer; }
 }
 .btn.primary { background: var(--amber); color: var(--white); border-color: var(--amber); font-weight: 600; }
 
-/* link "← Legami" / "← LEGO Minifigures" (st-back, in sito.css): qui attaccato al titolo
-   e, al passaggio del mouse, del colore del titolo */
-.st-back { margin-bottom: 0; }
+/* link "← Legami" / "← LEGO Minifigures" (st-back, in sito.css): al passaggio del mouse
+   del colore del titolo. La distanza dal titolo è quella di sito.css, uguale in tutte le pagine. */
 .st-back:hover { color: var(--titolo); }
 
 /* =====================================================================
@@ -70,7 +69,8 @@ header { margin-bottom: 12px; }
 
 h1 {
   margin: 0 0 22px;
-  display: flex; justify-content: center; align-items: center;
+  /* flex-start: il titolo parte sempre alla stessa altezza, anche se va su due righe */
+  display: flex; justify-content: center; align-items: flex-start;
   min-height: var(--logo-h);
 }
 /* Titolo nel colore --titolo; il carattere è nel file della collezione.
@@ -82,12 +82,6 @@ h1 .titolo-testo {
   color: var(--titolo);
 }
 
-/* Titolo fatto con un'immagine (es. il logo "Gnomburloni"):
-   <h1><img class="titolo-img" src="immagini/titolo.webp" alt="Nome"></h1>
-   alto come la zona del titolo, mai più largo dello schermo. Va anche nel PDF.
-   Logo quasi quadrato (es. "Svitatelli")? Ingrandiscilo nella pagina con
-   style="--titolo-scala: 1.8" sull'<img> (1 = normale). */
-h1 .titolo-img { display: block; height: calc(var(--logo-h) * var(--titolo-scala, 1)); width: auto; max-width: 100%; object-fit: contain; }
 
 /* riga sotto il titolo: conteggio a sinistra, strumenti a destra */
 .bar { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; }

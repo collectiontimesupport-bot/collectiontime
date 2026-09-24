@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
 <!-- =====================================================================
      LEGO MINIFIGURES · TUTTE — tutte le minifigure di tutte le serie in una
      sola pagina, in ordine, per vedere al volo quali ho e quali mi mancano.
@@ -16,6 +17,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>Tutte le LEGO Minifigures · Collection Time</title>
 <meta name="description" content="Tutte le LEGO Minifigures in una pagina: quelle che ho e quelle che mi mancano.">
 <meta name="theme-color" content="#1A2140">
@@ -38,7 +40,6 @@
     /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
     --titolo: #1A2140; }   /* blu scuro del sito, quasi nero */
   .st-wrap { max-width: 1400px; padding: 12px 16px 60px; }
-  .st-back { margin-bottom: 18px; }
   h1 { margin: 0; text-align: center; font: 900 clamp(1.8rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
   @media (max-width: 520px) { h1 { font-size: 8.5vw; } }
 
@@ -71,7 +72,9 @@
 <div id="header-placeholder"></div>
 
 <main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; LEGO Minifigures</a>
+  <!-- ! MODIFICA: titolo della pagina -->
   <h1>TUTTE LE MINIFIGURES</h1>
   <div class="bar">
     <p class="conta" id="conta"></p>
@@ -84,6 +87,7 @@
   <p class="attesa" id="attesa">Carico le minifigure…</p>
   <!-- la riempie lo script qui sotto: un <li> per minifigura -->
   <ul class="tutte" id="tutte"></ul>
+  <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
   <p class="hint">Tocca una minifigura per segnare che ce l'hai (o toglierlo). Tieni il dito sopra (o passa col mouse) per vedere il nome e la serie.</p>
 </main>
 

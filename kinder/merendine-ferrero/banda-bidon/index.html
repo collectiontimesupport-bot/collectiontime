@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
 <!-- =====================================================================
      LA BANDA BIDON (Merendine Kinder e Ferrero, 1999) — pagina della collezione
      ---------------------------------------------------------------------
@@ -7,8 +8,7 @@
        index.html           ← questa pagina: struttura, IMPOSTAZIONI ed
                               ELENCO DELLE SORPRESINE (le uniche parti da
                               toccare per aggiungere o cambiare sorpresine)
-       immagini/            ← le foto in WebP trasparente (01.webp … 19.webp),
-                              titolo.webp (il logo usato come titolo)
+       immagini/            ← le foto in WebP trasparente (01.webp … 19.webp)
                               e copertina.webp (la foto della card)
        (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
         collezioni, e in kinder/css/stile.css, UNO per tutte le serie Kinder;
@@ -17,13 +17,12 @@
      ▸ PER UNA NUOVA SERIE: copia questa cartella, cambia titolo,
        IMPOSTAZIONI ed ELENCO qui in fondo e aggiungi la sua card
        in ../index.html (in cima: dalla serie più recente).
-       Serie senza logo? Al posto dell'<img class="titolo-img" …> metti
-       <span class="titolo-testo">NOME DELLA SERIE</span>
      ===================================================================== -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>La Banda Bidon · Collection Time</title>
 <meta name="description" content="La Banda Bidon, sorpresine delle merendine Kinder e Ferrero (1999): i 19 bidoni, con quelli che ho e quelli che mi mancano.">
 <meta name="theme-color" content="#1A2140">
@@ -48,8 +47,8 @@
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
 <!-- "?v=…" è il numero di versione: quando cambi un file .js o .css aumentalo (v=1 → v=2)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../comune/collezione.css?v=3">
-<link rel="stylesheet" href="../../css/stile.css?v=1">
+<link rel="stylesheet" href="../../../comune/collezione.css?v=5">
+<link rel="stylesheet" href="../../css/stile.css?v=2">
 </head>
 <body>
 
@@ -58,13 +57,14 @@
 
 <div class="wrap">
   <!-- Link per tornare alla pagina Merendine Ferrero -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Merendine Ferrero</a>
 
   <!-- ============ TITOLO E STRUMENTI ============ -->
   <header>
-    <!-- titolo = logo della serie (immagini/titolo.webp): va anche nel PDF.
-         --titolo-scala = quanto ingrandirlo (il logo è quasi quadrato; 1 = normale) -->
-    <h1 id="pageTitle"><img class="titolo-img" src="immagini/titolo.webp" alt="La Banda Bidon" width="520" height="260" style="--titolo-scala: 1.5"></h1>
+    <!-- titolo scritto: va anche nel PDF -->
+    <!-- ! MODIFICA: titolo della pagina -->
+    <h1 id="pageTitle"><span class="titolo-testo">LA BANDA BIDON</span></h1>
     <div class="bar">
       <!-- "5 possedute su 19": il testo lo scrive app.js -->
       <p class="sub" id="count"></p>
@@ -107,6 +107,7 @@
   <!-- ============ PIÈ DI PAGINA: STAMPA ============
        Esporta e Importa sono nella banda in alto e valgono per tutto il sito. -->
   <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
     <p class="hint">Premi su una sorpresina per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
     <button class="btn" id="btnPrint" type="button">Stampa</button>
   </footer>
@@ -149,7 +150,7 @@
     <div class="dlg-body">
       <!-- Anno e Numero (fissi, non si modificano) -->
       <div class="trio">
-        <div class="field"><span id="lblEp">Anno</span><input type="text" id="fEp" readonly tabindex="-1" aria-labelledby="lblEp"></div>
+        <div class="field"><span id="lblCodice">Anno</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
         <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
       </div>
       <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
@@ -177,6 +178,7 @@
    Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra serie basta
    copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
    ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
 const CONFIG = {
   id: "kinder-banda-bidon",            // nome usato nei PDF
   dbName: "catalogo-kinder-banda-bidon", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
@@ -196,15 +198,14 @@ const CONFIG = {
    ---------------------------------------------------------------------
    Ogni riga { … } è UNA sorpresina, nello stesso ordine della pagina
    (dalla n° 1 alla n° 19, come nel foglietto originale).
-   (L'elenco si chiama PENNE perché comune/app.js è lo stesso per tutte
-   le collezioni: il nome non va cambiato.)
 
    I CAMPI
      id        codice unico: "banda-bidon-01", "banda-bidon-02"…
                Serve al browser per ricordare se ce l'hai: non cambiarlo
                e non usare lo stesso id due volte.
      numero    numero della sorpresina nella serie ("01" … "19")
-     ep        anno di uscita della serie (nei dettagli si legge "Anno")
+     codice    codice dell'oggetto: se non c'è un codice, metti l'anno
+               (qui c'è l'anno di uscita: nei dettagli si legge "Anno")
      nome      nome della sorpresina
      foto      percorso della foto: "immagini/NOMEFILE.webp"
      hashtag   tema: ["Natale"]… — facoltativo
@@ -213,32 +214,33 @@ const CONFIG = {
    Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
    virgolette "…".
    ===================================================================== */
-const PENNE = [
-  { id: "banda-bidon-01", numero: "01", ep: "1999", nome: "Rosa Spinosa", foto: "immagini/01.webp" },
-  { id: "banda-bidon-02", numero: "02", ep: "1999", nome: "Bidon Furioso", foto: "immagini/02.webp" },
-  { id: "banda-bidon-03", numero: "03", ep: "1999", nome: "Morby Hillo", foto: "immagini/03.webp" },
-  { id: "banda-bidon-04", numero: "04", ep: "1999", nome: "Bidone Pennellone", foto: "immagini/04.webp" },
-  { id: "banda-bidon-05", numero: "05", ep: "1999", nome: "Pablo el Diablo", foto: "immagini/05.webp" },
-  { id: "banda-bidon-06", numero: "06", ep: "1999", nome: "Mr. Tirabidon", foto: "immagini/06.webp" },
-  { id: "banda-bidon-07", numero: "07", ep: "1999", nome: "Bidona Precisona", foto: "immagini/07.webp" },
-  { id: "banda-bidon-08", numero: "08", ep: "1999", nome: "Gnam Bidon", foto: "immagini/08.webp" },
-  { id: "banda-bidon-09", numero: "09", ep: "1999", nome: "Baby Bidon", foto: "immagini/09.webp" },
-  { id: "banda-bidon-10", numero: "10", ep: "1999", nome: "Bidon Brillo", foto: "immagini/10.webp" },
-  { id: "banda-bidon-11", numero: "11", ep: "1999", nome: "Dante Furfante", foto: "immagini/11.webp" },
-  { id: "banda-bidon-12", numero: "12", ep: "1999", nome: "Romeo Piagnisteo", foto: "immagini/12.webp" },
-  { id: "banda-bidon-13", numero: "13", ep: "1999", nome: "Bidona Fatalona", foto: "immagini/13.webp" },
-  { id: "banda-bidon-14", numero: "14", ep: "1999", nome: "Bidi Bomber", foto: "immagini/14.webp" },
-  { id: "banda-bidon-15", numero: "15", ep: "1999", nome: "Tam Tam Bidon", foto: "immagini/15.webp" },
-  { id: "banda-bidon-16", numero: "16", ep: "1999", nome: "Bidone Secchione", foto: "immagini/16.webp" },
-  { id: "banda-bidon-17", numero: "17", ep: "1999", nome: "Saggio Bidon", foto: "immagini/17.webp" },
-  { id: "banda-bidon-18", numero: "18", ep: "1999", nome: "Bidon Pesto", foto: "immagini/18.webp" },
-  { id: "banda-bidon-19", numero: "19", ep: "1999", nome: "Bidone Impiccione", foto: "immagini/19.webp" },
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  { id: "banda-bidon-01", numero: "01", codice: "1999", nome: "Rosa Spinosa", foto: "immagini/01.webp" },
+  { id: "banda-bidon-02", numero: "02", codice: "1999", nome: "Bidon Furioso", foto: "immagini/02.webp" },
+  { id: "banda-bidon-03", numero: "03", codice: "1999", nome: "Morby Hillo", foto: "immagini/03.webp" },
+  { id: "banda-bidon-04", numero: "04", codice: "1999", nome: "Bidone Pennellone", foto: "immagini/04.webp" },
+  { id: "banda-bidon-05", numero: "05", codice: "1999", nome: "Pablo el Diablo", foto: "immagini/05.webp" },
+  { id: "banda-bidon-06", numero: "06", codice: "1999", nome: "Mr. Tirabidon", foto: "immagini/06.webp" },
+  { id: "banda-bidon-07", numero: "07", codice: "1999", nome: "Bidona Precisona", foto: "immagini/07.webp" },
+  { id: "banda-bidon-08", numero: "08", codice: "1999", nome: "Gnam Bidon", foto: "immagini/08.webp" },
+  { id: "banda-bidon-09", numero: "09", codice: "1999", nome: "Baby Bidon", foto: "immagini/09.webp" },
+  { id: "banda-bidon-10", numero: "10", codice: "1999", nome: "Bidon Brillo", foto: "immagini/10.webp" },
+  { id: "banda-bidon-11", numero: "11", codice: "1999", nome: "Dante Furfante", foto: "immagini/11.webp" },
+  { id: "banda-bidon-12", numero: "12", codice: "1999", nome: "Romeo Piagnisteo", foto: "immagini/12.webp" },
+  { id: "banda-bidon-13", numero: "13", codice: "1999", nome: "Bidona Fatalona", foto: "immagini/13.webp" },
+  { id: "banda-bidon-14", numero: "14", codice: "1999", nome: "Bidi Bomber", foto: "immagini/14.webp" },
+  { id: "banda-bidon-15", numero: "15", codice: "1999", nome: "Tam Tam Bidon", foto: "immagini/15.webp" },
+  { id: "banda-bidon-16", numero: "16", codice: "1999", nome: "Bidone Secchione", foto: "immagini/16.webp" },
+  { id: "banda-bidon-17", numero: "17", codice: "1999", nome: "Saggio Bidon", foto: "immagini/17.webp" },
+  { id: "banda-bidon-18", numero: "18", codice: "1999", nome: "Bidon Pesto", foto: "immagini/18.webp" },
+  { id: "banda-bidon-19", numero: "19", codice: "1999", nome: "Bidone Impiccione", foto: "immagini/19.webp" },
 ];
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Esporta/Importa: comuni a tutto il sito -->
 <script src="../../../script.js?v=8"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../comune/app.js?v=19"></script>
+<script src="../../../comune/app.js?v=22"></script>
 </body>
 </html>

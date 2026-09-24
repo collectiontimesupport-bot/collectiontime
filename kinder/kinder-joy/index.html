@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>Kinder Joy · Collection Time</title>
 <meta name="description" content="Kinder Joy: le serie di sorpresine dei Kinder Joy, con quelle che ho e quelle che mi mancano.">
 <meta name="theme-color" content="#1A2140">
@@ -48,7 +49,9 @@
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Kinder Ferrero</a>
+  <!-- ! MODIFICA: titolo della pagina -->
   <h1 class="st-titolo">KINDER JOY</h1>
   <!-- Frase + lente: la lente apre il campo per cercare tra le serie (funziona con script.js) -->
   <div class="st-sub">
@@ -70,6 +73,16 @@
        Esempio:
        <li data-cerca="nomi delle sorpresine"><a class="st-card" href="nome-cartella/index.html"><div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Nome della serie</h2><p>Anno · numero di sorpresine</p><span class="st-apri">Apri</span></a></li>
   -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
   <ul class="st-cards">
   </ul>
 </main>

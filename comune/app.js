@@ -6,17 +6,17 @@
    Il browser lo scarica una volta sola e lo riusa per tutte le pagine.
    Legge dall'HTML due blocchi:
      • CONFIG → testi e misure della collezione
-     • PENNE  → l'elenco degli oggetti (numero, nome, foto…)
+     • ELENCO → l'elenco degli oggetti (numero, nome, foto…)
    Per aggiungere oggetti NON serve toccare questo file: basta
-   aggiungere una riga all'elenco PENNE nell'HTML.
+   aggiungere una riga all'ELENCO nell'HTML.
 
    Cosa resta salvato nel browser di chi visita (IndexedDB)?
    Solo i suoi dati: "Ce l'ho" e gli hashtag che ha cambiato.
    Tutto il resto (nome, numero, colore, foto, info) arriva sempre
-   dall'elenco PENNE, così una modifica all'HTML si vede subito.
+   dall'ELENCO, così una modifica all'HTML si vede subito.
 
    Indice delle sezioni (cerca il titolo con ---------- ):
-     · elenco (da PENNE)
+     · elenco (da ELENCO)
      · archivio (IndexedDB)
      · ricerca e filtri
      · disegno della pagina (+ bagliore)
@@ -37,7 +37,7 @@
   document.documentElement.style.setProperty('--proporzione', String(CONFIG.proporzione || 7));
   document.documentElement.style.setProperty('--colonne', String(CONFIG.colonne || 8));
 
-  /* ---------- elenco (da PENNE, nell'HTML) ----------
+  /* ---------- elenco (da ELENCO, nell'HTML) ----------
      Trasformo le righe scritte nell'HTML (campi in italiano) nel formato
      usato dal resto del programma. L'ordine dell'elenco = ordine sulla pagina. */
 
@@ -45,16 +45,16 @@
   const SLOT_IMG = 'immagini/slot-vuoto.webp';
 
   const idVisti = new Set();
-  const SEED = PENNE.map((r, i) => {
+  const SEED = ELENCO.map((r, i) => {
     /* se manca l'id lo ricavo dal nome del file della foto (es. "penna-96-riccio") */
     const id = r.id || ('penna-' + String(r.foto || i).split('/').pop().replace(/\.[a-z]+$/i, ''));
-    if (idVisti.has(id)) console.warn('ELENCO PENNE: l\'id "' + id + '" è usato due volte. Cambiane uno!');
+    if (idVisti.has(id)) console.warn('ELENCO: l\'id "' + id + '" è usato due volte. Cambiane uno!');
     idVisti.add(id);
     return {
       id,
       pos: i,                                  /* posizione = ordine nell'elenco */
       code: r.numero || '',
-      ep: r.ep || '',
+      codice: r.codice || '',
       name: r.nome || '',
       colorName: r.colore || '',
       colorHex: r.hex || '',
@@ -95,7 +95,7 @@
     : Promise.resolve();
 
   /* ---------- ricerca e filtri ---------- */
-  /* gli oggetti si mostrano sempre nell'ordine dell'elenco PENNE (campo pos) */
+  /* gli oggetti si mostrano sempre nell'ordine dell'ELENCO (campo pos) */
   const byPos = (a, b) => a.pos - b.pos;
   /* parole alternative per gli hashtag: cercando "christmas" escono le penne di Natale, ecc. */
   const TAG_ALIASES = {
@@ -107,7 +107,7 @@
   const foldText = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   /* tutto il testo in cui cercare per un oggetto (numero, EP, nome, info, colore, hashtag) */
   function searchText(p) {
-    const parts = [p.code, p.ep, p.name, p.info, p.colorName];
+    const parts = [p.code, p.codice, p.name, p.info, p.colorName];
     p.tags.forEach(t => {
       parts.push(t, '#' + t);
       const al = TAG_ALIASES[String(t).toLowerCase()];
@@ -421,7 +421,7 @@
     if (p.image) img.src = p.image; else img.removeAttribute('src');
     img.hidden = !p.image;
     $('dlgNoPhoto').hidden = !!p.image;
-    $('fEp').value = p.ep;
+    $('fCodice').value = p.codice;
     $('fCode').value = p.code;
     $('fName').value = p.name;
     /* colore (solo nelle pagine che hanno il campo Colore, es. Legami Erasable) */
@@ -524,19 +524,10 @@
     });
   }
 
-  /* titolo del PDF: se nella pagina il titolo è un'immagine (.titolo-img, es. Gnomburloni)
-     uso quella; altrimenti lo disegno con lo stesso carattere e colore del titolo della pagina */
+  /* titolo del PDF: lo disegno con lo stesso carattere e colore del titolo della pagina */
   async function titlePng() {
-    const el = document.querySelector('.titolo-img, .titolo-testo');
+    const el = document.querySelector('.titolo-testo');
     if (!el) return null;
-    if (el.tagName === 'IMG') {
-      const img = await loadImg(el.currentSrc || el.src);
-      const c = document.createElement('canvas');
-      c.width = img.naturalWidth; c.height = img.naturalHeight;
-      c.getContext('2d').drawImage(img, 0, 0);
-      const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-      return new Uint8Array(await blob.arrayBuffer());
-    }
     const cs = getComputedStyle(el), text = el.textContent.trim(), size = 200;
     const font = '700 ' + size + 'px ' + cs.fontFamily;
     try { if (document.fonts && document.fonts.load) await document.fonts.load(font, text); } catch (e) { /* uso il carattere disponibile */ }
@@ -652,16 +643,11 @@
     const BAND = 30;                                        // banda blu in alto
     /* titolo scritto su un cartellino bianco, come le schede; TITOLO_H = altezza delle lettere */
     let TITOLO_H = 32;
-    /* titolo fatto con il logo (es. Gnomburloni, Lattimbri): grande e al centro.
-       Alto al massimo LOGO_MAX_H punti e mai più largo di metà pagina. */
-    const LOGO_MAX_H = 110;
-    const titoloLogo = !!(logo && document.querySelector('.titolo-img'));   // true = titolo fatto con il logo
-    if (titoloLogo) TITOLO_H = Math.min(LOGO_MAX_H, (W / 2) * logo.height / logo.width);
     const TITOLO_MAXW = W - 2 * MX - 40;
     if (logo && TITOLO_H * logo.width / logo.height > TITOLO_MAXW) TITOLO_H = TITOLO_MAXW * logo.height / logo.width;   // titoli molto lunghi
     const LOGO_W = logo ? TITOLO_H * logo.width / logo.height : 0;
-    /* margini del cartellino; con il logo niente cartellino (logo trasparente sul fondo) */
-    const CART_PX = titoloLogo ? 0 : 26, CART_PY = titoloLogo ? 0 : 12, CART_H = TITOLO_H + 2 * CART_PY;
+    /* margini del cartellino bianco intorno al titolo */
+    const CART_PX = 26, CART_PY = 12, CART_H = TITOLO_H + 2 * CART_PY;
     const areaTop = H - BAND - 16, gridBottom = 52;         // spazio tra la banda e il piè di pagina
     const TITOLO_GAP = 18;                                  // spazio tra titolo e schede
     const gridTop = areaTop - CART_H - TITOLO_GAP;          // spazio massimo per le schede
@@ -737,10 +723,8 @@
       const title = pdfText(CONFIG.titolo);
       const tw = logo ? LOGO_W : bold.widthOfTextAtSize(title, TITOLO_H * 1.35);
       const cartW = tw + 2 * CART_PX;
-      if (!titoloLogo) {   // cartellino bianco solo per i titoli scritti
-        page.drawSvgPath(scheda(cartW, CART_H), { x: (W - cartW) / 2, y: cartTop, color: bianco, borderColor: gray, borderWidth: 0.6 });
-        page.drawRectangle({ x: (W - cartW) / 2 + R, y: cartTop - CART_H, width: cartW - 2 * R, height: 2.5, color: ambra });
-      }
+      page.drawSvgPath(scheda(cartW, CART_H), { x: (W - cartW) / 2, y: cartTop, color: bianco, borderColor: gray, borderWidth: 0.6 });
+      page.drawRectangle({ x: (W - cartW) / 2 + R, y: cartTop - CART_H, width: cartW - 2 * R, height: 2.5, color: ambra });
       if (logo) page.drawImage(logo, { x: (W - LOGO_W) / 2, y: cartTop - CART_PY - TITOLO_H, width: LOGO_W, height: TITOLO_H });
       else page.drawText(title, { x: (W - tw) / 2, y: cartTop - CART_PY - TITOLO_H, size: TITOLO_H * 1.35, font: bold, color: ink });
 
@@ -873,7 +857,7 @@
   $('sort').addEventListener('change', e => { sortDir = e.target.value === 'desc' ? -1 : 1; render(); });
 
   /* ---------- id rinumerati (settembre 2026) ----------
-     Gli id dell'elenco PENNE sono stati rimessi in ordine (seed-001, seed-002…).
+     Gli id dell'ELENCO sono stati rimessi in ordine (seed-001, seed-002…).
      Chi aveva già aperto la pagina ha le spunte salvate con gli id vecchi:
      le sposto sugli id nuovi riconoscendo la penna da numero + nome
      (le schede vecchie avevano anche questi campi).
@@ -896,7 +880,7 @@
 
   /* ---------- avvio ----------
      1. leggo dal browser le spunte e gli hashtag di chi visita
-     2. li unisco all'elenco PENNE (oggetti nuovi, tolti o cambiati: vale l'elenco)
+     2. li unisco all'ELENCO (oggetti nuovi, tolti o cambiati: vale l'elenco)
      3. riscrivo l'archivio con i soli oggetti dell'elenco e i soli dati del visitatore */
   (async function avvio() {
     const nuovo = s => Object.assign({}, s, { owned: false, tags: s.tags.slice(), tagsTouched: false });

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>Kinder Ferrero · Collection Time</title>
 <meta name="description" content="Kinder Ferrero: le sorpresine di Kinder Sorpresa, Kinder Joy e merendine Ferrero.">
 <meta name="theme-color" content="#1A2140">
@@ -46,7 +47,9 @@
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Tutte le collezioni</a>
+  <!-- ! MODIFICA: titolo della pagina -->
   <h1 class="st-titolo">KINDER FERRERO</h1>
   <!-- Frase + lente: la lente apre il campo per cercare tra le collezioni (funziona con script.js) -->
   <div class="st-sub">
@@ -60,13 +63,21 @@
   </div>
   <p class="st-nessuna" hidden>Nessuna collezione trovata.</p>
   <!-- Una card per ogni gruppo: per aggiungerne uno, copia un <li> ... </li> e cambia cartella e testi.
-       Per mettere una foto nella card, aggiungi dentro il suo <a>:
-       <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt=""></div>
        data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi delle serie). -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
   <ul class="st-cards">
-    <li data-cerca="ovetto ovetti cioccolato sorpresine"><a class="st-card" href="kinder-sorpresa/index.html"><h2>Kinder Sorpresa</h2><p>Le sorpresine degli ovetti di cioccolato.</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="ovetto ovetti cioccolato sorpresine Leo Venturas leoni Ranoplà rane Panda Party Fantasmini fantasmi Presepe Natale Super Giraffe Polar Express Città delle Note note Piramolli lumache pirati Folletti di Natale Champion Ghost Pixie Winx Justice League Monster Hotel Halloween Bosco degli Auguri Christmas Battle Madagascar Fortunosi Puffi"><a class="st-card" href="kinder-sorpresa/index.html"><h2>Kinder Sorpresa</h2><p>Le sorpresine degli ovetti di cioccolato.</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="ovetto ovetti sorpresine"><a class="st-card" href="kinder-joy/index.html"><h2>Kinder Joy</h2><p>Le sorpresine degli ovetti con le due metà.</p><span class="st-apri">Apri</span></a></li>
-    <li data-cerca="merendina merendine sorpresine Gnomburloni gnomi Svitatelli animali Banda Bidon bidoni Lattimbri latte"><a class="st-card" href="merendine-ferrero/index.html"><h2>Merendine Ferrero</h2><p>Le sorpresine delle merendine.</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="merendina merendine sorpresine Gnomburloni gnomi Svitatelli animali Banda Bidon bidoni Lattimbri latte Amicozze cozze Penne Pazze Golden Garfield Matte Mollette Looney Tunes Monster Allergy Sbottigliati bottiglie Magotti maghi Lunes Aida degli Alberi Magicanti maghi Totò Sapore"><a class="st-card" href="merendine-ferrero/index.html"><h2>Merendine Ferrero</h2><p>Le sorpresine delle merendine.</p><span class="st-apri">Apri</span></a></li>
   </ul>
 </main>
 

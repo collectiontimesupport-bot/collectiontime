@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>Kinder Sorpresa · Collection Time</title>
 <meta name="description" content="Kinder Sorpresa: le serie di sorpresine degli ovetti Kinder Sorpresa, con quelle che ho e quelle che mi mancano.">
 <meta name="theme-color" content="#1A2140">
@@ -39,7 +40,6 @@
   .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
   .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
   /* scritta mostrata finché non c'è nessuna collezione (poi si cancella) */
-  .in-arrivo { text-align: center; color: var(--muted); font-size: 1.125rem; margin: 30px 0; }
 </style>
 </head>
 <body>
@@ -48,7 +48,9 @@
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Kinder Ferrero</a>
+  <!-- ! MODIFICA: titolo della pagina -->
   <h1 class="st-titolo">KINDER SORPRESA</h1>
   <!-- Frase + lente: la lente apre il campo per cercare tra le serie (funziona con script.js) -->
   <div class="st-sub">
@@ -61,8 +63,6 @@
     </div>
   </div>
   <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
-  <!-- Scritta provvisoria: quando aggiungi la prima serie, cancella questa riga. -->
-  <p class="in-arrivo">Le prime serie arrivano presto.</p>
   <!-- TUTTE LE SERIE in ordine di uscita, DALLA PIÙ RECENTE: una serie nuova va aggiunta IN CIMA.
        Una card per ogni serie: per aggiungerne una, copia l'esempio qui sotto,
        togli i segni di commento e cambia cartella, foto e testi.
@@ -70,7 +70,38 @@
        Esempio:
        <li data-cerca="nomi delle sorpresine"><a class="st-card" href="nome-cartella/index.html"><div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Nome della serie</h2><p>Anno · numero di sorpresine</p><span class="st-apri">Apri</span></a></li>
   -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
   <ul class="st-cards">
+    <li data-cerca="Grande Puffo Puffetta Quattrocchi Pescatore Pigrone Pittore Cuoco Inventore Burlone NV129 NV130 NV131 NV132 NV133 NV134 NV135 NV136 NV137 2010"><a class="st-card" href="puffi-2010/index.html"><div class="thumb"><img src="puffi-2010/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Puffi</h2><p>9 sorpresine<br>2010</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Amore Chatta Lockette Piff Tune NV159 NV160 NV161 NV162 NV163 2009"><a class="st-card" href="pixie-2009/index.html"><div class="thumb"><img src="pixie-2009/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Pixie</h2><p>5 sorpresine<br>2009</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Billy Linda Lella Lana Gege Mirta Duccio Tortella NV031 NV032 NV033 NV034 NV035 NV036 NV037 NV038 2009"><a class="st-card" href="fortunosi/index.html"><div class="thumb"><img src="fortunosi/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Fortunosi</h2><p>8 sorpresine<br>2009</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Alex Gloria Melman Marty Maurice Re Julien Skipper Pinguini Phil NV147 NV148 NV149 NV150 NV151 NV152 NV153 NV154 NV155 2008"><a class="st-card" href="madagascar-2/index.html"><div class="thumb"><img src="madagascar-2/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Madagascar 2</h2><p>9 sorpresine<br>2008</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Claus Zenzero Frigolotto Snowman Getto Lumina Skimmo Manopola NV060 NV061 NV062 NV063 NV064 NV065 NV066 NV067 2008"><a class="st-card" href="christmas-battle/index.html"><div class="thumb"><img src="christmas-battle/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Christmas Battle</h2><p>8 sorpresine<br>2008</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Con pennarello Foca Con righellino Con pastelli Con nastro di adesivi Con piegafoglio Con timbro neve Con timbro zampina TT098 TT099 TT100 TT101 TT102 TT103 TT104 TT105 2007"><a class="st-card" href="bosco-degli-auguri/index.html"><div class="thumb"><img src="bosco-degli-auguri/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Il Bosco degli Auguri</h2><p>8 sorpresine<br>2007</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Pipistrello su zucca Funnystein con zucca Porta Lupo nella zucca TT094 TT095 TT096 TT097 2007"><a class="st-card" href="monster-hotel-halloween/index.html"><div class="thumb"><img src="monster-hotel-halloween/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Monster Hotel Halloween</h2><p>4 sorpresine<br>2007</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Superman Batman Lanterna Verde Flash Bat-mobile Astronave 2S-231 2S-232 2S-233 2S-234 2S-235 2S-236 2007"><a class="st-card" href="justice-league/index.html"><div class="thumb"><img src="justice-league/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Justice League</h2><p>6 sorpresine<br>2007</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Chatta Lockette Tune Piff Amore Digit 2S-221 2S-222 2S-223 2S-224 2S-225 2S-226 2007"><a class="st-card" href="pixie-2007/index.html"><div class="thumb"><img src="pixie-2007/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Pixie</h2><p>6 sorpresine<br>2007</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Fantasmino n° 1 Fantasmino n° 2 Fantasmino n° 3 Fantasmino n° 4 Fantasmino n° 5 Fantasmino n° 6 Fantasmino n° 7 Fantasmino n° 8 Fantasmino n° 9 Fantasmino n° 10 2S-043 2S-044 2S-045 2S-046 2S-047 2S-048 2S-049 2S-050 2S-051 2S-052 2006"><a class="st-card" href="champion-ghost/index.html"><div class="thumb"><img src="champion-ghost/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Champion Ghost</h2><p>10 sorpresine<br>2006</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Timbro rullo stelline Timbro folletto Taglia nastro Nastro adesivo Porta bigliettini Pendolo da nastro Foratrice Arriccia nastro S-N-1 S-N-2 S-N-3 S-N-4 S-N-5 S-N-6 S-N-7 S-N-8 2005"><a class="st-card" href="folletti-di-natale/index.html"><div class="thumb"><img src="folletti-di-natale/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Folletti di Natale</h2><p>8 sorpresine<br>2005</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Lumacho Capitan Lumo Lumappo Lumocchio Lumarin Lumacchia Lumociao Luana Lumaca col salvagente Nave pirata Cannocchiale Lumaca con bandiera Lumaca che dorme Calamaio con piuma S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-10 S-12 S-13 S-14 S-17 S-18 2005"><a class="st-card" href="piramolli/index.html"><div class="thumb"><img src="piramolli/immagini/copertina.webp" alt="" loading="lazy"></div><h2>I Piramolli</h2><p>14 sorpresine<br>2005</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Supernota Falsanota Do Re Mi Fa Sol La Si Chitarra Giradischi Metronomo Organetto Clavicembalo Tuba S-19 S-20 S-21 S-22 S-23 S-24 S-25 S-26 S-27 S-28 S-29 S-30 S-31 S-32 S-33 2005"><a class="st-card" href="citta-delle-note/index.html"><div class="thumb"><img src="citta-delle-note/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Città delle Note</h2><p>15 sorpresine<br>2005</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Bambina in abito rosa Bambino in abito giallo Capostazione Fuochista Macchinista Babbo Natale Elfo di Natale Coppia su sci Scenario locomotiva Scenario vagoni Perforatrice Locomotiva C-201a C-201b C-202 C-203 C-204 C-205 C-206 C-207 C-208 C-209 C-210 C-211 2004"><a class="st-card" href="polar-express/index.html"><div class="thumb"><img src="polar-express/immagini/copertina.webp" alt="" loading="lazy"></div><h2>The Polar Express</h2><p>12 sorpresine<br>2004</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Asino Angelo Mucca Maria Gesù Bambino Giuseppe Zampognaro Ragazzo con i secchi Donna con agnello 2004"><a class="st-card" href="presepe-2004/index.html"><div class="thumb"><img src="presepe-2004/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Il Presepe</h2><p>9 sorpresine<br>2004</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Johnny Piombio Gina Scarpina Nik Supersonik Mike Superbike Emilio Appiglio Gaia Pagaia Linda Bucalonda Pia Plano Ela Stic &amp; Lalla Molla Jack la Grotta 1999"><a class="st-card" href="super-giraffe/index.html"><div class="thumb"><img src="super-giraffe/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Le 10 Spericolate Super Giraffe</h2><p>10 sorpresine<br>1999</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Maria Angelo Giuseppe Mucca con scoiattolo Gesù con gli animali Asino con cane Donna con bambino Pastorello con agnello Suonatore di flauto 1998"><a class="st-card" href="presepe-1998/index.html"><div class="thumb"><img src="presepe-1998/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Il Presepe</h2><p>9 sorpresine<br>1998</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Arturo Passamuro Arf Babau &amp; Ubaldo Passeggio Toto Smemorato Lalla Frullata Puccio Ciuccio Bice Stiratrice Molly Ammollo Ugo Asciugo Carlo Cucù Berto Tremor 1996"><a class="st-card" href="fantasmini/index.html"><div class="thumb"><img src="fantasmini/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Fantasmini</h2><p>10 sorpresine<br>1996</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Jimmy Pandrix Lola Stilosa Lorella Saltella Tonino Pensierino Adone Cuccone Dina Tondina Baldo Baldoria Lucia Festamia Terenzio Pizzoso Jonny Twistino Tommy Tuttagola Teo Tombola 1994"><a class="st-card" href="panda-party/index.html"><div class="thumb"><img src="panda-party/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Panda Party</h2><p>12 sorpresine<br>1994</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Pupo Pupazzolo Bobby Bob Gigi Spazzaneve Pico Picozzo Battista Fuoripista Gianni Tormenta Patty Ruzzolona Rosa Sprintosa Nina Pattinina Ran Saetta Tommy Campione Fred Freddoloso 1993"><a class="st-card" href="ranopla/index.html"><div class="thumb"><img src="ranopla/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Le simpatiche Ranoplà</h2><p>12 sorpresine<br>1993</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Capo Leon Ginetto Tronchetto Augusto Belfusto Lola Civettuola Gaio Buongustaio Poldino Pignolino Dante Vigilante Leo Tenerella Lello Stornello Leo Sfarfalla 1993"><a class="st-card" href="leo-venturas/index.html"><div class="thumb"><img src="leo-venturas/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Leo Venturas</h2><p>10 sorpresine<br>1993</p><span class="st-apri">Apri</span></a></li>
   </ul>
 </main>
 

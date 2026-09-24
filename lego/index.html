@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>LEGO Minifigures · Collection Time</title>
 <meta name="description" content="LEGO Minifigures: tutte le serie e le serie a tema, con le minifigure che ho e quelle che mi mancano.">
 <meta name="theme-color" content="#1A2140">
@@ -52,7 +53,9 @@
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Tutte le collezioni</a>
+  <!-- ! MODIFICA: titolo della pagina -->
   <h1 class="st-titolo">LEGO MINIFIGURES</h1>
   <!-- Frase + lente: la lente apre il campo per cercare tra le collezioni (funziona con script.js) -->
   <div class="st-sub">
@@ -71,6 +74,15 @@
        data-cerca="..." sul <li> = i nomi delle minifigure, così la ricerca trova la serie giusta. -->
   <!-- TUTTE LE SERIE (numerate e a tema) in ordine di uscita, DALLA PIÙ RECENTE:
        una serie nuova va aggiunta IN CIMA, come prima card dell'elenco. -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: lego/_strumenti/strumento-lego.html, sezione 3
+         "Cambia una foto (o la copertina)", partendo dalla foto di gruppo della serie. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
   <ul class="st-cards">
     <li data-cerca="Thelonious Puss in Boots Gingy Shrek Dragon Fiona e Ciuchino Merlin Pinocchio Big Bad Wolf Lord Farquaad Fairy Godmother Prince Charming"><a class="st-card" href="shrek/index.html"><div class="thumb"><img src="shrek/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Shrek</h2><p>12 minifigure<br>Set LEGO 71053</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Rullo compressore Pala caricatrice Camion ribaltabile Betoniera Gru demolitrice Escavatore Autogru Bulldozer"><a class="st-card" href="technic-mighty-machines/index.html"><div class="thumb"><img src="technic-mighty-machines/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Technic Mighty Machines</h2><p>8 mezzi<br>Set LEGO 42233</p><span class="st-apri">Apri</span></a></li>

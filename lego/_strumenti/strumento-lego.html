@@ -331,9 +331,9 @@ $('btnCrea').addEventListener('click', async () => {
          .replace(/colonne: \d+,\s*\/\/[^\n]*/, 'colonne: ' + colonne + ',                      // elementi per fila sugli schermi larghi (' + n + ' in ' + (n <= colonne ? 1 : 2) + (n <= colonne ? ' fila)' : ' file)'));
     const righe = elenco.map((nome, i) => {
       const k = String(i + 1).padStart(2, '0');
-      return '  { id: "' + prefisso + k + '", numero: "' + k + '", ep: "' + set + '", nome: ' + js(nome) + ', foto: "immagini/' + k + '.webp" },';
+      return '  { id: "' + prefisso + k + '", numero: "' + k + '", codice: "' + set + '", nome: ' + js(nome) + ', foto: "immagini/' + k + '.webp" },';
     }).join('\n');
-    t = t.replace(/const PENNE = \[[\s\S]*?\n\];/, 'const PENNE = [\n' + righe + '\n];');
+    t = t.replace(/const ELENCO = \[[\s\S]*?\n\];/, 'const ELENCO = [\n' + righe + '\n];');
     const d = await dir('lego/' + slug, true);
     await scrivi(d, 'index.html', t);
     await dir('lego/' + slug + '/immagini/mini', true);

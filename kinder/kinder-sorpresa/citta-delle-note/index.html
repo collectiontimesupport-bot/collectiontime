@@ -1,0 +1,242 @@
+<!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
+<!-- =====================================================================
+     CITTÀ DELLE NOTE (Kinder Sorpresa, 2005) — pagina della collezione
+     ---------------------------------------------------------------------
+     Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI ed
+                              ELENCO DELLE SORPRESINE (le uniche parti da
+                              toccare per aggiungere o cambiare sorpresine)
+       immagini/            ← le foto in WebP trasparente (01.webp … 15.webp)
+                              e copertina.webp (la foto della card)
+       (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
+        collezioni, e in kinder/css/stile.css, UNO per tutte le serie Kinder;
+        il funzionamento, app.js, sta nella cartella "comune" del sito)
+
+     ▸ PER UNA NUOVA SERIE: copia questa cartella, cambia titolo,
+       IMPOSTAZIONI ed ELENCO qui in fondo e aggiungi la sua card
+       in ../index.html (in cima: dalla serie più recente).
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Città delle Note · Collection Time</title>
+<meta name="description" content="Città delle Note, sorpresine Kinder Sorpresa (2005): le 15 sorpresine, con quelle che ho e quelle che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Città delle Note · Collection Time">
+<meta property="og:description" content="Città delle Note, sorpresine Kinder Sorpresa (2005): le 15 sorpresine, con quelle che ho e quelle che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/kinder/kinder-sorpresa/citta-delle-note/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../../sito.css?v=11">
+
+<!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
+<!-- "?v=…" è il numero di versione: quando cambi un file .js o .css aumentalo (v=1 → v=2)
+     in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
+<link rel="stylesheet" href="../../../comune/collezione.css?v=5">
+<link rel="stylesheet" href="../../css/stile.css?v=2">
+</head>
+<body>
+
+<!-- Header del sito: viene riempito con header.html da ../../../script.js -->
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <!-- Link per tornare alla pagina Kinder Sorpresa -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Kinder Sorpresa</a>
+
+  <!-- ============ TITOLO E STRUMENTI ============ -->
+  <header>
+    <!-- titolo scritto (questa serie non ha un logo): va anche nel PDF -->
+    <!-- ! MODIFICA: titolo della pagina -->
+    <h1 id="pageTitle"><span class="titolo-testo">CITTÀ DELLE NOTE</span></h1>
+    <div class="bar">
+      <!-- "5 possedute su 15": il testo lo scrive app.js -->
+      <p class="sub" id="count"></p>
+      <div class="tools">
+        <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
+        <div class="st-cerca" id="stCerca">
+          <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <!-- Filtro: tutte / possedute / mancanti -->
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutte</option>
+          <option value="owned" id="optOwned">Ce le ho</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <!-- Ordine: dalla n° 1 o al contrario -->
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dalla prima</option>
+          <option value="desc">Dalla più recente</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ GRIGLIA DELLE SORPRESINE ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni sorpresina
+       dell'ELENCO DELLE SORPRESINE (in fondo a questa pagina). -->
+  <ul class="grid" id="grid"></ul>
+
+  <!-- Messaggi quando non c'è nulla da mostrare -->
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p>Non ci sono ancora elementi in questa collezione.</p>
+  </section>
+
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       Esporta e Importa sono nella banda in alto e valgono per tutto il sito. -->
+  <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
+    <p class="hint">Premi su una sorpresina per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
+    <button class="btn" id="btnPrint" type="button">Stampa</button>
+  </footer>
+</div>
+
+<!-- Footer del sito: viene riempito con footer.html da ../../../script.js -->
+<div id="footer-placeholder"></div>
+
+
+<!-- ============ FINESTRA "STAMPA" ============ -->
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Verrà creato un PDF da salvare o stampare.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le sorpresine, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="missing">
+      <span><strong>Quelle che mi mancano</strong> (<span id="cnt-missing"></span>)<small>Solo ciò che non hai ancora segnato, con il quadratino vuoto.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong>Tutte le sorpresine</strong> (<span id="cnt-all"></span>)<small>Tutto l'elenco con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn primary" id="printGo">Crea PDF</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ FINESTRA "DETTAGLI" (si apre con ✎) ============ -->
+<dialog id="dlg">
+  <form id="editForm">
+    <!-- foto grande -->
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
+    <div class="dlg-body">
+      <!-- Anno e Numero (fissi, non si modificano) -->
+      <div class="trio">
+        <div class="field"><span id="lblCodice">Anno</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
+      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+/* =====================================================================
+   IMPOSTAZIONI DELLA COLLEZIONE
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra serie basta
+   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
+   ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
+const CONFIG = {
+  id: "kinder-citta-delle-note",            // nome usato nei PDF
+  dbName: "catalogo-kinder-citta-delle-note", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "Città delle Note",           // titolo della scheda del browser e del PDF
+  nome: "sorpresina",              // come si chiama un elemento
+  possedute: "possedute",          // "5 possedute su 15"
+  colonne: 8,                     // elementi per fila sugli schermi larghi (15 in 2 file)
+  proporzione: 1,                  // altezza ÷ larghezza di una foto (le foto sono quadrate)
+  pdfColonne: 8,                   // elementi per fila nel PDF
+  pdfFile: 2,                      // file per pagina del PDF (15 = 1 pagina)
+  suggerimenti: [],                // hashtag proposti nei dettagli (es. ["Natale"]); vuoto = nessuno
+  mostraNomi: true                 // nome scritto sotto ogni sorpresina (ogni sorpresina ha un nome)
+};
+
+/* =====================================================================
+   ELENCO DELLE SORPRESINE  ★ QUI SI AGGIUNGONO O CAMBIANO ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è UNA sorpresina, nello stesso ordine della pagina
+   (con la numerazione ufficiale).
+
+   I CAMPI
+     id        codice unico: "citta-delle-note-01", "citta-delle-note-02"…
+               Serve al browser per ricordare se ce l'hai: non cambiarlo
+               e non usare lo stesso id due volte.
+     numero    numero della sorpresina nella serie ("01" … "15")
+     codice    codice dell'oggetto: se non c'è un codice, metti l'anno
+               (qui c'è l'anno di uscita: nei dettagli si legge "Anno")
+     nome      nome della sorpresina
+     foto      percorso della foto: "immagini/NOMEFILE.webp"
+     hashtag   tema: ["Natale"]… — facoltativo
+     info      informazioni fisse — facoltativo
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…".
+   ===================================================================== */
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  { id: "citta-delle-note-01", numero: "01", codice: "2005", nome: "Supernota", foto: "immagini/01.webp", info: "Codice S-19" },
+  { id: "citta-delle-note-02", numero: "02", codice: "2005", nome: "Falsanota", foto: "immagini/02.webp", info: "Codice S-20" },
+  { id: "citta-delle-note-03", numero: "03", codice: "2005", nome: "Do", foto: "immagini/03.webp", info: "Codice S-21" },
+  { id: "citta-delle-note-04", numero: "04", codice: "2005", nome: "Re", foto: "immagini/04.webp", info: "Codice S-22" },
+  { id: "citta-delle-note-05", numero: "05", codice: "2005", nome: "Mi", foto: "immagini/05.webp", info: "Codice S-23" },
+  { id: "citta-delle-note-06", numero: "06", codice: "2005", nome: "Fa", foto: "immagini/06.webp", info: "Codice S-24" },
+  { id: "citta-delle-note-07", numero: "07", codice: "2005", nome: "Sol", foto: "immagini/07.webp", info: "Codice S-25" },
+  { id: "citta-delle-note-08", numero: "08", codice: "2005", nome: "La", foto: "immagini/08.webp", info: "Codice S-26" },
+  { id: "citta-delle-note-09", numero: "09", codice: "2005", nome: "Si", foto: "immagini/09.webp", info: "Codice S-27" },
+  { id: "citta-delle-note-10", numero: "10", codice: "2005", nome: "Chitarra", foto: "immagini/10.webp", info: "Codice S-28" },
+  { id: "citta-delle-note-11", numero: "11", codice: "2005", nome: "Giradischi", foto: "immagini/11.webp", info: "Codice S-29" },
+  { id: "citta-delle-note-12", numero: "12", codice: "2005", nome: "Metronomo", foto: "immagini/12.webp", info: "Codice S-30" },
+  { id: "citta-delle-note-13", numero: "13", codice: "2005", nome: "Organetto", foto: "immagini/13.webp", info: "Codice S-31" },
+  { id: "citta-delle-note-14", numero: "14", codice: "2005", nome: "Clavicembalo", foto: "immagini/14.webp", info: "Codice S-32" },
+  { id: "citta-delle-note-15", numero: "15", codice: "2005", nome: "Tuba", foto: "immagini/15.webp", info: "Codice S-33" },
+];
+</script>
+
+<!-- Banda in alto e in basso, ricerca, avvisi, Esporta/Importa: comuni a tutto il sito -->
+<script src="../../../script.js?v=8"></script>
+<!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
+<script src="../../../comune/app.js?v=22"></script>
+</body>
+</html>
