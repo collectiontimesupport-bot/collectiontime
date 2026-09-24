@@ -1,0 +1,199 @@
+<!doctype html>
+<!-- =====================================================================
+     STRUMENTO MINI — solo per te, sul tuo Mac (NON viene pubblicato)
+     ---------------------------------------------------------------------
+     Si apre in Google Chrome: tasto destro sul file → Apri con → Google Chrome.
+     (Safari non va bene: non sa salvare le foto in WebP e non può scrivere
+     nella cartella.)
+
+     A COSA SERVONO LE MINI
+       Le "mini" sono le copie piccole delle foto (160 × 160) nella cartella
+       immagini/mini/ di una serie. Le usano SOLO le pagine "tutti insieme"
+       (cartelle "tutti" o "tutte"), che mostrano centinaia di foto insieme:
+         lego/tutte, coolthings/charm-portachiavi/tutti,
+         coolthings/figure-3d/tutti, lidl/stikeez/tutti,
+         mcdonalds/happy-meal/squishmallows/tutti
+       Una serie ha bisogno delle mini solo se accanto a lei (nella stessa
+       cartella) c'è una cartella "tutti" o "tutte".
+
+     COSA FA
+       1. RIFAI LE MINI → per ogni serie che ne ha bisogno crea (o rifà)
+          immagini/mini/NN.webp partendo dalle foto grandi immagini/NN.webp.
+          Usalo dopo aver aggiunto o cambiato delle foto a mano.
+       2. TOGLI LE MINI CHE NON SERVONO → cancella le cartelle mini delle
+          serie che non hanno una pagina "tutti insieme" accanto.
+
+     Lo strumento trova da solo le pagine "tutti insieme": se un giorno ne
+     aggiungi una nuova, funziona anche per quella senza cambiare niente.
+     La cartella "_strumenti" inizia con "_": GitHub Pages non la pubblica.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strumento mini · Collection Time</title>
+<style>
+  :root { --ink: #1A2140; --muted: #5D6580; --line: #D5D9E2; --amber: #F2A900; --ok: #1E7F4F; --err: #B42318; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: #F6F7FA; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  .sub { margin: 0 0 20px; color: var(--muted); }
+  section { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin: 0 0 16px; }
+  h2 { margin: 0 0 8px; font-size: 1.15rem; }
+  button { font: inherit; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+  button.primario { background: var(--amber); border-color: var(--amber); font-weight: 600; }
+  button:disabled { opacity: .5; cursor: default; }
+  .bloccato { opacity: .45; pointer-events: none; }
+  .muted { color: var(--muted); font-size: .92rem; }
+  ul { margin: 6px 0; padding-left: 20px; font-size: .92rem; }
+  progress { width: 100%; margin-top: 10px; }
+  .msg { margin-top: 10px; font-weight: 600; }
+  .msg.ok { color: var(--ok); } .msg.err { color: var(--err); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Strumento mini</h1>
+  <p class="sub">Le copie piccole delle foto, solo dove servono.</p>
+
+  <!-- 0. scelta della cartella del sito -->
+  <section>
+    <h2>Scegli la cartella del sito</h2>
+    <p class="muted">La cartella "collection time website" sulla Scrivania.</p>
+    <p id="noChrome" class="msg err" hidden>Apri questo file con Google Chrome.</p>
+    <button class="primario" id="btnCartella" type="button">Scegli la cartella…</button>
+    <p id="nomeCartella" class="muted"></p>
+  </section>
+
+  <div id="lavoro" class="bloccato">
+    <!-- situazione: quali serie hanno bisogno delle mini -->
+    <section>
+      <h2>Situazione</h2>
+      <div id="situazione" class="muted">—</div>
+    </section>
+
+    <!-- 1. rifai le mini -->
+    <section>
+      <h2>1. Rifai le mini</h2>
+      <p class="muted">Crea le copie piccole per tutte le serie che hanno una pagina "tutti insieme" accanto. Serve dopo aver cambiato delle foto a mano. Ci vuole circa un minuto.</p>
+      <button class="primario" id="btnRifai" type="button">Rifai le mini</button>
+      <progress id="bar" hidden></progress>
+      <p id="msg1" class="msg" hidden></p>
+    </section>
+
+    <!-- 2. togli le mini inutili -->
+    <section>
+      <h2>2. Togli le mini che non servono</h2>
+      <p class="muted">Cancella le cartelle mini delle serie senza pagina "tutti insieme". Le foto grandi non vengono toccate.</p>
+      <button id="btnTogli" type="button">Togli le mini inutili</button>
+      <p id="msg2" class="msg" hidden></p>
+    </section>
+  </div>
+</main>
+
+<script>
+/* ---------- misure: le stesse delle mini già presenti nel sito ---------- */
+const PICCOLA = 160;          // mini: 160 × 160
+const QUALITA = 0.8;          // qualità WebP (0–1)
+
+const $ = id => document.getElementById(id);
+let cartella = null;          // cartella del sito
+let serieConMini = [];        // [{percorso, immagini}] serie che hanno bisogno delle mini
+let miniInutili = [];         // [{percorso, immagini}] cartelle mini da togliere
+
+function messaggio(el, testo, tipo) { el.hidden = false; el.className = 'msg' + (tipo ? ' ' + tipo : ''); el.textContent = testo; }
+
+/* ---------- esplora il sito ----------
+   Per ogni cartella: se contiene "tutti" o "tutte", le cartelle accanto
+   con dentro "immagini" sono serie che hanno bisogno delle mini.
+   Tutte le altre cartelle "immagini" con una "mini" dentro sono inutili. */
+async function esplora(d, percorso) {
+  const figli = [];
+  for await (const [nome, h] of d.entries()) if (h.kind === 'directory' && !nome.startsWith('_') && !nome.startsWith('.')) figli.push([nome, h]);
+  const haTutti = figli.some(([n]) => n === 'tutti' || n === 'tutte');
+  for (const [nome, h] of figli) {
+    if (nome === 'tutti' || nome === 'tutte') continue;
+    const imm = await h.getDirectoryHandle('immagini').catch(() => null);
+    if (imm) {
+      const p = percorso + nome;
+      if (haTutti) serieConMini.push({ percorso: p, immagini: imm });
+      else if (await imm.getDirectoryHandle('mini').catch(() => null)) miniInutili.push({ percorso: p, immagini: imm });
+    }
+    if (nome !== 'immagini' && nome !== 'immagini per mc') await esplora(h, percorso + nome + '/');
+  }
+}
+
+async function aggiornaSituazione() {
+  serieConMini = []; miniInutili = [];
+  await esplora(cartella, '');
+  const gruppi = {};
+  for (const s of serieConMini) { const g = s.percorso.split('/').slice(0, -1).join('/'); gruppi[g] = (gruppi[g] || 0) + 1; }
+  let html = '<p>Serie che usano le mini:</p><ul>' + Object.entries(gruppi).map(([g, n]) => `<li>${g}: ${n} serie</li>`).join('') + '</ul>';
+  html += miniInutili.length
+    ? `<p>Cartelle mini che non servono: <b>${miniInutili.length}</b></p><ul>${miniInutili.slice(0, 8).map(s => `<li>${s.percorso}</li>`).join('')}${miniInutili.length > 8 ? '<li>…</li>' : ''}</ul>`
+    : '<p>✓ Nessuna cartella mini inutile.</p>';
+  $('situazione').innerHTML = html;
+  $('btnTogli').disabled = !miniInutili.length;
+}
+
+/* ---------- immagini ---------- */
+function carica(blob) {
+  return new Promise((ok, ko) => { const u = URL.createObjectURL(blob), i = new Image(); i.onload = () => { URL.revokeObjectURL(u); ok(i); }; i.onerror = () => ko(new Error('Immagine non leggibile')); i.src = u; });
+}
+function piccola(img) {
+  const c = document.createElement('canvas'); c.width = c.height = PICCOLA;
+  const x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
+  x.drawImage(img, 0, 0, PICCOLA, PICCOLA);     // le foto grandi sono quadrate (560 × 560)
+  return new Promise((ok, ko) => c.toBlob(b => (b && b.type === 'image/webp') ? ok(b) : ko(new Error('Questo browser non sa creare WebP: usa Chrome.')), 'image/webp', QUALITA));
+}
+async function scrivi(d, nome, dati) {
+  const w = await (await d.getFileHandle(nome, { create: true })).createWritable();
+  await w.write(dati); await w.close();
+}
+
+/* ---------- 0. scelta della cartella ---------- */
+if (!window.showDirectoryPicker) { $('noChrome').hidden = false; $('btnCartella').disabled = true; }
+$('btnCartella').addEventListener('click', async () => {
+  try {
+    const d = await showDirectoryPicker({ id: 'collectiontime', mode: 'readwrite' });
+    if (!(await d.getFileHandle('index.html').catch(() => null)) || !(await d.getDirectoryHandle('comune').catch(() => null))) {
+      $('nomeCartella').textContent = 'Questa non è la cartella del sito. Riprova.'; return;
+    }
+    cartella = d; $('nomeCartella').textContent = '✓ ' + d.name;
+    await aggiornaSituazione();
+    $('lavoro').classList.remove('bloccato');
+  } catch (e) { /* scelta annullata */ }
+});
+
+/* ---------- 1. rifai le mini ---------- */
+$('btnRifai').addEventListener('click', async () => {
+  const b = $('btnRifai'), bar = $('bar'); b.disabled = true; bar.hidden = false;
+  try {
+    const lavori = [];
+    for (const s of serieConMini)
+      for await (const [f, fh] of s.immagini.entries())
+        if (fh.kind === 'file' && /^\d+\.webp$/.test(f)) lavori.push([s.immagini, f, fh]);   // copertina esclusa
+    bar.max = lavori.length; bar.value = 0;
+    for (const [d, f, fh] of lavori) {
+      await scrivi(await d.getDirectoryHandle('mini', { create: true }), f, await piccola(await carica(await fh.getFile())));
+      bar.value++;
+    }
+    messaggio($('msg1'), '✓ Fatto: ' + lavori.length + ' mini create o aggiornate.', 'ok');
+  } catch (e) { messaggio($('msg1'), 'Interrotto: ' + e.message, 'err'); }
+  b.disabled = false;
+});
+
+/* ---------- 2. togli le mini inutili ---------- */
+$('btnTogli').addEventListener('click', async () => {
+  if (!confirm('Cancello ' + miniInutili.length + ' cartelle mini che non servono?')) return;
+  try {
+    for (const s of miniInutili) await s.immagini.removeEntry('mini', { recursive: true });
+    messaggio($('msg2'), '✓ Tolte ' + miniInutili.length + ' cartelle mini.', 'ok');
+    await aggiornaSituazione();
+  } catch (e) { messaggio($('msg2'), 'Interrotto: ' + e.message, 'err'); }
+});
+</script>
+</body>
+</html>
