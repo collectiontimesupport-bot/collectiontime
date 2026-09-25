@@ -40,7 +40,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../sito.css?v=11">
+<link rel="stylesheet" href="../../sito.css?v=12">
 <!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
 <link rel="preload" href="../../comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
 
@@ -48,7 +48,7 @@
 <!-- "?v=…" è il numero di versione: quando cambi un file .js o .css aumentalo (v=1 → v=2)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
 <link rel="stylesheet" href="../../comune/collezione.css?v=5">
-<link rel="stylesheet" href="../css/stile.css?v=1">
+<link rel="stylesheet" href="../css/stile.css?v=8">
 </head>
 <body class="erasable">
 
@@ -120,7 +120,7 @@
 <dialog id="printDlg">
   <div class="dlg-body" tabindex="-1" autofocus>
     <h2 class="dlg-title">Cosa vuoi stampare?</h2>
-    <p class="sub">Verrà creato un PDF da salvare o stampare.</p>
+    <p class="sub">Un PDF da stampare o un'immagine da condividere.</p>
     <label class="choice">
       <input type="radio" name="printKind" value="owned" checked>
       <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le penne, con il quadratino spuntato dove ce l'hai.</small></span>
@@ -136,6 +136,7 @@
     <div class="actions">
       <span class="spacer"></span>
       <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn" id="printImg">Crea immagine</button>
       <button type="button" class="btn primary" id="printGo">Crea PDF</button>
     </div>
   </div>
@@ -189,8 +190,8 @@ const CONFIG = {
   possedute: "possedute",          // "12 possedute su 103"
   colonne: 25,                     // penne per fila sugli schermi larghi
   proporzione: 7,                  // altezza ÷ larghezza di una penna
-  pdfColonne: 20,                  // penne per fila nel PDF (20: anche le penne con le ali larghe restano alte come le altre)
-  pdfFile: 2,                      // file di penne per pagina del PDF
+  pdfColonne: 20,                  // penne per fila nel PDF orizzontale (20: anche le penne con le ali larghe restano alte come le altre)
+  pdfFile: 2,                      // file di penne per pagina del PDF (solo Legami: le altre pagine hanno il PDF verticale)
   suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua"]   // hashtag proposti nei dettagli
 };
 
@@ -224,6 +225,9 @@ const CONFIG = {
      colore    nome del colore (es. "Blu")          — facoltativo
      hex       codice del colore (es. "#2c357e")    — facoltativo
      foto      percorso della foto: "immagini/NOMEFILE.webp"
+               Se sostituisci la foto con un file nuovo con lo STESSO nome,
+               aggiungi o aumenta "?v=…" in fondo (es. "immagini/01.webp?v=2"):
+               obbliga il browser a scaricare la foto nuova invece di quella vecchia salvata.
                (se manca, al posto della penna compare una sagoma vuota)
      limitata  true = edizione limitata (numero in rosso)   — facoltativo
      hashtag   es. ["Natale", "Limited Edition"]            — facoltativo
@@ -358,8 +362,8 @@ const ELENCO = [
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Esporta/Importa: comuni a tutto il sito -->
-<script src="../../script.js?v=8"></script>
+<script src="../../script.js?v=9"></script>
 <!-- Funzionamento della pagina (legge CONFIG ed ELENCO qui sopra) -->
-<script src="../../comune/app.js?v=22"></script>
+<script src="../../comune/app.js?v=24"></script>
 </body>
 </html>

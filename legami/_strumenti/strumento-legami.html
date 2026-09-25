@@ -1,0 +1,245 @@
+<!doctype html>
+<!-- =====================================================================
+     STRUMENTO LEGAMI — solo per te, sul tuo Mac (NON viene pubblicato:
+     la cartella "_strumenti" inizia con "_" e GitHub Pages la salta)
+     ---------------------------------------------------------------------
+     Si apre in Google Chrome: tasto destro sul file → Apri con → Google Chrome.
+     (Safari non va bene: non sa salvare le foto in WebP.)
+     Funziona anche senza Internet.
+
+     A COSA SERVE
+     Prepara le foto delle collezioni Legami (portachiavi, astucci, penne…)
+     già pronte da mettere nella cartella "immagini" della collezione.
+
+     1. FOTO SINGOLA  → per un oggetto normale (un portachiavi, un astuccio).
+        Toglie il bordo vuoto intorno, la porta alta 640 pixel e la salva
+        in WebP. Puoi sceglierne tante insieme: ognuna viene salvata con
+        il suo nome (es. 13.png → 13.webp).
+
+     2. SET DA 2 O PIÙ → per un set (es. Orsetti, Pappagalli).
+        Nella pagina ogni foto viene resa ALTA come le altre: un set è largo
+        e, messo così com'è, finirebbe sopra gli oggetti vicini.
+        Lo strumento mette il set in una tela trasparente larga quanto il
+        riquadro della pagina, appoggiato in basso, con lo spazio vuoto sopra:
+        così sta dentro il suo riquadro, alla stessa linea degli altri.
+        Puoi scegliere UNA foto con tutto il set, oppure le foto dei singoli
+        pezzi (2–4) che lo strumento mette uno accanto all'altro.
+
+     LA PROPORZIONE
+     La larghezza del riquadro dipende da "proporzione" nel blocco CONFIG
+     della pagina della collezione (es. legami-portachiavi/index.html:
+     proporzione: 1.36). Scrivi nel campo lo stesso numero.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strumento Legami · Collection Time</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { --ink: #1A2140; --muted: #5D6580; --line: #D5D9E2; --amber: #F2A900; --rosso: #E50A15; --err: #B42318; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: #F6F7FA; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; color: var(--rosso); }
+  .sub { margin: 0 0 20px; color: var(--muted); }
+  section { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin: 0 0 16px; }
+  h2 { margin: 0 0 6px; font-size: 1.15rem; }
+  .muted { color: var(--muted); font-size: .92rem; margin: 0 0 12px; }
+  button { font: inherit; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+  button.primario { background: var(--amber); border-color: var(--amber); font-weight: 600; }
+  button:disabled { opacity: .45; cursor: default; }
+  label { display: block; margin: 12px 0 4px; font-weight: 600; }
+  input[type=number] { font: inherit; width: 110px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; }
+  input[type=text] { font: inherit; width: 200px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; }
+  /* scacchiera: fa vedere le parti trasparenti */
+  .scacchi { background: repeating-conic-gradient(#eee 0 25%, #fff 0 50%) 0 0 / 16px 16px; border-radius: 8px; }
+  #singole { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+  #singole figure { margin: 0; width: 110px; text-align: center; font-size: .8rem; color: var(--muted); }
+  #singole img { width: 110px; height: 150px; object-fit: contain; display: block; }
+  #pezzi { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 0; }
+  #pezzi figure { margin: 0; width: 90px; text-align: center; }
+  #pezzi img { width: 90px; height: 90px; object-fit: contain; display: block; }
+  #pezzi button { padding: 2px 8px; }
+  .riquadro { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin: 16px 0; }
+  #tela { height: 320px; width: auto; display: block; outline: 2px dashed var(--line); }
+  .info { font-size: .9rem; color: var(--muted); }
+  .err { color: var(--err); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Strumento Legami</h1>
+  <p class="sub">Foto pronte per le collezioni Legami: ritagliate, alte uguali, in WebP.</p>
+  <p class="err" id="noWebp" hidden>Questo browser non sa salvare in WebP: apri il file con Google Chrome.</p>
+
+  <!-- ============ 1. FOTO SINGOLA ============ -->
+  <section>
+    <h2>1. Foto singola</h2>
+    <p class="muted">Per un oggetto normale. Scegli una o più foto senza sfondo (PNG o WebP):
+      ognuna viene ritagliata, portata alta 640 pixel e salvata con lo stesso nome in .webp.</p>
+    <input type="file" id="fileSingole" accept="image/*" multiple hidden>
+    <button type="button" id="btnSingole">Scegli le foto…</button>
+    <div id="singole"></div>
+    <button type="button" class="primario" id="scaricaSingole" disabled>Scarica le foto .webp</button>
+  </section>
+
+  <!-- ============ 2. SET DA 2 O PIÙ ============ -->
+  <section>
+    <h2>2. Set da 2 o più</h2>
+    <p class="muted">Scegli UNA foto con tutto il set, oppure 2–4 foto dei singoli pezzi
+      (vengono messi uno accanto all'altro, nell'ordine in cui li scegli; cambialo con ◀ ▶).</p>
+
+    <label for="proporzione">Proporzione della collezione (CONFIG → proporzione)</label>
+    <input type="number" id="proporzione" value="1.36" min="0.5" max="10" step="0.01">
+
+    <input type="file" id="fileSet" accept="image/*" multiple hidden>
+    <p style="margin-top:14px"><button type="button" id="btnSet">Scegli le foto del set…</button></p>
+    <div id="pezzi"></div>
+
+    <!-- sovrapposizione: solo con 2–4 foto separate -->
+    <div id="boxSovr" hidden>
+      <label for="sovr">Sovrapposizione: <span id="sovrVal">0</span>%
+        <span class="info">(più sono sovrapposti, più il set viene grande)</span></label>
+      <input type="range" id="sovr" min="0" max="35" value="0">
+    </div>
+
+    <div class="riquadro">
+      <canvas id="tela" class="scacchi" width="10" height="10"></canvas>
+      <p class="info">Il tratteggio è il riquadro dell'oggetto nella pagina:<br>
+        il set deve stare tutto dentro, appoggiato in basso.<br><span id="infoSet"></span></p>
+    </div>
+
+    <label for="nomeSet">Nome del file</label>
+    <input type="text" id="nomeSet" value="set-nome"> .webp
+    <p style="margin-top:14px"><button type="button" class="primario" id="scaricaSet" disabled>Scarica il set .webp</button></p>
+  </section>
+</main>
+
+<script>
+/* ---------- IMPOSTAZIONI (si possono cambiare) ---------- */
+const ALTEZZA = 640;     // altezza delle foto, come le altre foto delle collezioni Legami
+const QUALITA = 0.88;    // qualità del .webp (come squoosh a 88)
+
+const $ = id => document.getElementById(id);
+
+/* il browser sa salvare in WebP? (Safari no) */
+(() => { const c = document.createElement('canvas'); c.width = c.height = 1;
+  if (!c.toDataURL('image/webp').startsWith('data:image/webp')) $('noWebp').hidden = false; })();
+
+/* apre un file immagine */
+function carica(file) {
+  return new Promise((ok, ko) => { const u = URL.createObjectURL(file), i = new Image();
+    i.onload = () => { URL.revokeObjectURL(u); ok(i); }; i.onerror = () => ko(new Error('Immagine non leggibile: ' + file.name)); i.src = u; });
+}
+
+/* toglie il bordo trasparente intorno all'immagine */
+function ritaglia(img) {
+  const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const x = c.getContext('2d'); x.drawImage(img, 0, 0);
+  const d = x.getImageData(0, 0, c.width, c.height).data;
+  let t = c.height, b = -1, l = c.width, r = -1;
+  for (let y = 0; y < c.height; y++) for (let xx = 0; xx < c.width; xx++)
+    if (d[(y * c.width + xx) * 4 + 3] > 10) { if (y < t) t = y; if (y > b) b = y; if (xx < l) l = xx; if (xx > r) r = xx; }
+  if (b < 0) return c;   // tutta trasparente: la lascio com'è
+  const o = document.createElement('canvas'); o.width = r - l + 1; o.height = b - t + 1;
+  o.getContext('2d').drawImage(c, l, t, o.width, o.height, 0, 0, o.width, o.height);
+  return o;
+}
+
+/* disegna "src" su una tela nuova alta "h" (larghezza in proporzione) */
+function altaH(src, h) {
+  const c = document.createElement('canvas');
+  c.height = h; c.width = Math.max(1, Math.round(src.width * h / src.height));
+  const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(src, 0, 0, c.width, c.height);
+  return c;
+}
+
+/* salva una tela come file .webp */
+function salva(tela, nome) {
+  return new Promise(ok => tela.toBlob(bl => {
+    if (!bl || bl.type !== 'image/webp') { $('noWebp').hidden = false; return ok(); }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = nome; a.click();
+    setTimeout(ok, 300);   // piccola pausa: Chrome scarica un file alla volta
+  }, 'image/webp', QUALITA));
+}
+
+/* ============ 1. FOTO SINGOLA ============ */
+let singole = [];   // [{nome, tela}]
+$('btnSingole').onclick = () => $('fileSingole').click();
+$('fileSingole').onchange = async e => {
+  singole = [];
+  for (const f of e.target.files) singole.push({ nome: f.name.replace(/\.[^.]+$/, '') + '.webp', tela: altaH(ritaglia(await carica(f)), ALTEZZA) });
+  e.target.value = '';
+  $('singole').innerHTML = '';
+  for (const s of singole) {
+    const fig = document.createElement('figure'), img = document.createElement('img');
+    img.className = 'scacchi'; img.src = s.tela.toDataURL();
+    fig.append(img, s.nome + ' · ' + s.tela.width + '×' + s.tela.height);
+    $('singole').append(fig);
+  }
+  $('scaricaSingole').disabled = !singole.length;
+};
+$('scaricaSingole').onclick = async () => { for (const s of singole) await salva(s.tela, s.nome); };
+
+/* ============ 2. SET ============ */
+let pezzi = [];     // immagini del set, già ritagliate
+const tela = $('tela'), ctx = tela.getContext('2d');
+$('btnSet').onclick = () => $('fileSet').click();
+$('fileSet').onchange = async e => {
+  pezzi = [];
+  for (const f of [...e.target.files].slice(0, 4)) pezzi.push(ritaglia(await carica(f)));
+  e.target.value = '';
+  disegnaSet();
+};
+$('sovr').oninput = e => { $('sovrVal').textContent = e.target.value; disegnaSet(); };
+$('proporzione').oninput = disegnaSet;
+
+function disegnaSet() {
+  mostraPezzi();
+  $('boxSovr').hidden = pezzi.length < 2;
+  $('scaricaSet').disabled = !pezzi.length;
+  if (!pezzi.length) return;
+
+  // a) il set intero: pezzi alti uguali, uno accanto all'altro (quello in mezzo davanti)
+  const H = 1000, sovr = Math.round(H * $('sovr').value / 100);
+  const alte = pezzi.map(p => altaH(p, H));
+  const set = document.createElement('canvas');
+  set.height = H; set.width = alte.reduce((a, c) => a + c.width, 0) - sovr * (alte.length - 1);
+  const sx = set.getContext('2d'), xs = []; let x = 0;
+  alte.forEach(c => { xs.push(x); x += c.width - sovr; });
+  const mezzo = Math.floor((alte.length - 1) / 2);
+  alte.map((_, i) => i).sort((a, b) => Math.abs(b - mezzo) - Math.abs(a - mezzo)).forEach(i => sx.drawImage(alte[i], xs[i], 0));
+
+  // b) la tela finale: alta ALTEZZA, larga quanto il riquadro della pagina (ALTEZZA ÷ proporzione);
+  //    il set il più grande possibile, centrato e appoggiato in basso
+  const prop = Math.max(0.5, parseFloat($('proporzione').value) || 1.36);
+  tela.height = ALTEZZA; tela.width = Math.round(ALTEZZA / prop);
+  const k = Math.min(tela.width / set.width, tela.height / set.height);
+  const w = Math.round(set.width * k), h = Math.round(set.height * k);
+  ctx.clearRect(0, 0, tela.width, tela.height);
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(set, Math.round((tela.width - w) / 2), tela.height - h, w, h);
+  $('infoSet').textContent = `Tela ${tela.width} × ${tela.height} px · il set occupa ${Math.round(h / tela.height * 100)}% dell'altezza`;
+}
+
+/* miniature dei pezzi, con le frecce per cambiare l'ordine */
+function mostraPezzi() {
+  $('pezzi').innerHTML = '';
+  if (pezzi.length < 2) return;
+  pezzi.forEach((p, i) => {
+    const f = document.createElement('figure'), img = document.createElement('img');
+    img.className = 'scacchi'; img.src = p.toDataURL(); f.append(img);
+    [['◀', -1], ['▶', 1]].forEach(([t, d]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.disabled = !pezzi[i + d];
+      b.onclick = () => { [pezzi[i], pezzi[i + d]] = [pezzi[i + d], pezzi[i]]; disegnaSet(); };
+      f.append(b);
+    });
+    $('pezzi').append(f);
+  });
+}
+$('scaricaSet').onclick = () => salva(tela, ($('nomeSet').value.trim() || 'set') .replace(/\.webp$/i, '') + '.webp');
+</script>
+</body>
+</html>

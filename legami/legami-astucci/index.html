@@ -1,0 +1,273 @@
+<!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
+<!-- =====================================================================
+     LEGAMI ASTUCCI — pagina della collezione degli astucci 2-in-1 in silicone Kawaii (Collection Time)
+     ---------------------------------------------------------------------
+     Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI ed
+                              ELENCO DEGLI ASTUCCI (le uniche parti da toccare
+                              per aggiungere o cambiare astucci)
+       (l'aspetto grafico è in comune/collezione.css e ../css/stile.css;
+        il funzionamento, app.js, e la libreria dei PDF stanno nella
+        cartella "comune" del sito: sono gli stessi per tutte le collezioni)
+       immagini/            ← le foto degli astucci in WebP trasparente (leggere)
+
+     ▸ PER AGGIUNGERE UN ASTUCCIO: vai in fondo alla pagina, al blocco
+       "ELENCO DEGLI ASTUCCI", e segui le istruzioni scritte lì.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Legami Astucci · Collection Time</title>
+<meta name="description" content="Legami Astucci: la collezione completa degli astucci 2-in-1 in silicone Kawaii, con quelle che ho e quelle che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Legami Astucci · Collection Time">
+<meta property="og:description" content="Legami Astucci: la collezione completa degli astucci 2-in-1 in silicone Kawaii, con quelle che ho e quelle che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/legami/legami-astucci/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../sito.css?v=12">
+<!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
+<link rel="preload" href="../../comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
+
+<!-- Aspetto grafico: comune a tutte le collezioni + quello delle collezioni Legami -->
+<!-- "?v=…" è il numero di versione: quando cambi un file .js o .css aumentalo (v=1 → v=2)
+     in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
+<link rel="stylesheet" href="../../comune/collezione.css?v=5">
+<link rel="stylesheet" href="../css/stile.css?v=8">
+</head>
+<body class="astucci">
+
+<!-- Header del sito: viene riempito con header.html da ../../script.js -->
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <!-- Link per tornare alla pagina Legami -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Legami</a>
+
+  <!-- ============ TITOLO E STRUMENTI ============ -->
+  <header>
+    <!-- ! MODIFICA: titolo della pagina -->
+    <h1 id="pageTitle"><span class="titolo-testo">LEGAMI ASTUCCI</span></h1>
+    <div class="bar">
+      <!-- "5 posseduti su 27": il testo lo scrive app.js -->
+      <p class="sub" id="count"></p>
+      <div class="tools">
+        <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
+        <div class="st-cerca" id="stCerca">
+          <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <!-- Filtro: tutte / possedute / mancanti -->
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutti</option>
+          <option value="owned" id="optOwned">Ce li ho</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <!-- Ordine: per codice (dal primo) o al contrario (dal più recente) -->
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dal primo</option>
+          <option value="desc">Dal più recente</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ GRIGLIA DEGLI ASTUCCI ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni astuccio
+       dell'ELENCO DEGLI ASTUCCI (in fondo a questa pagina). -->
+  <ul class="grid" id="grid"></ul>
+
+  <!-- Messaggi quando non c'è nulla da mostrare -->
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p>Non ci sono ancora elementi in questa collezione.</p>
+  </section>
+
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       Esporta e Importa sono nella banda in alto e valgono per tutto il sito. -->
+  <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
+    <p class="hint">Premi su un astuccio per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
+    <button class="btn" id="btnPrint" type="button">Stampa</button>
+  </footer>
+</div>
+
+<!-- Footer del sito: viene riempito con footer.html da ../../script.js -->
+<div id="footer-placeholder"></div>
+
+
+<!-- ============ FINESTRA "STAMPA" ============ -->
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Un PDF da stampare o un'immagine da condividere.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutti gli astucci, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="missing">
+      <span><strong>Quelli che mi mancano</strong> (<span id="cnt-missing"></span>)<small>Solo ciò che non hai ancora segnato, con il quadratino vuoto.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong>Tutti gli astucci</strong> (<span id="cnt-all"></span>)<small>Tutto l'elenco con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn" id="printImg">Crea immagine</button>
+      <button type="button" class="btn primary" id="printGo">Crea PDF</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ FINESTRA "DETTAGLI" (si apre con ✎) ============ -->
+<dialog id="dlg">
+  <form id="editForm">
+    <!-- foto grande -->
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
+    <div class="dlg-body">
+      <!-- Codice e Numero (fissi, non si modificano) -->
+      <div class="trio">
+        <div class="field"><span id="lblCodice">Codice</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
+      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+/* =====================================================================
+   IMPOSTAZIONI DELLA COLLEZIONE
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra collezione basta
+   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
+   ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
+const CONFIG = {
+  id: "legami-astucci",            // nome usato nei PDF
+  dbName: "catalogo-legami-astucci", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "Legami Astucci",        // titolo della scheda del browser e del PDF
+  nome: "astuccio",                // come si chiama un elemento
+  possedute: "posseduti",          // "5 posseduti su 27"
+  colonne: 8,                      // astucci per fila sugli schermi larghi, come nel poster
+  proporzione: 2.3,                // altezza ÷ larghezza di un astuccio (il panda col mantello è il più largo)
+  pdfColonne: 8,                   // astucci per fila nel PDF orizzontale
+  pdfFile: 2,                      // file di astucci per pagina del PDF (solo Legami: le altre pagine hanno il PDF verticale)
+  suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua", "Limited Edition"]   // hashtag proposti nei dettagli
+};
+
+/* =====================================================================
+   ELENCO DEGLI ASTUCCI  ★ QUI SI AGGIUNGONO GLI ASTUCCI ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è UN astuccio. Gli astucci compaiono sulla pagina
+   nello stesso ordine di questo elenco (in ordine di codice).
+
+   COME AGGIUNGERE UN ASTUCCIO
+     1. Salva la foto con lo sfondo trasparente nella cartella
+        "immagini" in formato WebP, che pesa circa la metà del PNG
+        (es. immagini/27.webp). Da PNG a WebP: apri squoosh.app,
+        trascina la foto, a destra scegli "WebP" qualità 88 e scarica.
+        Va bene anche un PNG, ma il sito diventa più lento.
+        Alta circa 640 pixel,
+        senza margini vuoti.
+     2. Copia una riga qui sotto, incollala nel punto dove vuoi che
+        compaia e cambia i valori.
+     3. Salva questo file e ricarica la pagina: l'astuccio c'è già.
+
+   I CAMPI
+     id        codice unico, in ordine: "astuccio-001", "astuccio-002"…
+               Serve al browser per ricordare se ce l'hai: non usare lo
+               stesso id due volte (per una nuova: l'ultimo + 1).
+     numero    ultime due cifre del codice (VKA0012 → "12")
+     codice    codice Legami (es. "VKA0012")
+               (se non c'è un codice, metti l'anno)
+     nome      nome dell'astuccio (es. "UNICORNO")
+     foto      percorso della foto: "immagini/NOMEFILE.webp"
+               Se sostituisci la foto con un file nuovo con lo STESSO nome,
+               aggiungi o aumenta "?v=…" in fondo (es. "immagini/01.webp?v=2"):
+               obbliga il browser a scaricare la foto nuova invece di quella vecchia salvata.
+               Finché non hai la foto vera usa "immagini/in-arrivo.webp"
+               (sagoma nera con il "?"): copiala da ../legami-lampada/immagini/.
+     hashtag   evento: ["Natale"], ["San Valentino"], ["Halloween"] — facoltativo
+     info      informazioni fisse (es. la scritta sull'astuccio)  — facoltativo
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…".
+   ===================================================================== */
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  // Ordine e codici come il poster "Astucci Kawaii" (01–25); 26 e 29 sono usciti dopo il poster.
+  // Le vecchie edizioni (01, 02, 05, 07, 08, 09) usano la stessa foto della nuova edizione:
+  // quando avrai la foto vera, mettila in "immagini" e cambia il campo foto.
+  { id: "astuccio-001", numero: "01", codice: "VKA0001", nome: "PANDA", foto: "immagini/10.webp", info: "Vecchia edizione · codice confezione VKA0001" },
+  { id: "astuccio-002", numero: "02", codice: "VKA0002", nome: "ORSO", foto: "immagini/11.webp", info: "Vecchia edizione · codice confezione VKA0002" },
+  { id: "astuccio-003", numero: "03", codice: "VKA0003", nome: "MAIALE", foto: "immagini/03.webp" },
+  { id: "astuccio-004", numero: "04", codice: "VKA0004", nome: "GATTO SDRAIATO", foto: "immagini/04.webp" },
+  { id: "astuccio-005", numero: "05", codice: "VKA0005", nome: "UNICORNO", foto: "immagini/12.webp", info: "Vecchia edizione · codice confezione VKA0005" },
+  { id: "astuccio-006", numero: "06", codice: "VKA0006", nome: "DINOSAURO", foto: "immagini/06.webp", info: "Vecchia edizione · codice confezione VKA0006 · cresta verde scuro" },
+  { id: "astuccio-007", numero: "07", codice: "VKA0007", nome: "CONIGLIO", foto: "immagini/14.webp", info: "Vecchia edizione · codice confezione VKA0007" },
+  { id: "astuccio-008", numero: "08", codice: "VKA0008", nome: "PINGUINO", foto: "immagini/15.webp", info: "Vecchia edizione · codice confezione VKA0008" },
+  { id: "astuccio-009", numero: "09", codice: "VKA0009", nome: "GATTO", foto: "immagini/16.webp", info: "Vecchia edizione · codice confezione VKA0009" },
+  { id: "astuccio-010", numero: "10", codice: "VKA0010", nome: "PANDA", foto: "immagini/10.webp", info: "Nuova edizione · scritta: Hug Me" },
+  { id: "astuccio-011", numero: "11", codice: "VKA0011", nome: "ORSO", foto: "immagini/11.webp", info: "Nuova edizione · scritta: Dream Big" },
+  { id: "astuccio-012", numero: "12", codice: "VKA0012", nome: "UNICORNO", foto: "immagini/12.webp", info: "Nuova edizione · scritta: Believe in Magic" },
+  { id: "astuccio-013", numero: "13", codice: "VKA0013", nome: "DINOSAURO", foto: "immagini/13.webp", info: "Nuova edizione · scritta: Rooarrr!" },
+  { id: "astuccio-014", numero: "14", codice: "VKA0014", nome: "CONIGLIO", foto: "immagini/14.webp", info: "Nuova edizione · scritta: Don't Worry Be Hoppy" },
+  { id: "astuccio-015", numero: "15", codice: "VKA0015", nome: "PINGUINO", foto: "immagini/15.webp", info: "Nuova edizione · scritta: Always Cool" },
+  { id: "astuccio-016", numero: "16", codice: "VKA0016", nome: "GATTO", foto: "immagini/16.webp", info: "Nuova edizione · scritta: Be Curious" },
+  { id: "astuccio-017", numero: "17", codice: "VKA0017", nome: "GIRAFFA", foto: "immagini/17.webp", info: "Scritta: Head in the Clouds" },
+  { id: "astuccio-018", numero: "18", codice: "VKA0018", nome: "TIGRE", foto: "immagini/18.webp", info: "Scritta: Grrreat Adventures" },
+  { id: "astuccio-019", numero: "19", codice: "VKA0019", nome: "ORSO BIANCO", foto: "immagini/19.webp", hashtag: ["Limited Edition", "San Valentino"], info: "Scritta: Always in My Heart" },
+  { id: "astuccio-020", numero: "20", codice: "VKA0020", nome: "MOSTRO", foto: "immagini/20.webp", info: "Scritta: Aaargh-dorable!" },
+  { id: "astuccio-021", numero: "21", codice: "VKA0021", nome: "APE", foto: "immagini/21.webp", info: "Scritta: Bee Different" },
+  { id: "astuccio-022", numero: "22", codice: "VKA0022", nome: "ZAMPA DI GATTO", foto: "immagini/22.webp", info: "Scritta: Meow" },
+  { id: "astuccio-023", numero: "23", codice: "VKA0023", nome: "GATTO NERO", foto: "immagini/23.webp", hashtag: ["Halloween"], info: "Halloween Edition" },
+  { id: "astuccio-024", numero: "24", codice: "VKA0024", nome: "COCCINELLA", foto: "immagini/24.webp", info: "Scritta: Get Lucky" },
+  { id: "astuccio-025", numero: "25", codice: "VKA0025", nome: "LABRADOR", foto: "immagini/25.webp", hashtag: ["Limited Edition"], info: "Codice confezione KA0025 · scritta: Fur-ever Friends" },
+  { id: "astuccio-026", numero: "26", codice: "VKA0026", nome: "GORILLA", foto: "immagini/26.webp", info: "Scritta: Wild but Kind" },
+  { id: "astuccio-027", numero: "29", codice: "VKA0029", nome: "PANDA VAMPIRO", foto: "immagini/29.webp", hashtag: ["Halloween"], info: "Scritta: Bam-Boo!" },
+];
+</script>
+
+<!-- Banda in alto e in basso, ricerca, avvisi, Esporta/Importa: comuni a tutto il sito -->
+<script src="../../script.js?v=9"></script>
+<!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
+<script src="../../comune/app.js?v=24"></script>
+</body>
+</html>

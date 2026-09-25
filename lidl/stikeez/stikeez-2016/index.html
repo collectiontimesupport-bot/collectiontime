@@ -42,7 +42,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=11">
+<link rel="stylesheet" href="../../../sito.css?v=12">
 
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Lidl -->
 <!-- "?v=…" è il numero di versione: quando cambi un file .js o .css aumentalo (v=1 → v=2)
@@ -121,7 +121,7 @@
 <dialog id="printDlg">
   <div class="dlg-body" tabindex="-1" autofocus>
     <h2 class="dlg-title">Cosa vuoi stampare?</h2>
-    <p class="sub">Verrà creato un PDF da salvare o stampare.</p>
+    <p class="sub">Un PDF da stampare o un'immagine da condividere.</p>
     <label class="choice">
       <input type="radio" name="printKind" value="owned" checked>
       <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le sorpresine, con il quadratino spuntato dove ce l'hai.</small></span>
@@ -137,6 +137,7 @@
     <div class="actions">
       <span class="spacer"></span>
       <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn" id="printImg">Crea immagine</button>
       <button type="button" class="btn primary" id="printGo">Crea PDF</button>
     </div>
   </div>
@@ -187,8 +188,6 @@ const CONFIG = {
   possedute: "possedute",          // "5 possedute su 24"
   colonne: 6,                     // elementi per fila sugli schermi larghi (24 in 4 file + la coppa)
   proporzione: 1,                  // altezza ÷ larghezza di una foto (le foto sono quadrate)
-  pdfColonne: 6,                   // elementi per fila nel PDF
-  pdfFile: 2,                      // file per pagina del PDF (12 per pagina: 25 = 3 pagine)
   suggerimenti: ["Calcio"], // hashtag proposti nei dettagli; [] = nessuno
   mostraNomi: true                 // nome scritto sotto ogni sorpresina (ogni sorpresina ha un nome)
 };
@@ -247,8 +246,8 @@ const ELENCO = [
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Esporta/Importa: comuni a tutto il sito -->
-<script src="../../../script.js?v=8"></script>
+<script src="../../../script.js?v=9"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../comune/app.js?v=22"></script>
+<script src="../../../comune/app.js?v=24"></script>
 </body>
 </html>

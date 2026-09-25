@@ -23,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../sito.css?v=11">
+<link rel="stylesheet" href="../sito.css?v=12">
 <!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
 <link rel="preload" href="../comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -36,16 +36,11 @@
   .st-titolo { font: 700 clamp(2rem, 4vw, 3rem)/1.1 var(--font-legami); letter-spacing: .01em; color: var(--titolo); }
   /* telefoni: titolo grande come nelle pagine Erasable e Lampada */
   @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
-  /* Card con immagine (es. Erasable): testo e "Apri" a sinistra, immagine a destra.
-     Per aggiungere un'immagine a una card basta mettere dentro il suo <a>:
-     <div class="thumb"><img src="..." alt=""></div> */
-  .st-card:has(.thumb) { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto; gap: 10px 16px; }
-  .st-card:has(.thumb) > :not(.thumb) { grid-column: 1; }
-  .st-card:has(.thumb) .st-apri { justify-self: start; align-self: end; }
-  .thumb { grid-column: 2; grid-row: 1 / 4; display: grid; place-items: center; }
-  /* Tutte le immagini delle card stanno nello stesso riquadro quadrato,
-     così hanno la stessa altezza (la lampadina come le penne). */
-  .thumb img { width: 100%; aspect-ratio: 1; max-height: 220px; object-fit: contain; display: block; }
+  /* Card con la foto IN ALTO, come nella sezione LEGO.
+     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
+  .st-card { --foto-h: 170px; }
+  .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
+  .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
 </style>
 </head>
 <body>
@@ -69,24 +64,28 @@
     </div>
   </div>
   <p class="st-nessuna" hidden>Nessuna collezione trovata.</p>
-  <!-- Una card per ogni oggetto: per aggiungerne uno, copia un <li> ... </li> e cambia link e testi.
-       Se serve, data-cerca="..." sul <li> aggiunge parole che la ricerca trova. -->
+  <!-- Una card per ogni collezione: per aggiungerne una, copia un <li> ... </li> e cambia cartella e testi.
+       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi degli oggetti). -->
   <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
        • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
          es. nome-cartella/immagini/copertina.webp
-       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
+         aumenta "?v=…" in fondo al nome del file (es. copertina.webp?v=1 → ?v=2, oppure aggiungi ?v=2
+         se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
        • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
          <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
-       • Al posto della copertina si può usare una foto già presente nella cartella
-         (come Bulb Fiction, che usa legami-lampada/immagini/08.webp): così non c'è un file in più.
+       • Le copertine hanno sempre più oggetti della collezione (di solito tre), come nel resto del sito.
        • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
-         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
-         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+         scegli 2–4 foto della collezione e le mette una accanto all'altra.
+       • Per le FOTO degli oggetti (singole o set da 2) c'è _strumenti/strumento-legami.html
+         in questa cartella legami. -->
   <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
   <ul class="st-cards">
-     <li><a class="st-card" href="legami-erasable/index.html"><div class="thumb"><img src="legami-erasable/immagini/copertina.webp" alt=""></div><h2>Erasable Pens</h2><p>Penne cancellabili </p><span class="st-apri">Apri</span></a></li>
-     <li><a class="st-card" href="legami-righello/index.html"><h2>Righello</h2><p>La collezione Legami Righello.</p><span class="st-apri">Apri</span></a></li>
-     <li><a class="st-card" href="legami-lampada/index.html"><div class="thumb"><img src="legami-lampada/immagini/08.webp" alt=""></div><h2>Bulb Fiction</h2><p>Lampade </p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Erasable Pens penne cancellabili cancellabile EP Limited Edition Halloween Natale San Valentino"><a class="st-card" href="legami-erasable/index.html"><div class="thumb"><img src="legami-erasable/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Erasable Pens</h2><p>Penne cancellabili</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Lovely Friends penne gel animaletto CPP Panda Gatto Orso Koala Bradipo Unicorno Dinosauro Tigre Coniglio Lama Fantasma Ape Leone Mostro Ippopotamo Ragno Coccinella Pulcino Orso fantasma Gatto mummia Spooky Party Halloween"><a class="st-card" href="legami-lovely-friends/index.html"><div class="thumb"><img src="legami-lovely-friends/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Lovely Friends</h2><p>Penne gel con animaletto</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Astucci Kawaii astuccio portapenne 2-in-1 silicone Panda Orso Maiale Gatto sdraiato Unicorno Dinosauro Coniglio Pinguino Gatto Giraffa Tigre Orso bianco Mostro Ape Zampa di gatto Gatto nero Coccinella Labrador Gorilla Panda vampiro Bam-Boo Halloween San Valentino Limited Edition vecchia edizione nuova edizione"><a class="st-card" href="legami-astucci/index.html"><div class="thumb"><img src="legami-astucci/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Astucci</h2><p>Astucci 2-in-1 in silicone</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Portachiavi peluche Tiny Super Soft! portachiavi di peluche Panda Unicorno Gatto Corgi Orso Orsetto Leone Giraffa Ape Margherita Uovo Gallina Asino Asinello Tigre Mostro Coccinella Gorilla Panda vampiro Bam-Boo Orsetti Pappagalli Pappagallini Limited Edition Halloween San Valentino"><a class="st-card" href="legami-portachiavi/index.html"><div class="thumb"><img src="legami-portachiavi/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Portachiavi</h2><p>Peluche Tiny Super Soft!</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Bulb Fiction lampade lampada lampadina Babbo Natale Renna Fiocco di neve Albero di Natale Cuore Cactus Fenicottero Arcobaleno Gatto Margherita Farfalla Alieno Unicorno Dream Big Be Happy Good Vibes Believe in Magic Joy Fantasma We Are Dreamers Love Is in the Air Booo Halloween San Valentino"><a class="st-card" href="legami-lampada/index.html"><div class="thumb"><img src="legami-lampada/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Bulb Fiction</h2><p>Lampade</p><span class="st-apri">Apri</span></a></li>
   </ul>
 </main>
 
@@ -96,6 +95,6 @@
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
 <!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../script.js?v=8"></script>
+<script src="../script.js?v=9"></script>
 </body>
 </html>

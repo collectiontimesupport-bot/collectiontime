@@ -3,10 +3,10 @@
    ---------------------------------------------------------------------
    Solo ciò che è diverso nelle pagine Legami: tutto il resto
    dell'aspetto è in comune/collezione.css (uguale per tutte le collezioni).
-   Lo richiamano le pagine legami-erasable e legami-lampada con
+   Lo richiamano le pagine legami-erasable, legami-lovely-friends, legami-lampada, legami-astucci e legami-portachiavi con
      <link rel="stylesheet" href="../css/stile.css?v=…">
    Ogni pagina ha nel <body> la sua classe (class="erasable",
-   class="lampada"): serve solo per le misure della griglia qui sotto.
+   class="lampada", class="lovely", class="astucci", class="portachiavi"): serve solo per le misure della griglia qui sotto.
    Per una nuova collezione Legami: dai una classe al suo <body> e
    copia uno dei due blocchi della griglia con quella classe.
    ===================================================================== */
@@ -32,4 +32,29 @@ h1 .titolo-testo { font-family: var(--font-legami); font-weight: 700; letter-spa
 .lampada .grid { max-width: 1300px; gap: 28px 20px; }
 @media (max-width: 1000px) {
   .lampada .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 22px 12px; }
+}
+
+/* ---------- griglia di Lovely Friends (penne gel con animaletto) ----------
+   23 colonne come la prima fila del poster (CONFIG.colonne); l'animaletto
+   sporge di lato, quindi un po' più di spazio tra le penne.
+   Sotto i 1250px le colonne si adattano da sole alla larghezza dello schermo. */
+.lovely .grid { gap: 14px 6px; }
+@media (max-width: 1250px) {
+  .lovely .grid { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); }
+}
+
+/* ---------- griglia degli Astucci (2-in-1 in silicone Kawaii) ----------
+   8 colonne come nel poster (CONFIG.colonne). Sono larghi come le
+   lampade: oltre 1100px resterebbero troppo distanti. Sotto i 900px si adattano. */
+.astucci .grid { max-width: 1100px; gap: 28px 16px; }
+@media (max-width: 900px) {
+  .astucci .grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 22px 10px; }
+}
+
+/* ---------- griglia dei Portachiavi (peluche Tiny Super Soft!) ----------
+   5 colonne come nel poster (CONFIG.colonne): oltre 800px resterebbero
+   troppo grandi e distanti. Sotto i 900px si adattano. */
+.portachiavi .grid { max-width: 800px; gap: 28px 16px; }
+@media (max-width: 900px) {
+  .portachiavi .grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 22px 10px; }
 }

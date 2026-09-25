@@ -189,7 +189,8 @@ body.st-semplice { line-height: 1.6; }
    nelle pagine delle collezioni nella barra degli strumenti.
    Apertura e chiusura sono in script.js (avviaCerca). */
 .st-sub { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 4px; margin: 14px 0 40px; }
-.st-sub .sub { margin: 0; color: var(--muted); }
+.st-sub .sub { margin: 0; color: var(--muted); cursor: pointer; }   /* toccando la frase si apre la ricerca */
+@media (hover: hover) { .st-sub .sub:hover { color: var(--amber); } }   /* solo col mouse: sul telefono non resta colorata */
 .st-cerca { display: flex; align-items: center; border: 1px solid transparent; border-radius: 8px; }
 .st-cerca.open { border-color: var(--line); }
 .st-cerca button { display: grid; place-items: center; padding: 8px 10px; border: 0; border-radius: 8px; background: none; color: var(--ink); cursor: pointer; }

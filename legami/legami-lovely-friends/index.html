@@ -1,0 +1,287 @@
+<!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
+<!-- =====================================================================
+     LEGAMI LOVELY FRIENDS — pagina della collezione (penne gel con animaletto) (Collection Time)
+     ---------------------------------------------------------------------
+     Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI ed
+                              ELENCO DELLE PENNE (le uniche parti da toccare
+                              per aggiungere o cambiare penne)
+       (l'aspetto grafico è in comune/collezione.css e ../css/stile.css;
+        il funzionamento, app.js, e la libreria dei PDF stanno nella
+        cartella "comune" del sito: sono gli stessi per tutte le collezioni)
+       immagini/            ← le foto delle penne in WebP trasparente (leggere)
+
+     ▸ PER AGGIUNGERE UNA PENNA: vai in fondo alla pagina, al blocco
+       "ELENCO DELLE PENNE", e segui le istruzioni scritte lì.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Legami Lovely Friends · Collection Time</title>
+<meta name="description" content="Legami Lovely Friends: la collezione completa, con quelle che ho e quelle che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Legami Lovely Friends · Collection Time">
+<meta property="og:description" content="Legami Lovely Friends: la collezione completa, con quelle che ho e quelle che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/legami/legami-lovely-friends/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../sito.css?v=12">
+<!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
+<link rel="preload" href="../../comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
+
+<!-- Aspetto grafico: comune a tutte le collezioni + quello delle collezioni Legami -->
+<!-- "?v=…" è il numero di versione: quando cambi un file .js o .css aumentalo (v=1 → v=2)
+     in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
+<link rel="stylesheet" href="../../comune/collezione.css?v=5">
+<link rel="stylesheet" href="../css/stile.css?v=8">
+</head>
+<body class="lovely">
+
+<!-- Header del sito: viene riempito con header.html da ../../script.js -->
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <!-- Link per tornare alla pagina Legami -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Legami</a>
+
+  <!-- ============ TITOLO E STRUMENTI ============ -->
+  <header>
+    <!-- ! MODIFICA: titolo della pagina -->
+    <h1 id="pageTitle"><span class="titolo-testo">LEGAMI LOVELY FRIENDS</span></h1>
+    <div class="bar">
+      <!-- "12 possedute su 33": il testo lo scrive app.js -->
+      <p class="sub" id="count"></p>
+      <div class="tools">
+        <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
+        <div class="st-cerca" id="stCerca">
+          <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <!-- Filtro: tutte / possedute / mancanti -->
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutte</option>
+          <option value="owned" id="optOwned">Ce le ho</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <!-- Ordine: come il poster (dalla prima) o al contrario (dalla più recente) -->
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dalla prima</option>
+          <option value="desc">Dalla più recente</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ GRIGLIA DELLE PENNE ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni penna
+       dell'ELENCO DELLE PENNE (in fondo a questa pagina). -->
+  <ul class="grid" id="grid"></ul>
+
+  <!-- Messaggi quando non c'è nulla da mostrare -->
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p>Non ci sono ancora elementi in questa collezione.</p>
+  </section>
+
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       Esporta e Importa sono nella banda in alto e valgono per tutto il sito. -->
+  <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
+    <p class="hint">Premi su una penna per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
+    <button class="btn" id="btnPrint" type="button">Stampa</button>
+  </footer>
+</div>
+
+<!-- Footer del sito: viene riempito con footer.html da ../../script.js -->
+<div id="footer-placeholder"></div>
+
+
+<!-- ============ FINESTRA "STAMPA" ============ -->
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Un PDF da stampare o un'immagine da condividere.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le penne, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="missing">
+      <span><strong>Quelle che mi mancano</strong> (<span id="cnt-missing"></span>)<small>Solo ciò che non hai ancora segnato, con il quadratino vuoto.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong>Tutte le penne</strong> (<span id="cnt-all"></span>)<small>Tutto l'elenco con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn" id="printImg">Crea immagine</button>
+      <button type="button" class="btn primary" id="printGo">Crea PDF</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ FINESTRA "DETTAGLI" (si apre con ✎) ============ -->
+<dialog id="dlg">
+  <form id="editForm">
+    <!-- foto grande -->
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
+    <div class="dlg-body">
+      <!-- Codice · Colore · Numero (fissi, non si modificano) -->
+      <div class="trio">
+        <div class="field"><span id="lblCodice">Codice CPP</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field">Colore
+          <div class="colorbox"><span class="dot" id="colorDot"></span><input type="text" id="fColorName" readonly tabindex="-1" aria-label="Colore"></div>
+        </div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
+      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+/* =====================================================================
+   IMPOSTAZIONI DELLA COLLEZIONE
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra collezione basta
+   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
+   ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
+const CONFIG = {
+  id: "legami-lovely-friends",           // nome usato nei PDF
+  dbName: "catalogo-legami-lovely-friends", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "Legami Lovely Friends",  // titolo della scheda del browser e del PDF
+  nome: "penna",                   // come si chiama un elemento
+  possedute: "possedute",          // "12 possedute su 33"
+  colonne: 23,                     // penne per fila sugli schermi larghi (23 = la prima fila del poster, fino alla 21)
+  proporzione: 6,                  // altezza ÷ larghezza di una penna (con l'animaletto di lato)
+  pdfColonne: 16,                  // penne per fila nel PDF orizzontale
+  pdfFile: 2,                      // file di penne per pagina del PDF (solo Legami: le altre pagine hanno il PDF verticale)
+  suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua"]   // hashtag proposti nei dettagli
+};
+
+/* =====================================================================
+   ELENCO DELLE PENNE  ★ QUI SI AGGIUNGONO LE PENNE ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è UNA penna. Le penne compaiono sulla pagina
+   nello stesso ordine di questo elenco.
+
+   COME AGGIUNGERE UNA PENNA
+     1. Salva la foto con lo sfondo trasparente nella cartella
+        "immagini" in formato WebP, che pesa circa la metà del PNG
+        (es. immagini/30.webp). Da PNG a WebP: apri squoosh.app,
+        trascina la foto, a destra scegli "WebP" qualità 88 e scarica.
+        Va bene anche un PNG, ma il sito diventa più lento. Consiglio: penna in
+        verticale, alta circa 800–1000 pixel, senza margini vuoti.
+     2. Copia una riga qui sotto, incollala nel punto dove vuoi che
+        compaia e cambia i valori.
+     3. Salva questo file e ricarica la pagina: la penna c'è già.
+
+   I CAMPI
+     id        codice unico della penna: "lf-01", "lf-02"… (le Limited
+               Edition senza codice: "lf-le-1", "lf-le-2"…)
+               Serve al browser per ricordare se ce l'hai: non usare lo
+               stesso id due volte e non cambiarlo dopo la pubblicazione.
+     numero    ultime due cifre del codice CPP (es. "30"), "LE" se al posto
+               del codice c'è la scritta "LIMITED EDITION"
+     codice    codice CPP scritto sul retro (es. "CPP0030")
+               (se non c'è un codice, metti l'anno)
+     nome      nome dell'animaletto (es. "GORILLA")
+     colore    nome del colore (es. "Blu")          — facoltativo
+     hex       codice del colore (es. "#2c357e")    — facoltativo
+     foto      percorso della foto: "immagini/NOMEFILE.webp"
+               Se sostituisci la foto con un file nuovo con lo STESSO nome,
+               aggiungi o aumenta "?v=…" in fondo (es. "immagini/01.webp?v=2"):
+               obbliga il browser a scaricare la foto nuova invece di quella vecchia salvata.
+               (se manca, al posto della penna compare una sagoma vuota)
+     limitata  true = edizione limitata (numero in rosso)   — facoltativo
+     hashtag   es. ["Natale", "Limited Edition"]            — facoltativo
+     info      informazioni fisse (es. "Prima versione con stellina")  — facoltativo
+
+   ESEMPIO
+     { id: "lf-30", numero: "30", codice: "CPP0030", nome: "GORILLA", colore: "Nero", hex: "#000000", foto: "immagini/30.webp" },
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…". Dalla 16 alla 25 sono le riedizioni (nuova edizione)
+   delle penne 01–10. Le penne 21, 22 e 23 usano la foto "in arrivo":
+   quando avrai la foto vera basta cambiare "foto".
+   ===================================================================== */
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  { id: "lf-01", numero: "01", codice: "CPP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01.webp?v=2", info: "Scritta “Hug me”; Vecchia edizione" },
+  { id: "lf-02", numero: "02", codice: "CPP0002", nome: "GATTO", colore: "Rosa", hex: "#e35087", foto: "immagini/02.webp", info: "Scritta “Be curious”; Vecchia edizione" },
+  { id: "lf-03", numero: "03", codice: "CPP0003", nome: "ORSO", colore: "Rosso", hex: "#c72b27", foto: "immagini/03.webp", info: "Scritta “Dream big”; Vecchia edizione" },
+  { id: "lf-04", numero: "04", codice: "CPP0004", nome: "KOALA", colore: "Verde", hex: "#1d9d47", foto: "immagini/04.webp", info: "Scritta “Let me sleep”; Vecchia edizione" },
+  { id: "lf-05", numero: "05", codice: "CPP0005", nome: "BRADIPO", colore: "Blu", hex: "#253c85", foto: "immagini/05.webp", info: "Scritta “Take it easy”; Vecchia edizione" },
+  { id: "lf-06", numero: "06", codice: "CPP0006", nome: "UNICORNO", colore: "Rosa", hex: "#d76097", foto: "immagini/06.webp", info: "Scritta “Believe in magic”; Vecchia edizione" },
+  { id: "lf-07", numero: "07", codice: "CPP0007", nome: "DINOSAURO", colore: "Verde chiaro", hex: "#95cd68", foto: "immagini/07.webp", info: "Scritta “Rooarrr!”; Vecchia edizione" },
+  { id: "lf-08", numero: "08", codice: "CPP0008", nome: "TIGRE", colore: "Arancione", hex: "#ed6403", foto: "immagini/08.webp", info: "Scritta “Grrreat adventures”; Vecchia edizione" },
+  { id: "lf-09", numero: "09", codice: "CPP0009", nome: "CONIGLIO", colore: "Viola", hex: "#8a217e", foto: "immagini/09.webp", info: "Scritta “Don't worry be hoppy”; Vecchia edizione" },
+  { id: "lf-10", numero: "10", codice: "CPP0010", nome: "LAMA", colore: "Azzurro", hex: "#0fbaec", foto: "immagini/10.webp", info: "Scritta “No probllama”; Vecchia edizione" },
+  { id: "lf-11", numero: "11", codice: "CPP0011", nome: "FANTASMA", colore: "Nero", hex: "#000000", foto: "immagini/11.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"], info: "Scritta “Hey Boo!”; Limited Edition Halloween 2024, si illumina al buio" },
+  { id: "lf-le-1", numero: "LE", codice: "", nome: "ORSO BIANCO", colore: "Viola", hex: "#a078cc", foto: "immagini/LE-orso-bianco.webp", limitata: true, hashtag: ["San Valentino", "Limited Edition"], info: "Scritta “I love you beary much”; Limited Edition San Valentino 2025, codice sostituito dalla scritta “LIMITED EDITION”" },
+  { id: "lf-le-2", numero: "LE", codice: "", nome: "ORSO BRUNO", colore: "Azzurro", hex: "#6ed2dd", foto: "immagini/LE-orso-bruno.webp", limitata: true, hashtag: ["San Valentino", "Limited Edition"], info: "Scritta “I love you more”; Limited Edition San Valentino 2025, codice sostituito dalla scritta “LIMITED EDITION”" },
+  { id: "lf-12", numero: "12", codice: "CPP0012", nome: "APE", colore: "Nero", hex: "#000000", foto: "immagini/12.webp", info: "Scritta “Bee different”" },
+  { id: "lf-13", numero: "13", codice: "CPP0013", nome: "LEONE", colore: "Nero", hex: "#000000", foto: "immagini/13.webp", info: "Scritta “Braveheart”" },
+  { id: "lf-14", numero: "14", codice: "CPP0014", nome: "MOSTRO", colore: "Blu", hex: "#3756a3", foto: "immagini/14.webp", info: "Scritta “Aaargh-dorable!”" },
+  { id: "lf-15", numero: "15", codice: "CPP0015", nome: "IPPOPOTAMO", colore: "Blu", hex: "#334f9c", foto: "immagini/15.webp", info: "Scritta “Hip hippo hooray!”" },
+  { id: "lf-16", numero: "16", codice: "CPP0016", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/16.webp", info: "Scritta “Hug me”; Nuova edizione (riedizione della 01)" },
+  { id: "lf-17", numero: "17", codice: "CPP0017", nome: "GATTO", colore: "Rosa", hex: "#e86298", foto: "immagini/17.webp?v=1", info: "Scritta “Meow”; Nuova edizione (riedizione della 02)" },
+  { id: "lf-18", numero: "18", codice: "CPP0018", nome: "ORSO", colore: "Rosso", hex: "#e0231f", foto: "immagini/18.webp?v=2", info: "Scritta “Dream big”; Nuova edizione (riedizione della 03)" },
+  { id: "lf-19", numero: "19", codice: "CPP0019", nome: "KOALA", colore: "Verde", hex: "#35ab59", foto: "immagini/19.webp", info: "Scritta “Let me sleep”; Nuova edizione (riedizione della 04)" },
+  { id: "lf-20", numero: "20", codice: "CPP0020", nome: "BRADIPO", colore: "Blu", hex: "#384c99", foto: "immagini/20.webp", info: "Scritta “Take it easy”; Nuova edizione (riedizione della 05)" },
+  { id: "lf-21", numero: "21", codice: "CPP0021", nome: "UNICORNO", colore: "", hex: "", foto: "immagini/in-arrivo.webp?v=3", info: "Nuova edizione (riedizione della 06), in arrivo" },
+  { id: "lf-22", numero: "22", codice: "CPP0022", nome: "DINOSAURO", colore: "", hex: "", foto: "immagini/in-arrivo.webp?v=3", info: "Nuova edizione (riedizione della 07), in arrivo" },
+  { id: "lf-23", numero: "23", codice: "CPP0023", nome: "TIGRE", colore: "", hex: "", foto: "immagini/in-arrivo.webp?v=3", info: "Nuova edizione (riedizione della 08), in arrivo" },
+  { id: "lf-24", numero: "24", codice: "CPP0024", nome: "CONIGLIO", colore: "Viola", hex: "#97328a", foto: "immagini/24.webp", info: "Scritta “Don't worry be hoppy”; Nuova edizione (riedizione della 09)" },
+  { id: "lf-25", numero: "25", codice: "CPP0025", nome: "LAMA", colore: "Azzurro", hex: "#10acd7", foto: "immagini/25.webp", info: "Scritta “No probllama”; Nuova edizione (riedizione della 10)" },
+  { id: "lf-26", numero: "26", codice: "CPP0026", nome: "RAGNO", colore: "Verde chiaro", hex: "#44c951", foto: "immagini/26.webp", limitata: true, hashtag: ["Halloween", "Limited Edition"], info: "Limited Edition Halloween 2025" },
+  { id: "lf-27", numero: "27", codice: "CPP0027", nome: "COCCINELLA", colore: "Rosso", hex: "#eb160e", foto: "immagini/27.webp", info: "Scritta “Get lucky”" },
+  { id: "lf-28", numero: "28", codice: "CPP0028", nome: "CONIGLIO", colore: "Rosa", hex: "#ecbeb9", foto: "immagini/28.webp", limitata: true, hashtag: ["Pasqua", "Limited Edition"], info: "Scritta “Hoppy vibes only”; Limited Edition Pasqua 2026" },
+  { id: "lf-29", numero: "29", codice: "CPP0029", nome: "PULCINO", colore: "Giallo", hex: "#f3cf5c", foto: "immagini/29.webp", limitata: true, hashtag: ["Pasqua", "Limited Edition"], info: "Scritta “Eggs-tra happy”; Limited Edition Pasqua 2026" },
+  { id: "lf-le-3", numero: "LE", codice: "", nome: "ORSO FANTASMA", colore: "Nero", hex: "#000000", foto: "immagini/LE-fantasma.webp?v=3", limitata: true, hashtag: ["Halloween", "Limited Edition"], info: "Scritta “Guess who's back?”; Limited Edition Halloween 2026, nel set da 2 “Spooky Party” con il Gatto mummia" },
+  { id: "lf-le-4", numero: "LE", codice: "", nome: "GATTO MUMMIA", colore: "Viola", hex: "#9b5fd0", foto: "immagini/LE-gatto-mummia.webp?v=2", limitata: true, hashtag: ["Halloween", "Limited Edition"], info: "Scritta “Nine lives later…”; Limited Edition Halloween 2026, nel set da 2 “Spooky Party” con l'Orso fantasma" },
+];
+</script>
+
+<!-- Banda in alto e in basso, ricerca, avvisi, Esporta/Importa: comuni a tutto il sito -->
+<script src="../../script.js?v=9"></script>
+<!-- Funzionamento della pagina (legge CONFIG ed ELENCO qui sopra) -->
+<script src="../../comune/app.js?v=24"></script>
+</body>
+</html>

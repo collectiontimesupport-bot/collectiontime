@@ -21,7 +21,7 @@
      · ricerca e filtri
      · disegno della pagina (+ bagliore)
      · finestra "Dettagli"
-     · stampa in PDF
+     · stampa in PDF o immagine
      · controlli
      · avvio
    ===================================================================== */
@@ -476,7 +476,7 @@
   /* foto di un oggetto per il PDF, in due passi:
      1) ritaglio(): carica la foto e trova il riquadro dove c'è davvero il
         disegno (toglie il margine trasparente intorno);
-     2) fotoPdf(): disegna solo quel riquadro, alla misura decisa in makePdf.
+     2) fotoTela(): disegna solo quel riquadro, alla misura decisa in makePdf.
      Tutte le foto usano la STESSA scala: restano in proporzione tra loro
      (le penne lunghe uguali restano lunghe uguali) e nessuna viene tagliata. */
   async function ritaglio(src) {
@@ -494,9 +494,9 @@
     if (x1 < 0) { x0 = 0; y0 = 0; x1 = w - 1; y1 = h - 1; }   // foto tutta trasparente: la tengo intera
     return { img, x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
   }
-  /* Le foto si salvano come JPEG su fondo bianco (il fondo della scheda: file leggero),
-     la sagoma degli slot vuoti come PNG trasparente. */
-  async function fotoPdf(r, dw, dh, transparent) {
+  /* Foto su fondo bianco (il fondo della scheda: nel PDF diventa un JPEG leggero),
+     sagoma degli slot vuoti trasparente (nel PDF diventa un PNG). */
+  function fotoTela(r, dw, dh, transparent) {
     const K = 3.5; /* pixel per punto: circa 250 dpi */
     const c = document.createElement('canvas');
     c.width = Math.max(1, Math.round(dw * K));
@@ -505,9 +505,11 @@
     if (!transparent) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); }
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(r.img, r.x, r.y, r.w, r.h, 0, 0, c.width, c.height);
-    const blob = await new Promise(res => c.toBlob(res, transparent ? 'image/png' : 'image/jpeg', 0.92));
-    return new Uint8Array(await blob.arrayBuffer());
+    return c;
   }
+  /* tela → file (JPEG o PNG), per metterla nel PDF o per scaricarla */
+  const fileDi = (c, tipo) => new Promise(r => c.toBlob(r, tipo, 0.9));
+  const byteDi = async (c, tipo) => new Uint8Array(await (await fileDi(c, tipo)).arrayBuffer());
 
   /* La libreria dei PDF (comune/pdf-lib.min.js, circa 500 KB) viene scaricata
      SOLO la prima volta che si preme "Crea PDF": così la pagina si apre più in fretta.
@@ -525,7 +527,7 @@
   }
 
   /* titolo del PDF: lo disegno con lo stesso carattere e colore del titolo della pagina */
-  async function titlePng() {
+  async function titoloTela() {
     const el = document.querySelector('.titolo-testo');
     if (!el) return null;
     const cs = getComputedStyle(el), text = el.textContent.trim(), size = 200;
@@ -541,8 +543,7 @@
     ctx.fillStyle = cs.color;
     ctx.textBaseline = 'alphabetic';
     ctx.fillText(text, pad, pad + su);
-    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-    return new Uint8Array(await blob.arrayBuffer());
+    return c;
   }
 
   /* ---- marchio Collection Time: tessera ambra con la spunta ----
@@ -569,7 +570,7 @@
      SFONDO_RIGA = distanza tra una fila e l'altra, SFONDO_TESSERA = grandezza
      della tessera, SFONDO_SCRITTA = grandezza della scritta (tutto in punti). */
   const SFONDO_RIGA = 26, SFONDO_TESSERA = 9, SFONDO_SCRITTA = 8;
-  async function sfondoPng(W, H) {
+  function sfondoTela(W, H) {
     const K = 2, c = document.createElement('canvas');   // 2 pixel per punto: basta, è un motivo leggero
     c.width = Math.round(W * K); c.height = Math.round(H * K);
     const ctx = c.getContext('2d');
@@ -592,8 +593,56 @@
         ctx.fillText(testo, x + SFONDO_TESSERA + 4, y);
       }
     }
-    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-    return new Uint8Array(await blob.arrayBuffer());
+    return c;
+  }
+
+  /* ---- PAGINA IMMAGINE ----
+     Per l'immagine da condividere disegno con le stesse misure del PDF, ma su una tela.
+     Questa "pagina finta" ha gli stessi comandi di una pagina PDF (drawRectangle, drawText…):
+     così il disegno è scritto UNA volta sola e serve sia al PDF sia all'immagine.
+     Nel PDF l'altezza si conta dal basso, sulla tela dall'alto: per questo si usa H - y.
+     IMG_K = pixel per punto (2: un A4 verticale viene largo 1190 pixel). */
+  const IMG_K = 2;
+  function paginaTela(W, H, bold) {
+    const c = document.createElement('canvas');
+    c.width = Math.round(W * IMG_K); c.height = Math.round(H * IMG_K);
+    const ctx = c.getContext('2d');
+    ctx.scale(IMG_K, IMG_K);
+    const colore = k => 'rgb(' + [k.red, k.green, k.blue].map(v => Math.round(v * 255)) + ')';
+    const bordo = (o, disegna) => {
+      if (!o.borderColor) return;
+      ctx.strokeStyle = colore(o.borderColor); ctx.lineWidth = o.borderWidth || 1; disegna();
+    };
+    return {
+      tela: c,
+      drawRectangle(o) {
+        const y = H - o.y - o.height;
+        if (o.color) { ctx.fillStyle = colore(o.color); ctx.fillRect(o.x, y, o.width, o.height); }
+        bordo(o, () => ctx.strokeRect(o.x, y, o.width, o.height));
+      },
+      drawSvgPath(d, o) {                                  // forme (schede arrotondate, marchio)
+        const k = o.scale || 1, forma = new Path2D(d);
+        ctx.save(); ctx.translate(o.x, H - o.y); ctx.scale(k, k);
+        if (o.color) { ctx.fillStyle = colore(o.color); ctx.fill(forma); }
+        bordo(o, () => { ctx.lineWidth /= k; ctx.stroke(forma); });
+        ctx.restore();
+      },
+      drawLine(o) {
+        ctx.strokeStyle = colore(o.color); ctx.lineWidth = o.thickness; ctx.lineCap = o.lineCap ? 'round' : 'butt';
+        ctx.beginPath(); ctx.moveTo(o.start.x, H - o.start.y); ctx.lineTo(o.end.x, H - o.end.y); ctx.stroke();
+      },
+      drawImage(img, o) {
+        ctx.globalAlpha = o.opacity == null ? 1 : o.opacity;
+        ctx.drawImage(img, o.x, H - o.y - o.height, o.width, o.height);
+        ctx.globalAlpha = 1;
+      },
+      drawText(t, o) {
+        ctx.fillStyle = colore(o.color);
+        ctx.font = (o.font === bold ? '700 ' : '400 ') + o.size + 'px Helvetica, Arial, sans-serif';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(t, o.x, H - o.y);
+      }
+    };
   }
 
   /* spezza un nome su al massimo 2 righe larghe "max" punti (il resto finisce con "…") */
@@ -614,12 +663,21 @@
     });
   }
 
-  /* crea il PDF: A4 orizzontale, CONFIG.pdfColonne oggetti per fila, CONFIG.pdfFile file per pagina.
-     Ogni oggetto ha la sua scheda bianca: foto (intera, mai tagliata), [nome], numero, quadratino. */
-  async function makePdf(list, kind) {
-    await loadPdfLib();
+  /* crea il PDF (immagine = false) o l'immagine da condividere (immagine = true).
+     Ogni oggetto ha la sua scheda bianca: foto (intera, mai tagliata), [nome], numero, quadratino.
+     L'IMMAGINE ha la stessa grafica del PDF ma è UNA sola, alta quanto serve:
+     tutti gli oggetti uno sotto l'altro, senza spazio vuoto in fondo.
+     Due impaginazioni:
+     • pagine Legami (hanno CONFIG.pdfColonne): A4 ORIZZONTALE, CONFIG.pdfColonne oggetti
+       per fila e CONFIG.pdfFile file per pagina, come il poster;
+     • tutte le altre pagine (non hanno pdfColonne): A4 VERTICALE, PDF_COLONNE oggetti per fila
+       e tante file quante ne entrano nella pagina. Le schede hanno sempre la stessa misura,
+       quindi una serie normale sta in una pagina sola. L'ultima fila si mette al centro. */
+  const PDF_COLONNE = 6;   // oggetti per fila nel PDF verticale (più alto = schede più piccole)
+  async function makePdf(list, kind, immagine) {
+    await loadPdfLib();   // serve anche per l'immagine: misura le scritte
     if (typeof PDFLib === 'undefined') { say('Il modulo per creare il PDF non è disponibile.'); return; }
-    say('Sto creando il PDF…');
+    say(immagine ? "Sto creando l'immagine…" : 'Sto creando il PDF…');
     const { PDFDocument, StandardFonts, rgb, LineCapStyle } = PDFLib;
     const doc = await PDFDocument.create();
     doc.setTitle(pdfText(CONFIG.titolo));
@@ -628,8 +686,10 @@
     doc.setProducer('Collection Time');
     const font = await doc.embedFont(StandardFonts.Helvetica);
     const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-    const titlePngBytes = await titlePng();
-    const logo = titlePngBytes ? await doc.embedPng(titlePngBytes) : null;
+    /* una tela va dentro il PDF (come JPEG o PNG); nell'immagine si usa così com'è */
+    const metti = async (c, jpeg) => immagine ? c : jpeg ? doc.embedJpg(await byteDi(c, 'image/jpeg')) : doc.embedPng(await byteDi(c, 'image/png'));
+    const titolo = await titoloTela();
+    const logo = titolo ? await metti(titolo) : null;
 
     /* ---- colori ---- */
     const ink = rgb(26 / 255, 33 / 255, 64 / 255);          // blu scuro del sito
@@ -638,8 +698,12 @@
     const bianco = rgb(1, 1, 1), gray = rgb(0.78, 0.8, 0.85), grigio = rgb(0.35, 0.38, 0.5);
     const red = rgb(229 / 255, 10 / 255, 21 / 255);
 
-    /* ---- misure (in punti; A4 orizzontale = 842 × 595) ---- */
-    const W = 841.89, H = 595.28, MX = 28, COLS = CONFIG.pdfColonne || 25, ROWS = CONFIG.pdfFile || 2;
+    /* ---- misure (in punti; A4 = 595 × 842) ---- */
+    const orizzontale = !!CONFIG.pdfColonne;                // solo le pagine Legami
+    const W = orizzontale ? 841.89 : 595.28, MX = 28;
+    let H = orizzontale ? 595.28 : 841.89;                  // l'immagine poi diventa alta quanto serve
+    const COLS = orizzontale ? CONFIG.pdfColonne : PDF_COLONNE;
+    let ROWS = orizzontale ? (CONFIG.pdfFile || 2) : 0;     // nel PDF verticale lo calcolo più sotto
     const BAND = 30;                                        // banda blu in alto
     /* titolo scritto su un cartellino bianco, come le schede; TITOLO_H = altezza delle lettere */
     let TITOLO_H = 32;
@@ -648,9 +712,9 @@
     const LOGO_W = logo ? TITOLO_H * logo.width / logo.height : 0;
     /* margini del cartellino bianco intorno al titolo */
     const CART_PX = 26, CART_PY = 12, CART_H = TITOLO_H + 2 * CART_PY;
-    const areaTop = H - BAND - 16, gridBottom = 52;         // spazio tra la banda e il piè di pagina
+    const SOPRA = BAND + 16, gridBottom = 52;               // spazio sotto la banda e per il piè di pagina
     const TITOLO_GAP = 18;                                  // spazio tra titolo e schede
-    const gridTop = areaTop - CART_H - TITOLO_GAP;          // spazio massimo per le schede
+    const spazio = H - SOPRA - CART_H - TITOLO_GAP - gridBottom;   // altezza massima per le schede
     const ROW_GAP = 12;
     const colPitch = (W - 2 * MX) / COLS;
     const CARD_GAP = Math.min(6, colPitch * 0.06);          // spazio tra una scheda e l'altra
@@ -662,7 +726,8 @@
     const NOME_H = nomi ? 2 * NOME_RIGA + GAP : 0;
     const TESTO_H = GAP + NOME_H + CODE_H + GAP + BOX;       // tutto quello che sta sotto la foto
     const fotoW = cardW - 2 * PAD;
-    const fotoMaxH = (gridTop - gridBottom - (ROWS - 1) * ROW_GAP) / ROWS - 2 * PAD - TESTO_H;
+    const fotoMaxH = orizzontale ? (spazio - (ROWS - 1) * ROW_GAP) / ROWS - 2 * PAD - TESTO_H
+                                 : fotoW;                   // PDF verticale: zona foto quadrata
 
     /* carico e ritaglio tutte le foto e scelgo la misura:
        • oggetti alti e stretti (CONFIG.proporzione > 1: penne, lampade) → tutti ALTI UGUALI;
@@ -678,6 +743,12 @@
     };
     const fotoH = altiUguali ? fotoMaxH : maxH * scala;     // altezza della zona foto
     const cardH = fotoH + 2 * PAD + TESTO_H;
+    if (!orizzontale) ROWS = Math.max(1, Math.floor((spazio + ROW_GAP) / (cardH + ROW_GAP)));   // file che entrano
+    if (immagine) {                                         // immagine: tutte le file, altezza su misura
+      ROWS = Math.ceil(list.length / COLS);
+      H = SOPRA + CART_H + TITOLO_GAP + ROWS * cardH + (ROWS - 1) * ROW_GAP + gridBottom;
+    }
+    const areaTop = H - SOPRA, gridTop = areaTop - CART_H - TITOLO_GAP;
     /* titolo + schede formano un blocco unico, centrato in altezza nella pagina */
     const righe = Math.min(ROWS, Math.ceil(list.length / COLS));
     const avanzo = (gridTop - gridBottom - righe * cardH - (righe - 1) * ROW_GAP) / 2;
@@ -699,12 +770,12 @@
     /* scritta nella banda in alto: che cosa è stato stampato */
     const cosa = { owned: 'La mia collezione', missing: 'Quelle che mi mancano', all: 'Checklist da compilare' }[kind];
 
-    const sfondo = await doc.embedPng(await sfondoPng(W, H));
+    const sfondo = await metti(sfondoTela(W, H));
     const pages = [];
     let ghost = null;      // sagoma degli slot vuoti: inserita una volta sola
     const perPage = COLS * ROWS;
     for (let start = 0; start < list.length; start += perPage) {
-      const page = doc.addPage([W, H]);
+      const page = immagine ? paginaTela(W, H, bold) : doc.addPage([W, H]);
       pages.push(page);
 
       /* sfondo: carta avorio + motivo di tessere Collection Time */
@@ -732,7 +803,9 @@
       for (let i = 0; i < chunk.length; i++) {
         const p = chunk[i];
         const r = Math.floor(i / COLS), c = i % COLS;
-        const cx = MX + c * colPitch + colPitch / 2;        // centro della colonna
+        const inFila = Math.min(COLS, chunk.length - r * COLS);                 // oggetti in questa fila
+        const spost = orizzontale ? 0 : (COLS - inFila) * colPitch / 2;          // fila corta: al centro (non per Legami)
+        const cx = MX + spost + c * colPitch + colPitch / 2;                     // centro della colonna
         const top = primaFila - r * (cardH + ROW_GAP);        // bordo alto della scheda
         const spuntata = kind === 'owned' && p.owned;
 
@@ -744,9 +817,9 @@
         const fotoTop = top - PAD, f = foto[start + i];
         if (f) {
           const [dw, dh] = misura(f), x = cx - dw / 2, y = fotoTop - fotoH;
-          if (p.image) page.drawImage(await doc.embedJpg(await fotoPdf(f, dw, dh, false)), { x, y, width: dw, height: dh });
+          if (p.image) page.drawImage(await metti(fotoTela(f, dw, dh, false), true), { x, y, width: dw, height: dh });
           else {
-            if (!ghost) ghost = await doc.embedPng(await fotoPdf(f, dw, dh, true));
+            if (!ghost) ghost = await metti(fotoTela(f, dw, dh, true));
             page.drawImage(ghost, { x, y, width: dw, height: dh });
           }
         }
@@ -791,34 +864,36 @@
     const fctx = fc.getContext('2d');
     fctx.scale(16, 16);
     tesseraCanvas(fctx, 'rgba(26, 33, 64, .5)', '#1A2140');   // tessera a metà, spunta piena: nessuna macchia
-    const filigrana = await doc.embedPng(new Uint8Array(await (await new Promise(r => fc.toBlob(r, 'image/png'))).arrayBuffer()));
+    const filigrana = await metti(fc);
 
     pages.forEach((pg, i) => {
-      const WM = 250;
+      const WM = Math.min(250, H * 0.6);                    // più piccola nelle immagini basse
       pg.drawImage(filigrana, { x: (W - WM) / 2, y: primaFila - (righe * cardH + (righe - 1) * ROW_GAP + WM) / 2, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
 
       /* piè di pagina a sinistra: tessera piccola + indirizzo del sito */
       marchio(pg, MX, 36, 18, ink);
       pg.drawText('collectiontime.com', { x: MX + 24, y: 22, size: 14, font: bold, color: ink });
 
-      /* numero di pagina in basso a destra */
+      /* numero di pagina in basso a destra (non nell'immagine: è una sola) */
+      if (immagine) return;
       const t = (i + 1) + ' su ' + pages.length;
       const tw = font.widthOfTextAtSize(t, 9);
       pg.drawText(t, { x: W - MX - tw, y: 22, size: 9, font, color: grigio });
     });
 
-    const bytes = await doc.save();
-    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const blob = immagine ? await fileDi(pages[0].tela, 'image/jpeg')
+                          : new Blob([await doc.save()], { type: 'application/pdf' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    /* nome del file, es. "collection-time_legami-erasable_mancanti_2026-09-23.pdf" */
+    /* nome del file, es. "collection-time_legami-erasable_mancanti_2026-09-23.pdf" (o .jpg) */
     const oggi = new Date(), dd = n => String(n).padStart(2, '0');                 // data del tuo computer (non quella di Londra)
-    a.download = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + '.pdf';
+    a.download = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + (immagine ? '.jpg' : '.pdf');
     document.body.appendChild(a);
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    say('PDF salvato nella cartella Download (' + pages.length + (pages.length === 1 ? ' pagina).' : ' pagine).'));
+    say(immagine ? 'Immagine salvata nella cartella Download.'
+                 : 'PDF salvato nella cartella Download (' + pages.length + (pages.length === 1 ? ' pagina).' : ' pagine).'));
   }
 
   $('btnPrint').addEventListener('click', () => {
@@ -829,7 +904,8 @@
     printDlg.showModal();
   });
   $('printCancel').addEventListener('click', () => printDlg.close());
-  $('printGo').addEventListener('click', async () => {
+  /* "Crea PDF" (da stampare) e "Crea immagine" (da condividere) */
+  async function crea(immagine) {
     const chosen = printDlg.querySelector('input[name=printKind]:checked');
     const kind = chosen ? chosen.value : 'owned';
     const list = printList(kind);
@@ -839,15 +915,18 @@
     }
     printDlg.close();
     try {
-      await makePdf(list, kind);
+      await makePdf(list, kind, immagine);
     } catch (err) {
       console.error(err);
       /* aperta con doppio clic (file://) il browser vieta di leggere le foto */
+      const cosa = immagine ? "L'immagine" : 'Il PDF';
       say(location.protocol === 'file:'
-        ? 'Il PDF non si può creare con la pagina aperta dal Finder: aprila dal sito o da un server locale.'
-        : 'Non sono riuscito a creare il PDF.');
+        ? cosa + ' non si può creare con la pagina aperta dal Finder: aprila dal sito o da un server locale.'
+        : 'Non sono riuscito a creare ' + (immagine ? "l'immagine." : 'il PDF.'));
     }
-  });
+  }
+  $('printGo').addEventListener('click', () => crea(false));
+  $('printImg').addEventListener('click', () => crea(true));
 
   /* ---------- controlli ----------
      La lente apre e chiude il campo (lo fa script.js, come nelle altre pagine);

@@ -1,0 +1,25 @@
+/* =====================================================================
+   stile.css — Mulino Bianco (Collection Time)
+   ---------------------------------------------------------------------
+   Solo ciò che è diverso nelle pagine delle serie Mulino Bianco: tutto il resto
+   dell'aspetto è in comune/collezione.css (uguale per tutte le collezioni).
+   UN SOLO FILE per tutte le serie Mulino Bianco:
+   ognuna lo richiama con  <link rel="stylesheet" href="../../css/stile.css?v=…">
+   ===================================================================== */
+
+/* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+:root { --titolo: #1A2140; }   /* blu scuro del sito, quasi nero (il rosso è solo per Legami) */
+
+/* Titolo scritto: carattere di sistema molto grosso, niente font da scaricare */
+h1 .titolo-testo {
+  font-family: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif;
+  font-weight: 900; letter-spacing: .02em;
+}
+
+/* Griglia: le colonne sono CONFIG.colonne di ogni pagina (es. 8: 16 sorpresine in 2 file).
+   Oltre 1400px le sorpresine resterebbero troppo distanti. */
+.grid { max-width: 1400px; gap: 28px 16px; }
+/* sotto i 1000px le colonne si adattano da sole alla larghezza dello schermo */
+@media (max-width: 1000px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 22px 12px; }
+}

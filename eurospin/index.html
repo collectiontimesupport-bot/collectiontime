@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Eurospin · Collection Time</title>
+<meta name="description" content="Eurospin: le collezioni dei supermercati Eurospin, come Harry Potter, Sonic, Kung Fu Panda, i Simpson, i Minions e Star Wars.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Eurospin · Collection Time">
+<meta property="og:description" content="Eurospin: le collezioni dei supermercati Eurospin, come Harry Potter, Sonic, Kung Fu Panda, i Simpson, i Minions e Star Wars.">
+<meta property="og:url" content="https://www.collectiontime.com/eurospin/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../sito.css?v=12">
+<style>
+  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  :root {
+    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+    --titolo: #1A2140; }   /* blu scuro del sito, quasi nero (il rosso è solo per Legami) */
+  /* Titolo in carattere di sistema molto grosso (nessun file da scaricare: pagina leggera) */
+  .st-titolo { font: 900 clamp(2rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
+  /* telefoni: titolo grande come nelle altre sezioni */
+  @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
+  /* Card con la foto IN ALTO, come nella sezione LEGO.
+     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
+  .st-card { --foto-h: 170px; }
+  .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
+  .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
+</style>
+</head>
+<body>
+<!-- Banda in alto (logo, Esporta, Importa): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
+<main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Tutte le collezioni</a>
+  <!-- ! MODIFICA: titolo della pagina -->
+  <h1 class="st-titolo">EUROSPIN</h1>
+  <!-- Frase + lente: la lente apre il campo per cercare tra le collezioni (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Cerca una collezione</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una collezione" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una collezione" aria-label="Cerca una collezione" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna collezione trovata.</p>
+  <!-- Una card per ogni gruppo: per aggiungerne uno, copia un <li> ... </li> e cambia cartella e testi.
+       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi delle serie). -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
+         aumenta "?v=…" in fondo al nome del file (es. copertina.webp?v=1 → ?v=2, oppure aggiungi ?v=2
+         se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
+  <ul class="st-cards">
+    <li data-cerca="Harry Potter 2026 Silente Voldemort Hermione Ron Harry Hagrid Ginny Edvige Draco Bellatrix Ford Anglia Il Nottetempo"><a class="st-card" href="harry-potter/index.html"><div class="thumb"><img src="harry-potter/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Harry Potter</h2><p>I personaggi 3D del mondo di Harry Potter.</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Sonic 2025 Super Sonic Amy Tails Knuckles Sonic Shadow Metal Sonic Dr. Eggman Silver Vector Blaze Rouge"><a class="st-card" href="sonic/index.html"><div class="thumb"><img src="sonic/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Sonic</h2><p>Macchinine a retrocarica con i personaggi di Sonic.</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Kung Fu Panda 4 2024 Tigre Zhen Gru e Mantide Scimmia e Vipera Po Tai Lung Camaleonte Kai Li Shan Oogway Shifu Sig. Ping"><a class="st-card" href="kung-fu-panda-4/index.html"><div class="thumb"><img src="kung-fu-panda-4/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Kung Fu Panda 4</h2><p>I personaggi 3D del film Kung Fu Panda 4.</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="The Simpsons 2023 Homer Marge Maggie Piccolo Aiutante di Babbo Natale Bart Lisa Krusty il Clown Ned Flanders Clancy Winchester Montgomery Burns Milhouse van Houten Abraham Simpson"><a class="st-card" href="the-simpsons/index.html"><div class="thumb"><img src="the-simpsons/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>The Simpsons</h2><p>I personaggi 3D dei Simpson, con movimento.</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Minions Fruit Sounds 2022 frutta verdura suono Carl Mela Tim Carota Jerry Pomodoro Kevin Banana Bob Fragola Dave Peperone"><a class="st-card" href="minions-fruit-sounds/index.html"><div class="thumb"><img src="minions-fruit-sounds/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Minions Fruit Sounds</h2><p>I Minions vestiti da frutta e verdura, con il suono.</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Star Wars Flash Heroes 2021 Yoda Chewbacca Kylo Ren Rey R2-D2 Darth Vader Boba Fett C-3PO Darth Maul Leia Han Solo Stormtrooper"><a class="st-card" href="star-wars-flash-heroes/index.html"><div class="thumb"><img src="star-wars-flash-heroes/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Star Wars Flash Heroes</h2><p>I personaggi 3D di Star Wars che si illuminano.</p><span class="st-apri">Apri</span></a></li>
+  </ul>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
+<!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
+     in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
+<script src="../script.js?v=9"></script>
+</body>
+</html>

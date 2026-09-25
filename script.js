@@ -252,7 +252,9 @@ async function aggiungiHome() {
 document.addEventListener('click', e => { if (e.target.closest('#stHome')) aggiungiHome(); });
 
 /* ---------- Ricerca (la lente) ----------
-   La lente apre il campo; con Esc o uscendo dal campo vuoto si richiude.
+   La lente apre il campo; lo apre anche la scritta accanto ("Cerca una serie",
+   "Cerca una categoria"…), più comoda da toccare sul telefono.
+   Con Esc o uscendo dal campo vuoto si richiude.
    Nelle pagine con le card (Home, Legami, LEGO, Kinder) scrivendo restano visibili
    solo le card che contengono quelle parole (nel testo della card o nel
    suo data-cerca="..."). Nelle pagine delle collezioni il filtro lo fa
@@ -262,6 +264,7 @@ function avviaCerca() {
   const box = document.getElementById('stCerca');
   if (!box) return;                          // la pagina non ha la ricerca
   const btn = box.querySelector('button'), campo = box.querySelector('input');
+  const scritta = box.parentElement.querySelector('.st-sub > .sub');   // la frase accanto alla lente (se c'è)
   const card = [...document.querySelectorAll('.st-cards > li')];
   const nessuna = document.querySelector('.st-nessuna');
   const semplice = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');   // senza accenti
@@ -282,6 +285,7 @@ function avviaCerca() {
     box.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); campo.tabIndex = -1;
   }
   btn.addEventListener('click', () => box.classList.contains('open') && !campo.value.trim() ? chiudi() : apri());
+  if (scritta) scritta.addEventListener('click', apri);
   campo.addEventListener('input', filtra);
   campo.addEventListener('blur', () => setTimeout(() => { if (!box.contains(document.activeElement)) chiudi(); }, 120));
   campo.addEventListener('keydown', e => {

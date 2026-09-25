@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="it">
-<head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3547486828171348"
-     crossorigin="anonymous"></script>
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
@@ -24,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=11">
+<link rel="stylesheet" href="sito.css?v=12">
 <!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
 <link rel="preload" href="comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -54,6 +53,8 @@
   .logo-coll.cool span { font-size: 1.8rem; white-space: nowrap; word-spacing: -.15em; }
   /* card McDonald's: "McDonald's" su una riga, più piccolo (se no esce dalla card) */
   .logo-coll.mcd span { font-size: 2.1rem; white-space: nowrap; }
+  /* card Eurospin: "Eurospin" su una riga, un po' più piccolo di "Lidl" (se no esce dalla card) */
+  .logo-coll.euro span { font-size: 2.6rem; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -79,7 +80,7 @@
        data-cerca = parole in più che la ricerca trova (es. le collezioni che ci sono dentro). -->
   <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
   <ul class="st-cards">
-    <li data-cerca="Erasable Pens penne cancellabili Bulb Fiction lampade lampada Righello">
+    <li data-cerca="Erasable Pens Lovely Friends penne gel penne cancellabili Bulb Fiction lampade lampada Astucci astuccio Portachiavi portachiavi peluche Tiny Super Soft">
       <a class="st-card" href="legami/index.html" aria-label="Legami Milano">
         <!-- logo scritto: --titolo = colore della collezione (rosso Legami) -->
         <div class="logo-coll" style="--titolo: #E50A15" aria-hidden="true"><span>Legami</span><small>Milano</small></div>
@@ -119,6 +120,22 @@
         <span class="st-apri">Apri</span>
       </a>
     </li>
+    <li data-cerca="Eurospin supermercato Minions Fruit Sounds frutta verdura Harry Potter Sonic macchinine Kung Fu Panda 4 The Simpsons Simpson Star Wars Flash Heroes">
+      <a class="st-card" href="eurospin/index.html" aria-label="Eurospin">
+        <!-- logo scritto: --titolo = colore di "Eurospin" (blu Eurospin) -->
+        <div class="logo-coll kinder euro" style="--titolo: #004A99" aria-hidden="true"><span>Eurospin</span></div>
+        <p>Le collezioni dei supermercati Eurospin.</p>
+        <span class="st-apri">Apri</span>
+      </a>
+    </li>
+    <li data-cerca="Mulino Bianco Raccolta punti premi colazione Momenti più buoni tazze piattini Felicitazza Frullotto Coccini Cappuccine Schiumalatte Coccio delle Origini Biscotazza Mattutina Sorpresine Gommine 2023 gomme Tarallucci Baiocchi Macine Abbracci Tegolino Gli Animabili Serie 1 Serie 2 animaletti cancelleria Shelly Birba Bee Polly Pepe Pinky Nella Sofi lumachina volpina apina paperella asinello maialino coccinella pecorella gufetto mucchina gallinella coniglietto Stampy Otto Mu">
+      <a class="st-card" href="mulino-bianco/index.html" aria-label="Mulino Bianco">
+        <!-- logo scritto: --titolo = colore di "Mulino" (rosso mattone); "Bianco" piccolo sotto, come "Milano" nella card Legami -->
+        <div class="logo-coll kinder" style="--titolo: #A3282B" aria-hidden="true"><span>Mulino</span><small>Bianco</small></div>
+        <p>Sorpresine e raccolta punti.</p>
+        <span class="st-apri">Apri</span>
+      </a>
+    </li>
     <li data-cerca="McDonald's McDonalds Mc Happy Meal sorprese giocattoli Gadget The Minecraft Movie Creeper Steve Squishmallows peluche Lil McDonald's miniature Disneyland 70 Disney Hello Kitty Ninja Turtles Super Mario Stranger Things SpongeBob One Piece UNO Anime Naruto Back to School scuola Spider-Man Friends tazze bicchieri PLAYMOBIL Crayola Adopt Me Roblox Libri Grinch Little People Big Dreams TinyTAN BTS Care Bears Orsetti del Cuore Merry Grinchmas calze Back to School 2025 teli mare Minecraft Movie Meal Jurassic World dinosauri Sonic Mario Kart Cattivissimo Me 4 Minions Pet Simulator Panini Family Wiltopia Yu-Gi-Oh Dobble MultiVersus KPop Demon Hunters Elf on the Shelf Hot Wheels Karma palloni calcio pallavolo">
       <a class="st-card" href="mcdonalds/index.html" aria-label="McDonald's">
         <!-- logo scritto: --titolo = colore di "McDonald's" (rosso McDonald's) -->
@@ -136,6 +153,6 @@
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
 <!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=8"></script>
+<script src="script.js?v=9"></script>
 </body>
 </html>

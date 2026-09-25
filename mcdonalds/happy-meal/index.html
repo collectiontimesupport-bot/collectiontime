@@ -23,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../sito.css?v=11">
+<link rel="stylesheet" href="../../sito.css?v=12">
 <style>
   /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
      qui solo ciò che è diverso in questa pagina. */
@@ -72,7 +72,9 @@
   <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
        • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
          es. nome-cartella/immagini/copertina.webp
-       • Per cambiarla basta sostituire il file con uno con lo stesso nome: l'HTML non si tocca.
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
+         aumenta "?v=…" in fondo al nome del file (es. copertina.webp?v=1 → ?v=2, oppure aggiungi ?v=2
+         se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
        • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
          <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
        • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
@@ -114,6 +116,14 @@
     <li data-cerca="Hot Wheels Nitro Junior Games Mattel 2023 BMX monopattini skateboard finger"><a class="st-card" href="hot-wheels-nitro-junior-games/index.html"><div class="thumb"><img src="hot-wheels-nitro-junior-games/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Hot Wheels - Nitro Junior Games</h2><p>12 giochi<br>2023</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Panini Family figurine 2023 Mondiale calcio femminile calciatrici poster"><a class="st-card" href="panini-family-2023/index.html"><div class="thumb"><img src="panini-family-2023/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Panini Family - 2023</h2><p>12 set<br>2023</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Il mondo di Karma Karma's World Netflix 2023 Carrie Chris Crash Demi Ray Jayla Tayla Karma Keys Sabiya Switch Winston"><a class="st-card" href="il-mondo-di-karma/index.html"><div class="thumb"><img src="il-mondo-di-karma/immagini/copertina.webp?v=3" alt="" loading="lazy"></div><h2>Il mondo di Karma</h2><p>10 box<br>2023</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="DC Comics cartone poster da colorare fumetti custodia 2022 Beast Boy Cyborg Raven Starfire Robin e Teen Titans Go!"><a class="st-card" href="teen-titans-go/index.html"><div class="thumb"><img src="teen-titans-go/immagini/copertina.webp?v=2" alt="" loading="lazy"></div><h2>Teen Titans Go!</h2><p>8 poster<br>2022</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="DC Comics supereroi animali peluche bambole di pezza 2022 Green Lantern Batman Ace Superman Krypto Flash Merton Wonder Woman PB Cyborg Lulu Lanterna Verde Chip"><a class="st-card" href="dc-league-of-super-pets/index.html"><div class="thumb"><img src="dc-league-of-super-pets/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>DC League of Super-Pets</h2><p>12 peluche<br>2022</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Miraculous Ladybug Le storie di e Chat Noir adesivi cancelleria 2022 Rena Rouge Queen Bee"><a class="st-card" href="miraculous/index.html"><div class="thumb"><img src="miraculous/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Miraculous</h2><p>4 giochi<br>2022</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Minions 2 Come Gru diventa cattivissimo cartoncino da montare 2022 Kyle Stuart Otto Kevin Bob Kung Fu ballerini ballerino costruttore"><a class="st-card" href="minions-2/index.html"><div class="thumb"><img src="minions-2/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Minions 2</h2><p>14 giochi<br>2022</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Tom and Jerry e cartone 2022 gatto topo cane la boccia dei pesci L&#x27;aspirapolvere di L&#x27;osso Spike Il bagnetto I manubri La poltrona tosaerba corsa del formaggio - fetta cuccia bidone forma WC"><a class="st-card" href="tom-e-jerry/index.html"><div class="thumb"><img src="tom-e-jerry/immagini/copertina.webp?v=2" alt="" loading="lazy"></div><h2>Tom &amp; Jerry</h2><p>12 giochi<br>2022</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="SpongeBob SquarePants Bikini Bottom 2021 Squidward Mermaid Man Plankton Patrick Sandy Gary Krusty Krab Squiddi e la Testa di Pietra il l&#x27;Ananas Campo delle Meduse Roccia Cupola Chum Bucket Mr. sua Casa Signora Puff Scuola Guida Waterman Shady Shoals"><a class="st-card" href="spongebob-squarepants/index.html"><div class="thumb"><img src="spongebob-squarepants/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>SpongeBob SquarePants</h2><p>10 giochi<br>2021</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Space Jam New Legends Legacy Looney Tunes basket 2021 LeBron James Bugs Bunny Lola Taz Taddeo Elmer Fudd Beep USA Silvestro e Titti Marvin il Marziano Daffy Duck Wile E. Coyote Yosemite Sam Road Runner Il canestro di"><a class="st-card" href="space-jam-new-legends/index.html"><div class="thumb"><img src="space-jam-new-legends/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Space Jam: New Legends</h2><p>12 giochi<br>2021</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Minions 2021 100 minifigure oro dorati dorato Gru Kevin Stuart Bob Otto con la parrucca bionda e collana sulla ciambella azzurra carcerato il cappello a righe i manubri hostess pilota che fa yoga nunchaku lo smartphone maschera del drago cuffia da nuoto pittore cantante microfono tuta bianca colletto rosso golfista robot mummia rosa carta igienica l’asciugamano in testa cuscino l&#x27;orsacchiotto ragazzo palla di neve le cuffie pattini chitarrista cavernicolo clava verde gonnellino un occhio angelo vampiro hawaiana bianco boomerang alto piccolo ballerina codini l’elmetto megafono viola kung fu arancione bastone soldato sciabola pirata spada kimono pugile rossa riccia vestito baffi camicia guardia reale re corona capitano banana completo azzurro pompiere spiaggia salvagente papera fantasma eschimese pesce tifoso fascia rosa cuore camicia colletto nero mano spugna arbitro"><a class="st-card" href="minions/index.html"><div class="thumb"><img src="minions/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Minions</h2><p>100 minifigure<br>2021</p><span class="st-apri">Apri</span></a></li>
   </ul>
 </main>
 
@@ -123,6 +133,6 @@
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
 <!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../../script.js?v=8"></script>
+<script src="../../script.js?v=9"></script>
 </body>
 </html>
