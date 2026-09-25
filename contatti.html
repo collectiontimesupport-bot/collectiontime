@@ -35,6 +35,11 @@
   .lab { font-size: .8125rem; color: var(--muted); }
   .val { font-size: 1.0625rem; color: var(--ink); overflow-wrap: anywhere; }
   a.val { text-underline-offset: 3px; text-decoration-color: var(--amber); text-decoration-thickness: 2px; }
+  /* "Cosa scrivere": elenco sotto l'email */
+  h2 { margin: 36px 0 10px; font-size: 1.125rem; }
+  .cosa { margin: 0; padding-left: 1.2em; color: var(--ink); }
+  .cosa li { margin: 6px 0; }
+  .nota { margin: 18px 0 0; font-size: .9375rem; color: var(--muted); }
   @media (max-width: 480px) { .st-btn { width: 100%; text-align: center; } }
 </style>
 </head>
@@ -54,6 +59,17 @@
     </div>
     <a class="st-btn" id="mailBtn" hidden>Scrivimi</a>
   </div>
+
+  <!-- ! MODIFICA: consigli su cosa scrivere; per aggiungere un punto copia una riga <li>…</li> -->
+  <h2>Per una segnalazione</h2>
+  <ul class="cosa">
+    <li>la <b>collezione</b> e la <b>serie</b> (per esempio "LEGO · Serie 25");</li>
+    <li>il <b>numero</b> o il nome dell'oggetto;</li>
+    <li>cosa c'è di sbagliato o cosa manca;</li>
+    <li>se puoi, una <b>foto</b> del pezzo o della confezione.</li>
+  </ul>
+  <!-- ! MODIFICA: tempo di risposta indicativo -->
+  <p class="nota">Il sito lo curo nel tempo libero: di solito rispondo entro qualche giorno. Grazie a chi segnala errori e pezzi mancanti!</p>
 </main>
 
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
@@ -62,7 +78,7 @@
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
 <!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=9"></script>
+<script src="script.js?v=10"></script>
 <script>
 /* L'indirizzo viene composto qui, così non compare in chiaro nel codice della pagina (meno spam) */
 (function () {
