@@ -319,3 +319,9 @@ body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
 .st-elimina-azioni { justify-content: space-between; }
 .st-account .st-rosso { color: #B3261E; border-color: #E8B4B0; }
 .st-account .st-rosso:hover { color: #B3261E; border-color: #B3261E; }
+/* menu del profilo: le voci allineate a destra (il menu si apre sul lato destro),
+   "Elimina account…" invece a sinistra, lontano da "Esci" */
+.st-profilo .st-link { justify-self: end; text-align: right; }
+.st-profilo .st-ma-sezione { text-align: right; }
+.st-profilo .st-ma-fondo { justify-content: flex-end; }
+.st-profilo .st-ma-elimina { justify-self: start; text-align: left; }
