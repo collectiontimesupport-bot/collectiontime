@@ -150,6 +150,8 @@
   /* segna / toglie "Ce l'ho" e aggiorna solo la scheda interessata */
   function setOwned(p, value) {
     p.owned = value;
+    const aveviDoppi = !value && p.doppi > 0;
+    if (!value) p.doppi = 0;                /* non ce l'hai più: niente doppioni */
     savePen(p);
     if (filterMode !== 'all') render();
     else {
@@ -159,6 +161,7 @@
         if (value) ensureHalo(li.querySelector('.pic'), p);
         li.querySelector('.open').setAttribute('aria-pressed', String(value));
         li.querySelector('.have input').checked = value;
+        if (aveviDoppi) li.querySelector('.doppi').replaceWith(doppiBox(p));   /* contatore di nuovo a 0 */
       }
       updateCount();
     }
@@ -186,6 +189,7 @@
     const mostra = () => { n.textContent = p.doppi; meno.disabled = !p.doppi; box.classList.toggle('si', p.doppi > 0); };
     const cambia = d => {
       p.doppi = Math.max(0, p.doppi + d);
+      if (p.doppi && !p.owned) { mostra(); return setOwned(p, true); }   /* un doppione vuol dire che ce l'hai: segno anche "Ce l'ho" */
       savePen(p);
       if (filterMode === 'doppi' && !p.doppi) render();   /* filtro "Doppioni": se arriva a 0 sparisce */
       else { mostra(); updateCount(); }
@@ -904,6 +908,7 @@
         if (v) {
           p.owned = v.owned === true;
           p.doppi = Number.isInteger(v.doppi) && v.doppi > 0 ? v.doppi : 0;
+          if (p.doppi) p.owned = true;         /* dati salvati prima della regola: doppione = ce l'hai */
           if (v.tagsTouched && Array.isArray(v.tags)) { p.tags = v.tags.map(String); p.tagsTouched = true; }
         }
         return p;

@@ -51,7 +51,7 @@
       try {
         const db = await apri(s.db);
         const righe = await new Promise(ok => { const g = db.transaction('penne').objectStore('penne').getAll(); g.onsuccess = () => ok(g.result); g.onerror = () => ok([]); });
-        righe.forEach(r => { if (r.owned === true) ce[r.id] = true; if (r.doppi > 0) doppi[r.id] = r.doppi; });
+        righe.forEach(r => { if (r.owned === true || r.doppi > 0) ce[r.id] = true; if (r.doppi > 0) doppi[r.id] = r.doppi; });
         db.close();
       } catch (e) { /* archivio non leggibile: la serie resta "non iniziata" */ }
     }
@@ -164,8 +164,10 @@
     const el = e.target.closest('[data-ce], [data-piu], [data-meno]');
     if (!el) return;
     const id = el.dataset.ce || el.dataset.piu || el.dataset.meno;
-    if (el.dataset.ce) { e.preventDefault(); if (ce[id]) delete ce[id]; else ce[id] = true; }
-    else if (el.dataset.piu) doppi[id] = (doppi[id] || 0) + 1;
+    /* come nelle pagine delle serie: togliendo "Ce l'ho" spariscono i doppioni,
+       aggiungendo un doppione si segna anche "Ce l'ho" */
+    if (el.dataset.ce) { e.preventDefault(); if (ce[id]) { delete ce[id]; delete doppi[id]; } else ce[id] = true; }
+    else if (el.dataset.piu) { doppi[id] = (doppi[id] || 0) + 1; ce[id] = true; }
     else { doppi[id] = Math.max(0, (doppi[id] || 0) - 1); if (!doppi[id]) delete doppi[id]; }
     salva(id);
     const y = scrollY;
