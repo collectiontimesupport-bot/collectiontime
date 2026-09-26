@@ -21,8 +21,11 @@
      • quando cambi qualcosa, qualche secondo dopo il cloud si aggiorna
      • aprendo il sito (una volta per visita) si scarica quello che hai
        cambiato su un altro dispositivo
-     • al primo accesso su un dispositivo, quello che c'è nel browser e
-       quello che c'è nel cloud si UNISCONO (non si perde niente)
+     • al primo accesso su un dispositivo che ha GIÀ delle spunte (e anche
+       l'account ne ha), si chiede se unirle all'account o usare solo quelle
+       dell'account (funzione chiedi)
+     • uscendo (Esci) o eliminando i dati, la collezione sparisce da questo
+       dispositivo (funzione svuotaQui): resta solo nell'account
    Leggere, unire e scrivere i dati del browser lo fanno le funzioni di
    script.js leggiTutto() e scriviTutto(), le stesse di Esporta / Importa.
 
@@ -108,7 +111,12 @@ function sincronizza() {
     const locale = await leggiTutto();
     let finale = locale, daScrivereQui = false;
     if (!nube) finale = locale;                                              // primo salvataggio in assoluto
-    else if (stato.uid !== utente.uid) { finale = unisci(locale, nube.collezioni); daScrivereQui = true; }   // primo accesso su questo browser
+    else if (stato.uid !== utente.uid) {                                     // primo accesso su questo browser
+      const haQui = Object.keys(locale).length > 0, haAccount = Object.keys(nube.collezioni || {}).length > 0;
+      finale = haQui && haAccount && (await chiedi()) === 'unisci' ? unisci(locale, nube.collezioni)
+        : haAccount ? (nube.collezioni || {}) : locale;
+      daScrivereQui = true;
+    }
     else if (nube.aggiornato === stato.ultimo) { if (!stato.sporco) return; }  // il cloud non è cambiato: mando solo le mie modifiche
     else if (stato.sporco) { finale = unisci(locale, nube.collezioni); daScrivereQui = true; }                // cambiato qui e altrove: unisco
     else { finale = nube.collezioni || {}; daScrivereQui = true; }            // cambiato solo altrove: prendo il cloud
@@ -208,22 +216,50 @@ function mostraErrore(testo, ok) {
   el.hidden = false;
 }
 
+/* toglie da QUESTO dispositivo spunte, doppioni e hashtag di tutte le collezioni
+   (usando le funzioni di script.js); poi ridisegna la pagina */
+async function svuotaQui() {
+  for (const n of await archivi()) {
+    const a = await apriArchivio(n);
+    const righe = await leggi(a);
+    await scrivi(a, righe.map(r => Object.assign(r, { owned: false, doppi: 0, tags: [], tagsTouched: false })));
+    a.close();
+  }
+  try { localStorage.removeItem('ct-cloud'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
+  setTimeout(() => location.reload(), 1500);
+}
 async function esci() {
   await sincronizza();                                         // prima mando le ultime modifiche
   await signOut(auth);
-  try { localStorage.removeItem('ct-cloud'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
-  avviso('Sei uscito. La collezione resta anche in questo browser.');
+  await svuotaQui();
+  avviso('Sei uscito: la collezione è al sicuro nel tuo account e non è più su questo dispositivo.');
+}
+/* primo accesso su un dispositivo che ha già delle spunte: cosa farne?
+   Risponde 'unisci' o 'account' (anche chiudendo la finestra: è la scelta più sicura) */
+function chiedi() {
+  return new Promise(risposta => {
+    const d = document.createElement('dialog');
+    d.className = 'st-guida st-account';
+    d.innerHTML = '<h2>Spunte già presenti</h2>'
+      + '<p>Su questo dispositivo ci sono già delle spunte che non sono nel tuo account.</p>'
+      + '<p><small>Se sono prove o non sono tue, usa solo quelle del tuo account.</small></p>'
+      + '<div class="st-account-azioni"><button type="button" value="unisci" class="st-secondario">Aggiungile al mio account</button><button type="button" value="account">Usa solo quelle del mio account</button></div>';
+    d.addEventListener('click', e => { const b = e.target.closest('button'); if (b) d.close(b.value); });
+    d.addEventListener('close', () => { risposta(d.returnValue === 'unisci' ? 'unisci' : 'account'); d.remove(); });
+    document.body.append(d);
+    d.showModal();
+  });
 }
 async function eliminaDati() {
   const utente = auth.currentUser;
   if (!utente) return;
   await deleteDoc(documento(utente.uid));
-  try { localStorage.removeItem('ct-cloud'); } catch (e) {}
-  try { await deleteUser(utente); avviso('Account e dati nel cloud eliminati. La collezione resta in questo browser.'); }
+  try { await deleteUser(utente); avviso('Account e collezione eliminati.'); }
   catch (e) {
     await signOut(auth);
-    avviso('Dati nel cloud eliminati. Per eliminare anche l\'account, accedi di nuovo e ripeti subito.');
+    avviso('Collezione eliminata. Per eliminare anche l\'account, accedi di nuovo e ripeti subito.');
   }
+  await svuotaQui();
 }
 
 /* ---------- pulsante nella banda in alto e finestra "Account" ----------
