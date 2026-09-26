@@ -1,5 +1,6 @@
 /* =====================================================================
-   cloud.js — "Accedi con Google" e collezione salvata nel cloud
+   cloud.js — "Accedi" (con Google o con email e password)
+   e collezione salvata nel cloud
    (Collection Time)
    ---------------------------------------------------------------------
    È l'UNICO file del sito che parla con Firebase (Google).
@@ -30,7 +31,8 @@
    ===================================================================== */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, deleteUser } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, deleteUser,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-lite.js';
 
 /* Dati del progetto Firebase "Collection-Time" (console di Firebase →
@@ -48,6 +50,7 @@ const FIREBASE = {
 
 const app = initializeApp(FIREBASE);
 const auth = getAuth(app);
+auth.languageCode = 'it';                                    // email di Firebase (es. reimposta password) in italiano
 const db = getFirestore(app);
 const documento = uid => doc(db, 'collezioni', uid);
 
@@ -152,6 +155,45 @@ async function accedi() {
     avviso(e.code === 'auth/popup-blocked' ? 'Il browser ha bloccato la finestra di Google: permetti i pop-up per questo sito e riprova.' : 'Accesso non riuscito. Riprova tra poco.');
   }
 }
+/* ---------- accesso con email e password ----------
+   modo: 'entra' (ha già l'account) o 'nuovo' (crea l'account) */
+const ERRORI = {
+  'auth/invalid-email': 'L\'indirizzo email non è scritto bene.',
+  'auth/missing-password': 'Scrivi la password.',
+  'auth/weak-password': 'La password deve avere almeno 6 caratteri.',
+  'auth/email-already-in-use': 'Esiste già un account con questa email: premi "Accedi".',
+  'auth/invalid-credential': 'Email o password sbagliate. Se non hai ancora un account, premi "Crea account".',
+  'auth/user-not-found': 'Non c\'è nessun account con questa email: premi "Crea account".',
+  'auth/wrong-password': 'Password sbagliata.',
+  'auth/too-many-requests': 'Troppi tentativi: aspetta qualche minuto e riprova.',
+  'auth/network-request-failed': 'Connessione assente: riprova quando sei online.',
+  'auth/operation-not-allowed': 'L\'accesso con email non è ancora attivo. Riprova più tardi.',
+  'auth/configuration-not-found': 'L\'accesso non è ancora attivo. Riprova più tardi.'
+};
+const messaggioErrore = e => ERRORI[e.code] || 'Qualcosa non ha funzionato. Riprova tra poco.';
+async function conEmail(modo, email, password) {
+  try {
+    if (modo === 'nuovo') await createUserWithEmailAndPassword(auth, email, password);
+    else await signInWithEmailAndPassword(auth, email, password);
+    finestra.close();
+    avviso(modo === 'nuovo' ? 'Account creato: la tua collezione si salva anche nel cloud.' : 'Accesso fatto: la tua collezione si salva anche nel cloud.');
+  } catch (e) { mostraErrore(messaggioErrore(e)); }
+}
+async function passwordDimenticata(email) {
+  if (!email) return mostraErrore('Scrivi la tua email qui sopra, poi premi di nuovo "Password dimenticata?".');
+  try {
+    await sendPasswordResetEmail(auth, email);
+    mostraErrore('Ti ho mandato un\'email per scegliere una nuova password (guarda anche nello spam).', true);
+  } catch (e) { mostraErrore(messaggioErrore(e)); }
+}
+function mostraErrore(testo, ok) {
+  const el = finestra && finestra.querySelector('.st-account-errore');
+  if (!el) return avviso(testo);
+  el.textContent = testo;
+  el.classList.toggle('ok', !!ok);
+  el.hidden = false;
+}
+
 async function esci() {
   await sincronizza();                                         // prima mando le ultime modifiche
   await signOut(auth);
@@ -175,7 +217,7 @@ async function eliminaDati() {
    è quello della finestra "Aggiungi alla Home" (.st-guida in sito.css). */
 function aggiornaPulsante(utente) {
   const b = document.getElementById('stAccedi');
-  if (b) b.textContent = utente ? (utente.displayName || 'Account').split(' ')[0] : 'Accedi';
+  if (b) b.textContent = utente ? (utente.displayName ? utente.displayName.split(' ')[0] : (utente.email || 'Account').split('@')[0]) : 'Accedi';
 }
 let finestra = null, conferma = false;
 function aggiornaFinestra() {
@@ -183,14 +225,23 @@ function aggiornaFinestra() {
   const u = auth.currentUser, s = leggiStato();
   const quando = s.ultimo ? new Date(s.ultimo).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
   finestra.querySelector('.st-account-testo').innerHTML = u
-    ? '<p>Accesso fatto come <b>' + esc(u.displayName || '') + '</b><br><small>' + esc(u.email || '') + '</small></p>'
+    ? '<p>Accesso fatto come <b>' + esc(u.displayName || u.email || '') + '</b>' + (u.displayName ? '<br><small>' + esc(u.email || '') + '</small>' : '') + '</p>'
       + '<p>La tua collezione si salva nel cloud e la ritrovi su tutti i dispositivi in cui fai l\'accesso.'
       + (s.sporco ? ' <b>Salvataggio in corso…</b>' : quando ? ' Ultimo salvataggio: ' + quando + '.' : '') + '</p>'
-    : '<p>Accedi con il tuo account Google per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>'
+    : '<p>Accedi per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>'
+      + '<button type="button" data-azione="accedi" class="st-google">Accedi con Google</button>'
+      + '<p class="st-oppure">oppure con la tua email</p>'
+      + '<form class="st-email" novalidate>'
+      +   '<input type="email" name="email" placeholder="Email" autocomplete="email" required>'
+      +   '<input type="password" name="password" placeholder="Password (almeno 6 caratteri)" autocomplete="current-password" required>'
+      +   '<p class="st-account-errore" role="alert" hidden></p>'
+      +   '<div class="st-email-azioni"><button type="submit" data-modo="entra">Accedi</button><button type="submit" data-modo="nuovo" class="st-secondario">Crea account</button></div>'
+      +   '<button type="button" data-azione="dimenticata" class="st-link">Password dimenticata?</button>'
+      + '</form>'
       + '<p><small>Salviamo solo il tuo nome, la tua email e quello che segni sul sito (spunte, doppioni, hashtag). Dettagli nella pagina Privacy.</small></p>';
   finestra.querySelector('.st-account-azioni').innerHTML = u
     ? '<button type="button" data-azione="elimina" class="st-secondario">' + (conferma ? 'Sicuro? Premi di nuovo' : 'Elimina i miei dati') + '</button><button type="button" data-azione="esci" class="st-secondario">Esci</button><button type="button" data-azione="chiudi">Chiudi</button>'
-    : '<button type="button" data-azione="chiudi" class="st-secondario">Chiudi</button><button type="button" data-azione="accedi">Accedi con Google</button>';
+    : '<button type="button" data-azione="chiudi" class="st-secondario">Chiudi</button>';
 }
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -209,12 +260,19 @@ export function apriAccount() {
       }
       const azione = b.dataset.azione;
       if (azione === 'accedi') { finestra.close(); accedi(); }  // il clic apre subito la finestra di Google (se no il browser la blocca)
+      else if (azione === 'dimenticata') passwordDimenticata(finestra.querySelector('.st-email [name=email]').value.trim());
       else if (azione === 'esci') { finestra.close(); esci(); }
       else if (azione === 'elimina') {
         if (!conferma) { conferma = true; aggiornaFinestra(); return; }
         finestra.close(); eliminaDati();
       }
       else finestra.close();
+    });
+    /* modulo email: "Accedi" o "Crea account" (anche premendo Invio = Accedi) */
+    finestra.addEventListener('submit', e => {
+      e.preventDefault();
+      const f = e.target, modo = (e.submitter && e.submitter.dataset.modo) || 'entra';
+      conEmail(modo, f.email.value.trim(), f.password.value);
     });
     finestra.addEventListener('close', () => { conferma = false; });
     document.body.append(finestra);

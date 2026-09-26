@@ -212,6 +212,7 @@ async function scriviTutto(collezioni, sostituisci) {
    segnalaModifica(): la chiamano app.js e raccolta.js dopo ogni spunta,
    doppione o hashtag salvato; se il cloud è attivo, lui lo manda su. */
 let cloud = null;
+/* cloud.js prende la stessa versione (?v=) di script.js: se cambi cloud.js, cambia la versione di script.js in tutte le pagine */
 const caricaCloud = () => cloud || (cloud = import(conVersione('comune/cloud.js').href));
 function segnaAccesso(si) { try { si ? localStorage.setItem('ct-accesso', '1') : localStorage.removeItem('ct-accesso'); } catch (e) {} }
 function segnalaModifica() { window.dispatchEvent(new Event('ct-modifica')); }

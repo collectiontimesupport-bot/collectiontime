@@ -163,6 +163,19 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-account-azioni { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .st-account .st-secondario { background: none; color: var(--ink); border: 1px solid var(--line); }
 .st-account .st-secondario:hover { background: none; border-color: var(--amber); color: var(--ink); }
+/* "Accedi con Google" largo quanto la finestra, poi il modulo email */
+.st-account .st-google { width: 100%; margin: 4px 0 0; }
+.st-oppure { display: flex; align-items: center; gap: 10px; margin: 14px 0 10px !important; color: var(--muted); font-size: .8125rem; }
+.st-oppure::before, .st-oppure::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.st-email { display: grid; gap: 8px; margin: 0 0 12px; text-align: left; }
+.st-email input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 1rem; color: var(--ink); background: var(--white); }
+.st-email input:focus { outline: none; border-color: var(--amber); }
+.st-email-azioni { display: flex; gap: 8px; }
+.st-email-azioni button { flex: 1; }
+.st-account .st-link { justify-self: start; padding: 2px 0; background: none; color: var(--muted); font-weight: 400; font-size: .8125rem; text-decoration: underline; }
+.st-account .st-link:hover { background: none; color: var(--ink); }
+.st-account-errore { margin: 0 !important; color: #B3261E; font-size: .875rem; }   /* rosso per gli errori */
+.st-account-errore.ok { color: var(--ink); }                                       /* messaggio "ti ho mandato un'email" */
 
 /* ---------- pagine di solo testo (FAQ, Note legali, Privacy) ----------
    Nel file basta: <body class="st-semplice"> e <main class="st-testo"> */
