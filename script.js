@@ -218,6 +218,32 @@ function segnaAccesso(si) { try { si ? localStorage.setItem('ct-accesso', '1') :
 function segnalaModifica() { window.dispatchEvent(new Event('ct-modifica')); }
 try { if (localStorage.getItem('ct-accesso') === '1') caricaCloud(); } catch (e) {}
 
+/* Promemoria "Tieni al sicuro la tua collezione": compare in basso alla prima
+   spunta di chi NON ha fatto l'accesso (non blocca niente). "Più tardi" lo
+   nasconde per 7 giorni (ct-promemoria = quando è stato chiuso).
+   L'aspetto è in sito.css (voce "promemoria accesso"). */
+const SETTE_GIORNI = 7 * 24 * 60 * 60 * 1000;
+window.addEventListener('ct-modifica', () => {
+  try {
+    if (localStorage.getItem('ct-accesso') === '1') return;                                   // ha già l'account
+    if (Date.now() - Number(localStorage.getItem('ct-promemoria') || 0) < SETTE_GIORNI) return;  // "Più tardi" da poco
+  } catch (e) { return; }
+  if (document.querySelector('.st-promemoria')) return;
+  const box = document.createElement('div');
+  box.className = 'st-promemoria';
+  box.setAttribute('role', 'status');
+  box.innerHTML = '<p><b>Tieni al sicuro la tua collezione.</b> Se cambi telefono o cancelli i dati del browser la perderesti: accedi per salvarla e ritrovarla ovunque.</p>'
+    + '<div><button type="button" data-p="dopo">Più tardi</button><button type="button" data-p="accedi">Accedi</button></div>';
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    try { localStorage.setItem('ct-promemoria', String(Date.now())); } catch (err) {}
+    box.remove();
+    if (b.dataset.p === 'accedi') caricaCloud().then(m => m.apriAccount(), () => avviso('Non riesco a collegarmi: controlla la connessione e riprova.'));
+  });
+  document.body.append(box);
+});
+
 /* i pulsanti arrivano con header.html: li ascolto dal documento */
 function protetto(fn) {
   return (...args) => fn(...args).catch(e => {

@@ -260,3 +260,18 @@ body.con-barra .st-avviso { bottom: calc(76px + env(safe-area-inset-bottom)); } 
 .st-anno-quante { color: var(--muted); font-size: .9375rem; }
 .st-anno > .st-cards { padding: 4px 0 24px; }
 @media (prefers-reduced-motion: reduce) { .st-anno summary::after { transition: none; } }
+
+/* ---------- promemoria accesso ----------
+   "Tieni al sicuro la tua collezione": lo crea script.js alla prima spunta di chi
+   non ha fatto l'accesso. In basso, sopra la barra delle categorie; non blocca la pagina. */
+.st-promemoria { position: fixed; left: 50%; bottom: 16px; z-index: 28; transform: translateX(-50%);
+  width: min(460px, calc(100vw - 24px)); padding: 12px 14px; border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 12px;
+  background: var(--white); color: var(--ink); box-shadow: 0 8px 28px rgba(26, 33, 64, .18);
+  font: .875rem/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom)); }
+.st-promemoria p { margin: 0 0 10px; }
+.st-promemoria div { display: flex; justify-content: flex-end; gap: 8px; }
+.st-promemoria button { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line); background: none; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.st-promemoria button[data-p="accedi"] { background: var(--ink); border-color: var(--ink); color: var(--white); }
+.st-promemoria button:hover { border-color: var(--amber); }
+.st-promemoria button[data-p="accedi"]:hover { background: var(--amber); border-color: var(--amber); color: var(--ink); }
