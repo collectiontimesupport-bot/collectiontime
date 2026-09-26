@@ -393,7 +393,8 @@ function disegnaMenu() {
       : '<button type="button" data-m="nome" class="st-link">Cambia nome</button>'
         + (conPassword(u) ? '<button type="button" data-m="password" class="st-link">Cambia password</button>' : ''))
     + COPIA
-    + '<div class="st-ma-fondo"><button type="button" data-m="esci" class="st-link">Esci</button></div>'
+    /* "Esci": pulsante rosso pieno, largo quanto il menu, con l'icona della porta */
+    + '<div class="st-ma-fondo"><button type="button" data-m="esci" class="st-esci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></svg>Esci</button></div>'
     + '<button type="button" data-m="elimina" class="st-link st-ma-elimina">Elimina account…</button>';
   if (modo === 'nome') { const i = menu.querySelector('input'); i.focus(); i.select(); }
 }

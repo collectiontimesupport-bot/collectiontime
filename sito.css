@@ -325,3 +325,9 @@ body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
 .st-profilo .st-ma-sezione { text-align: right; }
 .st-profilo .st-ma-fondo { justify-content: flex-end; }
 .st-profilo .st-ma-elimina { justify-self: start; text-align: left; }
+/* "Esci" nel menu del profilo: pulsante rosso pieno, largo quanto il menu */
+.st-profilo .st-ma-fondo { display: block; }
+.st-esci { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 10px; border: 0; border-radius: 10px;
+  background: #C62828; color: var(--white); font: inherit; font-weight: 700; cursor: pointer; }
+.st-esci svg { width: 18px; height: 18px; }
+.st-esci:hover { background: #A51F1F; }
