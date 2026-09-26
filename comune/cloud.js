@@ -31,17 +31,25 @@
    ===================================================================== */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, deleteUser,
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, deleteUser,
   signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-lite.js';
 
 /* Dati del progetto Firebase "Collection-Time" (console di Firebase →
    Impostazioni progetto → Le tue app → Sito C.T.). Sono dati PUBBLICI:
    stanno nel sito apposta, la protezione la fanno le regole di sicurezza.
-   (measurementId non c'è apposta: Google Analytics non si usa) */
+   (measurementId non c'è apposta: Google Analytics non si usa)
+   authDomain = collectiontime.com (e non ...firebaseapp.com): l'accesso con
+   Google passa dal NOSTRO dominio, se no Safari su iPhone lo blocca
+   ("Unable to process request due to missing initial state").
+   Per questo nel sito c'è la cartella __/auth con i file di accesso di Firebase
+   (copiati da https://collection-time-dd8fe.firebaseapp.com/__/auth/handler,
+   handler.js, experiments.js, iframe, iframe.js) e _config.yml la rende visibile.
+   Nella console di Google Cloud (API e servizi → Credenziali → client web)
+   è autorizzato l'indirizzo https://collectiontime.com/__/auth/handler */
 const FIREBASE = {
   apiKey: 'AIzaSyCgch5N04Z8YBprYCyJiMj_cYoXfz32b7c',
-  authDomain: 'collection-time-dd8fe.firebaseapp.com',
+  authDomain: 'collectiontime.com',
   projectId: 'collection-time-dd8fe',
   storageBucket: 'collection-time-dd8fe.firebasestorage.app',
   messagingSenderId: '1017812174787',
@@ -145,8 +153,14 @@ onAuthStateChanged(auth, utente => {
   }
 });
 
+/* Accedi con Google: di solito in una finestrella (popup).
+   Dal sito aperto con l'icona sulla schermata Home (come un'app) le finestrelle
+   non funzionano bene: lì si va sulla pagina di Google e poi si torna qui. */
+const comeApp = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+getRedirectResult(auth).then(r => { if (r) avviso('Accesso fatto: la tua collezione si salva anche nel cloud.'); }).catch(e => console.warn(e));
 async function accedi() {
   try {
+    if (comeApp()) return await signInWithRedirect(auth, new GoogleAuthProvider());
     await signInWithPopup(auth, new GoogleAuthProvider());
     avviso('Accesso fatto: la tua collezione si salva anche nel cloud.');
   } catch (e) {

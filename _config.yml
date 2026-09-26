@@ -1,0 +1,5 @@
+# Impostazioni di GitHub Pages.
+# GitHub Pages nasconde le cartelle che iniziano con "_": questa riga rende
+# visibile la cartella "__", che contiene i file di Firebase per "Accedi con Google"
+# (vedi il commento all'inizio di comune/cloud.js). Non toglierla.
+include: ["__"]
