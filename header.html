@@ -4,9 +4,9 @@
      <div id="header-placeholder"></div> di ogni pagina.
      · il logo porta alla pagina iniziale. Tessera ambra con la spunta:
        i due tratti hanno la stessa forma delle lancette della "o" a orologio
-     · Esporta / Importa: il loro funzionamento è in script.js
-       (sezione "Esporta / Importa"); gli id stEsporta,
-       stImporta e stImportaFile NON vanno cambiati
+     · Esporta / Importa / Accedi: il loro funzionamento è in script.js
+       (sezione "Esporta / Importa") e in comune/cloud.js; gli id stEsporta,
+       stImporta, stImportaFile e stAccedi NON vanno cambiati
      · l'aspetto (colori, misure, banda fissa) è in sito.css
      I link si scrivono come se la pagina fosse nella cartella
      principale (es. "index.html"): script.js li corregge da solo.
@@ -21,5 +21,7 @@
     <button type="button" id="stEsporta" title="Salva in un file le tue spunte e hashtag di tutte le collezioni">Esporta</button>
     <button type="button" id="stImporta" title="Carica un file salvato con Esporta">Importa</button>
     <input type="file" id="stImportaFile" accept="application/json,.json" hidden>
+    <!-- Accedi con Google: salva la collezione nel cloud (comune/cloud.js). Dopo l'accesso mostra il nome -->
+    <button type="button" id="stAccedi" title="Accedi con Google e salva la collezione nel cloud">Accedi</button>
   </nav>
 </header>

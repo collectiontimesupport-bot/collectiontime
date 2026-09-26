@@ -63,7 +63,7 @@
       const t = db.transaction('penne', 'readwrite'), st = t.objectStore('penne');
       const g = st.get(id);
       g.onsuccess = () => st.put(Object.assign(g.result || { tags: [], tagsTouched: false }, { id, owned: !!ce[id], doppi: doppi[id] || 0 }));
-      t.oncomplete = () => db.close();
+      t.oncomplete = () => { db.close(); segnalaModifica(); };   // se hai fatto l'accesso, aggiorna anche il cloud (script.js)
     } catch (e) { avviso('Salvataggio non riuscito.'); }
   }
 

@@ -4,6 +4,7 @@
       lo stile comune, sito.css, è richiamato nel <head> di ogni pagina
    2) fa funzionare Esporta e Importa della banda in alto:
       valgono per TUTTE le collezioni del sito insieme
+      (+ "Accedi": carica comune/cloud.js solo quando serve)
    3) fa funzionare "Aggiungi alla Home" della banda in basso
    4) apre e chiude la ricerca (la lente) e filtra le card
    5) avviso(testo): l'avviso temporaneo in basso, usato anche da app.js
@@ -124,7 +125,9 @@ function riassumi(penne) {
   return c;
 }
 
-async function esporta() {
+/* tutte le collezioni di questo browser, nel formato di Esporta
+   (le usa anche comune/cloud.js per il salvataggio nel cloud) */
+async function leggiTutto() {
   const collezioni = {};
   for (const n of await archivi()) {
     const db = await apriArchivio(n);
@@ -132,6 +135,11 @@ async function esporta() {
     db.close();
     if (Object.keys(dati).length) collezioni[n] = dati;
   }
+  return collezioni;
+}
+
+async function esporta() {
+  const collezioni = await leggiTutto();
   if (!Object.keys(collezioni).length) return avviso('Non c\'è ancora niente da esportare.');
   const blob = new Blob([JSON.stringify({ sito: 'Collection Time', versione: 1, data: oggi(), collezioni })], { type: 'application/json' });
   const a = document.createElement('a');
@@ -172,17 +180,42 @@ async function importa(file) {
   try { dati = JSON.parse(await file.text()); } catch (e) { /* non è un file JSON */ }
   const collezioni = dati && dati.collezioni;
   if (!collezioni || typeof collezioni !== 'object') return avviso('Questo file non è un backup di Collection Time.');
-  let tot = 0;
-  for (const [c, d] of Object.entries(collezioni)) {
-    if (!c.startsWith(PREFISSO) || !d || typeof d !== 'object') continue;
-    const db = await apriArchivio(c);
-    tot += await applica(db, d);
-    db.close();
-  }
+  const tot = await scriviTutto(collezioni, false);
+  segnalaModifica();                                    // col cloud attivo, anche il cloud si aggiorna
   avviso('Importato: ' + tot + (tot === 1 ? ' oggetto segnato' : ' oggetti segnati') + ' "Ce l\'ho".');
   /* nella pagina di una collezione ricarico, così le spunte si vedono subito */
   if (typeof CONFIG !== 'undefined') setTimeout(() => location.reload(), 1200);
 }
+
+/* scrive nel browser le collezioni (formato di Esporta).
+   sostituisci = true: le collezioni che NON ci sono vengono svuotate
+   (lo usa il cloud, che ha la collezione completa); Importa usa false.
+   Restituisce quanti oggetti sono segnati "Ce l'ho". */
+async function scriviTutto(collezioni, sostituisci) {
+  let tot = 0;
+  const nomi = new Set(Object.keys(collezioni));
+  if (sostituisci) (await archivi()).forEach(n => nomi.add(n));
+  for (const c of nomi) {
+    const d = collezioni[c] || {};
+    if (!c.startsWith(PREFISSO) || typeof d !== 'object') continue;
+    const db = await apriArchivio(c);
+    tot += await applica(db, d);
+    db.close();
+  }
+  return tot;
+}
+
+/* ---------- Accedi (collezione nel cloud) ----------
+   Il funzionamento è tutto in comune/cloud.js, che pesa circa 100 KB:
+   lo scarico SOLO a chi preme "Accedi" o ha già fatto l'accesso su
+   questo browser (ct-accesso = "1"). Per tutti gli altri il sito resta leggero.
+   segnalaModifica(): la chiamano app.js e raccolta.js dopo ogni spunta,
+   doppione o hashtag salvato; se il cloud è attivo, lui lo manda su. */
+let cloud = null;
+const caricaCloud = () => cloud || (cloud = import(conVersione('comune/cloud.js').href));
+function segnaAccesso(si) { try { si ? localStorage.setItem('ct-accesso', '1') : localStorage.removeItem('ct-accesso'); } catch (e) {} }
+function segnalaModifica() { window.dispatchEvent(new Event('ct-modifica')); }
+try { if (localStorage.getItem('ct-accesso') === '1') caricaCloud(); } catch (e) {}
 
 /* i pulsanti arrivano con header.html: li ascolto dal documento */
 function protetto(fn) {
@@ -194,6 +227,7 @@ function protetto(fn) {
 document.addEventListener('click', e => {
   if (e.target.closest('#stEsporta')) protetto(esporta)();
   else if (e.target.closest('#stImporta')) document.getElementById('stImportaFile').click();
+  else if (e.target.closest('#stAccedi')) caricaCloud().then(m => m.apriAccount(), () => avviso('Non riesco a collegarmi: controlla la connessione e riprova.'));
 });
 document.addEventListener('change', e => {
   if (e.target.id !== 'stImportaFile') return;

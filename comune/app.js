@@ -91,7 +91,9 @@
   /* la parte da salvare di un oggetto: solo i dati di chi visita */
   const datiVisitatore = p => ({ id: p.id, owned: p.owned, doppi: p.doppi, tags: p.tags, tagsTouched: p.tagsTouched });
   const savePen = p => db
-    ? wrap(db.transaction(STORE, 'readwrite').objectStore(STORE).put(datiVisitatore(p))).catch(() => say('Salvataggio non riuscito.'))
+    ? wrap(db.transaction(STORE, 'readwrite').objectStore(STORE).put(datiVisitatore(p)))
+        .then(segnalaModifica)                                  /* se hai fatto l'accesso, aggiorna anche il cloud (script.js) */
+        .catch(() => say('Salvataggio non riuscito.'))
     : Promise.resolve();
 
   /* ---------- ricerca e filtri ---------- */
