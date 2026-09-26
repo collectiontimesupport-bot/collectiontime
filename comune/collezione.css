@@ -4,7 +4,7 @@
    UN SOLO FILE per l'aspetto di tutte le pagine delle collezioni
    (Legami Erasable, Bulb Fiction, tutte le serie LEGO…), come app.js.
    Ogni pagina lo richiama nel <head>, dopo sito.css:
-     <link rel="stylesheet" href="../../comune/collezione.css?v=1">
+     <link rel="stylesheet" href="../../comune/collezione.css?v=2026-09-26">
    e poi carica il file della sua collezione, con le poche cose che
    cambiano (colore e carattere del titolo, misure della griglia):
      Legami → legami/css/stile.css      LEGO → lego/css/stile.css
@@ -117,6 +117,7 @@ select, .field input[type=text] {
      - il nome (.nome), solo se CONFIG.mostraNomi (LEGO)
      - il riquadro con il numero (.code)
      - la riga con la casella "Ce l'ho" e la matita ✎ (.row)
+     - la riga dei doppioni "Doppi − 0 +" (.doppi)
    ===================================================================== */
 .pen {
   container-type: inline-size; container-name: pen;   /* permette di adattare l'oggetto alla sua larghezza (vedi sezione 10) */
@@ -212,6 +213,17 @@ select, .field input[type=text] {
   padding: 2px 6px; color: var(--muted); font-size: 1rem; line-height: 1;
 }
 .edit:hover { color: var(--amber); }
+
+/* riga "Doppi  − 2 +" sotto "Ce l'ho": quanti doppioni hai da scambiare (la crea app.js) */
+.doppi { display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: .8125rem; color: var(--muted); }
+.doppi .conta { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--white); }
+.doppi button { border: 0; background: none; padding: 1px 7px; font-size: 1rem; line-height: 1.2; color: var(--ink); }
+.doppi button:hover { color: var(--amber); }
+.doppi button:disabled { color: var(--line); cursor: default; }
+.doppi .n { min-width: 14px; text-align: center; font-weight: 700; color: var(--ink); }
+/* con almeno un doppione: scritta blu scuro e cornice ambra */
+.doppi.si { color: var(--ink); font-weight: 600; }
+.doppi.si .conta { border-color: var(--amber); }
 
 /* =====================================================================
    6. MESSAGGI VUOTI E PIÈ DI PAGINA
@@ -337,6 +349,13 @@ input[readonly] { pointer-events: none; }
   .have-text { display: none; }
   .row { justify-content: center; gap: 6px; }
   .edit { padding: 2px 3px; font-size: .9rem; }
+  .doppi .etichetta { display: none; }   /* resta solo  − 2 +  */
+  .doppi { justify-content: center; }
+}
+/* oggetti strettissimi (penne Legami, circa 50px): contatore dei doppioni più compatto */
+@container pen (max-width: 60px) {
+  .doppi button { padding: 0 3px; font-size: .875rem; }
+  .doppi .n { min-width: 10px; font-size: .75rem; }
 }
 
 /* telefoni */
@@ -352,3 +371,25 @@ input[readonly] { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   .pic img { transition: none !important; }
 }
+
+/* =====================================================================
+   11. "MI MANCANO", "DOPPIONI" E "CERCA" (la-mia-collezione di ogni categoria)
+   Le disegna comune/raccolta.js; gli oggetti usano le stesse classi
+   delle pagine delle serie (sezione 5).
+   ===================================================================== */
+/* titolo di ogni serie, con la riga sottile sopra */
+.serie-titolo { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 32px 0 14px; padding-top: 18px; border-top: 1px solid var(--line); }
+.serie-titolo h2 { margin: 0; font: 900 1.2rem/1.2 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; text-transform: uppercase; }
+.serie-titolo a { color: var(--titolo); text-decoration: none; }
+.serie-titolo a:hover { text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 3px; text-underline-offset: 5px; }
+.serie-titolo small { color: var(--muted); font-size: .875rem; }
+.raccolta .empty .st-btn { margin-top: 12px; }
+/* "Cerca": campo sempre aperto */
+.cerca-aperta { width: min(460px, 100%); margin: 8px auto 24px; padding-left: 10px; }
+.cerca-aperta svg { width: 20px; height: 20px; flex: none; }
+.cerca-aperta.st-cerca input { flex: 1; width: auto; padding: 10px; opacity: 1; }
+/* card delle serie trovate: foto in alto, come nelle pagine delle categorie */
+.raccolta .st-cards { margin-bottom: 8px; }
+.raccolta .thumb { order: -1; display: grid; place-items: center; height: 150px; margin-bottom: 4px; }
+.raccolta .thumb img { max-width: 100%; max-height: 150px; width: auto; height: auto; object-fit: contain; }
+.raccolta .st-card p.avanz { flex: 0; font-size: .8125rem; }

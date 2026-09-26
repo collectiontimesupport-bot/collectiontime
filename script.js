@@ -7,9 +7,11 @@
    3) fa funzionare "Aggiungi alla Home" della banda in basso
    4) apre e chiude la ricerca (la lente) e filtra le card
    5) avviso(testo): l'avviso temporaneo in basso, usato anche da app.js
+   6) la barra in basso delle categorie (Serie · Mi mancano · Doppioni · Cerca)
+   7) le card divise per anno in tendine (solo le liste con data-per-anno)
    Da richiamare in ogni pagina con una sola riga:
-   <script src="script.js?v=8"></script>
-   (dentro una sottocartella: <script src="../script.js?v=8"></script>)
+   <script src="script.js?v=2026-09-26"></script>
+   (dentro una sottocartella: <script src="../script.js?v=2026-09-26"></script>)
    Nelle pagine delle collezioni va PRIMA di comune/app.js.
    ========================================================== */
 
@@ -17,7 +19,7 @@
    e i link vengono cercati da qui, quindi funzionano anche dalle
    pagine dentro le sottocartelle. */
 const BASE = new URL('.', document.currentScript.src);
-/* Numero di versione scritto nella pagina (script.js?v=8): lo aggiungo anche
+/* Versione (data) scritta nella pagina (script.js?v=2026-09-26): lo aggiungo anche
    a header.html e footer.html, così anche loro si aggiornano subito. */
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
@@ -55,12 +57,13 @@ function sistemaLink(box) {
    Esporta legge tutti questi archivi e salva UN solo file leggero con,
    per ogni collezione, solo:
      possedute → gli id di ciò che hai segnato "Ce l'ho"
+     doppi     → quanti doppioni hai               (id → numero)
      hashtag   → gli hashtag che hai cambiato tu   (id → elenco)
    Niente foto, nomi o colori: quelli sono già nelle pagine del sito.
    Esempio:
    {"sito":"Collection Time","versione":1,"data":"2026-09-22",
     "collezioni":{"catalogo-penne":{"possedute":["seed-000","seed-005"],
-    "hashtag":{"seed-011":["Natale"]}}}}
+    "doppi":{"seed-005":2},"hashtag":{"seed-011":["Natale"]}}}}
    Importa rimette tutto a posto, anche nelle collezioni che in
    questo browser non sono mai state aperte. */
 
@@ -107,14 +110,16 @@ async function archivi() {
 }
 const oggi = () => new Date().toISOString().slice(0, 10);
 
-/* dalle schede salvate nel browser tiene solo spunte e hashtag */
+/* dalle schede salvate nel browser tiene solo spunte, doppioni e hashtag */
 function riassumi(penne) {
-  const c = {}, hashtag = {};
+  const c = {}, hashtag = {}, doppi = {};
   const possedute = penne.filter(p => p.owned === true).map(p => p.id);
   penne.forEach(p => {
     if (p.tagsTouched) hashtag[p.id] = p.tags || [];
+    if (p.doppi > 0) doppi[p.id] = p.doppi;
   });
   if (possedute.length) c.possedute = possedute;
+  if (Object.keys(doppi).length) c.doppi = doppi;
   if (Object.keys(hashtag).length) c.hashtag = hashtag;
   return c;
 }
@@ -144,14 +149,17 @@ async function applica(db, dati) {
   const soloId = v => Array.isArray(v) ? v.filter(x => typeof x === 'string') : [];
   const possedute = new Set(soloId(dati.possedute));
   const hashtag = dati.hashtag && typeof dati.hashtag === 'object' ? dati.hashtag : {};
-  const ids = new Set([...possedute, ...Object.keys(hashtag)]);
+  const doppi = dati.doppi && typeof dati.doppi === 'object' ? dati.doppi : {};
+  const quanti = id => Number.isInteger(doppi[id]) && doppi[id] > 0 ? Math.min(doppi[id], 999) : 0;
+  const ids = new Set([...possedute, ...Object.keys(hashtag), ...Object.keys(doppi)]);
   const penne = await leggi(db);
   const perId = new Map(penne.map(p => [p.id, p]));
-  const cambiate = penne.filter(p => p.owned && !ids.has(p.id));   // non più segnate nel file
-  cambiate.forEach(p => { p.owned = false; });
+  const cambiate = penne.filter(p => (p.owned || p.doppi) && !ids.has(p.id));   // non più segnate nel file
+  cambiate.forEach(p => { p.owned = false; p.doppi = 0; });
   ids.forEach(id => {
     const p = perId.get(id) || { id };   // mai vista in questo browser: la completa la pagina della collezione
     p.owned = possedute.has(id);
+    p.doppi = quanti(id);
     if (Array.isArray(hashtag[id])) { p.tags = hashtag[id].map(String).slice(0, 30); p.tagsTouched = true; }
     cambiate.push(p);
   });
@@ -278,6 +286,7 @@ function avviaCerca() {
       if (!li.hidden) visibili++;
     });
     if (nessuna) nessuna.hidden = visibili > 0;
+    aggiornaAnni(parole.length > 0);
   }
   function apri() { box.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); campo.tabIndex = 0; campo.focus(); }
   function chiudi() {
@@ -293,8 +302,101 @@ function avviaCerca() {
   });
 }
 
+/* ---------- Barra in basso delle categorie ----------
+   In tutte le pagine che stanno DENTRO la cartella di una categoria
+   (legami, lego, kinder, mcdonalds…) aggiunge in fondo allo schermo:
+     Serie        → la pagina iniziale della categoria
+     Mi mancano   → <categoria>/la-mia-collezione/#/mancanti
+     Doppioni     → <categoria>/la-mia-collezione/#/doppioni
+     Cerca        → <categoria>/la-mia-collezione/#/cerca
+   Così ogni categoria è come una piccola app, e la Home è l'indice delle app.
+   Non compare nella Home, nelle pagine di testo (FAQ, Contatti…) e nelle
+   cartelle qui sotto, che non sono categorie.
+   L'aspetto è in sito.css (voce "barra in basso delle categorie"). */
+const NON_CATEGORIE = ['comune', 'icone', 'immagini per mc'];   // cartelle che non sono categorie (e quelle che iniziano con "_")
+const ICONE_BARRA = {
+  serie: '<path d="M3 5.5c3-1.3 6-1.3 9 .5 3-1.8 6-1.8 9-.5V19c-3-1.3-6-1.3-9 .5-3-1.8-6-1.8-9-.5z"/><path d="M12 6v13.5"/>',
+  mancanti: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12h6"/>',
+  doppioni: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  cerca: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'
+};
+function barraCategoria() {
+  const dentro = location.href.startsWith(BASE.href) ? decodeURIComponent(location.href.slice(BASE.href.length)) : '';
+  const cat = dentro.split(/[/?#]/)[0];
+  if (!dentro.includes('/') || !cat || cat.startsWith('_') || NON_CATEGORIE.includes(cat)) return;   // non siamo in una categoria
+  const lista = new URL(cat + '/la-mia-collezione/index.html', BASE).href;
+  const voci = [['serie', 'Serie', new URL(cat + '/index.html', BASE).href],
+                ['mancanti', 'Mi mancano', lista + '#/mancanti'],
+                ['doppioni', 'Doppioni', lista + '#/doppioni'],
+                ['cerca', 'Cerca', lista + '#/cerca']];
+  const nav = document.createElement('nav');
+  nav.className = 'st-barra';
+  nav.setAttribute('aria-label', 'Sezioni della categoria');
+  nav.innerHTML = voci.map(([k, t, href]) => '<a href="' + href + '" data-voce="' + k + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONE_BARRA[k] + '</svg>' + t + '</a>').join('');
+  document.body.append(nav);
+  document.body.classList.add('con-barra');
+  /* voce accesa: nella pagina "la mia collezione" dipende dalla parte dopo #, altrove è "Serie" */
+  const accendi = () => {
+    const attiva = dentro.includes('/la-mia-collezione/') ? (location.hash.replace(/^#\/?/, '') || 'mancanti') : 'serie';
+    nav.querySelectorAll('a').forEach(a => a.dataset.voce === attiva ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+  };
+  accendi();
+  window.addEventListener('hashchange', accendi);
+}
+
+/* ---------- Card divise per anno (tendine) ----------
+   In una pagina con le card basta scrivere  data-per-anno  nella lista:
+     <ul class="st-cards" data-per-anno>
+   e le card vengono raccolte in tendine, una per anno, che si aprono al clic.
+   L'anno è il primo numero tipo 1993 o 2010 scritto nel testo della card
+   (nel <p>: "9 sorpresine<br>2010"). Le card si scrivono come sempre,
+   dalla più recente: l'ordine delle tendine segue l'ordine delle card.
+   Le card SENZA anno (es. una cartella come "Squishmallows") restano
+   normali, sopra le tendine.
+   Mentre si cerca con la lente le tendine con risultati si aprono da sole
+   e quelle senza risultati si nascondono.
+   L'aspetto è in sito.css (voce "tendine degli anni"). */
+function perAnno() {
+  document.querySelectorAll('ul.st-cards[data-per-anno]').forEach(lista => {
+    const anni = new Map();                     // anno → le sue card, nell'ordine della pagina
+    const senzaAnno = [];
+    [...lista.children].forEach(li => {
+      const trovato = (li.querySelector('p') || li).textContent.match(/(?:^|\D)((?:19|20)\d{2})(?!\d)/);   // un numero di 4 cifre 19xx o 20xx
+      if (!trovato) return senzaAnno.push(li);
+      if (!anni.has(trovato[1])) anni.set(trovato[1], []);
+      anni.get(trovato[1]).push(li);
+    });
+    const box = document.createElement('div');
+    box.className = 'st-anni';
+    anni.forEach((card, anno) => {
+      const d = document.createElement('details');
+      d.className = 'st-anno';
+      d.innerHTML = '<summary><span class="st-anno-num">' + anno + '</span><span class="st-anno-quante">' + card.length + ' serie</span></summary>';
+      const ul = document.createElement('ul');
+      ul.className = 'st-cards';
+      ul.append(...card);
+      d.append(ul);
+      box.append(d);
+    });
+    lista.after(box);
+    if (senzaAnno.length) lista.replaceChildren(...senzaAnno);   // la lista resta sopra, solo con le card senza anno
+    else lista.remove();
+  });
+}
+/* durante la ricerca: apre le tendine con risultati e nasconde le altre; a campo vuoto torna com'era */
+function aggiornaAnni(cercando) {
+  document.querySelectorAll('.st-anno').forEach(d => {
+    const visibili = [...d.querySelectorAll('.st-cards > li')].some(li => !li.hidden);
+    d.hidden = cercando && !visibili;
+    if (cercando) { if (!('prima' in d.dataset)) d.dataset.prima = d.open ? '1' : ''; d.open = true; }
+    else if ('prima' in d.dataset) { d.open = d.dataset.prima === '1'; delete d.dataset.prima; }
+  });
+}
+
 /* ---------- Avvio ---------- */
 
 caricaParte('header-placeholder', 'header.html');
 caricaParte('footer-placeholder', 'footer.html');
+perAnno();          // prima della ricerca: le card vengono spostate nelle tendine
 avviaCerca();
+barraCategoria();

@@ -11,7 +11,7 @@
    aggiungere una riga all'ELENCO nell'HTML.
 
    Cosa resta salvato nel browser di chi visita (IndexedDB)?
-   Solo i suoi dati: "Ce l'ho" e gli hashtag che ha cambiato.
+   Solo i suoi dati: "Ce l'ho", i doppioni e gli hashtag che ha cambiato.
    Tutto il resto (nome, numero, colore, foto, info) arriva sempre
    dall'ELENCO, così una modifica all'HTML si vede subito.
 
@@ -68,15 +68,15 @@
   /* ---------- stato della pagina ---------- */
   let db = null;           /* archivio del browser (IndexedDB) */
   let pens = [];           /* tutti gli oggetti, con le spunte e gli hashtag di chi guarda */
-  let filterMode = 'all';  /* filtro scelto: all / owned / missing */
+  let filterMode = 'all';  /* filtro scelto: all / owned / missing / doppi */
   let sortDir = 1;         /* ordine: 1 = dalla prima, -1 = dalla più recente */
   let query = '';          /* testo scritto nella ricerca */
   let editing = null;      /* oggetto aperto nella finestra "Dettagli" */
 
   /* ---------- archivio (IndexedDB) ----------
      Ogni collezione ha il suo archivio, con il nome scritto in CONFIG.dbName.
-     Per ogni oggetto salvo solo: id, owned ("Ce l'ho"), tags e tagsTouched
-     (tagsTouched = hashtag cambiati dal visitatore). Gli stessi campi li
+     Per ogni oggetto salvo solo: id, owned ("Ce l'ho"), doppi (quanti doppioni),
+     tags e tagsTouched (tagsTouched = hashtag cambiati dal visitatore). Gli stessi campi li
      leggono e scrivono Esporta/Importa (script.js) e la pagina LEGO "Tutte". */
   const STORE = 'penne';
   function openDB() {
@@ -89,7 +89,7 @@
   }
   const wrap = req => new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
   /* la parte da salvare di un oggetto: solo i dati di chi visita */
-  const datiVisitatore = p => ({ id: p.id, owned: p.owned, tags: p.tags, tagsTouched: p.tagsTouched });
+  const datiVisitatore = p => ({ id: p.id, owned: p.owned, doppi: p.doppi, tags: p.tags, tagsTouched: p.tagsTouched });
   const savePen = p => db
     ? wrap(db.transaction(STORE, 'readwrite').objectStore(STORE).put(datiVisitatore(p))).catch(() => say('Salvataggio non riuscito.'))
     : Promise.resolve();
@@ -120,137 +120,30 @@
   function visiblePens() {
     const terms = foldText(query).replace(/#/g, ' ').split(/\s+/).filter(Boolean);
     return pens
-      .filter(p => filterMode === 'all' || (filterMode === 'owned' ? p.owned : (!p.owned && p.image)))
+      .filter(p => filterMode === 'owned' ? p.owned
+        : filterMode === 'missing' ? (!p.owned && p.image)
+        : filterMode === 'doppi' ? p.doppi > 0
+        : true)
       .filter(p => { if (!terms.length) return true; const hay = searchText(p); return terms.every(t => hay.includes(t)); })
       .sort((a, b) => sortDir * byPos(a, b));
   }
 
   /* ---------- disegno della pagina ---------- */
-  /* scrive "12 possedute su 103" (gli oggetti senza foto non contano) */
+  /* scrive "12 possedute su 103 · 3 doppioni" (gli oggetti senza foto non contano) */
   function updateCount(shown) {
     const owned = pens.filter(p => p.owned).length;
     const total = pens.filter(p => p.image || p.owned).length;
+    const doppi = pens.reduce((t, p) => t + p.doppi, 0);
     let t = owned + ' ' + CONFIG.possedute + ' su ' + total;
+    if (doppi) t += ' · ' + doppi + (doppi === 1 ? ' doppione' : ' doppioni');
     if (typeof shown === 'number' && shown !== pens.length) t += ' · ' + shown + (shown === 1 ? ' visibile' : ' visibili');
     $('count').textContent = t;
   }
 
-  /* ---------- bagliore (UNO SOLO per tutti gli oggetti) ----------
-     Quando una penna è posseduta, dietro la foto compare un alone arancio-giallo
-     che segue la sagoma della penna. Prima c'era un'immagine di bagliore già pronta
-     per ogni penna (100 immagini in più): ora lo stesso effetto è calcolato qui,
-     una volta per foto, per TUTTE le penne (anche quelle che aggiungerai).
-     Come funziona:
-       1. prendo la sagoma della penna (i pixel non trasparenti) in piccolo (30%)
-       2. la sfumo tre volte con raggi diversi e sommo i risultati
-       3. tolgo la parte coperta dalla penna e coloro tutto di arancio-giallo
-       4. ne faccio un'immagine PNG trasparente e la metto dietro la foto
-     I bagliori già calcolati restano in memoria (haloCache) e vengono creati
-     uno alla volta (haloChain) per non bloccare la pagina.
-     Nota: il calcolo legge i pixel della foto, quindi funziona con la pagina
-     aperta dal sito o da un piccolo server locale; aprendo il file con un
-     doppio clic (file://) il browser lo vieta: in quel caso si usa un alone
-     di riserva più semplice fatto con il CSS (vedi .no-halo in comune/collezione.css). */
-  const haloCache = new Map();
-  let haloChain = Promise.resolve();
-  function makeHalo(src) {
-    if (haloCache.has(src)) return haloCache.get(src);
-    const job = haloChain.then(() => new Promise(r => setTimeout(r, 0))).then(() => buildHalo(src));
-    haloCache.set(src, job);
-    haloChain = job.catch(() => {});
-    return job;
-  }
-  /* sfocatura gaussiana (3 passaggi di media) su una matrice di valori 0..1 */
-  function gaussBlur(a, w, h, sigma) {
-    const r = Math.max(1, Math.floor(Math.round(Math.sqrt(12 * sigma * sigma / 3 + 1)) / 2));
-    const div = 2 * r + 1;
-    const tmp = new Float32Array(a.length), out = new Float32Array(a.length);
-    let cur = a;
-    for (let it = 0; it < 3; it++) {
-      for (let y = 0; y < h; y++) {
-        const row = y * w;
-        let sum = 0;
-        for (let x = 0; x <= r && x < w; x++) sum += cur[row + x];
-        for (let x = 0; x < w; x++) {
-          tmp[row + x] = sum / div;
-          const add = x + r + 1, sub = x - r;
-          if (add < w) sum += cur[row + add];
-          if (sub >= 0) sum -= cur[row + sub];
-        }
-      }
-      for (let x = 0; x < w; x++) {
-        let sum = 0;
-        for (let y = 0; y <= r && y < h; y++) sum += tmp[y * w + x];
-        for (let y = 0; y < h; y++) {
-          out[y * w + x] = sum / div;
-          const add = y + r + 1, sub = y - r;
-          if (add < h) sum += tmp[add * w + x];
-          if (sub >= 0) sum -= tmp[sub * w + x];
-        }
-      }
-      cur = out;
-    }
-    return out;
-  }
-  /* crea il bagliore di una foto: restituisce l'indirizzo dell'immagine e
-     il fattore k (quanto è più alto della penna, circa 1.3) */
-  async function buildHalo(src) {
-    const img = await loadImg(src);
-    const S = 0.3;
-    const w = Math.max(1, Math.round(img.naturalWidth * S));
-    const h = Math.max(1, Math.round(img.naturalHeight * S));
-    const pad = Math.ceil(h * 0.15);
-    const W = w + 2 * pad, H = h + 2 * pad;
-    const c = document.createElement('canvas');
-    c.width = W; c.height = H;
-    const ctx = c.getContext('2d');
-    ctx.drawImage(img, pad, pad, w, h);
-    const px = ctx.getImageData(0, 0, W, H).data;
-    const A = new Float32Array(W * H);
-    for (let i = 0; i < A.length; i++) A[i] = px[i * 4 + 3] / 255;
-    const inv = new Float32Array(W * H).fill(1);
-    let B6 = null;
-    [[1.5, [1, 1]], [4.5, [1, 0.8]], [9.5, [0.9, 0.6]]].forEach(([sig, ks]) => {
-      const B = gaussBlur(A, W, H, sig);
-      if (sig === 4.5) B6 = B;
-      ks.forEach(k => { for (let i = 0; i < inv.length; i++) inv[i] *= 1 - Math.min(1, k * B[i]); });
-    });
-    const outData = ctx.createImageData(W, H);
-    const d = outData.data;
-    for (let i = 0; i < A.length; i++) {
-      /* il buco per la penna c'è solo dove è davvero opaca: sotto il bordo morbido il bagliore continua (niente bordo bianco) */
-      const ah = Math.min(1, Math.max(0, (A[i] - 0.9) / 0.09));
-      const g = (1 - inv[i]) * (1 - ah * ah * (3 - 2 * ah));
-      const t = Math.min(1, B6[i] * 1.4);
-      d[i * 4] = 255;
-      d[i * 4 + 1] = 184 + 44 * t;
-      d[i * 4 + 2] = 90 + 20 * t;
-      d[i * 4 + 3] = Math.round(g * 255);
-    }
-    ctx.clearRect(0, 0, W, H);
-    ctx.putImageData(outData, 0, 0);
-    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-    return { url: URL.createObjectURL(blob), k: H / h };
-  }
-  /* aggiunge il bagliore dietro la foto di una penna (se non c'è già) */
-  function ensureHalo(pic, p) {
-    if (!p.image || pic.querySelector('.halo')) return;
-    const halo = document.createElement('img');
-    halo.className = 'halo';
-    halo.alt = '';
-    halo.draggable = false;
-    halo.setAttribute('aria-hidden', 'true');
-    pic.insertBefore(halo, pic.firstChild);
-    makeHalo(p.image).then(hh => {
-      halo.style.setProperty('--k', String(hh.k));
-      halo.src = hh.url;
-    }).catch(() => {
-      /* il browser non permette di leggere i pixel (es. file aperto con doppio clic):
-         tolgo l'immagine e uso il bagliore di riserva fatto con il CSS (classe no-halo) */
-      halo.remove();
-      pic.classList.add('no-halo');
-    });
-  }
+  /* ---------- bagliore ----------
+     L'alone arancio-giallo delle cose che hai è calcolato in comune/bagliore.js
+     (uguale anche in "Mi mancano / Doppioni / Cerca"): qui basta chiamarlo. */
+  const ensureHalo = (pic, p) => accendiBagliore(pic, p.image);
 
   /* segna / toglie "Ce l'ho" e aggiorna solo la scheda interessata */
   function setOwned(p, value) {
@@ -269,12 +162,45 @@
     }
   }
 
+  /* Contatore dei doppioni sotto "Ce l'ho":  Doppi  − 2 +
+     (aspetto in comune/collezione.css, sezione 5, voce .doppi) */
+  function doppiBox(p) {
+    const box = document.createElement('div');
+    box.className = 'doppi';
+    const etichetta = document.createElement('span');
+    etichetta.className = 'etichetta';
+    etichetta.textContent = 'Doppi';
+    const conta = document.createElement('span');
+    conta.className = 'conta';
+    const meno = document.createElement('button'), n = document.createElement('span'), piu = document.createElement('button');
+    meno.type = piu.type = 'button';
+    meno.textContent = '\u2212';
+    piu.textContent = '+';
+    meno.setAttribute('aria-label', 'Un doppione in meno');
+    piu.setAttribute('aria-label', 'Un doppione in più');
+    n.className = 'n';
+    conta.append(meno, n, piu);
+    box.append(etichetta, conta);
+    const mostra = () => { n.textContent = p.doppi; meno.disabled = !p.doppi; box.classList.toggle('si', p.doppi > 0); };
+    const cambia = d => {
+      p.doppi = Math.max(0, p.doppi + d);
+      savePen(p);
+      if (filterMode === 'doppi' && !p.doppi) render();   /* filtro "Doppioni": se arriva a 0 sparisce */
+      else { mostra(); updateCount(); }
+    };
+    meno.addEventListener('click', () => cambia(-1));
+    piu.addEventListener('click', () => cambia(1));
+    mostra();
+    return box;
+  }
+
   /* Crea la scheda <li> di un oggetto:
        <li class="pen [owned]">
          <button class="open"> <div class="pic"> [bagliore] <img class="pen-img"> </div> </button>
          [<div class="nome">Nome</div>]   ← solo se CONFIG.mostraNomi
          <div class="code">01</div>
          <div class="row"> ☐ Ce l'ho   ✎ </div>
+         <div class="doppi"> Doppi − 0 + </div>   ← solo per gli oggetti con la foto
        </li>
      Se l'oggetto non ha foto mostra la sagoma vuota (SLOT_IMG) e non si può spuntare. */
   function card(p) {
@@ -338,14 +264,15 @@
     row.append(lab, edit);
 
     /* nome scritto sotto la foto: solo se la collezione lo chiede (CONFIG.mostraNomi, es. LEGO) */
+    const doppi = p.image ? [doppiBox(p)] : [];   /* gli slot vuoti (senza foto) non hanno doppioni */
     if (CONFIG.mostraNomi) {
       const nome = document.createElement('div');
       nome.className = 'nome';
       nome.append(document.createElement('span'));
       nome.firstChild.textContent = p.name;
-      li.append(btn, nome, code, row);
+      li.append(btn, nome, code, row, ...doppi);
     } else {
-      li.append(btn, code, row);
+      li.append(btn, code, row, ...doppi);
     }
     return li;
   }
@@ -932,6 +859,8 @@
      La lente apre e chiude il campo (lo fa script.js, come nelle altre pagine);
      qui scrivendo si filtrano gli oggetti. */
   $('search').addEventListener('input', e => { query = e.target.value; render(); });
+  /* voce "Doppioni" nel menu dei filtri: la aggiungo da qui, così non serve cambiare ogni pagina */
+  if (!$('filter').querySelector('option[value="doppi"]')) $('filter').append(new Option('Doppioni', 'doppi'));
   $('filter').addEventListener('change', e => { filterMode = e.target.value; render(); });
   $('sort').addEventListener('change', e => { sortDir = e.target.value === 'desc' ? -1 : 1; render(); });
 
@@ -958,11 +887,11 @@
   }
 
   /* ---------- avvio ----------
-     1. leggo dal browser le spunte e gli hashtag di chi visita
+     1. leggo dal browser le spunte, i doppioni e gli hashtag di chi visita
      2. li unisco all'ELENCO (oggetti nuovi, tolti o cambiati: vale l'elenco)
      3. riscrivo l'archivio con i soli oggetti dell'elenco e i soli dati del visitatore */
   (async function avvio() {
-    const nuovo = s => Object.assign({}, s, { owned: false, tags: s.tags.slice(), tagsTouched: false });
+    const nuovo = s => Object.assign({}, s, { owned: false, doppi: 0, tags: s.tags.slice(), tagsTouched: false });
     try {
       db = await openDB();
       let salvate = await wrap(db.transaction(STORE).objectStore(STORE).getAll());
@@ -972,13 +901,14 @@
         const p = nuovo(s), v = perId.get(s.id);
         if (v) {
           p.owned = v.owned === true;
+          p.doppi = Number.isInteger(v.doppi) && v.doppi > 0 ? v.doppi : 0;
           if (v.tagsTouched && Array.isArray(v.tags)) { p.tags = v.tags.map(String); p.tagsTouched = true; }
         }
         return p;
       });
       const t = db.transaction(STORE, 'readwrite'), st = t.objectStore(STORE);
       st.clear();
-      pens.filter(p => p.owned || p.tagsTouched).forEach(p => st.put(datiVisitatore(p)));
+      pens.filter(p => p.owned || p.doppi || p.tagsTouched).forEach(p => st.put(datiVisitatore(p)));
       await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
       if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
     } catch (e) {

@@ -23,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../sito.css?v=12">
+<link rel="stylesheet" href="../../sito.css?v=2026-09-26d">
 <style>
   /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
      qui solo ciò che è diverso in questa pagina. */
@@ -69,7 +69,7 @@
        • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
          es. nome-cartella/immagini/copertina.webp
        • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
-         aumenta "?v=…" in fondo al nome del file (es. copertina.webp?v=1 → ?v=2, oppure aggiungi ?v=2
+         metti la data di oggi in "?v=…" in fondo al nome del file (es. copertina.webp?v=2026-09-26, oppure aggiungilo
          se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
        • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
          <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
@@ -77,10 +77,12 @@
          con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
          con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
   <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
-  <ul class="st-cards">
-    <li data-cerca="Gli Animabili Serie 2 2026 Sorpresine Shelly la Lumachina Birba la Volpina Bee l'Apina Polly la Paperella Pepe l'Asinello Pinky il Maialino Nella la Coccinella Sofi la Pecorella cancelleria scuola"><a class="st-card" href="animabili-serie-2/index.html"><div class="thumb"><img src="animabili-serie-2/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Gli Animabili - Serie 2</h2><p>Gli animaletti di cancelleria delle Sorpresine.</p><span class="st-apri">Apri</span></a></li>
-    <li data-cerca="Gli Animabili Serie 1 2024 Sorpresine Bee l'Apina Shelly la Lumachina Polly la Paperella Stampy il Coniglietto Birba la Volpina Otto il Gufetto Mu la Mucchina Nella la Gallinella cancelleria scuola"><a class="st-card" href="animabili-serie-1/index.html"><div class="thumb"><img src="animabili-serie-1/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Gli Animabili - Serie 1</h2><p>Gli animaletti di cancelleria delle Sorpresine.</p><span class="st-apri">Apri</span></a></li>
-    <li data-cerca="Sorpresine Gommine 2023 Sorpresine Collection gomme gommine Tarallucci PlumCake Baiocchi Flauti Papavero Ape Macine Pancake Ritornelli Crostatine Fiordaliso Spiga Nastrine Galletti Tegolino Abbracci Margherita Mulino"><a class="st-card" href="sorpresine-gommine-2023/index.html"><div class="thumb"><img src="sorpresine-gommine-2023/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Sorpresine Gommine 2023</h2><p>Le gommine a forma di confezioni e simboli Mulino Bianco.</p><span class="st-apri">Apri</span></a></li>
+  <!-- data-per-anno = le card vengono raccolte in tendine, una per anno (lo fa script.js leggendo l'anno scritto nel <p> della card;
+       le card senza anno restano normali, sopra). Per tornare a tutte le card aperte, cancella data-per-anno. -->
+  <ul class="st-cards" data-per-anno>
+    <li data-cerca="Gli Animabili Serie 2 2026 Sorpresine Shelly la Lumachina Birba la Volpina Bee l'Apina Polly la Paperella Pepe l'Asinello Pinky il Maialino Nella la Coccinella Sofi la Pecorella cancelleria scuola"><a class="st-card" href="animabili-serie-2/index.html"><div class="thumb"><img src="animabili-serie-2/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Gli Animabili - Serie 2</h2><p>Gli animaletti di cancelleria delle Sorpresine.<br>2026</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Gli Animabili Serie 1 2024 Sorpresine Bee l'Apina Shelly la Lumachina Polly la Paperella Stampy il Coniglietto Birba la Volpina Otto il Gufetto Mu la Mucchina Nella la Gallinella cancelleria scuola"><a class="st-card" href="animabili-serie-1/index.html"><div class="thumb"><img src="animabili-serie-1/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Gli Animabili - Serie 1</h2><p>Gli animaletti di cancelleria delle Sorpresine.<br>2024</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Sorpresine Gommine 2023 Sorpresine Collection gomme gommine Tarallucci PlumCake Baiocchi Flauti Papavero Ape Macine Pancake Ritornelli Crostatine Fiordaliso Spiga Nastrine Galletti Tegolino Abbracci Margherita Mulino"><a class="st-card" href="sorpresine-gommine-2023/index.html"><div class="thumb"><img src="sorpresine-gommine-2023/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Sorpresine Gommine 2023</h2><p>Le gommine a forma di confezioni e simboli Mulino Bianco.<br>2023</p><span class="st-apri">Apri</span></a></li>
   </ul>
 </main>
 
@@ -88,8 +90,8 @@
 <div id="footer-placeholder"></div>
 
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
-<!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
+<!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../../script.js?v=10"></script>
+<script src="../../script.js?v=2026-09-26d"></script>
 </body>
 </html>

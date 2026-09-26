@@ -23,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../sito.css?v=12">
+<link rel="stylesheet" href="../sito.css?v=2026-09-26d">
 <style>
   /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
      qui solo ciò che è diverso in questa pagina. */
@@ -68,7 +68,7 @@
        • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
          es. nome-cartella/immagini/copertina.webp
        • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
-         aumenta "?v=…" in fondo al nome del file (es. copertina.webp?v=1 → ?v=2, oppure aggiungi ?v=2
+         metti la data di oggi in "?v=…" in fondo al nome del file (es. copertina.webp?v=2026-09-26, oppure aggiungilo
          se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
        • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
          <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
@@ -90,8 +90,8 @@
 <div id="footer-placeholder"></div>
 
 <!-- Carica stile comune, bande e Esporta/Importa: questa riga serve in ogni pagina -->
-<!-- "?v=8" è il numero di versione: quando cambi un file .js o .css aumentalo (v=8 → v=9)
+<!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../script.js?v=10"></script>
+<script src="../script.js?v=2026-09-26d"></script>
 </body>
 </html>

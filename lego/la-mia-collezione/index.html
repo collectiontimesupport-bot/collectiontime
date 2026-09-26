@@ -1,0 +1,49 @@
+<!doctype html>
+<!-- =====================================================================
+     LA MIA COLLEZIONE — LEGO Minifigures: "Mi mancano", "Doppioni" e "Cerca"
+     ---------------------------------------------------------------------
+     Si apre dalla barra in basso delle pagine di questa categoria.
+     Questa pagina è quasi vuota: il funzionamento è in comune/raccolta.js
+     (uguale per tutte le categorie) e le serie sono in indice.js, qui
+     accanto, creato in automatico (NON modificarlo a mano: rifallo con
+     _strumenti/aggiorna-catalogo.html quando aggiungi o cambi una serie).
+     ▸ PER UNA NUOVA CATEGORIA: copia questa cartella dentro la cartella
+       della categoria, cambia i testi segnati con "! MODIFICA" e crea
+       indice.js con lo strumento.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome della categoria in <title> e description -->
+<title>La mia collezione · LEGO Minifigures · Collection Time</title>
+<meta name="description" content="LEGO Minifigures: quello che mi manca, i miei doppioni e la ricerca in tutte le serie.">
+<meta name="theme-color" content="#1A2140">
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../site.webmanifest">
+<!-- Stile: comune del sito + comune delle collezioni + quello della categoria (colore e carattere del titolo).
+     "?v=…" è la versione del file = la DATA dell'ultima modifica: quando cambi un file .js o .css metti la data di oggi. -->
+<link rel="stylesheet" href="../../sito.css?v=2026-09-26d">
+<link rel="stylesheet" href="../../comune/collezione.css?v=2026-09-26b">
+<link rel="stylesheet" href="../css/stile.css?v=2026-09-26">
+</head>
+<body>
+<div id="header-placeholder"></div>
+
+<!-- Qui comune/raccolta.js disegna "Mi mancano", "Doppioni" o "Cerca" -->
+<main class="wrap raccolta" id="raccolta"></main>
+
+<div id="footer-placeholder"></div>
+
+<!-- Tutte le serie della categoria (creato in automatico) -->
+<script src="indice.js?v=2026-09-26"></script>
+<!-- Banda in alto e in basso, barra in basso, avvisi, Esporta/Importa: comuni a tutto il sito -->
+<script src="../../script.js?v=2026-09-26d"></script>
+<!-- Bagliore delle cose che hai -->
+<script src="../../comune/bagliore.js?v=2026-09-26"></script>
+<!-- Funzionamento di questa pagina (uguale per tutte le categorie) -->
+<script src="../../comune/raccolta.js?v=2026-09-26"></script>
+</body>
+</html>
