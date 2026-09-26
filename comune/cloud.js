@@ -233,7 +233,7 @@ function aggiornaPulsante(utente) {
   const b = document.getElementById('stAccedi');
   if (b) b.textContent = utente ? (utente.displayName ? utente.displayName.split(' ')[0] : (utente.email || 'Account').split('@')[0]) : 'Accedi';
 }
-let finestra = null, conferma = false;
+let finestra = null, conferma = false, nuovo = false;   // nuovo = modulo "Crea account" invece di "Accedi"
 function aggiornaFinestra() {
   if (!finestra) return;
   const u = auth.currentUser, s = leggiStato();
@@ -245,13 +245,24 @@ function aggiornaFinestra() {
     : '<p>Accedi per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>'
       + '<button type="button" data-azione="accedi" class="st-google">Accedi con Google</button>'
       + '<p class="st-oppure">oppure con la tua email</p>'
-      + '<form class="st-email" novalidate>'
-      +   '<input type="email" name="email" placeholder="Email" autocomplete="email" required>'
-      +   '<input type="password" name="password" placeholder="Password (almeno 6 caratteri)" autocomplete="current-password" required>'
-      +   '<p class="st-account-errore" role="alert" hidden></p>'
-      +   '<div class="st-email-azioni"><button type="submit" data-modo="entra">Accedi</button><button type="submit" data-modo="nuovo" class="st-secondario">Crea account</button></div>'
-      +   '<button type="button" data-azione="dimenticata" class="st-link">Password dimenticata?</button>'
-      + '</form>'
+      /* un modo alla volta ("entra" o "nuovo"), così il Portachiavi / gestore password
+         capisce se compilare una password salvata o proporne e salvarne una nuova */
+      + (nuovo
+        ? '<form class="st-email" data-modo="nuovo" novalidate>'
+          +   '<input type="email" name="email" placeholder="Email" autocomplete="username" required>'
+          +   '<input type="password" name="password" placeholder="Nuova password (min. 6 caratteri)" autocomplete="new-password" minlength="6" required>'
+          +   '<p class="st-account-errore" role="alert" hidden></p>'
+          +   '<div class="st-email-azioni"><button type="submit">Crea account</button></div>'
+          +   '<button type="button" data-azione="cambia-modo" class="st-link">Hai già un account? Accedi</button>'
+          + '</form>'
+        : '<form class="st-email" data-modo="entra" novalidate>'
+          +   '<input type="email" name="email" placeholder="Email" autocomplete="username" required>'
+          +   '<input type="password" name="password" placeholder="Password" autocomplete="current-password" required>'
+          +   '<p class="st-account-errore" role="alert" hidden></p>'
+          +   '<div class="st-email-azioni"><button type="submit">Accedi</button></div>'
+          +   '<button type="button" data-azione="dimenticata" class="st-link">Password dimenticata?</button>'
+          +   '<button type="button" data-azione="cambia-modo" class="st-link">Non hai un account? Crea account</button>'
+          + '</form>')
       + '<p><small>Salviamo solo il tuo nome, la tua email e quello che segni sul sito (spunte, doppioni, hashtag). Dettagli nella pagina Privacy.</small></p>';
   finestra.querySelector('.st-account-azioni').innerHTML = u
     ? '<button type="button" data-azione="elimina" class="st-secondario">' + (conferma ? 'Sicuro? Premi di nuovo' : 'Elimina i miei dati') + '</button><button type="button" data-azione="esci" class="st-secondario">Esci</button><button type="button" data-azione="chiudi">Chiudi</button>'
@@ -274,6 +285,11 @@ export function apriAccount() {
       }
       const azione = b.dataset.azione;
       if (azione === 'accedi') { finestra.close(); accedi(); }  // il clic apre subito la finestra di Google (se no il browser la blocca)
+      else if (azione === 'cambia-modo') {                   // Accedi ⇄ Crea account (l'email scritta resta)
+        const email = finestra.querySelector('.st-email [name=email]').value;
+        nuovo = !nuovo; aggiornaFinestra();
+        finestra.querySelector('.st-email [name=email]').value = email;
+      }
       else if (azione === 'dimenticata') passwordDimenticata(finestra.querySelector('.st-email [name=email]').value.trim());
       else if (azione === 'esci') { finestra.close(); esci(); }
       else if (azione === 'elimina') {
@@ -285,10 +301,10 @@ export function apriAccount() {
     /* modulo email: "Accedi" o "Crea account" (anche premendo Invio = Accedi) */
     finestra.addEventListener('submit', e => {
       e.preventDefault();
-      const f = e.target, modo = (e.submitter && e.submitter.dataset.modo) || 'entra';
+      const f = e.target, modo = f.dataset.modo;
       conEmail(modo, f.email.value.trim(), f.password.value);
     });
-    finestra.addEventListener('close', () => { conferma = false; });
+    finestra.addEventListener('close', () => { conferma = false; nuovo = false; });
     document.body.append(finestra);
   }
   aggiornaFinestra();
