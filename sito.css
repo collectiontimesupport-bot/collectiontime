@@ -312,3 +312,10 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-account-copia .st-link { font-size: .8125rem; text-decoration: underline; }
 /* se è aperto il promemoria in basso, l'avviso breve compare in alto (sotto la banda) per non sovrapporsi */
 body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
+/* "Elimina account…" lontano da "Esci": piccolo, grigio, su una riga a parte in fondo al menu */
+.st-profilo .st-ma-elimina { justify-self: end; margin-top: 18px; padding: 2px 0; color: var(--muted); font-size: .75rem; text-decoration: underline; }
+.st-profilo .st-ma-elimina:hover { color: #B3261E; }
+/* finestra di conferma: "Elimina per sempre" in rosso, lontano da "Annulla" */
+.st-elimina-azioni { justify-content: space-between; }
+.st-account .st-rosso { color: #B3261E; border-color: #E8B4B0; }
+.st-account .st-rosso:hover { color: #B3261E; border-color: #B3261E; }

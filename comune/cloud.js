@@ -364,7 +364,8 @@ function apriFinestra() {
 }
 
 /* ===== MENU DEL PROFILO (dopo l'accesso) =====
-   modo: '' normale · 'nome' sta cambiando il nome · 'elimina' chiede conferma */
+   modo: '' normale · 'nome' sta cambiando il nome.
+   "Elimina account" è lontano da "Esci" e apre una finestra di conferma a parte. */
 let menu = null, modo = '', numeri = null;
 async function contaNumeri() {
   const tutte = await leggiTutto();
@@ -392,8 +393,8 @@ function disegnaMenu() {
       : '<button type="button" data-m="nome" class="st-link">Cambia nome</button>'
         + (conPassword(u) ? '<button type="button" data-m="password" class="st-link">Cambia password</button>' : ''))
     + COPIA
-    + '<div class="st-ma-fondo"><button type="button" data-m="esci" class="st-link">Esci</button>'
-    + '<button type="button" data-m="elimina" class="st-link st-rosso">' + (modo === 'elimina' ? 'Sicuro? Si cancella tutto: premi di nuovo' : 'Elimina account') + '</button></div>';
+    + '<div class="st-ma-fondo"><button type="button" data-m="esci" class="st-link">Esci</button></div>'
+    + '<button type="button" data-m="elimina" class="st-link st-ma-elimina">Elimina account…</button>';
   if (modo === 'nome') { const i = menu.querySelector('input'); i.focus(); i.select(); }
 }
 function apriMenu() {
@@ -416,10 +417,7 @@ function apriMenu() {
         chiudiMenu();
       }
       else if (m === 'esci') { chiudiMenu(); esci(); }
-      else if (m === 'elimina') {
-        if (modo !== 'elimina') { modo = 'elimina'; disegnaMenu(); return; }
-        chiudiMenu(); eliminaDati();
-      }
+      else if (m === 'elimina') { chiudiMenu(); confermaElimina(); }
     });
     menu.addEventListener('submit', async e => {               // salva il nuovo nome
       e.preventDefault();
@@ -441,6 +439,19 @@ function apriMenu() {
   menu.hidden = false;
   disegnaMenu();
   contaNumeri();
+}
+/* finestra di conferma per eliminare l'account: "Annulla" è il pulsante evidenziato */
+function confermaElimina() {
+  const d = document.createElement('dialog');
+  d.className = 'st-guida st-account';
+  d.innerHTML = '<h2>Eliminare l\'account?</h2>'
+    + '<p>Vengono cancellati <b>per sempre</b> il tuo account e la collezione salvata nel cloud: spunte, doppioni e hashtag di tutte le collezioni. Non si può tornare indietro.</p>'
+    + '<p><small>Se vuoi solo uscire da questo dispositivo, usa <b>Esci</b>: la collezione resta nel tuo account.</small></p>'
+    + '<div class="st-account-azioni st-elimina-azioni"><button type="button" value="si" class="st-secondario st-rosso">Elimina per sempre</button><button type="button" value="no" autofocus>Annulla</button></div>';
+  d.addEventListener('click', e => { const b = e.target.closest('button'); if (b) d.close(b.value); });
+  d.addEventListener('close', () => { if (d.returnValue === 'si') eliminaDati(); d.remove(); });
+  document.body.append(d);
+  d.showModal();
 }
 function chiudiMenu() { if (menu) { menu.hidden = true; modo = ''; } }
 
