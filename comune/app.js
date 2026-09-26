@@ -151,6 +151,7 @@
   function setOwned(p, value) {
     p.owned = value;
     const aveviDoppi = !value && p.doppi > 0;
+    if (aveviDoppi) say(p.doppi === 1 ? 'Tolto anche il doppione.' : 'Tolti anche i ' + p.doppi + ' doppioni.');
     if (!value) p.doppi = 0;                /* non ce l'hai più: niente doppioni */
     savePen(p);
     if (filterMode !== 'all') render();
@@ -189,7 +190,10 @@
     const mostra = () => { n.textContent = p.doppi; meno.disabled = !p.doppi; box.classList.toggle('si', p.doppi > 0); };
     const cambia = d => {
       p.doppi = Math.max(0, p.doppi + d);
-      if (p.doppi && !p.owned) { mostra(); return setOwned(p, true); }   /* un doppione vuol dire che ce l'hai: segno anche "Ce l'ho" */
+      if (p.doppi && !p.owned) {            /* un doppione vuol dire che ce l'hai: segno anche "Ce l'ho" */
+        say('Segnato anche «Ce l\'ho»: se hai un doppione, ce l\'hai.');
+        mostra(); return setOwned(p, true);
+      }
       savePen(p);
       if (filterMode === 'doppi' && !p.doppi) render();   /* filtro "Doppioni": se arriva a 0 sparisce */
       else { mostra(); updateCount(); }

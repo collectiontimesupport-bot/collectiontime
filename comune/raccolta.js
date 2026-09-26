@@ -166,8 +166,18 @@
     const id = el.dataset.ce || el.dataset.piu || el.dataset.meno;
     /* come nelle pagine delle serie: togliendo "Ce l'ho" spariscono i doppioni,
        aggiungendo un doppione si segna anche "Ce l'ho" */
-    if (el.dataset.ce) { e.preventDefault(); if (ce[id]) { delete ce[id]; delete doppi[id]; } else ce[id] = true; }
-    else if (el.dataset.piu) { doppi[id] = (doppi[id] || 0) + 1; ce[id] = true; }
+    if (el.dataset.ce) {
+      e.preventDefault();
+      if (!ce[id]) ce[id] = true;
+      else {
+        if (doppi[id]) avviso(doppi[id] === 1 ? 'Tolto anche il doppione.' : 'Tolti anche i ' + doppi[id] + ' doppioni.');
+        delete ce[id]; delete doppi[id];
+      }
+    }
+    else if (el.dataset.piu) {
+      if (!ce[id]) avviso('Segnato anche «Ce l\'ho»: se hai un doppione, ce l\'hai.');
+      doppi[id] = (doppi[id] || 0) + 1; ce[id] = true;
+    }
     else { doppi[id] = Math.max(0, (doppi[id] || 0) - 1); if (!doppi[id]) delete doppi[id]; }
     salva(id);
     const y = scrollY;

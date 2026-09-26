@@ -310,3 +310,5 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-account-copia { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
 .st-account-copia .st-ma-sezione { display: none; }
 .st-account-copia .st-link { font-size: .8125rem; text-decoration: underline; }
+/* se è aperto il promemoria in basso, l'avviso breve compare in alto (sotto la banda) per non sovrapporsi */
+body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
