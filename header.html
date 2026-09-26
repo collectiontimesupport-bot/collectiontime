@@ -4,9 +4,8 @@
      <div id="header-placeholder"></div> di ogni pagina.
      · il logo porta alla pagina iniziale. Tessera ambra con la spunta:
        i due tratti hanno la stessa forma delle lancette della "o" a orologio
-     · Esporta / Importa / Accedi: il loro funzionamento è in script.js
-       (sezione "Esporta / Importa") e in comune/cloud.js; gli id stEsporta,
-       stImporta, stImportaFile e stAccedi NON vanno cambiati
+     · Accedi: il funzionamento è in script.js e in comune/cloud.js;
+       gli id stImportaFile e stAccedi NON vanno cambiati
      · l'aspetto (colori, misure, banda fissa) è in sito.css
      I link si scrivono come se la pagina fosse nella cartella
      principale (es. "index.html"): script.js li corregge da solo.
@@ -16,10 +15,10 @@
     <svg class="mk" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#F2A900"/><path d="M8.22 16.6 13.4 21.6" fill="none" stroke="#1A2140" stroke-width="4.6" stroke-linecap="round"/><path d="M13.4 21.6 24.52 11.23" fill="none" stroke="#1A2140" stroke-width="3.8" stroke-linecap="round"/></svg>
     <span class="st-wm">Collecti<svg class="st-clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#1A2140" stroke-width="2.6"/><path d="M8.83 8.94 12 12" fill="none" stroke="#F2A900" stroke-width="2.6" stroke-linecap="round"/><path d="M12 12 17.41 6.95" fill="none" stroke="#F2A900" stroke-width="2.1" stroke-linecap="round"/><circle cx="12" cy="12" r="1.3" fill="#1A2140"/></svg>n Time</span>
   </a>
-  <!-- Esporta e Importa valgono per TUTTE le collezioni del sito (vedi script.js) -->
-  <nav aria-label="Backup">
-    <button type="button" id="stEsporta" title="Salva in un file le tue spunte e hashtag di tutte le collezioni">Esporta</button>
-    <button type="button" id="stImporta" title="Carica un file salvato con Esporta">Importa</button>
+  <!-- Accedi / profilo. "Copia di sicurezza" (Scarica / Carica un file, i vecchi Esporta e Importa)
+       è nel menu del profilo e nella finestra Accedi (comune/cloud.js); il campo nascosto qui
+       sotto serve a "Carica un file" (script.js) -->
+  <nav aria-label="Account">
     <input type="file" id="stImportaFile" accept="application/json,.json" hidden>
     <!-- Accedi con Google: salva la collezione nel cloud (comune/cloud.js). Dopo l'accesso mostra il nome -->
     <button type="button" id="stAccedi" title="Accedi con Google e salva la collezione nel cloud">Accedi</button>

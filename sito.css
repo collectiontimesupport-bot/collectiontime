@@ -92,14 +92,14 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
 .st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
 
-/* pulsanti Esporta / Importa: sembrano link, con la riga ambra al passaggio del mouse */
+/* pulsante Accedi: sembra un link, con la riga ambra al passaggio del mouse */
 .st-top nav { display: flex; gap: 20px; }
 .st-top nav button {
   font: inherit; font-size: .875rem; color: var(--ink); cursor: pointer;
   background: none; border: 0; border-bottom: 2px solid transparent; padding: 6px 0;
 }
 .st-top nav button:hover { border-bottom-color: var(--amber); }
-/* solo PC (schermo largo + mouse): Esporta / Importa più grandi e facili da cliccare.
+/* solo PC (schermo largo + mouse): Accedi più grande e facile da cliccare.
    Sul telefono restano come sopra, se no si accavallano col nome del sito. */
 @media (min-width: 768px) and (pointer: fine) {
   .st-top nav { gap: 28px; }
@@ -275,3 +275,38 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-promemoria button[data-p="accedi"] { background: var(--ink); border-color: var(--ink); color: var(--white); }
 .st-promemoria button:hover { border-color: var(--amber); }
 .st-promemoria button[data-p="accedi"]:hover { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+
+/* ---------- pulsante del profilo e menu del profilo (li crea comune/cloud.js) ----------
+   Dopo l'accesso il pulsante in alto diventa un cerchietto con l'iniziale;
+   premendolo si apre il menu a destra, sotto la banda in alto. */
+#stAccedi:has(.st-avatar) { padding: 0; border: 0; }
+.st-avatar { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--ink); color: var(--white); font: 700 1rem/1 system-ui, -apple-system, "Segoe UI", sans-serif; }
+#stAccedi:hover .st-avatar { background: var(--amber); color: var(--ink); }
+.st-avatar.grande { width: 46px; height: 46px; font-size: 1.25rem; flex: none; }
+.st-profilo { position: fixed; right: 12px; z-index: 40; width: min(300px, calc(100vw - 24px)); padding: 16px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--white); color: var(--ink);
+  box-shadow: 0 12px 36px rgba(26, 33, 64, .22); font: .9375rem/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  display: grid; gap: 2px; max-height: calc(100vh - 90px); overflow: auto; }
+.st-ma-testa { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.st-ma-testa b { display: block; font-size: 1.0625rem; }
+.st-ma-testa small { color: var(--muted); font-size: .8125rem; word-break: break-all; }
+.st-ma-numeri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
+.st-ma-numeri div { padding: 8px 4px; border-radius: 10px; background: #F5F6F9; text-align: center; }
+.st-ma-numeri b { display: block; font-size: 1.25rem; }
+.st-ma-numeri small { color: var(--muted); font-size: .75rem; }
+.st-ma-nota { margin: 2px 0 8px; color: var(--muted); font-size: .75rem; text-align: center; }
+.st-ma-sezione { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; }
+.st-profilo .st-link, .st-account-copia .st-link { justify-self: start; padding: 6px 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: .9375rem; text-align: left; cursor: pointer; }
+.st-profilo .st-link:hover, .st-account-copia .st-link:hover { color: var(--amber); }
+.st-ma-fondo { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.st-profilo .st-rosso { color: #B3261E; font-size: .8125rem; }
+.st-ma-nome { display: grid; gap: 8px; margin: 4px 0; }
+.st-ma-nome input { padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; color: var(--ink); }
+.st-ma-nome input:focus { outline: none; border-color: var(--amber); }
+.st-ma-nome div { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+.st-ma-nome button[type=submit] { padding: 7px 16px; border: 0; border-radius: 8px; background: var(--ink); color: var(--white); font: inherit; font-weight: 600; cursor: pointer; }
+/* in fondo alla finestra Accedi: "Non vuoi un account? Copia di sicurezza" */
+.st-account-copia { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
+.st-account-copia .st-ma-sezione { display: none; }
+.st-account-copia .st-link { font-size: .8125rem; text-decoration: underline; }

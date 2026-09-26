@@ -2,7 +2,7 @@
    script.js — Collection Time
    1) carica header.html e footer.html nei segnaposto (Fetch);
       lo stile comune, sito.css, è richiamato nel <head> di ogni pagina
-   2) fa funzionare Esporta e Importa della banda in alto:
+   2) fa funzionare la copia di sicurezza (i vecchi Esporta e Importa, ora nel menu Accedi / profilo):
       valgono per TUTTE le collezioni del sito insieme
       (+ "Accedi": carica comune/cloud.js solo quando serve)
    3) fa funzionare "Aggiungi alla Home" della banda in basso
@@ -51,7 +51,7 @@ function sistemaLink(box) {
   });
 }
 
-/* ---------- Esporta / Importa (tutte le collezioni) ----------
+/* ---------- Copia di sicurezza: Esporta / Importa (tutte le collezioni) ----------
    Ogni collezione salva le spunte nel browser, in un archivio
    IndexedDB che si chiama "catalogo-…" (per le penne: "catalogo-penne"),
    il nome scritto in CONFIG.dbName della sua pagina.
@@ -252,8 +252,9 @@ function protetto(fn) {
   });
 }
 document.addEventListener('click', e => {
-  if (e.target.closest('#stEsporta')) protetto(esporta)();
-  else if (e.target.closest('#stImporta')) document.getElementById('stImportaFile').click();
+  /* "Copia di sicurezza" (menu del profilo e finestra Accedi): Scarica un file / Carica un file */
+  if (e.target.closest('[data-backup="esporta"]')) protetto(esporta)();
+  else if (e.target.closest('[data-backup="importa"]')) document.getElementById('stImportaFile').click();
   else if (e.target.closest('#stAccedi')) caricaCloud().then(m => m.apriAccount(), () => avviso('Non riesco a collegarmi: controlla la connessione e riprova.'));
 });
 document.addEventListener('change', e => {

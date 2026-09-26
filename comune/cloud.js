@@ -35,7 +35,7 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, deleteUser,
-  signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+  signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-lite.js';
 
 /* Dati del progetto Firebase "Collection-Time" (console di Firebase →
@@ -128,7 +128,7 @@ function sincronizza() {
       await setDoc(documento(utente.uid), { versione: 1, aggiornato, collezioni: finale });
     }
     scriviStato({ uid: utente.uid, ultimo: aggiornato, sporco: false });
-    aggiornaFinestra();
+    aggiornaVista();
     /* se sono arrivate spunte da un altro dispositivo, ridisegno la pagina */
     if (cambiaQui && (typeof CONFIG !== 'undefined' || document.getElementById('raccolta'))) location.reload();
   })().catch(e => { console.warn('Cloud:', e); }).finally(() => { inCorso = null; });
@@ -153,7 +153,7 @@ document.addEventListener('visibilitychange', () => {
 onAuthStateChanged(auth, utente => {
   segnaAccesso(!!utente);                                     // funzione di script.js: ricorda l'accesso e cambia il pulsante
   aggiornaPulsante(utente);
-  aggiornaFinestra();
+  aggiornaVista();
   if (utente) {
     let fatta = false;
     try { fatta = sessionStorage.getItem('ct-cloud-visita') === utente.uid; sessionStorage.setItem('ct-cloud-visita', utente.uid); } catch (e) {}
@@ -262,87 +262,190 @@ async function eliminaDati() {
   await svuotaQui();
 }
 
-/* ---------- pulsante nella banda in alto e finestra "Account" ----------
-   Il pulsante (id stAccedi) è in header.html; l'aspetto della finestra
-   è quello della finestra "Aggiungi alla Home" (.st-guida in sito.css). */
+/* ---------- pulsante nella banda in alto, finestra "Accedi" e menu del profilo ----------
+   Il pulsante (id stAccedi) è in header.html:
+     • senza accesso dice "Accedi" e apre la FINESTRA di accesso (Google o email)
+     • dopo l'accesso diventa un cerchietto con l'iniziale e apre il MENU DEL PROFILO
+       (nome, email, numeri della collezione, cambia nome/password, copia di
+       sicurezza, esci, elimina account), come nelle app.
+   "Copia di sicurezza" (Scarica / Carica un file) sono i vecchi Esporta / Importa:
+   i pulsanti hanno data-backup="esporta" / "importa" e li fa funzionare script.js.
+   Aspetto: sito.css, voci "finestra Account" e "menu del profilo". */
+const nomeDi = u => u.displayName || (u.email || 'Profilo').split('@')[0];
+const conPassword = u => u.providerData.some(p => p.providerId === 'password');
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const COPIA = '<p class="st-ma-sezione">Copia di sicurezza</p>'
+  + '<button type="button" data-backup="esporta" class="st-link">Scarica un file</button>'
+  + '<button type="button" data-backup="importa" class="st-link">Carica un file</button>';
+
 function aggiornaPulsante(utente) {
   const b = document.getElementById('stAccedi');
-  if (b) b.textContent = utente ? (utente.displayName ? utente.displayName.split(' ')[0] : (utente.email || 'Account').split('@')[0]) : 'Accedi';
+  if (!b) return;
+  if (utente) {
+    b.innerHTML = '<span class="st-avatar" aria-hidden="true">' + esc(nomeDi(utente).charAt(0).toUpperCase()) + '</span>';
+    b.setAttribute('aria-label', 'Il mio profilo: ' + nomeDi(utente));
+    b.title = nomeDi(utente);
+  } else {
+    b.textContent = 'Accedi';
+    b.removeAttribute('aria-label');
+    b.title = 'Accedi e salva la collezione nel cloud';
+  }
 }
-let finestra = null, conferma = false, nuovo = false;   // nuovo = modulo "Crea account" invece di "Accedi"
-function aggiornaFinestra() {
-  if (!finestra) return;
-  const u = auth.currentUser, s = leggiStato();
-  const quando = s.ultimo ? new Date(s.ultimo).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
-  finestra.querySelector('.st-account-testo').innerHTML = u
-    ? '<p>Accesso fatto come <b>' + esc(u.displayName || u.email || '') + '</b>' + (u.displayName ? '<br><small>' + esc(u.email || '') + '</small>' : '') + '</p>'
-      + '<p>La tua collezione si salva nel cloud e la ritrovi su tutti i dispositivi in cui fai l\'accesso.'
-      + (s.sporco ? ' <b>Salvataggio in corso…</b>' : quando ? ' Ultimo salvataggio: ' + quando + '.' : '') + '</p>'
-    : '<p>Accedi per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>'
-      + '<button type="button" data-azione="accedi" class="st-google">Accedi con Google</button>'
-      + '<p class="st-oppure">oppure con la tua email</p>'
-      /* un modo alla volta ("entra" o "nuovo"), così il Portachiavi / gestore password
-         capisce se compilare una password salvata o proporne e salvarne una nuova */
-      + (nuovo
-        ? '<form class="st-email" data-modo="nuovo" novalidate>'
-          +   '<input type="email" name="email" placeholder="Email" autocomplete="username" required>'
-          +   '<input type="password" name="password" placeholder="Nuova password (min. 6 caratteri)" autocomplete="new-password" minlength="6" required>'
-          +   '<p class="st-account-errore" role="alert" hidden></p>'
-          +   '<div class="st-email-azioni"><button type="submit">Crea account</button></div>'
-          +   '<button type="button" data-azione="cambia-modo" class="st-link">Hai già un account? Accedi</button>'
-          + '</form>'
-        : '<form class="st-email" data-modo="entra" novalidate>'
-          +   '<input type="email" name="email" placeholder="Email" autocomplete="username" required>'
-          +   '<input type="password" name="password" placeholder="Password" autocomplete="current-password" required>'
-          +   '<p class="st-account-errore" role="alert" hidden></p>'
-          +   '<div class="st-email-azioni"><button type="submit">Accedi</button></div>'
-          +   '<button type="button" data-azione="dimenticata" class="st-link">Password dimenticata?</button>'
-          +   '<button type="button" data-azione="cambia-modo" class="st-link">Non hai un account? Crea account</button>'
-          + '</form>')
-      + '<p><small>Salviamo solo il tuo nome, la tua email e quello che segni sul sito (spunte, doppioni, hashtag). Dettagli nella pagina Privacy.</small></p>';
-  finestra.querySelector('.st-account-azioni').innerHTML = u
-    ? '<button type="button" data-azione="elimina" class="st-secondario">' + (conferma ? 'Sicuro? Premi di nuovo' : 'Elimina i miei dati') + '</button><button type="button" data-azione="esci" class="st-secondario">Esci</button><button type="button" data-azione="chiudi">Chiudi</button>'
-    : '<button type="button" data-azione="chiudi" class="st-secondario">Chiudi</button>';
+/* chiamata quando cambia qualcosa (accesso, uscita, salvataggio): aggiorna ciò che è aperto */
+function aggiornaVista() {
+  if (auth.currentUser && finestra && finestra.open) finestra.close();   // accesso appena fatto: chiudo la finestra
+  if (menu && !menu.hidden) disegnaMenu();
 }
-const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-export function apriAccount() {
+/* ===== FINESTRA "Accedi" (solo per chi non ha fatto l'accesso) ===== */
+let finestra = null, nuovo = false;   // nuovo = modulo "Crea account" invece di "Accedi"
+function disegnaFinestra() {
+  finestra.querySelector('.st-account-testo').innerHTML =
+    '<p>Accedi per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>'
+    + '<button type="button" data-azione="accedi" class="st-google">Accedi con Google</button>'
+    + '<p class="st-oppure">oppure con la tua email</p>'
+    /* un modo alla volta ("entra" o "nuovo"), così il Portachiavi / gestore password
+       capisce se compilare una password salvata o proporne e salvarne una nuova */
+    + (nuovo
+      ? '<form class="st-email" data-modo="nuovo" novalidate>'
+        +   '<input type="email" name="email" placeholder="Email" autocomplete="username" required>'
+        +   '<input type="password" name="password" placeholder="Nuova password (min. 6 caratteri)" autocomplete="new-password" minlength="6" required>'
+        +   '<p class="st-account-errore" role="alert" hidden></p>'
+        +   '<div class="st-email-azioni"><button type="submit">Crea account</button></div>'
+        +   '<button type="button" data-azione="cambia-modo" class="st-link">Hai già un account? Accedi</button>'
+        + '</form>'
+      : '<form class="st-email" data-modo="entra" novalidate>'
+        +   '<input type="email" name="email" placeholder="Email" autocomplete="username" required>'
+        +   '<input type="password" name="password" placeholder="Password" autocomplete="current-password" required>'
+        +   '<p class="st-account-errore" role="alert" hidden></p>'
+        +   '<div class="st-email-azioni"><button type="submit">Accedi</button></div>'
+        +   '<button type="button" data-azione="dimenticata" class="st-link">Password dimenticata?</button>'
+        +   '<button type="button" data-azione="cambia-modo" class="st-link">Non hai un account? Crea account</button>'
+        + '</form>')
+    + '<p><small>Salviamo solo il tuo nome, la tua email e quello che segni sul sito (spunte, doppioni, hashtag). Dettagli nella pagina Privacy.</small></p>'
+    + '<div class="st-account-copia"><small>Non vuoi un account?</small> ' + COPIA + '</div>';
+}
+function apriFinestra() {
   if (!finestra) {
     finestra = document.createElement('dialog');
     finestra.className = 'st-guida st-account';
     finestra.setAttribute('aria-labelledby', 'stAccountTitolo');
-    finestra.innerHTML = '<h2 id="stAccountTitolo">La tua collezione nel cloud</h2><div class="st-account-testo"></div><div class="st-account-azioni"></div>';
+    finestra.innerHTML = '<h2 id="stAccountTitolo">La tua collezione nel cloud</h2><div class="st-account-testo"></div>'
+      + '<div class="st-account-azioni"><button type="button" data-azione="chiudi" class="st-secondario">Chiudi</button></div>';
     finestra.addEventListener('click', e => {
-      const b = e.target.closest('button[data-azione]');
+      const b = e.target.closest('button[data-azione], button[data-backup]');
       if (!b) {                                                // clic fuori dalla finestra: chiude
         const r = finestra.getBoundingClientRect();
         if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) finestra.close();
         return;
       }
+      if (b.dataset.backup) return finestra.close();           // Scarica / Carica un file: li gestisce script.js
       const azione = b.dataset.azione;
       if (azione === 'accedi') { finestra.close(); accedi(); }  // il clic apre subito la finestra di Google (se no il browser la blocca)
-      else if (azione === 'cambia-modo') {                   // Accedi ⇄ Crea account (l'email scritta resta)
+      else if (azione === 'cambia-modo') {                     // Accedi ⇄ Crea account (l'email scritta resta)
         const email = finestra.querySelector('.st-email [name=email]').value;
-        nuovo = !nuovo; aggiornaFinestra();
+        nuovo = !nuovo; disegnaFinestra();
         finestra.querySelector('.st-email [name=email]').value = email;
       }
       else if (azione === 'dimenticata') passwordDimenticata(finestra.querySelector('.st-email [name=email]').value.trim());
-      else if (azione === 'esci') { finestra.close(); esci(); }
-      else if (azione === 'elimina') {
-        if (!conferma) { conferma = true; aggiornaFinestra(); return; }
-        finestra.close(); eliminaDati();
-      }
       else finestra.close();
     });
-    /* modulo email: "Accedi" o "Crea account" (anche premendo Invio = Accedi) */
+    /* modulo email: "Accedi" o "Crea account" (anche premendo Invio) */
     finestra.addEventListener('submit', e => {
       e.preventDefault();
-      const f = e.target, modo = f.dataset.modo;
-      conEmail(modo, f.email.value.trim(), f.password.value);
+      const f = e.target;
+      conEmail(f.dataset.modo, f.email.value.trim(), f.password.value);
     });
-    finestra.addEventListener('close', () => { conferma = false; nuovo = false; });
+    finestra.addEventListener('close', () => { nuovo = false; });
     document.body.append(finestra);
   }
-  aggiornaFinestra();
+  disegnaFinestra();
   finestra.showModal();
+}
+
+/* ===== MENU DEL PROFILO (dopo l'accesso) =====
+   modo: '' normale · 'nome' sta cambiando il nome · 'elimina' chiede conferma */
+let menu = null, modo = '', numeri = null;
+async function contaNumeri() {
+  const tutte = await leggiTutto();
+  const v = Object.values(tutte);
+  numeri = {
+    ce: v.reduce((t, c) => t + (c.possedute || []).length, 0),
+    doppi: v.reduce((t, c) => t + Object.values(c.doppi || {}).reduce((a, n) => a + n, 0), 0),
+    collezioni: v.filter(c => (c.possedute || []).length).length
+  };
+  if (menu && !menu.hidden) disegnaMenu();
+}
+function disegnaMenu() {
+  const u = auth.currentUser, s = leggiStato();
+  if (!u) return chiudiMenu();
+  const quando = s.ultimo ? new Date(s.ultimo).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
+  const n = numeri || { ce: '…', doppi: '…', collezioni: '…' };
+  menu.innerHTML =
+    '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(nomeDi(u).charAt(0).toUpperCase()) + '</span>'
+    + '<div><b>' + esc(nomeDi(u)) + '</b><small>' + esc(u.email || '') + '</small></div></div>'
+    + '<div class="st-ma-numeri"><div><b>' + n.ce + '</b><small>Ce l\'ho</small></div><div><b>' + n.doppi + '</b><small>Doppioni</small></div><div><b>' + n.collezioni + '</b><small>Collezioni</small></div></div>'
+    + '<p class="st-ma-nota">' + (s.sporco ? 'Salvataggio nel cloud in corso…' : quando ? 'Salvata nel cloud · ' + quando : 'Salvata nel cloud') + '</p>'
+    + (modo === 'nome'
+      ? '<form class="st-ma-nome"><input name="nome" maxlength="40" value="' + esc(u.displayName || '') + '" placeholder="Il tuo nome" autocomplete="nickname" required>'
+        + '<div><button type="button" data-m="annulla" class="st-link">Annulla</button><button type="submit">Salva</button></div></form>'
+      : '<button type="button" data-m="nome" class="st-link">Cambia nome</button>'
+        + (conPassword(u) ? '<button type="button" data-m="password" class="st-link">Cambia password</button>' : ''))
+    + COPIA
+    + '<div class="st-ma-fondo"><button type="button" data-m="esci" class="st-link">Esci</button>'
+    + '<button type="button" data-m="elimina" class="st-link st-rosso">' + (modo === 'elimina' ? 'Sicuro? Si cancella tutto: premi di nuovo' : 'Elimina account') + '</button></div>';
+  if (modo === 'nome') { const i = menu.querySelector('input'); i.focus(); i.select(); }
+}
+function apriMenu() {
+  if (!menu) {
+    menu = document.createElement('div');
+    menu.className = 'st-profilo';
+    menu.setAttribute('role', 'dialog');
+    menu.setAttribute('aria-label', 'Il mio profilo');
+    menu.hidden = true;
+    menu.addEventListener('click', async e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.backup) return chiudiMenu();               // Scarica / Carica un file: li gestisce script.js
+      const m = b.dataset.m;
+      if (m === 'nome') { modo = 'nome'; disegnaMenu(); }
+      else if (m === 'annulla') { modo = ''; disegnaMenu(); }
+      else if (m === 'password') {                             // il modo più sicuro: un'email per sceglierne una nuova
+        try { await sendPasswordResetEmail(auth, auth.currentUser.email); avviso('Ti ho mandato un\'email per scegliere la nuova password (guarda anche nello spam).'); }
+        catch (err) { avviso(messaggioErrore(err)); }
+        chiudiMenu();
+      }
+      else if (m === 'esci') { chiudiMenu(); esci(); }
+      else if (m === 'elimina') {
+        if (modo !== 'elimina') { modo = 'elimina'; disegnaMenu(); return; }
+        chiudiMenu(); eliminaDati();
+      }
+    });
+    menu.addEventListener('submit', async e => {               // salva il nuovo nome
+      e.preventDefault();
+      const nome = e.target.nome.value.trim().slice(0, 40);
+      if (!nome) return;
+      try { await updateProfile(auth.currentUser, { displayName: nome }); aggiornaPulsante(auth.currentUser); avviso('Nome cambiato.'); }
+      catch (err) { avviso('Non sono riuscito a cambiare il nome. Riprova.'); }
+      modo = ''; disegnaMenu();
+    });
+    /* clic fuori dal menu o tasto Esc: si chiude */
+    /* (composedPath: vale anche se il clic ha ridisegnato il menu, es. "Cambia nome") */
+    document.addEventListener('click', e => { if (!menu.hidden && !e.composedPath().includes(menu) && !e.target.closest('#stAccedi')) chiudiMenu(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) chiudiMenu(); });
+    document.body.append(menu);
+  }
+  const barra = document.querySelector('.st-top');
+  menu.style.top = (barra ? barra.getBoundingClientRect().bottom + 6 : 70) + 'px';   // subito sotto la banda in alto
+  modo = '';
+  menu.hidden = false;
+  disegnaMenu();
+  contaNumeri();
+}
+function chiudiMenu() { if (menu) { menu.hidden = true; modo = ''; } }
+
+/* il pulsante in alto (script.js chiama questa funzione) */
+export function apriAccount() {
+  if (!auth.currentUser) return apriFinestra();
+  if (menu && !menu.hidden) chiudiMenu(); else apriMenu();
 }
