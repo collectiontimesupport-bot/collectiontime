@@ -86,6 +86,8 @@ h1 .titolo-testo {
 /* riga sotto il titolo: conteggio a sinistra, strumenti a destra */
 .bar { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; }
 .sub { margin: 0; color: var(--muted); }
+/* conteggio con sotto il pulsante "Stampa" */
+.conta-stampa { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
 /* menu a tendina e campi di testo */

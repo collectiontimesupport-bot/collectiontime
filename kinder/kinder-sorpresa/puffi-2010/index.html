@@ -67,7 +67,10 @@
     <h1 id="pageTitle"><span class="titolo-testo">I PUFFI</span></h1>
     <div class="bar">
       <!-- "5 possedute su 9": il testo lo scrive app.js -->
-      <p class="sub" id="count"></p>
+      <div class="conta-stampa">  <!-- conteggio e, sotto, il pulsante Stampa -->
+        <p class="sub" id="count"></p>
+        <button class="btn" id="btnPrint" type="button">Stampa</button>
+      </div>
       <div class="tools">
         <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
         <div class="st-cerca" id="stCerca">
@@ -109,7 +112,6 @@
   <footer>
     <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
     <p class="hint">Premi su una sorpresina per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
-    <button class="btn" id="btnPrint" type="button">Stampa</button>
   </footer>
 </div>
 
