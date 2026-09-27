@@ -77,7 +77,11 @@
   let db = null;           /* archivio del browser (IndexedDB) */
   let pens = [];           /* tutti gli oggetti, con le spunte e gli hashtag di chi guarda */
   let filterMode = 'all';  /* filtro scelto: all / owned / missing / doppi */
-  let sortDir = 1;         /* ordine: 1 = dalla prima, -1 = dalla più recente */
+  /* ordine: 1 = dalla prima, -1 = dall'ultima.
+     La scelta resta salvata SOLO su questo dispositivo (localStorage "ct-ordine"),
+     non nel cloud, e vale per tutte le pagine delle collezioni. */
+  let sortDir = 1;
+  try { if (localStorage.getItem('ct-ordine') === 'desc') sortDir = -1; } catch (e) {}
   let query = '';          /* testo scritto nella ricerca */
   let editing = null;      /* oggetto aperto nella finestra "Dettagli" */
 
@@ -948,7 +952,12 @@
   /* voce "Doppioni" nel menu dei filtri: la aggiungo da qui, così non serve cambiare ogni pagina */
   if (!$('filter').querySelector('option[value="doppi"]')) $('filter').append(new Option('Doppioni', 'doppi'));
   $('filter').addEventListener('change', e => { filterMode = e.target.value; render(); });
-  $('sort').addEventListener('change', e => { sortDir = e.target.value === 'desc' ? -1 : 1; render(); });
+  $('sort').value = sortDir === -1 ? 'desc' : 'asc';   /* mostra l'ordine salvato */
+  $('sort').addEventListener('change', e => {
+    sortDir = e.target.value === 'desc' ? -1 : 1;
+    try { localStorage.setItem('ct-ordine', e.target.value); } catch (err) {}
+    render();
+  });
 
   /* ---------- id rinumerati (settembre 2026) ----------
      Gli id dell'ELENCO sono stati rimessi in ordine (seed-001, seed-002…).
