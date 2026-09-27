@@ -1,0 +1,259 @@
+<!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
+<!-- =====================================================================
+     ONE PIECE — pagina della collezione (Kinder Ferrero)
+     ---------------------------------------------------------------------
+     Pagina creata dall'area amministratore. Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI (CONFIG)
+                              ed ELENCO DELLE SORPRESINE (in fondo)
+       immagini/            ← le foto in WebP trasparente (01.webp, 02.webp…)
+                              e copertina.webp (la foto della card, se c'è)
+       (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
+        collezioni, e nel file css/stile.css della categoria;
+        il funzionamento, app.js, sta nella cartella "comune" del sito)
+
+     ▸ PER CAMBIARE NOMI, FOTO, ORDINE, QUANTI PER FILA E GRANDEZZA:
+       area amministratore (_admin/index.html) → "Modifica una serie".
+       A mano: blocco "ELENCO DELLE SORPRESINE" in fondo a questa pagina.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>One Piece · Collection Time</title>
+<meta name="description" content="One Piece, sorpresine Kinder Joy (2026): le 25 sorpresine, con quelle che ho e quelle che mi mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/". -->
+<link rel="icon" href="../../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2">
+<link rel="manifest" href="../../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="One Piece · Collection Time">
+<meta property="og:description" content="One Piece, sorpresine Kinder Joy (2026): le 25 sorpresine, con quelle che ho e quelle che mi mancano.">
+<meta property="og:url" content="https://www.collectiontime.com/kinder/kinder-joy/one-piece/">
+<meta property="og:image" content="https://www.collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../../sito.css?v=2026-09-26l">
+
+<!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
+<!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
+     in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27d">
+<link rel="stylesheet" href="../../css/stile.css?v=2026-09-26">
+</head>
+<body>
+
+<!-- Header del sito: viene riempito con header.html da ../../../script.js -->
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <!-- Link per tornare alla pagina Kinder Joy -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Kinder Joy</a>
+
+  <!-- ============ TITOLO E STRUMENTI ============ -->
+  <header>
+    <!-- titolo scritto (questa serie non ha un logo): va anche nel PDF -->
+    <!-- ! MODIFICA: titolo della pagina -->
+    <h1 id="pageTitle"><span class="titolo-testo">ONE PIECE</span></h1>
+    <div class="bar">
+      <!-- "5 possedute su 9": il testo lo scrive app.js -->
+      <p class="sub" id="count"></p>
+      <div class="tools">
+        <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
+        <div class="st-cerca" id="stCerca">
+          <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <!-- Filtro: tutte / possedute / mancanti -->
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutte</option>
+          <option value="owned" id="optOwned">Ce le ho</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <!-- Ordine: dalla n° 1 o al contrario -->
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dalla prima</option>
+          <option value="desc">Dalla più recente</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ GRIGLIA DELLE SORPRESINE ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni riga
+       dell'ELENCO (in fondo a questa pagina). -->
+  <ul class="grid" id="grid"></ul>
+
+  <!-- Messaggi quando non c'è nulla da mostrare -->
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p>Non ci sono ancora elementi in questa collezione.</p>
+  </section>
+
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       La copia di sicurezza (Scarica / Carica un file) è nel menu Accedi / profilo e vale per tutto il sito. -->
+  <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
+    <p class="hint">Premi su una sorpresina per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
+    <button class="btn" id="btnPrint" type="button">Stampa</button>
+  </footer>
+</div>
+
+<!-- Footer del sito: viene riempito con footer.html da ../../../script.js -->
+<div id="footer-placeholder"></div>
+
+
+<!-- ============ FINESTRA "STAMPA" ============ -->
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Un PDF da stampare o un'immagine da condividere.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le sorpresine, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="missing">
+      <span><strong>Quelle che mi mancano</strong> (<span id="cnt-missing"></span>)<small>Solo ciò che non hai ancora segnato, con il quadratino vuoto.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong>Tutte le sorpresine</strong> (<span id="cnt-all"></span>)<small>Tutto l'elenco con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn" id="printImg">Crea immagine</button>
+      <button type="button" class="btn primary" id="printGo">Crea PDF</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ FINESTRA "DETTAGLI" (si apre con ✎) ============ -->
+<dialog id="dlg">
+  <form id="editForm">
+    <!-- foto grande -->
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
+    <div class="dlg-body">
+      <!-- Anno e Numero (fissi, non si modificano) -->
+      <div class="trio">
+        <div class="field"><span id="lblCodice">Anno</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
+      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+/* =====================================================================
+   IMPOSTAZIONI DELLA COLLEZIONE
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra serie basta
+   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
+   ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
+const CONFIG = {
+  id: "kinder-joy-one-piece",            // nome usato nei PDF
+  dbName: "catalogo-kinder-joy-one-piece", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "One Piece",           // titolo della scheda del browser e del PDF
+  nome: "sorpresina",              // come si chiama un elemento
+  possedute: "possedute",          // "5 possedute su 18"
+  colonne: 8,                     // quanti per fila sugli schermi larghi (sui telefoni diminuiscono da soli)
+  proporzione: 1,                  // altezza ÷ larghezza di una foto (le foto sono quadrate)
+  suggerimenti: [],                // hashtag proposti nei dettagli (es. ["Natale"]); vuoto = nessuno
+  mostraNomi: true                 // true = nome scritto sotto ogni foto; false = solo nei dettagli
+};
+
+/* =====================================================================
+   ELENCO DELLE SORPRESINE  ★ QUI SI AGGIUNGONO O CAMBIANO ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è una sorpresina, nello stesso ordine della pagina.
+
+   PIÙ FACILE: area amministratore → "Modifica una serie" (aggiunge le
+   righe, prepara le foto e aggiorna "Mi mancano", "Doppioni" e "Cerca").
+
+   A MANO: copia una riga, incollala dove vuoi che compaia, cambia i valori,
+   poi nell'area amministratore premi "Aggiorna catalogo".
+
+   I CAMPI
+     id        codice unico (es. l'ultimo + 1): serve al browser per ricordare
+               se ce l'hai. Non usarlo due volte e non cambiarlo dopo la pubblicazione.
+     numero    il numero mostrato sotto la foto
+     codice    codice o anno
+     nome      nome
+     foto      "immagini/NN.webp?v=DATA" (sfondo trasparente, WebP: le prepara
+               l'area amministratore). Se sostituisci una foto con una con lo
+               STESSO nome, metti la data di oggi in "?v=" (es. ?v=2026-09-27):
+               così i browser scaricano quella nuova e non quella vecchia salvata.
+     info      facoltativo: testo fisso nei dettagli
+     hashtag   facoltativo, es. ["Natale"]
+     (altri campi, se ci sono: come nelle righe già scritte)
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…".
+   ===================================================================== */
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  { id: "one-piece-12", numero: "01", codice: "2026", nome: "Buggy", foto: "immagini/01.webp?v=2026-09-27b", info: "Codice VS326" },
+  { id: "one-piece-15", numero: "02", codice: "2026", nome: "Luffy Wanted", foto: "immagini/02.webp?v=2026-09-27b", info: "Luffy nel manifesto “Wanted” · codice VS329" },
+  { id: "one-piece-01", numero: "03", codice: "2026", nome: "Luffy", foto: "immagini/03.webp?v=2026-09-27b", info: "Codice VS331" },
+  { id: "one-piece-02", numero: "04", codice: "2026", nome: "Nami", foto: "immagini/04.webp?v=2026-09-27b", info: "Codice VS332" },
+  { id: "one-piece-05", numero: "05", codice: "2026", nome: "Sanji", foto: "immagini/05.webp?v=2026-09-27b", info: "Codice VS333" },
+  { id: "one-piece-13", numero: "06", codice: "2026", nome: "Tony Tony Chopper", foto: "immagini/06.webp?v=2026-09-27b", info: "Codice VS334" },
+  { id: "one-piece-03", numero: "07", codice: "2026", nome: "Zoro", foto: "immagini/07.webp?v=2026-09-27b", info: "Codice VS335" },
+  { id: "one-piece-11", numero: "08", codice: "2026", nome: "Miss All Sunday", foto: "immagini/08.webp?v=2026-09-27b", info: "Nico Robin · codice VS336" },
+  { id: "one-piece-07", numero: "09", codice: "2026", nome: "Smoker", foto: "immagini/09.webp?v=2026-09-27b", info: "Codice VS340" },
+  { id: "one-piece-16", numero: "10", codice: "2026", nome: "Chopper", foto: "immagini/10.webp?v=2026-09-27b", info: "Decorazione per zip" },
+  { id: "one-piece-17", numero: "11", codice: "2026", nome: "Chopper", foto: "immagini/11.webp?v=2026-09-27b", info: "Decorazione per zip" },
+  { id: "one-piece-23", numero: "12", codice: "2026", nome: "Going Merry", foto: "immagini/12.webp?v=2026-09-27b", info: "Sostegno per telefono · codice VS343" },
+  { id: "one-piece-04", numero: "13", codice: "2026", nome: "Usopp", foto: "immagini/13.webp?v=2026-09-27b", info: "Codice VS344" },
+  { id: "one-piece-18", numero: "14", codice: "2026", nome: "Laboon", foto: "immagini/14.webp?v=2026-09-27b", info: "Decorazione per zip · codice VS363" },
+  { id: "one-piece-22", numero: "15", codice: "2026", nome: "Frutto Gom Gom", foto: "immagini/15.webp?v=2026-09-27b", info: "Sostegno per cavetti · codice VS364" },
+  { id: "one-piece-10", numero: "16", codice: "2026", nome: "Wapol", foto: "immagini/16.webp?v=2026-09-27b", info: "Codice VS367" },
+  { id: "one-piece-09", numero: "17", codice: "2026", nome: "Mr. 5", foto: "immagini/17.webp?v=2026-09-27b", info: "Codice VS368" },
+  { id: "one-piece-06", numero: "18", codice: "2026", nome: "Vivi", foto: "immagini/18.webp?v=2026-09-27b", info: "Codice VS369" },
+  { id: "one-piece-20", numero: "19", codice: "2026", nome: "Usopp", foto: "immagini/19.webp?v=2026-09-27b", info: "Decorazione per penna · codice VS376" },
+  { id: "one-piece-21", numero: "20", codice: "2026", nome: "Frutto Homo Homo", foto: "immagini/20.webp?v=2026-09-27b", info: "Sostegno per cavetti · codice VS377" },
+  { id: "one-piece-08", numero: "21", codice: "2026", nome: "Crocodile", foto: "immagini/21.webp?v=2026-09-27b", info: "Codice VS378" },
+  { id: "one-piece-19", numero: "22", codice: "2026", nome: "Luffy", foto: "immagini/22.webp?v=2026-09-27b", info: "Decorazione per penna · codice VS379" },
+  { id: "one-piece-14", numero: "23", codice: "2026", nome: "Luffy d'oro", foto: "immagini/23.webp?v=2026-09-27b", info: "Variante rara, tutta dorata · codice VS504" },
+  { id: "one-piece-24", numero: "24", codice: "2026", nome: "Luffy d'oro", info: "Variante rara, tutta dorata · codice VS513", foto: "immagini/24.webp?v=2026-09-27b" },
+  { id: "one-piece-25", numero: "25", codice: "2026", nome: "Luffy d'oro - special", info: "Variante rara, tutta dorata · codice VS513A", foto: "immagini/25.webp?v=2026-09-27b" },
+];
+</script>
+
+<!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
+<script src="../../../script.js?v=2026-09-27"></script>
+<!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
+<script src="../../../comune/bagliore.js?v=2026-09-26"></script>
+<!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
+<script src="../../../comune/app.js?v=2026-09-27d"></script>
+</body>
+</html>

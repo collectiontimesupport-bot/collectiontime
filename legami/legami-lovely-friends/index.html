@@ -47,10 +47,10 @@
 <!-- Aspetto grafico: comune a tutte le collezioni + quello delle collezioni Legami -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../comune/collezione.css?v=2026-09-27">
-<link rel="stylesheet" href="../css/stile.css?v=2026-09-26">
+<link rel="stylesheet" href="../../comune/collezione.css?v=2026-09-27d">
+<link rel="stylesheet" href="../css/stile.css?v=2026-09-27d">
 </head>
-<body class="lovely">
+<body>
 
 <!-- Header del sito: viene riempito con header.html da ../../script.js -->
 <div id="header-placeholder"></div>
@@ -190,6 +190,7 @@ const CONFIG = {
   possedute: "possedute",          // "12 possedute su 33"
   colonne: 23,                     // penne per fila sugli schermi larghi (23 = la prima fila del poster, fino alla 21)
   proporzione: 6,                  // altezza ÷ larghezza di una penna (con l'animaletto di lato)
+  altezza: 375,                    // altezza delle foto sugli schermi larghi, in pixel (più alto = più grandi)
   pdfColonne: 16,                  // penne per fila nel PDF orizzontale
   pdfFile: 2,                      // file di penne per pagina del PDF (solo Legami: le altre pagine hanno il PDF verticale)
   suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua"]   // hashtag proposti nei dettagli
@@ -284,6 +285,6 @@ const ELENCO = [
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG ed ELENCO qui sopra) -->
-<script src="../../comune/app.js?v=2026-09-27b"></script>
+<script src="../../comune/app.js?v=2026-09-27d"></script>
 </body>
 </html>

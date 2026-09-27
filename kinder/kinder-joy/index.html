@@ -40,7 +40,6 @@
   .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
   .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
   /* scritta mostrata finché non c'è nessuna collezione (poi si cancella) */
-  .in-arrivo { text-align: center; color: var(--muted); font-size: 1.125rem; margin: 30px 0; }
 </style>
 </head>
 <body>
@@ -64,8 +63,6 @@
     </div>
   </div>
   <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
-  <!-- Scritta provvisoria: quando aggiungi la prima serie, cancella questa riga. -->
-  <p class="in-arrivo">Le prime serie arrivano presto.</p>
   <!-- TUTTE LE SERIE in ordine di uscita, DALLA PIÙ RECENTE: una serie nuova va aggiunta IN CIMA.
        Una card per ogni serie: per aggiungerne una, copia l'esempio qui sotto,
        togli i segni di commento e cambia cartella, foto e testi.
@@ -88,6 +85,7 @@
   <!-- data-per-anno = le card vengono raccolte in tendine, una per anno (lo fa script.js leggendo l'anno scritto nel <p> della card;
        le card senza anno restano normali, sopra). Per tornare a tutte le card aperte, cancella data-per-anno. -->
   <ul class="st-cards" data-per-anno>
+    <li data-cerca="Luffy Nami Zoro Usopp Sanji Vivi Smoker Crocodile Mr. 5 Wapol Miss All Sunday Buggy Tony Tony Chopper Luffy d'oro Luffy Wanted Chopper Laboon Frutto Homo Homo Frutto Gom Gom Going Merry Nico Robin Funko Pop Netflix Decorazione zip Decorazione penna Sostegno cavetti Sostegno telefono 2026"><a class="st-card" href="one-piece/index.html"><div class="thumb"><img src="one-piece/immagini/copertina.webp?v=2026-09-27" alt="" loading="lazy"></div><h2>One Piece</h2><p>25 sorpresine<br>2026</p><span class="st-apri">Apri</span></a></li>
   </ul>
 </main>
 

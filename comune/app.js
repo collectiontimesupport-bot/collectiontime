@@ -36,6 +36,14 @@
   /* misure della collezione (da CONFIG) */
   document.documentElement.style.setProperty('--proporzione', String(CONFIG.proporzione || 7));
   document.documentElement.style.setProperty('--colonne', String(CONFIG.colonne || 8));
+  /* grandezza scelta nel CONFIG ("altezza" delle foto, in pixel): larghezza della griglia
+     e colonne sui telefoni le calcola comune/collezione.css (classe "su-misura").
+     Oggetti stretti (proporzione 4 o più, le penne): classe "stretti", più vicini. */
+  if (CONFIG.altezza) {
+    document.documentElement.style.setProperty('--altezza', CONFIG.altezza + 'px');
+    grid.classList.add('su-misura');
+  }
+  if ((CONFIG.proporzione || 7) >= 4) grid.classList.add('stretti');
 
   /* ---------- elenco (da ELENCO, nell'HTML) ----------
      Trasformo le righe scritte nell'HTML (campi in italiano) nel formato

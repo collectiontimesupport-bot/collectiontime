@@ -102,12 +102,37 @@ select, .field input[type=text] {
    4. GRIGLIA
    Colonne = CONFIG.colonne della pagina (app.js lo scrive in --colonne).
    Distanze, larghezza massima e colonne sui telefoni sono nel file
-   della collezione.
+   della collezione, oppure (se nel CONFIG c'è "altezza") qui sotto.
    ===================================================================== */
 .grid {
   list-style: none; margin: 0 auto; padding: 0;
   display: grid;
   grid-template-columns: repeat(var(--colonne, 8), minmax(0, 1fr));
+}
+/* oggetti molto stretti (penne): più vicini tra loro */
+.grid.stretti { gap: 14px 5px; }
+
+/* GRANDEZZA SCELTA NEL CONFIG (classe "su-misura", la mette app.js)
+   Nel CONFIG: colonne = quanti per fila sugli schermi larghi,
+               altezza = quanto è alta ogni foto sugli schermi larghi (px),
+               proporzione = altezza ÷ larghezza dell'oggetto più largo.
+   Da questi tre numeri:
+     --cella    larghezza di una colonna sugli schermi larghi
+     max-width  la griglia non va oltre "colonne" celle
+     --min-col  colonna più stretta possibile: sugli schermi piccoli le
+                colonne diminuiscono da sole quando non ci stanno più.
+   Sugli schermi bassi le foto si abbassano da sole (--pen-vh). */
+.grid.su-misura {
+  --gap-x: 16px;
+  --cella: calc(var(--altezza) / var(--proporzione));
+  --min-col: max(90px, calc(var(--cella) * .6));
+  gap: 28px var(--gap-x);
+  max-width: calc(var(--colonne) * var(--cella) + (var(--colonne) - 1) * var(--gap-x));
+  grid-template-columns: repeat(auto-fill, minmax(max(var(--min-col), calc((100% - (var(--colonne) - 1) * var(--gap-x)) / var(--colonne))), 1fr));
+}
+.grid.su-misura.stretti { --gap-x: 5px; --min-col: calc(var(--cella) * .88); row-gap: 14px; }
+@media (max-width: 900px) {
+  .grid.su-misura:not(.stretti) { --gap-x: 10px; row-gap: 22px; }
 }
 
 /* =====================================================================

@@ -86,7 +86,7 @@
   /* griglia di una serie: penne strette (proporzione alta, es. Legami) più fitte, sorpresine più larghe */
   function griglia(s, oggetti) {
     const stretta = s.pr >= 3;
-    return `<div class="${esc(s.cl)}"><ul class="grid" style="--proporzione:${s.pr}; --pen-vh:${stretta ? 260 : 170}px; grid-template-columns: repeat(auto-fill, minmax(${stretta ? 56 : 110}px, 1fr))">${oggetti.map(o => oggetto(s, o)).join('')}</ul></div>`;
+    return `<div class="${esc(s.cl)}"><ul class="grid${stretta ? ' stretti' : ''}" style="--proporzione:${s.pr}; --pen-vh:${stretta ? 260 : 170}px; grid-template-columns: repeat(auto-fill, minmax(${stretta ? 56 : 110}px, 1fr))">${oggetti.map(o => oggetto(s, o)).join('')}</ul></div>`;
   }
   /* titolo di una serie, con il link alla sua pagina;
      con scambi = true anche il pulsante "Cerco e scambio" (vedi in cima) */

@@ -243,13 +243,145 @@ const Motore = (() => {
     lettura.commentiFine.forEach(c => righe.push(c));
     return html.slice(0, e.da) + '[\n' + righe.join('\n') + '\n]' + html.slice(e.a);
   }
-  /* cambia UN valore di testo del CONFIG (es. titolo) lasciando il commento a destra */
-  function impostaConfig(html, chiave, valore) {
+  /* cambia UN valore del CONFIG (es. titolo, colonne).
+     commento (facoltativo) = nuovo commento a destra ("// …");
+     se la voce manca la aggiunge sotto la voce "dopo" (o in fondo al CONFIG) */
+  function impostaConfig(html, chiave, valore, commento, dopo) {
     const c = blocco(html, 'CONFIG');
-    const re = new RegExp('(\\b' + chiave + ':\\s*)("(?:[^"\\\\]|\\\\.)*"|[-\\d.]+|true|false)');
-    const nuovo = c.testo.replace(re, '$1' + (typeof valore === 'string' ? JSON.stringify(valore) : String(valore)));
+    const scritto = typeof valore === 'string' ? JSON.stringify(valore) : String(valore);
+    const riga = new RegExp('^([ \\t]*' + chiave + ':\\s*)("(?:[^"\\\\]|\\\\.)*"|[-\\d.]+|true|false)(,?)([ \\t]*)(//[^\\n]*)?$', 'm');
+    let nuovo;
+    if (riga.test(c.testo)) {
+      nuovo = c.testo.replace(riga, (m, a, v, virgola, spazi, vecchioCommento) => {
+        const testo = a + scritto + virgola;
+        if (commento === undefined) return testo + (spazi || '') + (vecchioCommento || '');
+        return testo.padEnd(Math.max(testo.length + 1, (a + v + virgola + (spazi || '')).length)) + '// ' + commento;
+      });
+    } else {
+      const righe = c.testo.split('\n');
+      const eVoce = r => /^\s*\w+:/.test(r);
+      /* la aggiungo sotto la voce "dopo" (se non c'è, sotto l'ultima voce) */
+      let k = dopo ? righe.findIndex(r => new RegExp('^\\s*' + dopo + ':').test(r)) : -1;
+      if (k < 0) for (k = righe.length - 1; k > 0 && !eVoce(righe[k]); k--);
+      const ultima = !righe.slice(k + 1).some(eVoce);        // dopo non ci sono altre voci: la nuova non vuole la virgola
+      if (!/,\s*(\/\/.*)?$/.test(righe[k])) righe[k] = righe[k].replace(/^(.*?\S)(\s*(\/\/.*)?)$/, '$1,$2');
+      const testo = '  ' + chiave + ': ' + scritto + (ultima ? '' : ',');
+      righe.splice(k + 1, 0, commento ? testo.padEnd(35) + '// ' + commento : testo);
+      nuovo = righe.join('\n');
+    }
     return html.slice(0, c.da) + nuovo + html.slice(c.a);
   }
+
+  /* ---------- come si chiama un pezzo (nei testi della pagina) ----------
+     Le frasi si scrivono con l'articolo: "una tote bag" / "le tote bag",
+     "un portachiavi" / "i portachiavi". Dall'articolo capisco maschile e femminile. */
+  function leggiFrase(frase) {
+    const m = /^\s*(un'|uno|una|un|i|gli|le)(?:\s+|(?<='))(.+?)\s*$/i.exec(String(frase || ''));
+    return m ? { art: m[1].toLowerCase(), parola: m[2] } : { art: '', parola: String(frase || '').trim() };
+  }
+  function forme(un, i) {
+    const s = leggiFrase(un), p = leggiFrase(i);
+    const fem = p.art ? p.art === 'le' : /^(una|un')$/.test(s.art);
+    const artS = s.art || (fem ? 'una' : 'un'), artP = p.art || (fem ? 'le' : 'i');
+    const sing = s.parola, plur = p.parola || s.parola;
+    return {
+      un: artS + (artS.endsWith("'") ? '' : ' ') + sing,     // "una tote bag"
+      i: artP + ' ' + plur,                                   // "le tote bag"
+      sing, plur, fem,
+      tutti: (fem ? 'Tutte ' : 'Tutti ') + artP + ' ' + plur, // "Tutte le tote bag"
+      dei: { i: 'dei', gli: 'degli', le: 'delle' }[artP] + ' ' + plur   // "delle tote bag"
+    };
+  }
+  /* le parole scritte ora nella pagina (dal suggerimento in basso e dalla finestra Stampa) */
+  function leggiParole(html) {
+    const lettura = leggiSerieSicura(html);
+    const nome = lettura && lettura.config ? lettura.config.nome || '' : '';
+    const u = /<p class="hint">(?:Premi su|Tocca) ((?:un'|uno|una|un)\s?.+?) per segnare/.exec(html);
+    const t = /<strong>Tutt[ie] ((?:i|gli|le) [^<]+)<\/strong>/.exec(html);
+    return forme(u ? decodifica(u[1]) : 'un ' + nome, t ? decodifica(t[1]) : 'i ' + nome);
+  }
+  /* scrive le parole in tutti i testi che le usano (e in CONFIG: nome, possedute) */
+  function impostaParole(html, un, i) {
+    const f = forme(un, i);
+    const E = codifica;
+    html = html
+      .replace(/(<option value="all" id="optAll">)[^<]*</, '$1' + (f.fem ? 'Tutte' : 'Tutti') + '<')
+      .replace(/(<option value="owned" id="optOwned">)[^<]*</, '$1' + (f.fem ? 'Ce le ho' : 'Ce li ho') + '<')
+      .replace(/(<p class="hint">(?:Premi su|Tocca) )(?:un'|uno|una|un)\s?.+?( per segnare)/, (m, a, b) => a + E(f.un) + b)
+      .replace(/<small>Tutt[ie] (?:i|gli|le) [^,<]+,/, '<small>' + E(f.tutti) + ',')
+      .replace(/<strong>Tutt[ie] (?:i|gli|le) [^<]+<\/strong>/, '<strong>' + E(f.tutti) + '</strong>')
+      .replace(/<strong>Quell[ie] che mi mancano<\/strong>/, '<strong>' + (f.fem ? 'Quelle' : 'Quelli') + ' che mi mancano</strong>')
+      .replace(/(content="[^"]*)con quell[ie] che ho e quell[ie] che mi mancano/g, '$1con ' + (f.fem ? 'quelle che ho e quelle' : 'quelli che ho e quelli') + ' che mi mancano');
+    const possedute = f.fem ? 'possedute' : 'posseduti';
+    html = impostaConfig(html, 'nome', f.sing);
+    return impostaConfig(html, 'possedute', possedute, '"5 ' + possedute + ' su 18"');
+  }
+
+  /* commenti di spiegazione di una pagina NUOVA: scritti da zero con le parole giuste
+     (così non restano frasi della serie da cui è stata copiata) */
+  function commentiNuovaPagina(html, { titolo, categoria, un, i }) {
+    const f = forme(un, i);
+    const testa = `<!-- =====================================================================
+     ${titolo.toUpperCase()} — pagina della collezione (${categoria})
+     ---------------------------------------------------------------------
+     Pagina creata dall'area amministratore. Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI (CONFIG)
+                              ed ELENCO ${f.dei.toUpperCase()} (in fondo)
+       immagini/            ← le foto in WebP trasparente (01.webp, 02.webp…)
+                              e copertina.webp (la foto della card, se c'è)
+       (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
+        collezioni, e nel file css/stile.css della categoria;
+        il funzionamento, app.js, sta nella cartella "comune" del sito)
+
+     ▸ PER CAMBIARE NOMI, FOTO, ORDINE, QUANTI PER FILA E GRANDEZZA:
+       area amministratore (_admin/index.html) → "Modifica una serie".
+       A mano: blocco "ELENCO ${f.dei.toUpperCase()}" in fondo a questa pagina.
+     ===================================================================== -->`;
+    const griglia = `<!-- ============ GRIGLIA ${f.dei.toUpperCase()} ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni riga
+       dell'ELENCO (in fondo a questa pagina). -->`;
+    const elenco = `/* =====================================================================
+   ELENCO ${f.dei.toUpperCase()}  ★ QUI SI AGGIUNGONO O CAMBIANO ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è ${f.un}, nello stesso ordine della pagina.
+
+   PIÙ FACILE: area amministratore → "Modifica una serie" (aggiunge le
+   righe, prepara le foto e aggiorna "Mi mancano", "Doppioni" e "Cerca").
+
+   A MANO: copia una riga, incollala dove vuoi che compaia, cambia i valori,
+   poi nell'area amministratore premi "Aggiorna catalogo".
+
+   I CAMPI
+     id        codice unico (es. l'ultimo + 1): serve al browser per ricordare
+               se ce l'hai. Non usarlo due volte e non cambiarlo dopo la pubblicazione.
+     numero    il numero mostrato sotto la foto
+     codice    codice o anno
+     nome      nome
+     foto      "immagini/NN.webp?v=DATA" (sfondo trasparente, WebP: le prepara
+               l'area amministratore). Se sostituisci una foto con una con lo
+               STESSO nome, metti la data di oggi in "?v=" (es. ?v=${oggi()}):
+               così i browser scaricano quella nuova e non quella vecchia salvata.
+     info      facoltativo: testo fisso nei dettagli
+     hashtag   facoltativo, es. ["Natale"]
+     (altri campi, se ci sono: come nelle righe già scritte)
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…".
+   ===================================================================== */`;
+    html = html.replace(/<!-- =+\n[\s\S]*?=+ -->/, testa);
+    html = html.replace(/<!-- =+ GRIGLIA[\s\S]*?-->/, griglia);
+    html = html.replace(/\/\* =+\n\s*ELENCO[\s\S]*?=+ \*\//, elenco);
+    return html;
+  }
+  /* righe della pagina (non l'elenco) che contengono ancora una parola della serie copiata */
+  function paroleRimaste(html, parole) {
+    const e = blocco(html, 'ELENCO');
+    const fuori = e ? html.slice(0, e.da) + html.slice(e.a) : html;
+    const re = new RegExp('(^|[^\\p{L}])(' + parole.filter(Boolean).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')(?![\\p{L}])', 'iu');
+    return parole.filter(Boolean).length ? fuori.split('\n').map(r => r.trim()).filter(r => re.test(r) && !r.includes('! MODIFICA')) : [];
+  }
+
   /* nuovo titolo di una serie: scheda del browser, anteprima dei link, titolo grande, PDF */
   function cambiaTitoloSerie(html, titolo, titoloGrande) {
     html = html
@@ -263,22 +395,48 @@ const Motore = (() => {
       .replace(/(<meta property="og:description" content=")[^"]*"/, '$1' + codifica(testo) + '"');
   }
 
+  /* quanti per fila e grandezza (CONFIG: colonne, altezza, proporzione, pdfColonne).
+     a = { colonne, altezza, proporzione } (solo quelli da cambiare) */
+  const COMMENTI_ASPETTO = {
+    colonne: 'quanti per fila sugli schermi larghi (sui telefoni diminuiscono da soli)',
+    proporzione: "altezza ÷ larghezza dell'oggetto più largo (calcolata dalle foto)",
+    altezza: 'altezza delle foto sugli schermi larghi, in pixel (più alto = più grandi)',
+    pdfColonne: 'quanti per fila nel PDF'
+  };
+  function impostaAspetto(html, a) {
+    if (a.colonne != null) html = impostaConfig(html, 'colonne', a.colonne, COMMENTI_ASPETTO.colonne);
+    if (a.proporzione != null) html = impostaConfig(html, 'proporzione', a.proporzione, COMMENTI_ASPETTO.proporzione, 'colonne');
+    if (a.altezza != null) html = impostaConfig(html, 'altezza', a.altezza, COMMENTI_ASPETTO.altezza, 'proporzione');
+    if (a.pdfColonne != null && /\bpdfColonne:/.test(blocco(html, 'CONFIG').testo)) html = impostaConfig(html, 'pdfColonne', a.pdfColonne, COMMENTI_ASPETTO.pdfColonne);
+    return html;
+  }
+  /* quanti per fila nel PDF orizzontale (solo Legami): come sulla pagina, ma al massimo 8 oggetti (20 penne) */
+  const pdfColonneDa = (colonne, proporzione) => Math.min(colonne, proporzione >= 4 ? 20 : 8);
+
   /* pagina di una serie NUOVA, copiata da un'altra serie (modello):
-     cambia titoli, indirizzo, CONFIG (id, dbName, titolo) ed ELENCO */
-  function creaPaginaSerie(modello, { vecchiaCartella, cartella, url, titolo, titoloGrande, descrizione, id, dbName, elenco, backTesto }) {
+     cambia titoli, indirizzo, CONFIG (id, dbName, titolo, parole, aspetto), ELENCO
+     e riscrive i commenti di spiegazione con le parole giuste */
+  function creaPaginaSerie(modello, { url, titolo, titoloGrande, descrizione, id, dbName, elenco, backTesto, categoria, un, i, aspetto }) {
     const lettura = leggiSerie(modello);
+    const vecchie = leggiParole(modello);
     let t = cambiaTitoloSerie(modello, titolo, titoloGrande);
     t = cambiaDescrizione(t, descrizione);
     t = t.replace(/(<meta property="og:url" content=")[^"]*"/, '$1https://www.collectiontime.com/' + url + '"');
     if (backTesto) t = t.replace(/(<a class="st-back" href="[^"]*">&larr; )[^<]*</, '$1' + codifica(backTesto) + '<');
+    t = t.replace(/(<!-- Link per tornare alla pagina )[^>]*?( -->)/, '$1' + codifica(backTesto || '') + '$2');
     t = impostaConfig(t, 'id', id);
     t = impostaConfig(t, 'dbName', dbName);
-    /* il riquadro di spiegazione in cima: la riga col nome della serie */
-    const vecchioTitolo = lettura.config.titolo;
-    t = t.replace(/(<!-- =+\n\s*)([^\n]*)/, (m, a, riga) => a + (riga.includes(' — ') ? titolo.toUpperCase() + ' — ' + riga.split(' — ').slice(1).join(' — ') : titolo.toUpperCase() + ' — pagina della collezione'));
+    t = impostaParole(t, un || vecchie.un, i || vecchie.i);
+    if (aspetto) t = impostaAspetto(t, aspetto);
+    /* commenti del CONFIG che parlano della serie copiata: generici */
+    const cfg = blocco(t, 'CONFIG').testo;
+    if (/\bpdfFile:/.test(cfg)) t = impostaConfig(t, 'pdfFile', lettura.config.pdfFile, 'file di foto per pagina del PDF (solo Legami: le altre pagine hanno il PDF verticale)');
+    if (/\bmostraNomi:/.test(cfg)) t = impostaConfig(t, 'mostraNomi', lettura.config.mostraNomi, 'true = nome scritto sotto ogni foto; false = solo nei dettagli');
+    t = commentiNuovaPagina(t, { titolo, categoria, un: un || vecchie.un, i: i || vecchie.i });
     t = scriviElenco(t, Object.assign({}, lettura, { elenco: [], originali: {}, commenti: {}, commentiFine: [] }), elenco);
-    void vecchiaCartella; void vecchioTitolo;
-    return t;
+    /* parole della serie copiata rimaste nella pagina (se le parole sono cambiate) */
+    const rimaste = forme(un || vecchie.un, i || vecchie.i).sing === vecchie.sing ? [] : paroleRimaste(t, [vecchie.sing, vecchie.plur]);
+    return { html: t, rimaste };
   }
 
   /* =====================================================================
@@ -366,6 +524,7 @@ const Motore = (() => {
     leggiCard, analizzaCard, cartellaCard, cambiaCard, scriviCard, nuovaCard, impostaPerAnno, testoDaRighe, righeDaTesto,
     leggiVediTutti, impostaVediTutti, aggiungiVediTutti, creaPaginaTutti,
     leggiSerie, scriviElenco, rigaElenco, impostaConfig, cambiaTitoloSerie, cambiaDescrizione, creaPaginaSerie,
+    forme, leggiParole, impostaParole, commentiNuovaPagina, paroleRimaste, impostaAspetto, pdfColonneDa,
     albero, serieDi, creaIndice
   };
 })();

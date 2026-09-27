@@ -13,6 +13,7 @@
        admin.js          ← i pulsanti (cartella, card, serie, foto…)
        motore.js         ← legge e riscrive il testo delle pagine del sito
        statistiche.js    ← scheda Statistiche (accesso e numeri dal cloud)
+       pubblica.js       ← scheda Pubblica (copia il sito nel repository GitHub)
 
      Sicurezza: prima di cambiare un file ne salva una copia in
      _backup/admin/<data>/… (nella cartella del sito). Non cancella mai
@@ -124,6 +125,21 @@
   .drop { border: 2px dashed var(--line); border-radius: 12px; padding: 18px; text-align: center; color: var(--muted); cursor: pointer; background: #fff; }
   .drop.sopra { border-color: var(--amber); background: #FFF8E6; }
 
+  /* campo "Cerca…" sopra le tendine lunghe */
+  .cerca-tendina { display: flex; gap: 10px; align-items: center; margin: 2px 0 4px; }
+  .cerca-tendina input { max-width: 340px; width: 100%; padding: 7px 10px; border: 1px solid var(--line); border-radius: 9px; background: #fff; font-size: .95rem; }
+
+  /* ---------- Quanti per fila e grandezza: anteprima di una fila ---------- */
+  .misure { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: end; }
+  .misure output { font-weight: 600; color: var(--ink); }
+  .fila-box { margin-top: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; padding: 14px; overflow: hidden; }
+  .fila { display: grid; margin: 0 auto; align-items: end; }
+  .fila div { display: flex; justify-content: center; align-items: flex-end; overflow: visible; outline: 1px dashed #E3E6EC; }
+  .fila img { display: block; max-width: none; }
+  .fila-testo { margin: 10px 0 0; font-size: .9rem; color: var(--muted); }
+  .fila-testo b { color: var(--ink); }
+  .quadrate .solo-legami, :not(.quadrate) > .solo-quadrate { display: none; }
+
   /* ---------- Statistiche ---------- */
   table.classifica { border-collapse: collapse; width: 100%; font-size: .9rem; }
   table.classifica td, table.classifica th { padding: 6px 8px; border-bottom: 1px solid #EEF0F4; text-align: left; }
@@ -151,6 +167,7 @@
     <a href="#serie"><span>✏️</span>Modifica una serie</a>
     <a href="#nuova"><span>➕</span>Nuova serie</a>
     <a href="#catalogo"><span>🔄</span>Aggiorna catalogo</a>
+    <a href="#pubblica"><span>🚀</span>Pubblica</a>
     <hr>
     <a href="#statistiche"><span>📊</span>Statistiche</a>
     <a href="#strumenti"><span>🧰</span>Strumenti</a>
@@ -171,10 +188,11 @@
         <div class="numeri" id="numeri"></div>
         <h3>Cosa vuoi fare?</h3>
         <div class="scorciatoie">
-          <a href="#nuova"><b>➕ Aggiungere una serie</b><span class="muted">Titolo, nomi, foto e copertina: la pagina e la card le crea lui.</span></a>
+          <a href="#nuova"><b>➕ Aggiungere una serie</b><span class="muted">Titolo, nomi, foto, quanti per fila e grandezza: la pagina, la card e la copertina le crea lui.</span></a>
           <a href="#serie"><b>✏️ Cambiare nomi o foto</b><span class="muted">Correggi un nome, aggiungi un pezzo, sostituisci una foto.</span></a>
           <a href="#pagine"><b>🖼️ Cambiare una copertina</b><span class="muted">Oppure spostare, nascondere o rinominare una card.</span></a>
           <a href="#pagine"><b>🔘 Pulsanti “Vedi tutti”</b><span class="muted">Accendili, spegnili o creali per un gruppo nuovo.</span></a>
+          <a href="#pubblica"><b>🚀 Pubblicare il sito</b><span class="muted">Copia le modifiche nel repository; poi Commit e Push con GitHub Desktop.</span></a>
           <a href="#statistiche"><b>📊 Statistiche</b><span class="muted">Iscritti, pezzi più posseduti e più cercati, visite.</span></a>
           <a href="#strumenti"><b>🧰 Controllo del sito</b><span class="muted">Foto mancanti, versioni dei file, strumenti LEGO e Legami.</span></a>
         </div>
@@ -210,8 +228,8 @@
     <!-- ============ MODIFICA SERIE ============ -->
     <section data-scheda="serie" hidden>
       <h2>Modifica una serie</h2>
-      <p class="sub">Cambia titolo, nomi, codici, info e foto. Premi sulla foto per sostituirla (la ritaglia e la salva lui, con la data nel “?v=”).
-        I pezzi nuovi vanno in fondo; con ↑ ↓ cambi l'ordine.</p>
+      <p class="sub">Cambia titolo, nomi, codici, info, foto, scritte e (Legami) quanti per fila e grandezza. Premi sulla foto per sostituirla (la ritaglia e la salva lui, con la data nel “?v=”).
+        I pezzi nuovi vanno in fondo; con ↑ ↓ cambi l'ordine e i numeri (01, 02, 03…) si rimettono in ordine da soli.</p>
       <label class="campo">Serie
         <select id="srScegli"></select>
       </label>
@@ -222,6 +240,25 @@
             <label class="campo">Titolo grande nella pagina<input type="text" id="srTitoloGrande"></label>
           </div>
           <p class="muted" id="srInfo"></p>
+        </section>
+        <section class="box">
+          <h3 style="margin-top:0">Aspetto della pagina</h3>
+          <div class="griglia">
+            <label class="campo">Un pezzo si chiama (con l'articolo)<input type="text" id="srUn" placeholder="es. una tote bag"></label>
+            <label class="campo">Tutti insieme si chiamano<input type="text" id="srI" placeholder="es. le tote bag"></label>
+          </div>
+          <p class="muted">Servono per le scritte della pagina: “Premi su <i>una tote bag</i>…”, “<i>Tutte le tote bag</i>”, “Ce le ho”, “5 possedute su 18”.</p>
+          <div id="srMisure" hidden>
+            <h3>Quanti per fila e grandezza</h3>
+            <div class="misure">
+              <label class="campo">Quanti per fila (computer)<input type="number" id="srColonne" min="1" max="40" step="1"></label>
+              <label class="campo solo-legami">Grandezza delle foto: <output id="srAltezzaVal"></output><input type="range" id="srAltezza" min="150" max="450" step="10"></label>
+              <label class="campo solo-legami">Proporzione (altezza ÷ larghezza del più largo)<input type="number" id="srProporzione" min="0.5" max="12" step="0.05"></label>
+            </div>
+            <p class="muted solo-legami" id="srProporzioneInfo"></p>
+            <p class="muted solo-quadrate">Le foto sono quadrate: la grandezza segue da sola (meno per fila = più grandi). Sui telefoni diminuiscono da sole.</p>
+          <div class="fila-box solo-legami"><div class="fila" id="srFila"></div><p class="fila-testo" id="srFilaTesto"></p></div>
+          </div>
         </section>
         <div class="tabella-box">
           <table class="oggetti">
@@ -261,7 +298,10 @@
           <label class="campo">Codice o anno (uguale per tutti i pezzi, lo puoi cambiare dopo)<input type="text" id="nvCodice" placeholder="es. 2026"></label>
           <label class="campo">Testo della card, 1ª riga<input type="text" id="nvTesto1" placeholder="es. 12 sorpresine"></label>
           <label class="campo">Testo della card, 2ª riga (facoltativa: l'anno per le tendine)<input type="text" id="nvTesto2" placeholder="es. 2026"></label>
+          <label class="campo">Un pezzo si chiama (con l'articolo)<input type="text" id="nvUn" placeholder="es. una tote bag"></label>
+          <label class="campo">Tutti insieme si chiamano<input type="text" id="nvI" placeholder="es. le tote bag"></label>
         </div>
+        <p class="muted">Le ultime due servono per le scritte della pagina: “Premi su <i>una tote bag</i>…”, “<i>Tutte le tote bag</i>”, “Ce le ho”, “5 possedute su 18”.</p>
       </section>
       <section class="box">
         <h3 style="margin-top:0">3 · I pezzi</h3>
@@ -272,8 +312,19 @@
         <div class="drop" id="nvDrop">Trascina qui le foto dei pezzi (già scontornate), oppure premi per sceglierle.<br><small>Vanno in ordine di nome del file: la prima è il n° 01, la seconda il 02…</small></div>
         <input type="file" id="nvFoto" accept="image/*" multiple hidden>
         <div class="anteprime" id="nvAnteprime"></div>
-        <h3>5 · La copertina della card (facoltativa)</h3>
-        <div class="riga"><button type="button" id="nvBtnCop">Scegli la copertina…</button><span class="muted" id="nvCopNome">Se non la metti, la card resta senza foto (la aggiungi dopo da “Pagine e card”).</span></div>
+        <div id="nvMisure" hidden>
+          <h3>5 · Quanti per fila e grandezza</h3>
+          <div class="misure">
+            <label class="campo">Quanti per fila (computer)<input type="number" id="nvColonne" min="1" max="40" step="1"></label>
+            <label class="campo solo-legami">Grandezza delle foto: <output id="nvAltezzaVal"></output><input type="range" id="nvAltezza" min="150" max="450" step="10"></label>
+            <label class="campo solo-legami">Proporzione (altezza ÷ larghezza del più largo)<input type="number" id="nvProporzione" min="0.5" max="12" step="0.05"></label>
+          </div>
+          <p class="muted solo-legami" id="nvProporzioneInfo">La proporzione la calcolo dalle foto quando le scegli.</p>
+          <p class="muted solo-quadrate">Le foto sono quadrate: la grandezza segue da sola (meno per fila = più grandi). Sui telefoni diminuiscono da sole.</p>
+          <div class="fila-box solo-legami"><div class="fila" id="nvFila"></div><p class="fila-testo" id="nvFilaTesto"></p></div>
+        </div>
+        <h3><span id="nvNumCop">5</span> · La copertina della card (facoltativa)</h3>
+        <div class="riga"><button type="button" id="nvBtnCop">Scegli la copertina…</button><span class="muted" id="nvCopNome">Se non la metti, la creo io con le prime 3 foto (una accanto all'altra). La cambi quando vuoi da “Pagine e card”.</span></div>
         <input type="file" id="nvCop" accept="image/*" hidden>
         <img class="foto" id="nvCopImg" alt="" style="max-height:160px" hidden>
       </section>
@@ -288,6 +339,36 @@
         leggendo le card e le pagine delle serie. Lo fa già da solo dopo ogni “Salva” di questa area: premilo quando cambi qualcosa a mano nei file.</p>
       <div class="riga"><button type="button" class="primario" id="ctVai">Aggiorna tutto il catalogo</button></div>
       <div class="msg" id="ctMsg" hidden></div>
+    </section>
+
+    <!-- ============ PUBBLICA ============ -->
+    <section data-scheda="pubblica" hidden>
+      <h2>Pubblica</h2>
+      <p class="sub">Copia la cartella del sito (Scrivania) nel repository di GitHub Desktop: solo i file nuovi o cambiati, e toglie quelli che non ci sono più.
+        Le cartelle di lavoro (_backup, _ko-fi, _nuovo_da_fare, _to_delete) restano solo sul tuo Mac.</p>
+      <section class="box">
+        <h3 style="margin-top:0">1 · La cartella del repository</h3>
+        <p>La prima volta scegli <b>Documenti → GitHub → collectiontime</b> (Chrome chiede il permesso: “Modifica file”). Poi la ricorda.</p>
+        <div class="riga"><button type="button" id="pbCollega">Collega il repository</button><span class="muted" id="pbRepo">Non collegato</span></div>
+      </section>
+      <section class="box">
+        <h3 style="margin-top:0">2 · Copia le modifiche</h3>
+        <div class="riga">
+          <button type="button" class="primario" id="pbControlla" disabled>Controlla cosa cambia</button>
+          <button type="button" class="ambra" id="pbCopia" disabled>Copia nel repository</button>
+          <label class="spunta"><input type="checkbox" id="pbCompleto"> Controllo completo (confronta anche il contenuto: più lento)</label>
+        </div>
+        <div class="msg" id="pbMsg" hidden></div>
+      </section>
+      <section class="box" id="pbDopo" hidden>
+        <h3 style="margin-top:0">3 · Pubblica con GitHub Desktop</h3>
+        <ol>
+          <li><a id="pbDesktop" href="#">Apri GitHub Desktop</a> (o aprilo tu): a sinistra vedi i file cambiati.</li>
+          <li>In basso a sinistra, nel riquadro <b>Summary</b>, scrivi <b>Aggiornamento</b>.</li>
+          <li>Premi <b>Commit to main</b>, poi in alto <b>Push origin</b>.</li>
+          <li>Dopo 1–2 minuti il sito è aggiornato su collectiontime.com.</li>
+        </ol>
+      </section>
     </section>
 
     <!-- ============ STATISTICHE ============ -->
@@ -355,5 +436,6 @@
 <script src="motore.js"></script>
 <script src="admin.js"></script>
 <script src="statistiche.js"></script>
+<script src="pubblica.js"></script>
 </body>
 </html>

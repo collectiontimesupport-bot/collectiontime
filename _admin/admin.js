@@ -6,7 +6,7 @@
      1) foto: ritaglio, misure, WebP (le stesse misure degli altri strumenti)
      2) lettura di tutto il sito (categorie → gruppi → serie)
      3) schede: Inizio · Pagine e card · Modifica serie · Nuova serie ·
-        Aggiorna catalogo · Strumenti   (Statistiche è in statistiche.js)
+        Aggiorna catalogo · Strumenti   (Statistiche è in statistiche.js, Pubblica in pubblica.js)
    Il testo delle pagine lo legge e riscrive motore.js (Motore.…).
    ===================================================================== */
 
@@ -19,6 +19,9 @@ const PICCOLA = 160;       // copia piccola per le pagine "Vedi tutti": 160 × 1
 const COP_ALTA = 360;      // copertina della card: alta al massimo 360…
 const COP_LARGA = 760;     // …e larga al massimo 760 (nella card è alta 170: così è nitida anche sui telefoni)
 const QUALITA = 0.84;      // qualità WebP (0–1)
+/* foto delle serie NON quadrate (Legami: penne, astucci, borse…), come lo strumento Legami */
+const LEGAMI_ALTA = 640;   // alte 640, senza margini vuoti
+const LEGAMI_QUALITA = 0.88;
 
 /* =====================================================================
    0) AIUTI, CARTELLA, FILE
@@ -159,6 +162,60 @@ async function fotoPezzo(file) {
   px.drawImage(g, 0, 0, PICCOLA, PICCOLA);
   return { grande: await aWebp(g), piccola: await aWebp(p, 0.8) };
 }
+/* foto di un pezzo di una serie NON quadrata (proporzione ≠ 1, es. Legami):
+   ritagliata senza margini e alta 640, come lo strumento Legami.
+   Se è più larga del suo riquadro (larghezza = altezza ÷ proporzione, es. un set da 2)
+   la metto in una tela larga quanto il riquadro, appoggiata in basso: così non tocca le vicine. */
+async function fotoLegami(file, proporzione) {
+  const img = await caricaImmagine(file);
+  const b = bordi(img); if (!b) throw new Error('La foto è tutta trasparente.');
+  const w = b.x1 - b.x0, h = b.y1 - b.y0, H = LEGAMI_ALTA;
+  const larga = w * H / h, riquadro = H / proporzione;
+  const c = tela(Math.round(Math.min(larga, riquadro)), H), x = c.getContext('2d');
+  x.imageSmoothingQuality = 'high';
+  if (larga <= riquadro + 0.5) x.drawImage(img, b.x0, b.y0, w, h, 0, 0, c.width, H);
+  else { const dh = h * c.width / w; x.drawImage(img, b.x0, b.y0, w, h, 0, H - dh, c.width, dh); }
+  return { grande: await aWebp(c, LEGAMI_QUALITA) };
+}
+/* la parte visibile di una foto (senza margini, per l'anteprima) e la sua proporzione (altezza ÷ larghezza) */
+async function ritagliata(file) {
+  const img = await caricaImmagine(file), b = bordi(img);
+  if (!b) return { url: '', rapporto: null };
+  const w = b.x1 - b.x0, h = b.y1 - b.y0, k = Math.min(1, 400 / h);
+  const c = tela(Math.max(1, Math.round(w * k)), Math.max(1, Math.round(h * k)));
+  c.getContext('2d').drawImage(img, b.x0, b.y0, w, h, 0, 0, c.width, c.height);
+  return { url: c.toDataURL(), rapporto: h / w };
+}
+/* proporzione di una serie dalle sue foto: quella della foto più larga, con un po' di margine.
+   Le foto MOLTO più larghe delle altre (meno di 2/3 della proporzione tipica, es. un set da 2)
+   non contano: vanno nel loro riquadro, appoggiate in basso (vedi fotoLegami). */
+const tipica = r => r.slice().sort((a, b) => a - b)[Math.floor(r.length / 2)];
+const fotoLarghe = rapporti => { const r = rapporti.filter(Boolean); return r.length > 1 ? rapporti.map(x => !!x && x < tipica(r) * 2 / 3) : rapporti.map(() => false); };
+const proporzioneDa = rapporti => {
+  const larghe = fotoLarghe(rapporti), r = rapporti.filter((x, i) => x && !larghe[i]);
+  return r.length ? Math.max(0.5, Math.floor(Math.min(...r) * 0.95 * 20) / 20) : null;
+};
+/* copertina fatta da sola: le prime 3 foto una accanto all'altra (quella in mezzo davanti),
+   come lo strumento copertina */
+async function copertinaDa(files) {
+  const pezzi = [];
+  for (const f of files.slice(0, 3)) {
+    const img = await caricaImmagine(f), b = bordi(img);
+    if (b) pezzi.push({ img, b, w: (b.x1 - b.x0) * COP_ALTA / (b.y1 - b.y0) });
+  }
+  if (!pezzi.length) return null;
+  const W = pezzi.reduce((t, p) => t + p.w, 0), s = Math.min(1, COP_LARGA / W);
+  const c = tela(Math.round(W * s), Math.round(COP_ALTA * s)), x = c.getContext('2d');
+  x.imageSmoothingQuality = 'high';
+  const xs = []; let pos = 0;
+  pezzi.forEach(p => { xs.push(pos); pos += p.w; });
+  const mezzo = Math.floor((pezzi.length - 1) / 2);
+  pezzi.map((_, i) => i).sort((a, b) => Math.abs(b - mezzo) - Math.abs(a - mezzo)).forEach(i => {
+    const p = pezzi[i];
+    x.drawImage(p.img, p.b.x0, p.b.y0, p.b.x1 - p.b.x0, p.b.y1 - p.b.y0, xs[i] * s, 0, p.w * s, COP_ALTA * s);
+  });
+  return aWebp(c, 0.82);
+}
 /* copertina: tolgo i bordi trasparenti e la rimpicciolisco */
 async function fotoCopertina(file) {
   const img = await caricaImmagine(file);
@@ -169,14 +226,85 @@ async function fotoCopertina(file) {
   x.drawImage(img, b.x0, b.y0, w, h, 0, 0, c.width, c.height);
   return aWebp(c, 0.82);
 }
-/* scrive la foto di un pezzo: immagini/NN.webp e immagini/mini/NN.webp */
+/* scrive la foto di un pezzo: immagini/NN.webp e (foto quadrate) immagini/mini/NN.webp */
 async function salvaFotoPezzo(cartellaSerie, percorsoFoto, foto) {
   const p = senzaV(percorsoFoto);
   await scrivi(cartellaSerie + '/' + p, foto.grande);
   const [c, n] = dividi(p);
-  await scrivi(cartellaSerie + '/' + (c ? c + '/' : '') + 'mini/' + n, foto.piccola);
+  if (foto.piccola && await serveMini(cartellaSerie)) await scrivi(cartellaSerie + '/' + (c ? c + '/' : '') + 'mini/' + n, foto.piccola);
   cacheFoto.delete(cartellaSerie + '/' + p);
 }
+/* le copie piccole (mini) servono solo alle serie di un gruppo con la pagina "Vedi tutti"
+   (cartella tutti/ accanto alla serie) o che le hanno già */
+const serveMini = async cartellaSerie => await esisteCartella(dividi(cartellaSerie)[0] + '/tutti') || await esisteCartella(dividi(cartellaSerie)[0] + '/tutte') || await esisteCartella(cartellaSerie + '/immagini/mini');
+/* foto di un pezzo nella misura giusta per la serie */
+const fotoPer = (file, proporzione) => proporzione === 1 ? fotoPezzo(file) : fotoLegami(file, proporzione);
+
+/* =====================================================================
+   QUANTI PER FILA E GRANDEZZA (serie con proporzione ≠ 1, es. Legami)
+   Le stesse regole di comune/collezione.css (griglia "su-misura"):
+   qui servono per l'anteprima e per dire quanti ne stanno sul telefono.
+   ===================================================================== */
+const LARGHEZZA_PC = 1568;   // spazio per la griglia su uno schermo largo (1600 meno i margini)
+const LARGHEZZA_TEL = 358;   // spazio per la griglia su un telefono (390 meno i margini)
+function calcolaFila({ colonne, altezza, proporzione }) {
+  const stretti = proporzione >= 4, gap = stretti ? 5 : 16, gapTel = stretti ? 5 : 10;
+  const cella = altezza / proporzione;
+  const minCol = stretti ? cella * 0.88 : Math.max(90, cella * 0.6);
+  return {
+    cella, gap,
+    stanno: Math.max(1, Math.floor((LARGHEZZA_PC + gap) / (cella + gap))),                               // quanti ne stanno al massimo
+    tel: Math.max(1, Math.min(colonne, Math.floor((LARGHEZZA_TEL + gapTel) / (minCol + gapTel))))        // quanti sul telefono
+  };
+}
+/* legge i tre campi (prefisso "nv" = Nuova serie, "sr" = Modifica serie) */
+function leggiMisure(p) {
+  if ($(p + 'Misure').classList.contains('quadrate')) return { colonne: Math.min(40, Math.max(1, parseInt($(p + 'Colonne').value, 10) || 1)) };
+  return {
+    colonne: Math.min(40, Math.max(1, parseInt($(p + 'Colonne').value, 10) || 1)),
+    altezza: Math.min(450, Math.max(150, parseInt($(p + 'Altezza').value, 10) || 250)),
+    proporzione: Math.max(0.5, Math.round((parseFloat($(p + 'Proporzione').value) || 1.5) * 100) / 100)
+  };
+}
+function scriviMisure(p, a) {
+  $(p + 'Misure').classList.toggle('quadrate', a.proporzione === 1);    // foto quadrate: solo "quanti per fila"
+  $(p + 'Colonne').value = a.colonne;
+  if (a.proporzione === 1) return;
+  $(p + 'Altezza').value = a.altezza; $(p + 'Proporzione').value = a.proporzione;
+  $(p + 'AltezzaVal').textContent = a.altezza + ' px';
+}
+/* anteprima di una fila come sullo schermo del computer (rimpicciolita se non ci sta) */
+function disegnaFila(p, urls) {
+  if ($(p + 'Misure').classList.contains('quadrate')) return;
+  const a = leggiMisure(p), f = calcolaFila(a), n = Math.min(a.colonne, f.stanno);
+  $(p + 'AltezzaVal').textContent = a.altezza + ' px';
+  const box = $(p + 'Fila'), spazio = Math.max(200, box.parentElement.clientWidth - 30);
+  const k = Math.min(1, spazio / (n * f.cella + (n - 1) * f.gap));
+  box.style.gridTemplateColumns = 'repeat(' + n + ', ' + (f.cella * k).toFixed(1) + 'px)';
+  box.style.columnGap = (f.gap * k).toFixed(1) + 'px';
+  const h = (a.altezza * k).toFixed(1) + 'px';
+  const w = (f.cella * k).toFixed(1) + 'px';
+  /* come nella pagina: ogni foto dentro il suo riquadro, appoggiata in basso */
+  box.innerHTML = Array.from({ length: n }, (_, i) => '<div style="height:' + h + '">' +
+    (urls.length ? '<img src="' + urls[i % urls.length] + '" style="width:' + w + ';height:' + h + ';object-fit:contain;object-position:center bottom" alt="">' : '') + '</div>').join('');
+  $(p + 'FilaTesto').innerHTML = 'Computer: <b>' + n + ' per fila</b>, foto alte <b>' + a.altezza + ' px</b> (sugli schermi bassi un po\' meno)' +
+    (a.colonne > f.stanno ? ' — ⚠️ con questa grandezza ne stanno solo ' + f.stanno + ' per fila: abbassa la grandezza o il numero.' : '') +
+    ' · Telefono: circa <b>' + f.tel + ' per fila</b>.' + (k < 1 ? ' <span class="muted">(anteprima rimpicciolita)</span>' : '') +
+    (urls.length ? '' : ' <span class="muted">(i riquadri tratteggiati sono lo spazio di ogni pezzo)</span>');
+}
+/* plurale indovinato dal singolare ("una borsa" → "le borse"): si può sempre correggere a mano */
+function pluraleDa(un) {
+  const f = M.forme(un, ''), p = f.sing;
+  let art = 'i';
+  if (f.fem) art = 'le';
+  else if (/^uno\s/i.test(un.trim()) || /^un'/i.test(un.trim()) || /^([aeiou]|s[^aeiou]|z|gn|ps|x|y)/i.test(p)) art = 'gli';
+  const fine = (da, a) => new RegExp(da + '$', 'i').test(p) ? p.slice(0, -da.length) + a : null;
+  const parola = /[^aeiou]$|[àèéìòù]$/i.test(p) ? p                       // tote bag, set, città → uguale
+    : fine('ca', 'che') || fine('ga', 'ghe') || fine('co', 'chi') || fine('go', 'ghi') || fine('io', 'i')
+    || (f.fem ? fine('a', 'e') : null) || fine('o', 'i') || fine('e', 'i') || fine('a', 'i') || p;
+  return art + ' ' + parola;
+}
+
 
 /* =====================================================================
    2) LETTURA DI TUTTO IL SITO
@@ -225,7 +353,7 @@ function mostraScheda() {
   const nome = (location.hash || '#inizio').slice(1).split('/')[0];
   document.querySelectorAll('[data-scheda]').forEach(s => { s.hidden = s.dataset.scheda !== nome; });
   document.querySelectorAll('nav a').forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + nome ? 'page' : 'false'));
-  const serveCartella = ['pagine', 'serie', 'nuova', 'catalogo', 'strumenti'].includes(nome);
+  const serveCartella = ['pagine', 'serie', 'nuova', 'catalogo', 'strumenti', 'pubblica'].includes(nome);
   document.querySelector('[data-scheda="' + nome + '"]')?.classList.toggle('bloccato', serveCartella && !cartella);
   if (serveCartella && !cartella) $('primoPasso').hidden = false;
   if (nome === 'strumenti' && cartella && !versioni) riempiFileVersione();
@@ -233,13 +361,49 @@ function mostraScheda() {
 addEventListener('hashchange', mostraScheda);
 mostraScheda();
 
+/* parole in più che la ricerca delle tendine trova per una serie: testo della card (anno…) e cartella */
+const cercaSerie = n => [n.card ? M.soloTesto(n.card.testoHtml) : '', n.cartella].join(' ');
 function riempiSelect() {
   const opzLista = sito.liste.map((n, i) => `<option value="${i}">${esc(n.etichetta)}</option>`).join('');
   $('pgScegli').innerHTML = '<option value="">— scegli —</option>' + opzLista;
   $('nvDove').innerHTML = '<option value="">— scegli —</option>' + opzLista;
-  $('srScegli').innerHTML = '<option value="">— scegli —</option>' + sito.serie.map((n, i) => `<option value="${i}">${esc(n.etichetta)}</option>`).join('');
+  $('srScegli').innerHTML = '<option value="">— scegli —</option>' + sito.serie.map((n, i) => `<option value="${i}" data-cerca="${esc(cercaSerie(n))}">${esc(n.etichetta)}</option>`).join('');
   versioni = null;          // l'elenco dei file .js/.css lo rileggo quando apri "Strumenti"
+  filtraTendine();
 }
+
+/* ---------- RICERCA NELLE TENDINE LUNGHE ----------
+   Sopra la tendina c'è un campo "Cerca…": nasconde le voci che non contengono
+   tutte le parole scritte (nel nome, nel testo della card o nella cartella).
+   Se ne resta una sola la sceglie da solo; con Invio sceglie la prima. */
+const TENDINE_CON_RICERCA = ['srScegli', 'pgScegli', 'nvModello'];
+const normale = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+function filtraTendina(id) {
+  const sel = $(id), campo = $(id + 'Cerca');
+  const parole = normale(campo.value).split(/\s+/).filter(Boolean);
+  const trovate = [];
+  for (const o of sel.options) {
+    const ok = !o.value || parole.every(p => normale(o.text + ' ' + (o.dataset.cerca || '')).includes(p));
+    o.hidden = !ok;
+    if (ok && o.value) trovate.push(o);
+  }
+  $(id + 'Conta').textContent = parole.length ? (trovate.length === 1 ? '1 trovata' : trovate.length + ' trovate') : '';
+  return trovate;
+}
+const filtraTendine = () => TENDINE_CON_RICERCA.forEach(filtraTendina);
+function scegliDaTendina(id, o) {
+  if (!o || $(id).value === o.value) return;
+  $(id).value = o.value; $(id).dispatchEvent(new Event('change'));
+}
+TENDINE_CON_RICERCA.forEach(id => {
+  const campo = Object.assign(document.createElement('input'), { type: 'search', id: id + 'Cerca', placeholder: 'Cerca… (es. puffi, 2010)', autocomplete: 'off' });
+  const conta = Object.assign(document.createElement('span'), { id: id + 'Conta', className: 'muted' });
+  const riga = document.createElement('div'); riga.className = 'cerca-tendina';
+  riga.append(campo, conta);
+  $(id).before(riga);
+  campo.addEventListener('input', () => { const t = filtraTendina(id); if (t.length === 1) scegliDaTendina(id, t[0]); });
+  campo.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); scegliDaTendina(id, filtraTendina(id)[0]); } });
+});
 
 /* ---------------- INIZIO ---------------- */
 function disegnaInizio() {
@@ -317,7 +481,8 @@ function disegnaPagina() {
         <button type="button" class="piccolo" data-a="su" title="Sposta su" ${i === 0 ? 'disabled' : ''}>↑</button>
         <button type="button" class="piccolo" data-a="giu" title="Sposta giù" ${i === pg.card.length - 1 ? 'disabled' : ''}>↓</button>
         <button type="button" class="piccolo" data-a="nascondi">${c.nascosta ? 'Mostra' : 'Nascondi'}</button>
-        <button type="button" class="piccolo" data-a="copertina">Copertina…</button>
+        <button type="button" class="piccolo" data-a="copertina" title="Scegli un'immagine già pronta">Copertina…</button>
+        ${c.figlio && c.figlio.tipo === 'serie' ? '<button type="button" class="piccolo" data-a="copertinaFoto" title="Le prime 3 foto della serie, una accanto all\'altra">Copertina dalle foto</button>' : ''}
         <button type="button" class="piccolo" data-a="modifica">${c.aperta ? 'Chiudi' : 'Modifica'}</button>
       </div>
       ${c.aperta ? `<div class="modifica">
@@ -360,6 +525,22 @@ $('pgCard').addEventListener('click', e => {
       catch (err) { alert(err.message); }
     };
     inp.click(); return;
+  }
+  else if (a === 'copertinaFoto') {
+    (async () => {
+      try {
+        const s = c.figlio.serie, files = [];
+        for (const o of s.elenco || []) {
+          const f = o.foto && !/in-arrivo|slot-vuoto/.test(o.foto) ? await prendiFile(c.figlio.cartella + '/' + o.foto) : null;
+          if (f) files.push(f);
+          if (files.length === 3) break;
+        }
+        if (!files.length) throw new Error('questa serie non ha ancora foto.');
+        const blob = await copertinaDa(files);
+        c.nuovaCop = { blob, url: URL.createObjectURL(blob) }; disegnaPagina();
+      } catch (err) { alert('Non riesco a creare la copertina: ' + err.message); }
+    })();
+    return;
   }
   disegnaPagina();
 });
@@ -427,31 +608,67 @@ async function apriSerie(i) {
   const nodo = sito.serie[+i];
   const html = await leggi(nodo.cartella + '/index.html');
   const lettura = M.leggiSerie(html);
+  const pr = lettura.config.proporzione || 1;
+  const parole = M.leggiParole(html);
   sr = {
     nodo, html, lettura,
     titolo: lettura.config.titolo, titoloGrande: lettura.titoloPagina,
     righe: lettura.elenco.map(o => ({ o: structuredClone(o), orig: o, foto: null })),
-    tolti: 0
+    tolti: 0,
+    parole: { un: parole.un, i: parole.i },
+    /* quanti per fila (e, per le serie non quadrate come Legami, grandezza e proporzione) */
+    misure: pr !== 1 ? { colonne: lettura.config.colonne || 6, altezza: lettura.config.altezza || 280, proporzione: pr } : { colonne: lettura.config.colonne || 8 }
   };
   $('srTitolo').value = sr.titolo; $('srTitoloGrande').value = sr.titoloGrande;
+  $('srUn').value = parole.un; $('srI').value = parole.i;
   $('srLblCodice').textContent = (/id="lblCodice">([^<]*)</.exec(html) || [])[1] || 'Codice';
-  const pr = lettura.config.proporzione || 1;
   $('srInfo').innerHTML = `Cartella <code>${esc(nodo.cartella)}</code> · archivio <code>${esc(lettura.config.dbName)}</code>` +
-    (pr !== 1 ? ` · <b>foto non quadrate</b> (${pr}): per cambiare le foto usa lo <a href="../legami/_strumenti/strumento-legami.html" target="_blank">strumento Legami</a>.` : '');
+    (pr !== 1 ? ' · foto ritagliate senza margini, alte ' + LEGAMI_ALTA + ' px (come lo strumento Legami)' : '');
   $('srApri').href = '../' + nodo.cartella + '/index.html';
+  $('srMisure').hidden = false;
+  $('srProporzioneInfo').textContent = '';
+  scriviMisure('sr', Object.assign({ proporzione: pr }, sr.misure));
+  if (pr !== 1) controllaProporzione();
   $('srLavoro').hidden = false;
   disegnaSerie();
 }
+/* foto della serie per l'anteprima della fila (le prime, già caricate) */
+async function srUrlFoto() {
+  const urls = [];
+  for (const r of sr.righe.slice(0, 40)) {
+    const u = r.foto ? r.foto.url : r.o.foto ? await urlFoto(sr.nodo.cartella + '/' + r.o.foto) : '';
+    if (u) urls.push(u);
+  }
+  return urls;
+}
+async function srDisegnaFila() { if (sr && sr.misure.proporzione) disegnaFila('sr', await srUrlFoto()); }
+/* la foto più larga della serie: se è più larga della proporzione scelta, lo dico */
+async function controllaProporzione() {
+  const lo = sr;
+  const rapporti = [];
+  for (const r of lo.righe) {
+    const f = r.foto ? r.foto.grande : r.o.foto ? await prendiFile(lo.nodo.cartella + '/' + r.o.foto) : null;
+    if (f) try { const b = await createImageBitmap(f); rapporti.push(b.height / b.width); b.close(); } catch (e) {}
+  }
+  if (lo !== sr || !rapporti.length) return;
+  const larghe = fotoLarghe(rapporti), r = rapporti.filter((x, i) => !larghe[i]);
+  $('srProporzioneInfo').textContent = 'La foto più larga della serie ha proporzione ' + (Math.floor(Math.min(...r) * 100) / 100) +
+    ': la proporzione può arrivare fino a questo numero. Più bassa = riquadri più larghi. (Le foto nuove più larghe del riquadro le metto dentro, appoggiate in basso.)';
+}
 const srCambiata = r => !r.orig || !!r.foto || JSON.stringify(r.o) !== JSON.stringify(r.orig);
+const srParoleCambiate = () => sr.parole.un.trim() !== M.leggiParole(sr.html).un || sr.parole.i.trim() !== M.leggiParole(sr.html).i;
+function srMisureCambiate() {
+  const c = sr.lettura.config;
+  return Object.keys(sr.misure).some(k => sr.misure[k] !== c[k]);
+}
 function srSporca() {
   const ordine = sr.righe.some((r, i) => r.orig !== sr.lettura.elenco[i]) || sr.righe.length !== sr.lettura.elenco.length;
   const n = sr.righe.filter(srCambiata).length;
-  const sporca = ordine || n > 0 || sr.titolo !== sr.lettura.config.titolo || sr.titoloGrande !== sr.lettura.titoloPagina;
+  const sporca = ordine || n > 0 || sr.titolo !== sr.lettura.config.titolo || sr.titoloGrande !== sr.lettura.titoloPagina || srParoleCambiate() || srMisureCambiate();
   $('srSalva').disabled = !sporca;
   $('srStato').textContent = sporca ? 'Ci sono modifiche da salvare.' : '';
 }
 function disegnaSerie() {
-  const quadrate = (sr.lettura.config.proporzione || 1) === 1;
   $('srRighe').innerHTML = sr.righe.map((r, i) => {
     const o = r.o;
     const foto = r.foto ? `<img class="foto" src="${r.foto.url}" alt="" data-a="foto">`
@@ -469,14 +686,17 @@ function disegnaSerie() {
         <button type="button" class="piccolo" data-a="togli" title="Togli questo pezzo">✕</button>
       </td></tr>`;
   }).join('');
-  if (!quadrate) $('srRighe').querySelectorAll('[data-a="foto"]').forEach(x => { x.removeAttribute('data-a'); x.style.cursor = 'default'; });
   caricaAnteprime($('srRighe'));
   srSporca();
+  srDisegnaFila();
 }
 $('srTitolo').addEventListener('input', e => { const vecchio = sr.titolo; sr.titolo = e.target.value;
   if ($('srTitoloGrande').value === vecchio.toUpperCase()) { sr.titoloGrande = sr.titolo.toUpperCase(); $('srTitoloGrande').value = sr.titoloGrande; }
   srSporca(); });
 $('srTitoloGrande').addEventListener('input', e => { sr.titoloGrande = e.target.value; srSporca(); });
+$('srUn').addEventListener('input', e => { sr.parole.un = e.target.value; srSporca(); });
+$('srI').addEventListener('input', e => { sr.parole.i = e.target.value; srSporca(); });
+['srColonne', 'srAltezza', 'srProporzione'].forEach(id => $(id).addEventListener('input', () => { sr.misure = leggiMisure('sr'); srSporca(); srDisegnaFila(); }));
 $('srRighe').addEventListener('input', e => {
   const tr = e.target.closest('tr'), r = sr.righe[tr.dataset.i], k = e.target.dataset.k;
   const v = e.target.value;
@@ -497,11 +717,25 @@ $('srRighe').addEventListener('click', e => {
     if (r.orig && !confirm('Togliere “' + r.o.nome + '” (n° ' + r.o.numero + ')?\nChi l\'aveva segnato “Ce l\'ho” non lo vedrà più. La foto resta nella cartella.')) return;
     sr.righe.splice(i, 1);
   }
+  rinumera();
   disegnaSerie();
 });
+/* NUMERI IN ORDINE: se tutti i numeri della serie sono numeri semplici (01, 02, 03…),
+   dopo uno spostamento o un pezzo tolto li rimetto in ordine dall'alto: 01, 02, 03…
+   Numeri speciali (es. "01-A", "LE") = non tocco niente: li cambi tu.
+   L'id e la foto di ogni pezzo NON cambiano (chi l'ha segnato "Ce l'ho" lo ritrova). */
+function rinumera() {
+  if (!sr.righe.length || !sr.righe.every(r => /^\d+$/.test(String(r.o.numero)))) return;
+  const cifre = Math.max(2, ...sr.righe.map(r => String(r.o.numero).length));
+  sr.righe.forEach((r, i) => { r.o.numero = pad(i + 1, cifre); });
+}
 $('srFile').addEventListener('change', async () => {
   const f = $('srFile').files[0]; if (!f || srFotoPer == null) return;
-  try { const foto = await fotoPezzo(f); foto.url = URL.createObjectURL(foto.grande); sr.righe[srFotoPer].foto = foto; disegnaSerie(); }
+  try {
+    const foto = await fotoPer(f, sr.misure.proporzione || 1);
+    foto.url = URL.createObjectURL(foto.grande); sr.righe[srFotoPer].foto = foto; disegnaSerie();
+    if (sr.misure.proporzione) controllaProporzione();
+  }
   catch (e) { alert(e.message); }
 });
 /* id per un pezzo nuovo: stesso inizio degli altri + numero dopo l'ultimo */
@@ -534,21 +768,44 @@ $('srSalva').addEventListener('click', async () => {
     const ids = sr.righe.map(r => r.o.id);
     if (new Set(ids).size !== ids.length) throw new Error('due pezzi hanno lo stesso id.');
     /* foto nuove */
+    /* nome del file per una foto nuova: il numero del pezzo, ma mai un file che usa già un altro pezzo */
+    const usate = new Set(sr.righe.map(r => senzaV(r.o.foto)).filter(Boolean));
+    const nomeLibero = base => { let p = 'immagini/' + base + '.webp', k = 2; while (usate.has(p)) p = 'immagini/' + base + '-' + k++ + '.webp'; usate.add(p); return p; };
     for (const r of sr.righe) {
       if (!r.foto) continue;
-      const p = senzaV(r.o.foto) || 'immagini/' + String(r.o.numero).replace(/[^\w-]/g, '') + '.webp';
+      const p = senzaV(r.o.foto) || nomeLibero(String(r.o.numero).replace(/[^\w-]/g, '') || 'foto');
       await salvaFotoPezzo(c, p, r.foto);
       r.o.foto = M.conVersione(p);
     }
     let html = M.scriviElenco(sr.html, sr.lettura, sr.righe.map(r => r.o));
     if (sr.titolo !== sr.lettura.config.titolo || sr.titoloGrande !== sr.lettura.titoloPagina) html = M.cambiaTitoloSerie(html, sr.titolo, sr.titoloGrande);
+    if (srParoleCambiate()) {
+      if (!sr.parole.un.trim() || !sr.parole.i.trim()) throw new Error('scrivi come si chiama un pezzo e come si chiamano tutti insieme.');
+      html = M.impostaParole(html, sr.parole.un, sr.parole.i);
+    }
+    if (srMisureCambiate()) {
+      const a = Object.assign({}, sr.misure);
+      if (a.colonne !== sr.lettura.config.colonne) a.pdfColonne = M.pdfColonneDa(a.colonne, a.proporzione || 1);
+      html = M.impostaAspetto(html, a);
+    }
     await scrivi(c + '/index.html', html);
     /* se la card aveva lo stesso titolo della pagina, cambio anche lei */
+    /* la card della serie: stesso titolo della pagina → cambio anche lei;
+       1ª riga "23 sorpresine" → il numero giusto di pezzi */
     let anche = '';
-    if (sr.titolo !== sr.lettura.config.titolo && nodo.card && nodo.card.titolo === sr.lettura.config.titolo && nodo.genitore) {
-      const lp = nodo.genitore.cartella + '/index.html', t = await leggi(lp), l = M.leggiCard(t);
-      await scrivi(lp, M.scriviCard(t, l, l.card.map(x => ({ li: x.li === nodo.card.li ? M.cambiaCard(x.li, { titolo: sr.titolo }) : x.li, nascosta: x.nascosta }))));
-      anche = ' Cambiato anche il titolo della card.';
+    if (nodo.card && nodo.genitore) {
+      const cambi = {};
+      if (sr.titolo !== sr.lettura.config.titolo && nodo.card.titolo === sr.lettura.config.titolo) { cambi.titolo = sr.titolo; anche += ' Cambiato anche il titolo della card.'; }
+      const righeCard = M.righeDaTesto(nodo.card.testoHtml);
+      const conta = /^(\d+)(\s.*)$/.exec(righeCard[0] || '');
+      if (conta && +conta[1] === sr.lettura.elenco.length && sr.righe.length !== sr.lettura.elenco.length) {
+        righeCard[0] = sr.righe.length + conta[2]; cambi.testoHtml = M.testoDaRighe(righeCard);
+        anche += ' Nella card ora c\'è “' + righeCard[0] + '”.';
+      }
+      if (Object.keys(cambi).length) {
+        const lp = nodo.genitore.cartella + '/index.html', t = await leggi(lp), l = M.leggiCard(t);
+        await scrivi(lp, M.scriviCard(t, l, l.card.map(x => ({ li: x.li === nodo.card.li ? M.cambiaCard(x.li, cambi) : x.li, nascosta: x.nascosta }))));
+      }
     }
     const r = await aggiornaIndice(categoriaDi(c));
     const scelta = sito.serie.indexOf(nodo);
@@ -561,14 +818,15 @@ $('srSalva').addEventListener('click', async () => {
 });
 
 /* ---------------- NUOVA SERIE ---------------- */
-const nv = { foto: [], cop: null, toccati: new Set() };   // toccati = campi scritti a mano (non li riempio più da solo)
+const nv = { foto: [], url: [], rapporti: [], cop: null, toccati: new Set() };   // toccati = campi scritti a mano (non li riempio più da solo)
 $('nvDove').addEventListener('change', () => {
   const lista = sito.liste[$('nvDove').value];
   if (!lista) { $('nvModello').innerHTML = ''; return; }
   let modelli = lista.figli.filter(f => f.tipo === 'serie');
   if (!modelli.length) modelli = sito.serie.filter(s => s.categoria === lista.categoria);
   if (!modelli.length) modelli = sito.serie;
-  $('nvModello').innerHTML = modelli.map(s => `<option value="${sito.serie.indexOf(s)}">${esc(s.etichetta)}</option>`).join('');
+  $('nvModello').innerHTML = modelli.map(s => `<option value="${sito.serie.indexOf(s)}" data-cerca="${esc(cercaSerie(s))}">${esc(s.etichetta)}</option>`).join('');
+  $('nvModelloCerca').value = ''; filtraTendina('nvModello');
   riempiDaModello();
 });
 $('nvModello').addEventListener('change', riempiDaModello);
@@ -576,10 +834,27 @@ function modello() { return sito.serie[$('nvModello').value]; }
 function nvRighe() {
   return $('nvNomi').value.split('\n').map(s => s.trim()).filter(Boolean).map(s => { const [nome, ...info] = s.split('|'); return { nome: nome.trim(), info: info.join('|').trim() }; });
 }
+/* la serie nuova ha foto non quadrate (Legami)? come il modello */
+const nvLegami = () => { const m = modello(); return !!m && (m.serie.config.proporzione || 1) !== 1; };
 function riempiDaModello() {
   const m = modello(); if (!m) return;
-  const primo = m.serie.elenco && m.serie.elenco[0];
-  if (!nv.toccati.has('nvCodice')) $('nvCodice').value = primo && primo.codice ? primo.codice : '';
+  /* codice: quello del modello solo se è uguale per tutti i suoi pezzi (es. l'anno) */
+  const codici = new Set((m.serie.elenco || []).map(o => o.codice || ''));
+  if (!nv.toccati.has('nvCodice')) $('nvCodice').value = codici.size === 1 ? [...codici][0] : '';
+  const parole = M.leggiParole(m.html);
+  if (!nv.toccati.has('nvUn')) $('nvUn').value = parole.un;
+  if (!nv.toccati.has('nvI')) $('nvI').value = parole.i;
+  const legami = nvLegami(), c = m.serie.config;
+  $('nvMisure').hidden = false;
+  $('nvNumCop').textContent = '6';
+  $('nvMisure').classList.toggle('quadrate', !legami);
+  const prima = leggiMisure('nv');
+  scriviMisure('nv', legami ? {
+    colonne: nv.toccati.has('nvColonne') ? prima.colonne : c.colonne || 6,
+    altezza: nv.toccati.has('nvAltezza') && prima.altezza ? prima.altezza : c.altezza || 280,
+    proporzione: nv.toccati.has('nvProporzione') && prima.proporzione ? prima.proporzione : proporzioneDa(nv.rapporti) || c.proporzione
+  } : { colonne: nv.toccati.has('nvColonne') ? prima.colonne : c.colonne || 8, proporzione: 1 });
+  disegnaFila('nv', nv.url);
   aggiornaNuova();
 }
 function aggiornaNuova() {
@@ -589,18 +864,37 @@ function aggiornaNuova() {
   if (!nv.toccati.has('nvTitoloGrande')) $('nvTitoloGrande').value = t.toUpperCase();
   if (m && m.card) {
     const righe = M.righeDaTesto(m.card.testoHtml);
-    if (!nv.toccati.has('nvTesto1')) $('nvTesto1').value = /^\d+/.test(righe[0] || '') ? righe[0].replace(/^\d+/, n) : (righe[0] || '');
+    /* 1ª riga: "12 sorpresine" → col numero giusto; se è un'altra frase (es. "Penne cancellabili") la scrivi tu */
+    if (!nv.toccati.has('nvTesto1')) $('nvTesto1').value = /^\d+/.test(righe[0] || '') ? righe[0].replace(/^\d+/, n) : '';
     if (!nv.toccati.has('nvTesto2')) $('nvTesto2').value = righe[1] !== undefined ? ($('nvCodice').value.match(/\b(19|20)\d\d\b/) || [righe[1]])[0] : '';
   }
   $('nvConta').textContent = n ? n + ' pezzi · ' + nv.foto.length + ' foto' + (nv.foto.length && nv.foto.length !== n ? ' ⚠️ il numero di foto è diverso da quello dei pezzi' : '') : '';
 }
 ['nvTitolo', 'nvNomi', 'nvCodice'].forEach(id => $(id).addEventListener('input', aggiornaNuova));
-['nvCartella', 'nvTitoloGrande', 'nvTesto1', 'nvTesto2', 'nvCodice'].forEach(id => $(id).addEventListener('input', () => nv.toccati.add(id)));
+['nvCartella', 'nvTitoloGrande', 'nvTesto1', 'nvTesto2', 'nvCodice', 'nvUn', 'nvI', 'nvColonne', 'nvAltezza', 'nvProporzione'].forEach(id => $(id).addEventListener('input', () => nv.toccati.add(id)));
+/* "una borsa" → propongo "le borse" (finché non scrivi tu il plurale) */
+$('nvUn').addEventListener('input', () => { if (!nv.toccati.has('nvI')) $('nvI').value = pluraleDa($('nvUn').value); });
+['nvColonne', 'nvAltezza', 'nvProporzione'].forEach(id => $(id).addEventListener('input', () => disegnaFila('nv', nv.url)));
 /* foto: trascinate o scelte, in ordine di nome del file */
-function prendiFoto(files) {
+async function prendiFoto(files) {
   nv.foto = [...files].filter(f => f.type.startsWith('image/')).sort((a, b) => a.name.localeCompare(b.name, 'it', { numeric: true }));
-  $('nvAnteprime').innerHTML = nv.foto.map((f, i) => `<figure><img class="foto" src="${URL.createObjectURL(f)}" alt=""><figcaption>${pad(i + 1, 2)} · ${esc((nvRighe()[i] || {}).nome || f.name)}</figcaption></figure>`).join('');
+  nv.url = nv.foto.map(f => URL.createObjectURL(f));
+  $('nvAnteprime').innerHTML = nv.foto.map((f, i) => `<figure><img class="foto" src="${nv.url[i]}" alt=""><figcaption>${pad(i + 1, 2)} · ${esc((nvRighe()[i] || {}).nome || f.name)}</figcaption></figure>`).join('');
   aggiornaNuova();
+  /* proporzione dalle foto (serie Legami) */
+  nv.rapporti = [];
+  if (!nvLegami()) return;
+  const r = await Promise.all(nv.foto.map(f => ritagliata(f).catch(() => ({ url: '', rapporto: null }))));
+  nv.url = r.map(x => x.url).filter(Boolean);            // anteprima della fila: foto senza margini
+  nv.rapporti = r.map(x => x.rapporto);
+  const p = proporzioneDa(nv.rapporti);
+  if (p) {
+    if (!nv.toccati.has('nvProporzione')) $('nvProporzione').value = p;
+    const larghe = fotoLarghe(nv.rapporti).map((x, i) => x ? pad(i + 1, 2) : '').filter(Boolean);
+    $('nvProporzioneInfo').textContent = 'Calcolata dalle foto: consigliata ' + p + '.' +
+      (larghe.length ? ' Le foto molto larghe (n° ' + larghe.join(', ') + ', es. un set) le metto nel loro riquadro, appoggiate in basso.' : '');
+  }
+  disegnaFila('nv', nv.url);
 }
 $('nvDrop').addEventListener('click', () => $('nvFoto').click());
 $('nvFoto').addEventListener('change', () => prendiFoto($('nvFoto').files));
@@ -639,27 +933,37 @@ $('nvCrea').addEventListener('click', async () => {
     const usati = new Set(sito.serie.map(s => s.serie.config && s.serie.config.dbName));
     for (let k = 2; usati.has(dbName); k++) dbName = 'catalogo-' + cat + '-' + slug + '-' + k;
     const cifre = righe.length > 99 ? 3 : 2, codice = $('nvCodice').value.trim();
+    const un = $('nvUn').value.trim(), i_ = $('nvI').value.trim();
+    if (!un || !i_) throw new Error('scrivi come si chiama un pezzo e come si chiamano tutti insieme (es. “una borsa” e “le borse”).');
+    const legami = nvLegami(), misure = leggiMisure('nv');
+    const proporzione = legami ? misure.proporzione : 1;
     /* foto */
     const elenco = [];
     for (let i = 0; i < righe.length; i++) {
       const numero = pad(i + 1, cifre), o = { id: slug + '-' + numero, numero, codice, nome: righe[i].nome, foto: '' };
       if (nv.foto[i]) {
         messaggio(msg, 'Preparo la foto ' + (i + 1) + ' di ' + nv.foto.length + '…');
-        await salvaFotoPezzo(c, 'immagini/' + numero + '.webp', await fotoPezzo(nv.foto[i]));
+        await salvaFotoPezzo(c, 'immagini/' + numero + '.webp', await fotoPer(nv.foto[i], proporzione));
         o.foto = 'immagini/' + numero + '.webp?v=' + M.oggi();
       }
       if (righe[i].info) o.info = righe[i].info;
       elenco.push(o);
     }
+    /* copertina: quella scelta, altrimenti la creo con le prime 3 foto */
+    if (!nv.cop && nv.foto.length) { messaggio(msg, 'Creo la copertina…'); nv.cop = await copertinaDa(nv.foto); }
     if (nv.cop) await scrivi(c + '/immagini/copertina.webp', nv.cop);
     /* pagina: copiata dal modello */
-    let pagina = M.creaPaginaSerie(await leggi(m.cartella + '/index.html'), {
+    const f = M.forme(un, i_);
+    const testo1 = $('nvTesto1').value.trim();
+    const creata = M.creaPaginaSerie(await leggi(m.cartella + '/index.html'), {
       url: c + '/', titolo, titoloGrande: $('nvTitoloGrande').value.trim() || titolo.toUpperCase(),
-      descrizione: titolo + ': ' + $('nvTesto1').value.trim() + ', con quelli che ho e quelli che mi mancano.',
+      descrizione: titolo + (testo1 ? ': ' + testo1 : '') + ', con ' + (f.fem ? 'quelle che ho e quelle' : 'quelli che ho e quelli') + ' che mi mancano.',
       id: dal(m.serie.config.id, cat + '-' + slug), dbName, elenco,
-      backTesto: lista.card ? lista.card.titolo : lista.nome
+      backTesto: lista.card ? lista.card.titolo : lista.nome,
+      categoria: lista.categoria ? lista.categoria.nome : cat, un, i: i_,
+      aspetto: Object.assign({}, misure, { pdfColonne: M.pdfColonneDa(misure.colonne, proporzione) })
     });
-    pagina = riposiziona(pagina, m.cartella, c).replace(/(<a class="st-back" href=")[^"]*"/, '$1../index.html"');
+    const pagina = riposiziona(creata.html, m.cartella, c).replace(/(<a class="st-back" href=")[^"]*"/, '$1../index.html"');
     await scrivi(c + '/index.html', pagina);
     /* card in cima alla pagina scelta */
     const lp = lista.cartella + '/index.html', t = await leggi(lp), l = M.leggiCard(t);
@@ -669,13 +973,17 @@ $('nvCrea').addEventListener('click', async () => {
     const r = await aggiornaIndice(cat);
     await rileggiSito();
     msg.innerHTML = '';
-    messaggio(msg, '✓ Serie creata in ' + c + ' (' + righe.length + ' pezzi, ' + nv.foto.length + ' foto).' + (r ? ' Catalogo aggiornato.' : '') +
-      '\nControllala: “Modifica una serie” per ritoccare nomi e info, “Pagine e card” per la copertina.', 'ok');
+    messaggio(msg, '✓ Serie creata in ' + c + ' (' + righe.length + ' pezzi, ' + nv.foto.length + ' foto' + (nv.cop ? ', copertina' : '') + ').' + (r ? ' Catalogo aggiornato.' : '') +
+      ' La pagina è già attiva (con la sua card in cima a “' + (lista.card ? lista.card.titolo : lista.nome) + '”).' +
+      '\nPer ritoccare nomi, codici, info, foto, quanti per fila o grandezza: “Modifica una serie”. Per la copertina: “Pagine e card”.' +
+      (creata.rimaste.length ? '\n\n⚠️ In queste righe c\'è ancora una parola della serie copiata (“' + m.serie.config.nome + '”): controllale nel file.\n· ' + creata.rimaste.join('\n· ') : ''), 'ok');
     const a = Object.assign(document.createElement('a'), { href: '../' + c + '/index.html', target: '_blank', textContent: ' Apri la pagina nuova ↗' });
     msg.append(a);
     /* pulisco il modulo */
     ['nvTitolo', 'nvTitoloGrande', 'nvCartella', 'nvNomi', 'nvTesto1', 'nvTesto2'].forEach(id => { $(id).value = ''; });
-    nv.foto = []; nv.cop = null; nv.toccati.clear(); $('nvAnteprime').innerHTML = ''; $('nvCopImg').hidden = true; $('nvCopNome').textContent = '';
+    nv.foto = []; nv.url = []; nv.rapporti = []; nv.cop = null; nv.toccati.clear(); $('nvAnteprime').innerHTML = ''; $('nvCopImg').hidden = true;
+    $('nvCopNome').textContent = 'Se non la metti, la creo io con le prime 3 foto (una accanto all\'altra). La cambi quando vuoi da “Pagine e card”.';
+    riempiDaModello();
   } catch (e) { messaggio(msg, 'Non ho creato la serie: ' + e.message, 'err'); }
   b.disabled = false;
 });
