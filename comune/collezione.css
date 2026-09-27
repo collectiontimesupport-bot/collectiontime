@@ -4,7 +4,7 @@
    UN SOLO FILE per l'aspetto di tutte le pagine delle collezioni
    (Legami Erasable, Bulb Fiction, tutte le serie LEGO…), come app.js.
    Ogni pagina lo richiama nel <head>, dopo sito.css:
-     <link rel="stylesheet" href="../../comune/collezione.css?v=2026-09-26">
+     <link rel="stylesheet" href="../../../comune/collezione.css?v=…">
    e poi carica il file della sua collezione, con le poche cose che
    cambiano (colore e carattere del titolo, misure della griglia):
      Legami → legami/css/stile.css      LEGO → lego/css/stile.css
@@ -271,7 +271,7 @@ select, .field input[type=text] {
 .edit:hover { color: var(--amber); }
 
 /* numero di un oggetto che hai: cornice ambra */
-.pen.owned .code { border-color: var(--amber); background: color-mix(in srgb, var(--amber) 10%, var(--white)); }
+.pen.owned .code { border-color: var(--amber); background: rgba(242, 169, 0, .1); background: color-mix(in srgb, var(--amber) 10%, var(--white)); }   /* rgba = riserva per i browser vecchi */
 
 /* riga "Doppi  − 2 +" sotto il numero: quanti doppioni hai da scambiare (la crea app.js) */
 .doppi { display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: .8125rem; color: var(--muted); }
@@ -374,7 +374,7 @@ input[readonly] { pointer-events: none; }
 .chips { display: contents; }
 .chip {
   display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 10px; border-radius: 999px;
-  background: color-mix(in srgb, var(--amber) 12%, var(--white)); color: var(--amber); font-size: .8125rem;
+  background: rgba(242, 169, 0, .12); background: color-mix(in srgb, var(--amber) 12%, var(--white)); color: var(--amber); font-size: .8125rem;
 }
 .chip button { all: unset; cursor: pointer; padding: 0 6px; font-size: 1rem; line-height: 1; border-radius: 999px; }
 .chip button:hover { background: color-mix(in srgb, var(--amber) 20%, var(--white)); }

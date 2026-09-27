@@ -4,7 +4,7 @@
    UN SOLO FILE per tutte le pagine che mostrano gli oggetti:
    le pagine delle serie (comune/app.js) e "Mi mancano / Doppioni / Cerca"
    (comune/raccolta.js). Va richiamato PRIMA di quei file:
-     <script src="../../comune/bagliore.js?v=…"></script>
+     <script src="../../../comune/bagliore.js?v=…"></script>
    Mette a disposizione una sola funzione:
      accendiBagliore(riquadro, foto)
        riquadro = il <div class="pic"> della foto, foto = indirizzo della foto

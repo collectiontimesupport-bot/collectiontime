@@ -3,7 +3,7 @@
      404.html — pagina "non trovata"
      GitHub Pages la mostra quando qualcuno apre un indirizzo che
      non esiste. Può comparire a qualsiasi profondità (es.
-     /legami/xyz), per questo tutti i percorsi iniziano con "/"
+     /catalogo/legami/xyz), per questo tutti i percorsi iniziano con "/"
      (= cartella principale del sito). Aperta dal computer con
      doppio clic non trova stile e bande: sul sito online sì.
      ========================================================== -->
@@ -11,12 +11,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Indirizzi vecchi: fino al 27/09/2026 le categorie stavano nella cartella principale
+     (es. /legami/legami-erasable/). Chi arriva da un link vecchio o da un'icona sulla Home
+     viene portato subito allo stesso indirizzo dentro /catalogo/. Le categorie nuove
+     non vanno aggiunte qui: nascono già dentro catalogo/. -->
+<script>(function(){if(/^\/(coolthings|eurospin|kinder|legami|lego|lidl|mcdonalds|mulino-bianco)(\/|$)/.test(location.pathname))location.replace('/catalogo'+location.pathname+location.search+location.hash)})();</script>
 <title>Pagina non trovata · Collection Time</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#1A2140">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2026-09-27">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
 <link rel="stylesheet" href="/sito.css?v=2026-09-27">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
@@ -45,6 +50,6 @@
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
-<script src="/script.js?v=2026-09-27b"></script>
+<script src="/script.js?v=2026-09-27c"></script>
 </body>
 </html>

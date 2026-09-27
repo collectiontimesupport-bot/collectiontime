@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
+<title>Legami · Collection Time</title>
+<meta name="description" content="Legami: tutte le mie collezioni a tema Legami.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/".
+     favicon-96.png = icona della scheda (PNG: Safari non mostra le icone SVG).
+     Se sostituisci un'icona con un file con lo STESSO nome, metti la data di oggi in "?v=…"
+     (es. apple-touch-icon.png?v=2026-09-27) in tutte le pagine: così il browser scarica quella nuova. -->
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=2026-09-27">
+<link rel="manifest" href="../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Legami · Collection Time">
+<meta property="og:description" content="Legami: tutte le mie collezioni a tema Legami.">
+<meta property="og:url" content="https://collectiontime.com/catalogo/legami/">
+<meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../sito.css?v=2026-09-27">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+<!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
+<link rel="preload" href="../../comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  :root {
+    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+    --titolo: #E50A15; }
+  /* Titolo nello stesso carattere del titolo di Erasable (var(--font-legami), in sito.css) */
+  .st-titolo { font: 700 clamp(2rem, 4vw, 3rem)/1.1 var(--font-legami); letter-spacing: .01em; color: var(--titolo); }
+  /* telefoni: titolo grande come nelle pagine Erasable e Lampada */
+  @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
+  /* Card con la foto IN ALTO, come nella sezione LEGO.
+     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
+  .st-card { --foto-h: 170px; }
+  .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
+  .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
+</style>
+</head>
+<body>
+<!-- Banda in alto (logo, Accedi): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
+<main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../../index.html">&larr; Tutte le collezioni</a>
+  <!-- ! MODIFICA: titolo della pagina -->
+  <h1 class="st-titolo">LEGAMI</h1>
+  <!-- Frase + lente: la lente apre il campo per cercare tra le collezioni (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Cerca una collezione</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una collezione" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una collezione" aria-label="Cerca una collezione" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna collezione trovata.</p>
+  <!-- Una card per ogni collezione: per aggiungerne una, copia un <li> ... </li> e cambia cartella e testi.
+       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi degli oggetti). -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
+         metti la data di oggi in "?v=…" in fondo al nome del file (es. copertina.webp?v=2026-09-26, oppure aggiungilo
+         se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Le copertine hanno sempre più oggetti della collezione (di solito tre), come nel resto del sito.
+       • Più facile: area amministratore → “Pagine e card” → “Copertina dalle foto” (le prime 3 foto della serie).
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         scegli 2–4 foto della collezione e le mette una accanto all'altra.
+       • Per le FOTO degli oggetti (singole o set da 2) c'è _strumenti/strumento-legami.html
+         in questa cartella legami. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
+  <ul class="st-cards">
+    <li data-cerca="Mummy Cat VRBAG0022"><a class="st-card" href="tote-bag/index.html"><div class="thumb"><img src="tote-bag/immagini/copertina.webp?v=2026-09-27" alt="" loading="lazy"></div><h2>Tote Bag</h2><p>Collezione di shopper in Cotone</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Erasable Pens penne cancellabili cancellabile EP Limited Edition Halloween Natale San Valentino"><a class="st-card" href="legami-erasable/index.html"><div class="thumb"><img src="legami-erasable/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Erasable Pens</h2><p>Penne cancellabili</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Lovely Friends penne gel animaletto CPP Panda Gatto Orso Koala Bradipo Unicorno Dinosauro Tigre Coniglio Lama Fantasma Ape Leone Mostro Ippopotamo Ragno Coccinella Pulcino Orso fantasma Gatto mummia Spooky Party Halloween"><a class="st-card" href="legami-lovely-friends/index.html"><div class="thumb"><img src="legami-lovely-friends/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Lovely Friends</h2><p>Penne gel con animaletto</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Astucci Kawaii astuccio portapenne 2-in-1 silicone Panda Orso Maiale Gatto sdraiato Unicorno Dinosauro Coniglio Pinguino Gatto Giraffa Tigre Orso bianco Mostro Ape Zampa di gatto Gatto nero Coccinella Labrador Gorilla Panda vampiro Bam-Boo Halloween San Valentino Limited Edition vecchia edizione nuova edizione"><a class="st-card" href="legami-astucci/index.html"><div class="thumb"><img src="legami-astucci/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Astucci</h2><p>Astucci 2-in-1 in silicone</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Portachiavi peluche Tiny Super Soft! portachiavi di peluche Panda Unicorno Gatto Corgi Orso Orsetto Leone Giraffa Ape Margherita Uovo Gallina Asino Asinello Tigre Mostro Coccinella Gorilla Panda vampiro Bam-Boo Orsetti Pappagalli Pappagallini Limited Edition Halloween San Valentino"><a class="st-card" href="legami-portachiavi/index.html"><div class="thumb"><img src="legami-portachiavi/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Portachiavi</h2><p>Peluche Tiny Super Soft!</p><span class="st-apri">Apri</span></a></li>
+    <li data-cerca="Bulb Fiction lampade lampada lampadina Babbo Natale Renna Fiocco di neve Albero di Natale Cuore Cactus Fenicottero Arcobaleno Gatto Margherita Farfalla Alieno Unicorno Dream Big Be Happy Good Vibes Believe in Magic Joy Fantasma We Are Dreamers Love Is in the Air Booo Halloween San Valentino"><a class="st-card" href="legami-lampada/index.html"><div class="thumb"><img src="legami-lampada/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Bulb Fiction</h2><p>Lampade</p><span class="st-apri">Apri</span></a></li>
+  </ul>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
+<!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
+     in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
+<script src="../../script.js?v=2026-09-27c"></script>
+</body>
+</html>

@@ -96,8 +96,12 @@
   const titoloSerie = (s, extra, scambi) =>
     `<div class="serie-titolo"><h2><a href="../${s.p}/index.html">${esc(s.t)}</a></h2><small>${[s.g, s.d, extra].filter(Boolean).map(esc).join(' · ')}</small>`
     + (scambi ? `<a class="serie-scambi" href="../${s.p}/index.html#cerco-scambio">Cerco e scambio</a>` : '') + '</div>';
-  /* intestazione: link alla categoria, titolo, conteggio e strumenti */
-  const testa = (titolo, sotto, strumenti) => `<a class="st-back" href="../index.html">&larr; ${esc(INDICE.categoria)}</a>
+  /* intestazione: percorso in alto, titolo, conteggio e strumenti.
+     Il percorso ("McDonald's › Mi mancano") è uguale a quello delle altre pagine
+     (script.js, voce "Percorso in alto", aspetto in sito.css .st-percorso):
+     qui lo scrivo io perché questa pagina cambia con Mi mancano / Doppioni / Cerca.
+     categoria → torna alla pagina della categoria; dopo › il nome della vista aperta. */
+  const testa = (titolo, sotto, strumenti) => `<nav class="st-percorso" aria-label="Percorso"><a href="../index.html">${esc(INDICE.categoria)}</a><span class="sep" aria-hidden="true">&rsaquo;</span><span aria-current="page">${esc(titolo.charAt(0) + titolo.slice(1).toLowerCase())}</span></nav>
     <header><h1><span class="titolo-testo">${titolo}</span></h1>
     <div class="bar"><p class="sub">${sotto}</p><div class="tools">${strumenti || ''}</div></div></header>`;
   const menu = (id, voci, scelta, etichetta) =>

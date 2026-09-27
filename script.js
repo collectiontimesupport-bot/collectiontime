@@ -14,8 +14,9 @@
    9) il percorso in alto (Kinder Ferrero › Kinder Joy › One Piece)
   10) l'aspetto del sito: Automatico · Chiaro · Scuro (in fondo alla pagina)
    Da richiamare in ogni pagina con una sola riga:
-   <script src="script.js?v=2026-09-26"></script>
-   (dentro una sottocartella: <script src="../script.js?v=2026-09-26"></script>)
+   <script src="script.js?v=2026-09-27c"></script>
+   (dentro una sottocartella: <script src="../script.js?v=2026-09-27c"></script>,
+    in una pagina di una serie: <script src="../../../script.js?v=…"></script>)
    Nelle pagine delle collezioni va PRIMA di comune/app.js.
    ========================================================== */
 
@@ -379,16 +380,18 @@ function avviaCerca() {
 
 /* ---------- Barra in basso delle categorie ----------
    In tutte le pagine che stanno DENTRO la cartella di una categoria
-   (legami, lego, kinder, mcdonalds…) aggiunge in fondo allo schermo:
+   (catalogo/legami, catalogo/lego, catalogo/kinder…) aggiunge in fondo allo schermo:
      Serie        → la pagina iniziale della categoria
-     Mi mancano   → <categoria>/la-mia-collezione/#/mancanti
-     Doppioni     → <categoria>/la-mia-collezione/#/doppioni
-     Cerca        → <categoria>/la-mia-collezione/#/cerca
+     Mi mancano   → catalogo/<categoria>/la-mia-collezione/#/mancanti
+     Doppioni     → catalogo/<categoria>/la-mia-collezione/#/doppioni
+     Cerca        → catalogo/<categoria>/la-mia-collezione/#/cerca
    Così ogni categoria è come una piccola app, e la Home è l'indice delle app.
-   Non compare nella Home, nelle pagine di testo (FAQ, Contatti…) e nelle
-   cartelle qui sotto, che non sono categorie.
+   Tutte le categorie stanno nella cartella "catalogo": fuori da lì (Home,
+   FAQ, Contatti…) e nelle cartelle che iniziano con "_" la barra non c'è.
    L'aspetto è in sito.css (voce "barra in basso delle categorie"). */
-const NON_CATEGORIE = ['comune', 'icone', 'immagini per mc'];   // cartelle che non sono categorie (e quelle che iniziano con "_")
+const CATALOGO = new URL('catalogo/', BASE).href;   // cartella con tutte le categorie
+/* percorso della pagina dentro "catalogo/" (es. "legami/legami-erasable/index.html"); '' fuori dal catalogo */
+const dentroCatalogo = () => location.href.startsWith(CATALOGO) ? decodeURIComponent(location.href.slice(CATALOGO.length)) : '';
 const ICONE_BARRA = {
   serie: '<path d="M3 5.5c3-1.3 6-1.3 9 .5 3-1.8 6-1.8 9-.5V19c-3-1.3-6-1.3-9 .5-3-1.8-6-1.8-9-.5z"/><path d="M12 6v13.5"/>',
   mancanti: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12h6"/>',
@@ -396,11 +399,11 @@ const ICONE_BARRA = {
   cerca: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'
 };
 function barraCategoria() {
-  const dentro = location.href.startsWith(BASE.href) ? decodeURIComponent(location.href.slice(BASE.href.length)) : '';
+  const dentro = dentroCatalogo();
   const cat = dentro.split(/[/?#]/)[0];
-  if (!dentro.includes('/') || !cat || cat.startsWith('_') || NON_CATEGORIE.includes(cat)) return;   // non siamo in una categoria
-  const lista = new URL(cat + '/la-mia-collezione/index.html', BASE).href;
-  const voci = [['serie', 'Serie', new URL(cat + '/index.html', BASE).href],
+  if (!dentro.includes('/') || !cat || cat.startsWith('_')) return;   // non siamo in una categoria
+  const lista = new URL(cat + '/la-mia-collezione/index.html', CATALOGO).href;
+  const voci = [['serie', 'Serie', new URL(cat + '/index.html', CATALOGO).href],
                 ['mancanti', 'Mi mancano', lista + '#/mancanti'],
                 ['doppioni', 'Doppioni', lista + '#/doppioni'],
                 ['cerca', 'Cerca', lista + '#/cerca']];
@@ -484,12 +487,11 @@ const NOMI_CATEGORIE = {
 };
 function percorso() {
   const back = document.querySelector('a.st-back');
-  if (!back || !location.href.startsWith(BASE.href)) return;
-  const cartelle = decodeURIComponent(location.href.slice(BASE.href.length)).split(/[?#]/)[0]
-    .split('/').filter(c => c && c !== 'index.html');
+  if (!back) return;
+  const cartelle = dentroCatalogo().split(/[?#]/)[0].split('/').filter(c => c && c !== 'index.html');
   const cat = cartelle[0] || '';
-  if (cartelle.length < 2 || cat.startsWith('_') || NON_CATEGORIE.includes(cat)) return;   // Home, pagine della categoria stessa, strumenti
-  const voci = [[NOMI_CATEGORIE[cat] || cat.charAt(0).toUpperCase() + cat.slice(1), new URL(cat + '/index.html', BASE).href]];
+  if (cartelle.length < 2 || cat.startsWith('_')) return;   // fuori dal catalogo, pagine della categoria stessa, strumenti
+  const voci = [[NOMI_CATEGORIE[cat] || cat.charAt(0).toUpperCase() + cat.slice(1), new URL(cat + '/index.html', CATALOGO).href]];
   if (cartelle.length > 2) voci.push([back.textContent.replace(/^\s*\u2190\s*/, '').trim(), back.href]);
   const nav = document.createElement('nav');
   nav.className = 'st-percorso';
@@ -537,7 +539,7 @@ barraCategoria();
    Conta le pagine viste SENZA cookie e senza dati personali: i numeri si
    vedono su https://collectiontime.goatcounter.com (o dall'area admin).
    Solo sul sito vero (collectiontime.com): le prove sul Mac non contano.
-   Per non contare le TUE visite: apri https://www.collectiontime.com/#toggle-goatcounter
+   Per non contare le TUE visite: apri https://collectiontime.com/#toggle-goatcounter
    una volta su ogni tuo dispositivo e premi il pulsante che compare. */
 if (/(^|\.)collectiontime\.com$/.test(location.hostname)) {
   const gc = document.createElement('script');

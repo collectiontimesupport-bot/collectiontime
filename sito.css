@@ -6,7 +6,7 @@
    "Aggiungi alla Home" e pagine di solo testo (FAQ, Note legali, Privacy).
    Ogni pagina lo richiama nel <head> con:
    <link rel="stylesheet" href="sito.css?v=2026-09-26">
-   (dentro una sottocartella: "../sito.css", "../../sito.css")
+   (dentro una sottocartella: "../sito.css", "../../sito.css"; nelle serie del catalogo "../../../sito.css")
    Le pagine delle collezioni aggiungono comune/collezione.css.
    ========================================================== */
 

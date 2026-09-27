@@ -2,7 +2,7 @@
    app.js — pagine delle collezioni (Collection Time)
    ---------------------------------------------------------------------
    UN SOLO FILE per tutte le collezioni (penne, lampade, minifigure…):
-   ogni pagina lo richiama con  <script src="../../comune/app.js?v=…">.
+   ogni pagina lo richiama con  <script src="../../../comune/app.js?v=…"> (una serie sta in catalogo/<categoria>/<serie>/).
    Il browser lo scarica una volta sola e lo riusa per tutte le pagine.
    Legge dall'HTML due blocchi:
      • CONFIG → testi e misure della collezione
@@ -576,7 +576,7 @@
   }
 
   /* ---- marchio Collection Time: tessera ambra con la spunta ----
-     Stessa forma di favicon.svg (griglia 32×32): i due tratti della spunta
+     Stessa forma del logo di header.html (griglia 32×32): i due tratti della spunta
      hanno la forma delle lancette della "o" a orologio. */
   const TESSERA = 'M7 0H25Q32 0 32 7V25Q32 32 25 32H7Q0 32 0 25V7Q0 0 7 0Z';   // quadrato arrotondato 32×32
   const SPUNTA = [[8.22, 16.6], [13.4, 21.6], [24.52, 11.23]];                 // i 3 punti della spunta

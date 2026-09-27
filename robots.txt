@@ -1,0 +1,16 @@
+# robots.txt — Collection Time
+# Dice ai motori di ricerca (Google, Bing…) cosa possono leggere del sito.
+# Si trova nella cartella principale e deve chiamarsi proprio "robots.txt".
+#   User-agent: *   → vale per tutti i motori di ricerca
+#   Allow: /        → possono leggere tutto il sito…
+#   Disallow: …     → …tranne queste pagine:
+#       /__/                          file di Firebase per "Accedi" (non sono pagine)
+#       /catalogo/*/la-mia-collezione/ Mi mancano / Doppioni / Cerca: diverse per ognuno, vuote per Google
+#   Sitemap:        → dove trovare l'elenco di tutte le pagine (sitemap.xml,
+#                     lo rifà da solo l'area amministratore quando pubblichi)
+User-agent: *
+Allow: /
+Disallow: /__/
+Disallow: /catalogo/*/la-mia-collezione/
+
+Sitemap: https://collectiontime.com/sitemap.xml
