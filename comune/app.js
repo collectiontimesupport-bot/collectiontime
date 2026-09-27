@@ -143,7 +143,9 @@
   }
 
   /* ---------- disegno della pagina ---------- */
-  /* scrive "12 possedute su 103 · 3 doppioni" (gli oggetti senza foto non contano) */
+  /* scrive "12 possedute su 103 · 3 doppioni" (gli oggetti senza foto non contano),
+     riempie la barra ambra sotto e mette i numeri nella tendina: "Tutte (103)", "Ce le ho (12)"… */
+  let barra = null;
   function updateCount(shown) {
     const owned = pens.filter(p => p.owned).length;
     const total = pens.filter(p => p.image || p.owned).length;
@@ -152,7 +154,88 @@
     if (doppi) t += ' · ' + doppi + (doppi === 1 ? ' doppione' : ' doppioni');
     if (typeof shown === 'number' && shown !== pens.length) t += ' · ' + shown + (shown === 1 ? ' visibile' : ' visibili');
     $('count').textContent = t;
+    /* barra di avanzamento (la creo la prima volta, subito sotto il conteggio) */
+    if (!barra) {
+      barra = document.createElement('div');
+      barra.className = 'avanz-barra';
+      barra.setAttribute('role', 'progressbar');
+      barra.setAttribute('aria-label', 'Quanto hai completato');
+      barra.append(document.createElement('span'));
+      $('count').after(barra);
+    }
+    const perc = total ? Math.round(owned / total * 100) : 0;
+    barra.firstChild.style.width = perc + '%';
+    barra.setAttribute('aria-valuenow', String(perc));
+    /* numeri tra parentesi nelle voci della tendina (il testo di base resta quello scritto nella pagina) */
+    const quanti = { all: pens.length, owned, missing: pens.filter(p => !p.owned && p.image).length, doppi: pens.filter(p => p.doppi > 0).length };
+    [...$('filter').options].forEach(o => {
+      if (!o.dataset.testo) o.dataset.testo = o.textContent;
+      if (o.value in quanti) o.textContent = o.dataset.testo + ' (' + quanti[o.value] + ')';
+    });
   }
+
+  /* riga sotto il titolo: "2026 · 25 sorpresine" (l'anno solo se è uguale per tutti gli oggetti) */
+  const PLURALI_UGUALI = ['auto', 'box', 'charm', 'gadget', 'minifigure', 'peluche', 'photocard', 'portachiavi', 'poster', 'set', 'tote bag'];
+  function plurale(nome) {
+    const n = String(nome || '').trim();
+    if (CONFIG.plurale) return CONFIG.plurale;              /* se serve, nel CONFIG: plurale: "…" */
+    if (!n || PLURALI_UGUALI.includes(n) || /[^aeiou]$/i.test(n)) return n;
+    if (/io$/.test(n)) return n.slice(0, -1);             /* personaggio → personaggi */
+    if (/[cg]o$/.test(n)) return n.slice(0, -1) + 'hi';   /* gioco → giochi */
+    if (/[cg]a$/.test(n)) return n.slice(0, -1) + 'he';
+    if (/a$/.test(n)) return n.slice(0, -1) + 'e';        /* sorpresina → sorpresine */
+    return n.slice(0, -1) + 'i';                          /* libro → libri, pallone → palloni */
+  }
+  function rigaInfo() {
+    const h1 = document.querySelector('header h1');
+    if (!h1 || !SEED.length) return;
+    const anni = new Set(SEED.map(s => s.codice));
+    const anno = anni.size === 1 && /^(19|20)\d\d$/.test(SEED[0].codice) ? SEED[0].codice : '';
+    const quanti = SEED.length + ' ' + (SEED.length === 1 ? CONFIG.nome : plurale(CONFIG.nome));
+    const p = document.createElement('p');
+    p.className = 'info-serie';
+    p.textContent = [anno, quanti].filter(Boolean).join(' · ');
+    h1.after(p);
+  }
+  rigaInfo();
+
+  /* ---------- descrizione della serie, in fondo alla pagina (per Google e per chi arriva) ----------
+     La scrive da sola dai dati: "La checklist completa delle 25 sorpresine di «One Piece»
+     (Kinder Joy, 2026), con foto, nome e codice di ognuna (da VS326 a VS513A)."
+     Se ci sono abbastanza collezionisti aggiunge: "12 collezionisti la stanno completando
+     su Collection Time: inizia anche tu!". Il numero arriva da comune/collezionisti.json,
+     che l'area amministratore riscrive ogni volta che apri "Statistiche" (contano solo
+     le persone con l'account). Sotto MINIMO_COLLEZIONISTI la frase non compare. */
+  const MINIMO_COLLEZIONISTI = 3;
+  const RADICE = new URL('../', document.currentScript.src);   /* cartella principale del sito (app.js è in comune/) */
+  function descrizione() {
+    const fondo = document.querySelector('.wrap > footer');
+    if (!fondo || !SEED.length) return;
+    const gruppo = document.querySelector('.st-percorso a:last-of-type, a.st-back');
+    const nomeGruppo = gruppo ? gruppo.textContent.replace(/^\s*\u2190\s*/, '').trim() : '';
+    const anni = new Set(SEED.map(x => x.codice));
+    const anno = anni.size === 1 && /^(19|20)\d\d$/.test(SEED[0].codice) ? SEED[0].codice : '';
+    const codici = SEED.map(x => (/ - (.+)$/.exec(x.code) || [])[1]).filter(c => c && c !== 'USA');
+    const cosa = SEED.length + ' ' + (SEED.length === 1 ? CONFIG.nome : plurale(CONFIG.nome));
+    const tra = [nomeGruppo, anno].filter(Boolean).join(', ');
+    const sec = document.createElement('section');
+    sec.className = 'descr-serie';
+    const p = document.createElement('p');
+    p.textContent = 'La checklist completa ' + (SEED.length === 1 ? 'di 1 ' + CONFIG.nome : 'delle ' + cosa) + ' di «' + CONFIG.titolo + '»'
+      + (tra ? ' (' + tra + ')' : '') + ', con foto, nome e ' + (codici.length ? 'codice' : 'numero') + ' di ognuna'
+      + (codici.length > 1 ? ' (da ' + codici[0] + ' a ' + codici[codici.length - 1] + ').' : '.');
+    sec.append(p);
+    fondo.before(sec);
+    fetch(new URL('comune/collezionisti.json', RADICE)).then(r => r.ok ? r.json() : null).then(d => {
+      const n = d && d.serie && d.serie[CONFIG.dbName];
+      if (!n || n < MINIMO_COLLEZIONISTI) return;
+      const b = document.createElement('p');
+      b.className = 'descr-conta';
+      b.textContent = n + ' collezionisti la stanno completando su Collection Time: inizia anche tu!';
+      sec.append(b);
+    }).catch(() => {});
+  }
+  descrizione();
 
   /* ---------- bagliore ----------
      L'alone arancio-giallo delle cose che hai è calcolato in comune/bagliore.js
@@ -173,7 +256,6 @@
         li.classList.toggle('owned', value);
         if (value) ensureHalo(li.querySelector('.pic'), p);
         li.querySelector('.open').setAttribute('aria-pressed', String(value));
-        li.querySelector('.have input').checked = value;
         if (aveviDoppi) li.querySelector('.doppi').replaceWith(doppiBox(p));   /* contatore di nuovo a 0 */
       }
       updateCount();
@@ -218,12 +300,14 @@
 
   /* Crea la scheda <li> di un oggetto:
        <li class="pen [owned]">
-         <button class="open"> <div class="pic"> [bagliore] <img class="pen-img"> </div> </button>
+         <button class="open"> <div class="pic"> [bagliore] <img class="pen-img"> <span class="spunta"> </div> </button>
+         <button class="edit">✎</button>   ← matita dei dettagli, in alto a sinistra sulla foto
          [<div class="nome">Nome</div>]   ← solo se CONFIG.mostraNomi
          <div class="code">01</div>
-         <div class="row"> ☐ Ce l'ho   ✎ </div>
          <div class="doppi"> Doppi − 0 + </div>   ← solo per gli oggetti con la foto
        </li>
+     "Ce l'ho" si segna premendo la foto: la tesserina .spunta in alto a destra
+     è vuota se ti manca, ambra con la spunta (come il logo) se ce l'hai.
      Se l'oggetto non ha foto mostra la sagoma vuota (SLOT_IMG) e non si può spuntare. */
   function card(p) {
     const li = document.createElement('li');
@@ -248,7 +332,10 @@
       if (!CONFIG.mostraNomi) img.title = img.alt;   /* nome come pop-up solo se non è già scritto sotto */
       img.decoding = 'async';
       img.loading = 'lazy';
-      pic.append(img);
+      const spunta = document.createElement('span');   /* tesserina "Ce l'ho" (solo disegno: il clic è sul pulsante .open) */
+      spunta.className = 'spunta';
+      spunta.setAttribute('aria-hidden', 'true');
+      pic.append(img, spunta);
       if (p.owned) ensureHalo(pic, p);
     } else {
       img.className = 'ghost';
@@ -263,19 +350,6 @@
     code.textContent = p.code || 'N°';
     code.setAttribute('aria-label', 'Numero ' + (p.code || 'non indicato'));
 
-    const row = document.createElement('div');
-    row.className = 'row';
-    const lab = document.createElement('label');
-    lab.className = 'have';
-    const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.checked = p.owned;
-    cb.setAttribute('aria-label', "Ce l'ho");
-    cb.addEventListener('change', () => setOwned(p, cb.checked));
-    const labText = document.createElement('span');
-    labText.className = 'have-text';
-    labText.textContent = "Ce l'ho";
-    lab.append(cb, labText);
     const edit = document.createElement('button');
     edit.type = 'button';
     edit.className = 'edit';
@@ -283,7 +357,6 @@
     edit.setAttribute('aria-label', 'Dettagli');
     edit.title = 'Dettagli';
     edit.addEventListener('click', () => openEdit(p));
-    row.append(lab, edit);
 
     /* nome scritto sotto la foto: solo se la collezione lo chiede (CONFIG.mostraNomi, es. LEGO) */
     const doppi = p.image ? [doppiBox(p)] : [];   /* gli slot vuoti (senza foto) non hanno doppioni */
@@ -292,9 +365,9 @@
       nome.className = 'nome';
       nome.append(document.createElement('span'));
       nome.firstChild.textContent = p.name;
-      li.append(btn, nome, code, row, ...doppi);
+      li.append(btn, edit, nome, code, ...doppi);
     } else {
-      li.append(btn, code, row, ...doppi);
+      li.append(btn, edit, code, ...doppi);
     }
     return li;
   }

@@ -22,7 +22,8 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=2026-09-26l">
+<link rel="stylesheet" href="sito.css?v=2026-09-27">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <style>
   /* Base della pagina (st-wrap) e pulsante (st-btn) sono in sito.css: qui solo ciò che è diverso in questa pagina. */
   .st-wrap { max-width: 600px; padding-top: 56px; }
@@ -52,7 +53,7 @@
   <h1>Contatti</h1>
   <p class="lead">Per segnalare un errore, proporre una novità o solo per scrivermi.</p>
   <div class="box">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A2140" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7.5 8 6 8-6"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7.5 8 6 8-6"/></svg>
     <div class="who">
       <div class="lab">Email</div>
       <a class="val" id="mailLink">collectiontime.support (chiocciola) gmail.com</a>
@@ -78,7 +79,7 @@
 <!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=2026-09-27"></script>
+<script src="script.js?v=2026-09-27b"></script>
 <script>
 /* L'indirizzo viene composto qui, così non compare in chiaro nel codice della pagina (meno spam) */
 (function () {

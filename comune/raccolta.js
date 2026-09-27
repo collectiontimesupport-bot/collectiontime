@@ -11,6 +11,9 @@
    La parte dopo # nell'indirizzo sceglie cosa mostrare:
      #/mancanti   quelle che mancano (di base: solo nelle serie iniziate)
      #/doppioni   i doppioni
+   In "Mi mancano" sotto ogni serie c'è "Non la cerco più": la serie finisce
+   nella tendina "Non le cerco più (N)" in fondo, da cui si riprende. La scelta
+   si ricorda in questo browser (ct-pausa = elenco degli archivi "db" delle serie).
    In "Mi mancano" e "Doppioni" ogni serie ha il pulsante "Cerco e scambio":
    apre la pagina della serie con la finestra Stampa già pronta per un PDF
    o un'immagine con CERCO (mi mancano) e SCAMBIO (doppioni) — lo fa app.js.
@@ -72,14 +75,14 @@
 
   /* ---------- pezzi di pagina ---------- */
 
-  /* un oggetto, fatto come nelle pagine delle serie (stesse classi di comune/collezione.css) */
+  /* un oggetto, fatto come nelle pagine delle serie (stesse classi di comune/collezione.css):
+     "Ce l'ho" si segna premendo la foto (tesserina .spunta in alto a destra) */
   function oggetto(s, o) {
     const [id, numero, nome] = o, si = !!ce[id], n = doppi[id] || 0;
     return `<li class="pen${si ? ' owned' : ''}">
-      <button type="button" class="open" data-ce="${id}" aria-pressed="${si}" aria-label="Ce l'ho: ${esc(nome || numero)}"><div class="pic"><img class="pen-img" src="${fotoDi(s, o)}" alt="${esc(nome || numero)}"${s.nomi ? '' : ` title="${esc(nome)}"`} loading="lazy" decoding="async" draggable="false"></div></button>
+      <button type="button" class="open" data-ce="${id}" aria-pressed="${si}" aria-label="Ce l'ho: ${esc(nome || numero)}"><div class="pic"><img class="pen-img" src="${fotoDi(s, o)}" alt="${esc(nome || numero)}"${s.nomi ? '' : ` title="${esc(nome)}"`} loading="lazy" decoding="async" draggable="false"><span class="spunta" aria-hidden="true"></span></div></button>
       ${s.nomi ? `<div class="nome"><span>${esc(nome)}</span></div>` : ''}
       <div class="code${numero ? '' : ' none'}">${esc(numero || 'N°')}</div>
-      <div class="row"><label class="have"><input type="checkbox" data-ce="${id}"${si ? ' checked' : ''}><span class="have-text">Ce l'ho</span></label></div>
       <div class="doppi${n ? ' si' : ''}"><span class="etichetta">Doppi</span><span class="conta"><button type="button" data-meno="${id}"${n ? '' : ' disabled'} aria-label="Un doppione in meno">−</button><span class="n">${n}</span><button type="button" data-piu="${id}" aria-label="Un doppione in più">+</button></span></div>
     </li>`;
   }
@@ -104,15 +107,26 @@
 
   /* ---------- le tre pagine ---------- */
 
-  /* MI MANCANO: per ogni serie, gli oggetti che non hai */
+  /* serie che non cerco più (solo in "Mi mancano"): elenco degli archivi (s.db), salvato nel browser */
+  const pausa = new Set((() => { try { return JSON.parse(localStorage.getItem('ct-pausa')) || []; } catch (e) { return []; } })());
+  const salvaPausa = () => { try { localStorage.setItem('ct-pausa', JSON.stringify([...pausa])); } catch (e) {} };
+
+  /* MI MANCANO: per ogni serie, gli oggetti che non hai (le serie "in pausa" stanno chiuse nella tendina in fondo) */
   let soloIniziate = true, gruppo = '';
   function mancanti() {
-    const elenco = SERIE.filter(s => (!gruppo || s.g === gruppo) && quante(s) < s.x.length && (!soloIniziate || quante(s) > 0));
-    const tot = elenco.reduce((t, s) => t + s.x.length - quante(s), 0);
+    const tutte = SERIE.filter(s => (!gruppo || s.g === gruppo) && quante(s) < s.x.length && (!soloIniziate || quante(s) > 0));
+    const elenco = tutte.filter(s => !pausa.has(s.db));
+    const ferme = tutte.filter(s => pausa.has(s.db));
+    const manca = s => s.x.length - quante(s);
+    const tot = elenco.reduce((t, s) => t + manca(s), 0);
     app.innerHTML = testa('MI MANCANO', plurale(tot, 'oggetto', 'oggetti') + ' in ' + plurale(elenco.length, 'serie', 'serie'),
       menu('iniziate', [['1', 'Serie che ho iniziato'], ['0', 'Tutte le serie']], soloIniziate ? '1' : '0', 'Quali serie') + menuGruppi())
-      + (elenco.map(s => { const m = s.x.filter(o => !ce[o[0]]); return titoloSerie(s, m.length === 1 ? 'ne manca 1' : 'ne mancano ' + m.length, true) + griglia(s, m); }).join('')
-        || vuoto(soloIniziate ? 'Non hai ancora iniziato nessuna serie. Segna con "Ce l\'ho" quello che hai: qui vedrai cosa manca per completare le serie.' : 'Non ti manca niente!'))
+      + (elenco.map(s => { const m = s.x.filter(o => !ce[o[0]]); return titoloSerie(s, m.length === 1 ? 'ne manca 1' : 'ne mancano ' + m.length, true) + griglia(s, m)
+          + `<button type="button" class="non-cerco" data-pausa="${esc(s.db)}">Non la cerco più</button>`; }).join('')
+        || (ferme.length ? '' : vuoto(soloIniziate ? 'Non hai ancora iniziato nessuna serie. Segna con "Ce l\'ho" quello che hai: qui vedrai cosa manca per completare le serie.' : 'Non ti manca niente!')))
+      + (ferme.length ? `<details class="pausa"><summary>Non le cerco più (${ferme.length})</summary>`
+          + ferme.map(s => `<div class="pausa-serie"><div><b>${esc(s.t)}</b><small>${[s.g, 'ne ' + (manca(s) === 1 ? 'manca 1' : 'mancano ' + manca(s))].filter(Boolean).map(esc).join(' · ')}</small></div><button type="button" class="st-btn" data-riprendi="${esc(s.db)}">Riprendi</button></div>`).join('')
+          + '</details>' : '')
       + '<p class="hint" style="margin-top:28px">Premi su una foto per segnare che ce l\'hai. Con + e − conti i doppioni.</p>';
   }
 
@@ -159,6 +173,16 @@
   window.addEventListener('hashchange', () => { mostra(); scrollTo(0, 0); });
 
   app.addEventListener('click', e => {
+    /* "Non la cerco più" / "Riprendi": sposto la serie nella tendina in fondo o la rimetto nell'elenco */
+    const p = e.target.closest('[data-pausa], [data-riprendi]');
+    if (p) {
+      const db = p.dataset.pausa || p.dataset.riprendi, ferma = !!p.dataset.pausa;
+      const cambia = f => { f ? pausa.add(db) : pausa.delete(db); salvaPausa(); const y = scrollY; mostra(); scrollTo(0, y); };
+      cambia(ferma);
+      const nome = (SERIE.find(s => s.db === db) || {}).t || 'La serie';
+      if (ferma) avviso('«' + nome + '» spostata in «Non le cerco più»', () => cambia(false));
+      return;
+    }
     const el = e.target.closest('[data-ce], [data-piu], [data-meno]');
     if (!el) return;
     const id = el.dataset.ce || el.dataset.piu || el.dataset.meno;

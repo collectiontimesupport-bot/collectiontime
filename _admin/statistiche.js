@@ -175,6 +175,15 @@
     }
     const categorie = Object.keys(perCategoria).sort((a, b) => perCategoria[b] - perCategoria[a]);
 
+    /* numero di collezionisti per serie, per la frase in fondo alle pagine delle serie
+       ("12 collezionisti la stanno completando…", la scrive comune/app.js):
+       lo salvo nel sito in comune/collezionisti.json; si vede online dopo "Pubblica". */
+    if (typeof sito !== 'undefined' && sito && typeof scrivi === 'function') {
+      const conta = {}; Object.values(perSerie).forEach(s => { conta[s.db] = s.persone; });
+      try { await scrivi('comune/collezionisti.json', JSON.stringify({ aggiornato: new Date().toISOString().slice(0, 10), serie: conta })); }
+      catch (e) { console.warn('collezionisti.json non salvato', e); }
+    }
+
     const box = $('stRisultati');
     box.hidden = false;
     box.innerHTML = `

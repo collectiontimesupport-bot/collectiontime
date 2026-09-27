@@ -42,13 +42,14 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-09-26l">
+<link rel="stylesheet" href="../../../sito.css?v=2026-09-27">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27d">
-<link rel="stylesheet" href="../../css/stile.css?v=2026-09-26">
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27e">
+<link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
 </head>
 <body>
 
@@ -205,8 +206,8 @@ const CONFIG = {
                Serve al browser per ricordare se ce l'hai: non cambiarlo
                e non usare lo stesso id due volte.
      numero    numero della sorpresina nella serie ("01" … "12")
-     codice    codice dell'oggetto: se non c'è un codice, metti l'anno
-               (qui c'è l'anno di uscita: nei dettagli si legge "Anno")
+               e il codice del foglietto, se c'è: "01 - NV129" (numero - codice)
+     codice    anno di uscita (nei dettagli si legge "Anno")
      nome      nome della sorpresina
      foto      percorso della foto: "immagini/NOMEFILE.webp"
                Se sostituisci la foto con un file nuovo con lo STESSO nome,
@@ -220,26 +221,26 @@ const CONFIG = {
    ===================================================================== */
 // ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
 const ELENCO = [
-  { id: "polar-express-01", numero: "01", codice: "2004", nome: "Bambina in abito rosa", foto: "immagini/01.webp", info: "Codice C-201a" },
-  { id: "polar-express-02", numero: "02", codice: "2004", nome: "Bambino in abito giallo", foto: "immagini/02.webp", info: "Codice C-201b" },
-  { id: "polar-express-03", numero: "03", codice: "2004", nome: "Capostazione", foto: "immagini/03.webp", info: "Codice C-202" },
-  { id: "polar-express-04", numero: "04", codice: "2004", nome: "Fuochista", foto: "immagini/04.webp", info: "Codice C-203" },
-  { id: "polar-express-05", numero: "05", codice: "2004", nome: "Macchinista", foto: "immagini/05.webp", info: "Codice C-204" },
-  { id: "polar-express-06", numero: "06", codice: "2004", nome: "Babbo Natale", foto: "immagini/06.webp", info: "Codice C-205" },
-  { id: "polar-express-07", numero: "07", codice: "2004", nome: "Elfo di Natale", foto: "immagini/07.webp", info: "Codice C-206" },
-  { id: "polar-express-08", numero: "08", codice: "2004", nome: "Coppia su sci", foto: "immagini/08.webp", info: "Codice C-207" },
-  { id: "polar-express-09", numero: "09", codice: "2004", nome: "Scenario locomotiva", foto: "immagini/09.webp", info: "Codice C-208" },
-  { id: "polar-express-10", numero: "10", codice: "2004", nome: "Scenario vagoni", foto: "immagini/10.webp", info: "Codice C-209" },
-  { id: "polar-express-11", numero: "11", codice: "2004", nome: "Perforatrice", foto: "immagini/11.webp", info: "Codice C-210" },
-  { id: "polar-express-12", numero: "12", codice: "2004", nome: "Locomotiva", foto: "immagini/12.webp", info: "Codice C-211" },
+  { id: "polar-express-01", numero: "01 - C-201a", codice: "2004", nome: "Bambina in abito rosa", foto: "immagini/01.webp" },
+  { id: "polar-express-02", numero: "02 - C-201b", codice: "2004", nome: "Bambino in abito giallo", foto: "immagini/02.webp" },
+  { id: "polar-express-03", numero: "03 - C-202", codice: "2004", nome: "Capostazione", foto: "immagini/03.webp" },
+  { id: "polar-express-04", numero: "04 - C-203", codice: "2004", nome: "Fuochista", foto: "immagini/04.webp" },
+  { id: "polar-express-05", numero: "05 - C-204", codice: "2004", nome: "Macchinista", foto: "immagini/05.webp" },
+  { id: "polar-express-06", numero: "06 - C-205", codice: "2004", nome: "Babbo Natale", foto: "immagini/06.webp" },
+  { id: "polar-express-07", numero: "07 - C-206", codice: "2004", nome: "Elfo di Natale", foto: "immagini/07.webp" },
+  { id: "polar-express-08", numero: "08 - C-207", codice: "2004", nome: "Coppia su sci", foto: "immagini/08.webp" },
+  { id: "polar-express-09", numero: "09 - C-208", codice: "2004", nome: "Scenario locomotiva", foto: "immagini/09.webp" },
+  { id: "polar-express-10", numero: "10 - C-209", codice: "2004", nome: "Scenario vagoni", foto: "immagini/10.webp" },
+  { id: "polar-express-11", numero: "11 - C-210", codice: "2004", nome: "Perforatrice", foto: "immagini/11.webp" },
+  { id: "polar-express-12", numero: "12 - C-211", codice: "2004", nome: "Locomotiva", foto: "immagini/12.webp" },
 ];
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
-<script src="../../../script.js?v=2026-09-27"></script>
+<script src="../../../script.js?v=2026-09-27b"></script>
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../comune/app.js?v=2026-09-27d"></script>
+<script src="../../../comune/app.js?v=2026-09-27e"></script>
 </body>
 </html>

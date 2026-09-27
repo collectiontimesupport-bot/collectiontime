@@ -23,7 +23,8 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=2026-09-26l">
+<link rel="stylesheet" href="sito.css?v=2026-09-27">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
 <link rel="preload" href="comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -37,8 +38,11 @@
   /* min-height = altezza del logo più alto (Legami + Milano): così tutti i loghi occupano lo stesso spazio
      e le descrizioni sotto partono alla stessa altezza in ogni card.
      align-content: center = un logo senza seconda riga (es. "Lidl") sta al centro di quello spazio. */
+  /* background: var(--piastra) = nel tema scuro una piastra chiara dietro la scritta, così i colori
+     dei marchi (blu Lidl, rosso Mulino Bianco…) si leggono; nel tema chiaro è trasparente (sito.css) */
   .logo-coll { display: grid; justify-items: center; align-content: center; min-height: calc(5.3rem + 14px);
-               margin: -3px 0 6px; line-height: 1; color: var(--titolo);
+               margin: -3px 0 6px; padding: var(--piastra-pad, 0); border-radius: 12px; background: var(--piastra);
+               line-height: 1; color: var(--titolo);
                font-family: var(--font-legami); font-weight: 700; }
   .logo-coll span { font-size: 3.6rem; }   /* grandezza di "Legami" */
   /* "Milano": grandezza (font-size) e distanza da "Legami" (margin-top) */
@@ -64,7 +68,7 @@
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
   <!-- ! MODIFICA: titolo della pagina -->
-  <h1 class="st-titolo">Le mie collezioni</h1>
+  <h1 class="st-titolo">Catalogo collezioni</h1>
   <!-- Frase + lente: la lente apre il campo per cercare tra le categorie (funziona con script.js) -->
   <div class="st-sub">
     <p class="sub">Cerca una categoria</p>
@@ -153,6 +157,6 @@
 <!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=2026-09-27"></script>
+<script src="script.js?v=2026-09-27b"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
    ===================================================================== */
 
 /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
-:root { --titolo: #1A2140; }   /* blu scuro del sito, quasi nero (il rosso è solo per Legami) */
+:root { --titolo: var(--ink); }   /* colore del testo del sito: blu scuro (chiaro nel tema scuro), quasi nero (il rosso è solo per Legami) */
 
 /* Titolo scritto: carattere di sistema molto grosso, niente font da scaricare */
 h1 .titolo-testo {

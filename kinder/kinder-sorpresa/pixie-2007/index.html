@@ -42,13 +42,14 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-09-26l">
+<link rel="stylesheet" href="../../../sito.css?v=2026-09-27">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27d">
-<link rel="stylesheet" href="../../css/stile.css?v=2026-09-26">
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27e">
+<link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
 </head>
 <body>
 
@@ -205,8 +206,8 @@ const CONFIG = {
                Serve al browser per ricordare se ce l'hai: non cambiarlo
                e non usare lo stesso id due volte.
      numero    numero della sorpresina nella serie ("01" … "06")
-     codice    codice dell'oggetto: se non c'è un codice, metti l'anno
-               (qui c'è l'anno di uscita: nei dettagli si legge "Anno")
+               e il codice del foglietto, se c'è: "01 - NV129" (numero - codice)
+     codice    anno di uscita (nei dettagli si legge "Anno")
      nome      nome della sorpresina
      foto      percorso della foto: "immagini/NOMEFILE.webp"
                Se sostituisci la foto con un file nuovo con lo STESSO nome,
@@ -220,20 +221,20 @@ const CONFIG = {
    ===================================================================== */
 // ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
 const ELENCO = [
-  { id: "pixie-2007-01", numero: "01", codice: "2007", nome: "Chatta", foto: "immagini/01.webp", info: "Codice 2S-221" },
-  { id: "pixie-2007-02", numero: "02", codice: "2007", nome: "Lockette", foto: "immagini/02.webp", info: "Codice 2S-222" },
-  { id: "pixie-2007-03", numero: "03", codice: "2007", nome: "Tune", foto: "immagini/03.webp", info: "Codice 2S-223" },
-  { id: "pixie-2007-04", numero: "04", codice: "2007", nome: "Piff", foto: "immagini/04.webp", info: "Codice 2S-224" },
-  { id: "pixie-2007-05", numero: "05", codice: "2007", nome: "Amore", foto: "immagini/05.webp", info: "Codice 2S-225" },
-  { id: "pixie-2007-06", numero: "06", codice: "2007", nome: "Digit", foto: "immagini/06.webp", info: "Codice 2S-226" },
+  { id: "pixie-2007-01", numero: "01 - 2S-221", codice: "2007", nome: "Chatta", foto: "immagini/01.webp" },
+  { id: "pixie-2007-02", numero: "02 - 2S-222", codice: "2007", nome: "Lockette", foto: "immagini/02.webp" },
+  { id: "pixie-2007-03", numero: "03 - 2S-223", codice: "2007", nome: "Tune", foto: "immagini/03.webp" },
+  { id: "pixie-2007-04", numero: "04 - 2S-224", codice: "2007", nome: "Piff", foto: "immagini/04.webp" },
+  { id: "pixie-2007-05", numero: "05 - 2S-225", codice: "2007", nome: "Amore", foto: "immagini/05.webp" },
+  { id: "pixie-2007-06", numero: "06 - 2S-226", codice: "2007", nome: "Digit", foto: "immagini/06.webp" },
 ];
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
-<script src="../../../script.js?v=2026-09-27"></script>
+<script src="../../../script.js?v=2026-09-27b"></script>
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../comune/app.js?v=2026-09-27d"></script>
+<script src="../../../comune/app.js?v=2026-09-27e"></script>
 </body>
 </html>

@@ -42,13 +42,14 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-09-26l">
+<link rel="stylesheet" href="../../../sito.css?v=2026-09-27">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27d">
-<link rel="stylesheet" href="../../css/stile.css?v=2026-09-26">
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27e">
+<link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
 </head>
 <body>
 
@@ -205,8 +206,8 @@ const CONFIG = {
                Serve al browser per ricordare se ce l'hai: non cambiarlo
                e non usare lo stesso id due volte.
      numero    numero della sorpresina nella serie ("01" … "15")
-     codice    codice dell'oggetto: se non c'è un codice, metti l'anno
-               (qui c'è l'anno di uscita: nei dettagli si legge "Anno")
+               e il codice del foglietto, se c'è: "01 - NV129" (numero - codice)
+     codice    anno di uscita (nei dettagli si legge "Anno")
      nome      nome della sorpresina
      foto      percorso della foto: "immagini/NOMEFILE.webp"
                Se sostituisci la foto con un file nuovo con lo STESSO nome,
@@ -220,29 +221,29 @@ const CONFIG = {
    ===================================================================== */
 // ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
 const ELENCO = [
-  { id: "citta-delle-note-01", numero: "01", codice: "2005", nome: "Supernota", foto: "immagini/01.webp", info: "Codice S-19" },
-  { id: "citta-delle-note-02", numero: "02", codice: "2005", nome: "Falsanota", foto: "immagini/02.webp", info: "Codice S-20" },
-  { id: "citta-delle-note-03", numero: "03", codice: "2005", nome: "Do", foto: "immagini/03.webp", info: "Codice S-21" },
-  { id: "citta-delle-note-04", numero: "04", codice: "2005", nome: "Re", foto: "immagini/04.webp", info: "Codice S-22" },
-  { id: "citta-delle-note-05", numero: "05", codice: "2005", nome: "Mi", foto: "immagini/05.webp", info: "Codice S-23" },
-  { id: "citta-delle-note-06", numero: "06", codice: "2005", nome: "Fa", foto: "immagini/06.webp", info: "Codice S-24" },
-  { id: "citta-delle-note-07", numero: "07", codice: "2005", nome: "Sol", foto: "immagini/07.webp", info: "Codice S-25" },
-  { id: "citta-delle-note-08", numero: "08", codice: "2005", nome: "La", foto: "immagini/08.webp", info: "Codice S-26" },
-  { id: "citta-delle-note-09", numero: "09", codice: "2005", nome: "Si", foto: "immagini/09.webp", info: "Codice S-27" },
-  { id: "citta-delle-note-10", numero: "10", codice: "2005", nome: "Chitarra", foto: "immagini/10.webp", info: "Codice S-28" },
-  { id: "citta-delle-note-11", numero: "11", codice: "2005", nome: "Giradischi", foto: "immagini/11.webp", info: "Codice S-29" },
-  { id: "citta-delle-note-12", numero: "12", codice: "2005", nome: "Metronomo", foto: "immagini/12.webp", info: "Codice S-30" },
-  { id: "citta-delle-note-13", numero: "13", codice: "2005", nome: "Organetto", foto: "immagini/13.webp", info: "Codice S-31" },
-  { id: "citta-delle-note-14", numero: "14", codice: "2005", nome: "Clavicembalo", foto: "immagini/14.webp", info: "Codice S-32" },
-  { id: "citta-delle-note-15", numero: "15", codice: "2005", nome: "Tuba", foto: "immagini/15.webp", info: "Codice S-33" },
+  { id: "citta-delle-note-01", numero: "01 - S-19", codice: "2005", nome: "Supernota", foto: "immagini/01.webp" },
+  { id: "citta-delle-note-02", numero: "02 - S-20", codice: "2005", nome: "Falsanota", foto: "immagini/02.webp" },
+  { id: "citta-delle-note-03", numero: "03 - S-21", codice: "2005", nome: "Do", foto: "immagini/03.webp" },
+  { id: "citta-delle-note-04", numero: "04 - S-22", codice: "2005", nome: "Re", foto: "immagini/04.webp" },
+  { id: "citta-delle-note-05", numero: "05 - S-23", codice: "2005", nome: "Mi", foto: "immagini/05.webp" },
+  { id: "citta-delle-note-06", numero: "06 - S-24", codice: "2005", nome: "Fa", foto: "immagini/06.webp" },
+  { id: "citta-delle-note-07", numero: "07 - S-25", codice: "2005", nome: "Sol", foto: "immagini/07.webp" },
+  { id: "citta-delle-note-08", numero: "08 - S-26", codice: "2005", nome: "La", foto: "immagini/08.webp" },
+  { id: "citta-delle-note-09", numero: "09 - S-27", codice: "2005", nome: "Si", foto: "immagini/09.webp" },
+  { id: "citta-delle-note-10", numero: "10 - S-28", codice: "2005", nome: "Chitarra", foto: "immagini/10.webp" },
+  { id: "citta-delle-note-11", numero: "11 - S-29", codice: "2005", nome: "Giradischi", foto: "immagini/11.webp" },
+  { id: "citta-delle-note-12", numero: "12 - S-30", codice: "2005", nome: "Metronomo", foto: "immagini/12.webp" },
+  { id: "citta-delle-note-13", numero: "13 - S-31", codice: "2005", nome: "Organetto", foto: "immagini/13.webp" },
+  { id: "citta-delle-note-14", numero: "14 - S-32", codice: "2005", nome: "Clavicembalo", foto: "immagini/14.webp" },
+  { id: "citta-delle-note-15", numero: "15 - S-33", codice: "2005", nome: "Tuba", foto: "immagini/15.webp" },
 ];
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
-<script src="../../../script.js?v=2026-09-27"></script>
+<script src="../../../script.js?v=2026-09-27b"></script>
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../comune/app.js?v=2026-09-27d"></script>
+<script src="../../../comune/app.js?v=2026-09-27e"></script>
 </body>
 </html>

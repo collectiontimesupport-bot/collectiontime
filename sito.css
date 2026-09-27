@@ -22,9 +22,40 @@
   --white: #FFFFFF;   /* sfondo */
   --soft: #B9BFD3;    /* grigio chiaro: testo piccolo sulla banda in basso */
   --band-line: #343C5E; /* riga sottile sulla banda in basso */
+  --piastra: transparent; /* dietro le scritte colorate delle card in Home: chiara nel tema scuro */
+  --riquadro: #F5F6F9; /* riquadri grigi chiarissimi (numeri nel menu profilo) */
+  --errore: #B3261E;  /* rosso degli errori */
+  /* colori che NON cambiano nel tema scuro (banda in basso, spunta sull'ambra) */
+  --blu: #1A2140;
+  --bianco: #FFFFFF;
+  --band-bg: #1A2140; /* sfondo della banda in basso */
   /* carattere dei titoli rossi Legami (vedi sotto "CARATTERE LEGAMI") */
   --font-legami: "Legami Titolo", "Comic Sans MS", cursive;
   color-scheme: light;
+}
+
+/* ---------- TEMA SCURO (blu notte) ----------
+   Chi visita sceglie in fondo alla pagina "Aspetto: Automatico · Chiaro · Scuro"
+   (lo fa script.js e lo ricorda nel browser). La scelta è scritta nella pagina
+   come <html data-tema="auto|chiaro|scuro"> dalla riga <script> nel <head>.
+     auto   = segue il telefono / computer (scuro se è in modalità scura)
+     scuro  = sempre scuro
+     chiaro = sempre chiaro
+   Le pagine senza quella riga (strumenti, area amministratore) restano chiare.
+   I colori scuri sono qui sotto DUE volte, uguali: se li cambi, cambiali in tutti e due. */
+@media (prefers-color-scheme: dark) {
+  :root[data-tema="auto"] {
+    --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
+    --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126;
+    --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg);
+    color-scheme: dark;
+  }
+}
+:root[data-tema="scuro"] {
+  --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
+  --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126;
+  --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg);
+  color-scheme: dark;
 }
 
 /* ---------- CARATTERE LEGAMI ----------
@@ -62,6 +93,12 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 /* link per tornare indietro ("← Legami"): grande e facile da toccare, su telefono e su PC */
 .st-back { display: inline-block; margin: 0 0 22px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
 .st-back:hover { color: var(--ink); }
+/* percorso in alto: "Kinder Ferrero › Kinder Joy › One Piece" (lo crea script.js dal link ← della pagina) */
+.st-percorso { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 0 0 22px; padding: 6px 0; color: var(--muted); font-size: 1rem; }
+.st-percorso a { color: var(--muted); text-decoration: none; }
+.st-percorso a:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--amber); text-underline-offset: 3px; }
+.st-percorso [aria-current] { color: var(--ink); font-weight: 600; }
+.st-percorso .sep { color: var(--line); }
 /* titolo al centro con la lineetta ambra sotto */
 .st-titolo { margin: 0; text-align: center; font: 600 clamp(2rem, 4vw, 3rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .st-titolo::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
@@ -108,9 +145,9 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-top :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ---------- banda in basso (footer.html) ---------- */
-.st-band { margin-top: auto; background: var(--ink); color: var(--white); border-top: 3px solid var(--amber); padding: 22px 20px; font: .8125rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.st-band { margin-top: auto; background: var(--band-bg); color: var(--bianco); border-top: 3px solid var(--amber); padding: 22px 20px; font: .8125rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
 .st-band-in { max-width: 1100px; margin: 0 auto; }   /* larghezza massima del contenuto */
-.st-band a { color: var(--white); text-underline-offset: 3px; }
+.st-band a { color: var(--bianco); text-underline-offset: 3px; }
 .st-band a:hover { color: var(--amber); }
 .st-band :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 /* riga in alto: nome + frase a sinistra, pulsanti a destra */
@@ -120,14 +157,22 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-band-pul { display: flex; flex-wrap: wrap; gap: 10px; }
 /* pulsanti: "Aggiungi alla Home" solo bordo, "Sostieni" pieno in ambra */
 .st-band .st-pul { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: 1px solid #6B7396;
-                   background: none; color: var(--white); font: inherit; font-weight: 600; font-size: .875rem; line-height: 1.2; text-decoration: none; cursor: pointer; }
+                   background: none; color: var(--bianco); font: inherit; font-weight: 600; font-size: .875rem; line-height: 1.2; text-decoration: none; cursor: pointer; }
 .st-band .st-pul svg { width: 16px; height: 16px; flex: none; }
-.st-band .st-pul:hover { border-color: var(--amber); color: var(--white); }
-.st-band .st-pul-dona { background: var(--amber); border-color: var(--amber); color: var(--ink); }
-.st-band .st-pul-dona:hover { background: var(--white); border-color: var(--white); color: var(--ink); }
+.st-band .st-pul:hover { border-color: var(--amber); color: var(--bianco); }
+.st-band .st-pul-dona { background: var(--amber); border-color: var(--amber); color: var(--blu); }
+.st-band .st-pul-dona:hover { background: var(--bianco); border-color: var(--bianco); color: var(--blu); }
 /* link (FAQ, Contatti, Note legali, Privacy) */
 .st-band-link { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 16px 0 14px; }
 /* avviso legale e © */
+/* "Aspetto: Automatico · Chiaro · Scuro" (lo fa funzionare script.js) */
+.st-aspetto { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 14px; color: var(--soft); }
+.st-aspetto div { display: inline-flex; border: 1px solid #6B7396; border-radius: 8px; overflow: hidden; }
+.st-aspetto button { padding: 5px 12px; border: 0; background: none; color: var(--bianco); font: inherit; cursor: pointer; }
+.st-aspetto button + button { border-left: 1px solid #6B7396; }
+.st-aspetto button[aria-pressed="true"] { background: var(--amber); color: var(--blu); font-weight: 600; }
+.st-aspetto button:hover:not([aria-pressed="true"]) { color: var(--amber); }
+@media (max-width: 600px) { .st-aspetto { justify-content: center; } }   /* sul telefono la banda è centrata */
 .st-band-legale { border-top: 1px solid var(--band-line); padding-top: 12px; color: var(--soft); font-size: .75rem; line-height: 1.55; }
 .st-band-legale p { margin: 0 0 8px; }
 .st-band-legale p:last-child { margin: 0; }
@@ -174,7 +219,7 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-email-azioni button { flex: 1; }
 .st-account .st-link { justify-self: start; padding: 2px 0; background: none; color: var(--muted); font-weight: 400; font-size: .8125rem; text-decoration: underline; }
 .st-account .st-link:hover { background: none; color: var(--ink); }
-.st-account-errore { margin: 0 !important; color: #B3261E; font-size: .875rem; }   /* rosso per gli errori */
+.st-account-errore { margin: 0 !important; color: var(--errore); font-size: .875rem; }   /* rosso per gli errori */
 .st-account-errore.ok { color: var(--ink); }                                       /* messaggio "ti ho mandato un'email" */
 
 /* ---------- pagine di solo testo (FAQ, Note legali, Privacy) ----------
@@ -200,10 +245,13 @@ body.st-semplice { line-height: 1.6; }
 .st-avviso {
   position: fixed; left: 50%; bottom: 20px; z-index: 30; transform: translateX(-50%);
   max-width: 90vw; padding: 10px 16px; border-radius: 10px;
-  background: var(--ink); color: var(--white); font: .9375rem/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--blu); color: var(--bianco); border: 1px solid var(--line); font: .9375rem/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
   opacity: 0; pointer-events: none; transition: opacity .2s;
 }
 .st-avviso.show { opacity: 1; }
+/* avviso con il pulsante "Annulla" (es. "Non la cerco più") */
+.st-avviso.con-azione.show { pointer-events: auto; display: flex; align-items: center; gap: 14px; width: max-content; }
+.st-avviso button { padding: 4px 0; border: 0; background: none; color: var(--amber); font: inherit; font-weight: 700; cursor: pointer; }
 
 /* ---------- ricerca (lente) ----------
    Si vede solo la lente; premendola il campo si allarga.
@@ -292,7 +340,7 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-ma-testa b { display: block; font-size: 1.0625rem; }
 .st-ma-testa small { color: var(--muted); font-size: .8125rem; word-break: break-all; }
 .st-ma-numeri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
-.st-ma-numeri div { padding: 8px 4px; border-radius: 10px; background: #F5F6F9; text-align: center; }
+.st-ma-numeri div { padding: 8px 4px; border-radius: 10px; background: var(--riquadro); text-align: center; }
 .st-ma-numeri b { display: block; font-size: 1.25rem; }
 .st-ma-numeri small { color: var(--muted); font-size: .75rem; }
 .st-ma-nota { margin: 2px 0 8px; color: var(--muted); font-size: .75rem; text-align: center; }
@@ -300,7 +348,7 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-profilo .st-link, .st-account-copia .st-link { justify-self: start; padding: 6px 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: .9375rem; text-align: left; cursor: pointer; }
 .st-profilo .st-link:hover, .st-account-copia .st-link:hover { color: var(--amber); }
 .st-ma-fondo { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
-.st-profilo .st-rosso { color: #B3261E; font-size: .8125rem; }
+.st-profilo .st-rosso { color: var(--errore); font-size: .8125rem; }
 .st-ma-nome { display: grid; gap: 8px; margin: 4px 0; }
 .st-ma-nome input { padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; color: var(--ink); }
 .st-ma-nome input:focus { outline: none; border-color: var(--amber); }
@@ -314,11 +362,11 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
 /* "Elimina account…" lontano da "Esci": piccolo, grigio, su una riga a parte in fondo al menu */
 .st-profilo .st-ma-elimina { justify-self: end; margin-top: 18px; padding: 2px 0; color: var(--muted); font-size: .75rem; text-decoration: underline; }
-.st-profilo .st-ma-elimina:hover { color: #B3261E; }
+.st-profilo .st-ma-elimina:hover { color: var(--errore); }
 /* finestra di conferma: "Elimina per sempre" in rosso, lontano da "Annulla" */
 .st-elimina-azioni { justify-content: space-between; }
-.st-account .st-rosso { color: #B3261E; border-color: #E8B4B0; }
-.st-account .st-rosso:hover { color: #B3261E; border-color: #B3261E; }
+.st-account .st-rosso { color: var(--errore); border-color: #E8B4B0; }
+.st-account .st-rosso:hover { color: var(--errore); border-color: var(--errore); }
 /* menu del profilo: le voci allineate a destra (il menu si apre sul lato destro),
    "Elimina account…" invece a sinistra, lontano da "Esci" */
 .st-profilo .st-link { justify-self: end; text-align: right; }
@@ -328,6 +376,6 @@ body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
 /* "Esci" nel menu del profilo: pulsante rosso pieno, largo quanto il menu */
 .st-profilo .st-ma-fondo { display: block; }
 .st-esci { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 10px; border: 0; border-radius: 10px;
-  background: #C62828; color: var(--white); font: inherit; font-weight: 700; cursor: pointer; }
+  background: #C62828; color: var(--bianco); font: inherit; font-weight: 700; cursor: pointer; }
 .st-esci svg { width: 18px; height: 18px; }
 .st-esci:hover { background: #A51F1F; }

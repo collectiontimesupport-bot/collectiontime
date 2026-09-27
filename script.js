@@ -11,6 +11,8 @@
    6) la barra in basso delle categorie (Serie · Mi mancano · Doppioni · Cerca)
    7) le card divise per anno in tendine (solo le liste con data-per-anno)
    8) le statistiche delle visite (GoatCounter, senza cookie)
+   9) il percorso in alto (Kinder Ferrero › Kinder Joy › One Piece)
+  10) l'aspetto del sito: Automatico · Chiaro · Scuro (in fondo alla pagina)
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js?v=2026-09-26"></script>
    (dentro una sottocartella: <script src="../script.js?v=2026-09-26"></script>)
@@ -38,6 +40,7 @@ async function caricaParte(idSegnaposto, file) {
     box.innerHTML = html;
     sistemaLink(box);
     nascondiHomeSeInstallato();
+    attivaAspetto(box);
   } catch (e) {
     console.warn('Impossibile caricare ' + file + ':', e);
   }
@@ -71,9 +74,10 @@ function sistemaLink(box) {
 
 const PREFISSO = 'catalogo-', STORE = 'penne';
 
-/* avviso temporaneo in basso (sparisce dopo 4,5 secondi); l'aspetto è in sito.css */
+/* avviso temporaneo in basso (sparisce dopo 4,5 secondi); l'aspetto è in sito.css.
+   annulla (facoltativo) = funzione del pulsante "Annulla" dentro l'avviso (resta 7 secondi) */
 let avvisoTimer;
-function avviso(testo) {
+function avviso(testo, annulla) {
   let el = document.querySelector('.st-avviso');
   if (!el) {
     el = document.createElement('div');
@@ -82,9 +86,17 @@ function avviso(testo) {
     document.body.append(el);
   }
   el.textContent = testo;
+  el.classList.toggle('con-azione', !!annulla);
+  if (annulla) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = 'Annulla';
+    b.addEventListener('click', () => { el.classList.remove('show'); annulla(); });
+    el.append(b);
+  }
   el.classList.add('show');
   clearTimeout(avvisoTimer);
-  avvisoTimer = setTimeout(() => el.classList.remove('show'), 4500);
+  avvisoTimer = setTimeout(() => el.classList.remove('show'), annulla ? 7000 : 4500);
 }
 
 const richiesta = r => new Promise((ok, ko) => { r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
@@ -456,10 +468,67 @@ function aggiornaAnni(cercando) {
   });
 }
 
+/* ---------- Percorso in alto ----------
+   Nelle pagine dentro una categoria il link "← Kinder Joy" diventa:
+     Kinder Ferrero › Kinder Joy › One Piece
+   (categoria › pagina di sopra › questa pagina). Nelle pagine scritte
+   non cambia niente: basta il solito <a class="st-back" href="../index.html">← …</a>.
+     categoria   → il nome qui sotto (NOMI_CATEGORIE)
+     di sopra    → la scritta del link "←" della pagina
+     questa      → il <title> della pagina, prima di " · Collection Time"
+   ! MODIFICA: quando crei una categoria nuova aggiungi qui il suo nome
+     (cartella: "Nome"); se manca, uso il nome della cartella. */
+const NOMI_CATEGORIE = {
+  'coolthings': 'Cool Things', 'eurospin': 'Eurospin', 'kinder': 'Kinder Ferrero', 'legami': 'Legami',
+  'lego': 'LEGO Minifigures', 'lidl': 'Lidl', 'mcdonalds': "McDonald's", 'mulino-bianco': 'Mulino Bianco'
+};
+function percorso() {
+  const back = document.querySelector('a.st-back');
+  if (!back || !location.href.startsWith(BASE.href)) return;
+  const cartelle = decodeURIComponent(location.href.slice(BASE.href.length)).split(/[?#]/)[0]
+    .split('/').filter(c => c && c !== 'index.html');
+  const cat = cartelle[0] || '';
+  if (cartelle.length < 2 || cat.startsWith('_') || NON_CATEGORIE.includes(cat)) return;   // Home, pagine della categoria stessa, strumenti
+  const voci = [[NOMI_CATEGORIE[cat] || cat.charAt(0).toUpperCase() + cat.slice(1), new URL(cat + '/index.html', BASE).href]];
+  if (cartelle.length > 2) voci.push([back.textContent.replace(/^\s*\u2190\s*/, '').trim(), back.href]);
+  const nav = document.createElement('nav');
+  nav.className = 'st-percorso';
+  nav.setAttribute('aria-label', 'Percorso');
+  voci.forEach(([testo, href]) => {
+    const a = document.createElement('a');
+    a.href = href; a.textContent = testo;
+    const sep = document.createElement('span');
+    sep.className = 'sep'; sep.textContent = '\u203A'; sep.setAttribute('aria-hidden', 'true');
+    nav.append(a, sep);
+  });
+  const qui = document.createElement('span');
+  qui.setAttribute('aria-current', 'page');
+  qui.textContent = document.title.split(' \u00B7 ')[0];
+  nav.append(qui);
+  back.replaceWith(nav);
+}
+
+/* ---------- Aspetto: Automatico · Chiaro · Scuro ----------
+   La scelta si ricorda nel browser (ct-tema) e si scrive in <html data-tema="…">;
+   i colori scuri sono in sito.css (voce "TEMA SCURO"). La riga <script> nel <head>
+   di ogni pagina la rimette subito, prima che la pagina si veda, senza lampi di bianco. */
+function temaScelto() { try { return localStorage.getItem('ct-tema') || 'auto'; } catch (e) { return 'auto'; } }
+function attivaAspetto(box) {
+  const pulsanti = [...box.querySelectorAll('.st-aspetto button')];
+  const segna = t => pulsanti.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tema === t)));
+  segna(temaScelto());
+  pulsanti.forEach(b => b.addEventListener('click', () => {
+    try { localStorage.setItem('ct-tema', b.dataset.tema); } catch (e) {}
+    document.documentElement.dataset.tema = b.dataset.tema;
+    segna(b.dataset.tema);
+  }));
+}
+
 /* ---------- Avvio ---------- */
 
 caricaParte('header-placeholder', 'header.html');
 caricaParte('footer-placeholder', 'footer.html');
+percorso();
 perAnno();          // prima della ricerca: le card vengono spostate nelle tendine
 avviaCerca();
 barraCategoria();

@@ -41,13 +41,14 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-09-26l">
+<link rel="stylesheet" href="../../../sito.css?v=2026-09-27">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27d">
-<link rel="stylesheet" href="../../css/stile.css?v=2026-09-26">
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-27e">
+<link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
 </head>
 <body>
 
@@ -208,7 +209,8 @@ const CONFIG = {
      id        codice unico (es. l'ultimo + 1): serve al browser per ricordare
                se ce l'hai. Non usarlo due volte e non cambiarlo dopo la pubblicazione.
      numero    il numero mostrato sotto la foto
-     codice    codice o anno
+               e il codice del foglietto, se c'è: "01 - NV129" (numero - codice)
+     codice    anno di uscita (nei dettagli si legge "Anno")
      nome      nome
      foto      "immagini/NN.webp?v=DATA" (sfondo trasparente, WebP: le prepara
                l'area amministratore). Se sostituisci una foto con una con lo
@@ -223,39 +225,39 @@ const CONFIG = {
    ===================================================================== */
 // ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
 const ELENCO = [
-  { id: "one-piece-12", numero: "01", codice: "2026", nome: "Buggy", foto: "immagini/01.webp?v=2026-09-27b", info: "Codice VS326" },
-  { id: "one-piece-15", numero: "02", codice: "2026", nome: "Luffy Wanted", foto: "immagini/02.webp?v=2026-09-27b", info: "Luffy nel manifesto “Wanted” · codice VS329" },
-  { id: "one-piece-01", numero: "03", codice: "2026", nome: "Luffy", foto: "immagini/03.webp?v=2026-09-27b", info: "Codice VS331" },
-  { id: "one-piece-02", numero: "04", codice: "2026", nome: "Nami", foto: "immagini/04.webp?v=2026-09-27b", info: "Codice VS332" },
-  { id: "one-piece-05", numero: "05", codice: "2026", nome: "Sanji", foto: "immagini/05.webp?v=2026-09-27b", info: "Codice VS333" },
-  { id: "one-piece-13", numero: "06", codice: "2026", nome: "Tony Tony Chopper", foto: "immagini/06.webp?v=2026-09-27b", info: "Codice VS334" },
-  { id: "one-piece-03", numero: "07", codice: "2026", nome: "Zoro", foto: "immagini/07.webp?v=2026-09-27b", info: "Codice VS335" },
-  { id: "one-piece-11", numero: "08", codice: "2026", nome: "Miss All Sunday", foto: "immagini/08.webp?v=2026-09-27b", info: "Nico Robin · codice VS336" },
-  { id: "one-piece-07", numero: "09", codice: "2026", nome: "Smoker", foto: "immagini/09.webp?v=2026-09-27b", info: "Codice VS340" },
+  { id: "one-piece-12", numero: "01 - VS326", codice: "2026", nome: "Buggy", foto: "immagini/01.webp?v=2026-09-27b" },
+  { id: "one-piece-15", numero: "02 - VS329", codice: "2026", nome: "Luffy Wanted", foto: "immagini/02.webp?v=2026-09-27b", info: "Luffy nel manifesto “Wanted”" },
+  { id: "one-piece-01", numero: "03 - VS331", codice: "2026", nome: "Luffy", foto: "immagini/03.webp?v=2026-09-27b" },
+  { id: "one-piece-02", numero: "04 - VS332", codice: "2026", nome: "Nami", foto: "immagini/04.webp?v=2026-09-27b" },
+  { id: "one-piece-05", numero: "05 - VS333", codice: "2026", nome: "Sanji", foto: "immagini/05.webp?v=2026-09-27b" },
+  { id: "one-piece-13", numero: "06 - VS334", codice: "2026", nome: "Tony Tony Chopper", foto: "immagini/06.webp?v=2026-09-27b" },
+  { id: "one-piece-03", numero: "07 - VS335", codice: "2026", nome: "Zoro", foto: "immagini/07.webp?v=2026-09-27b" },
+  { id: "one-piece-11", numero: "08 - VS336", codice: "2026", nome: "Miss All Sunday", foto: "immagini/08.webp?v=2026-09-27b", info: "Nico Robin" },
+  { id: "one-piece-07", numero: "09 - VS340", codice: "2026", nome: "Smoker", foto: "immagini/09.webp?v=2026-09-27b" },
   { id: "one-piece-16", numero: "10", codice: "2026", nome: "Chopper", foto: "immagini/10.webp?v=2026-09-27b", info: "Decorazione per zip" },
   { id: "one-piece-17", numero: "11", codice: "2026", nome: "Chopper", foto: "immagini/11.webp?v=2026-09-27b", info: "Decorazione per zip" },
-  { id: "one-piece-23", numero: "12", codice: "2026", nome: "Going Merry", foto: "immagini/12.webp?v=2026-09-27b", info: "Sostegno per telefono · codice VS343" },
-  { id: "one-piece-04", numero: "13", codice: "2026", nome: "Usopp", foto: "immagini/13.webp?v=2026-09-27b", info: "Codice VS344" },
-  { id: "one-piece-18", numero: "14", codice: "2026", nome: "Laboon", foto: "immagini/14.webp?v=2026-09-27b", info: "Decorazione per zip · codice VS363" },
-  { id: "one-piece-22", numero: "15", codice: "2026", nome: "Frutto Gom Gom", foto: "immagini/15.webp?v=2026-09-27b", info: "Sostegno per cavetti · codice VS364" },
-  { id: "one-piece-10", numero: "16", codice: "2026", nome: "Wapol", foto: "immagini/16.webp?v=2026-09-27b", info: "Codice VS367" },
-  { id: "one-piece-09", numero: "17", codice: "2026", nome: "Mr. 5", foto: "immagini/17.webp?v=2026-09-27b", info: "Codice VS368" },
-  { id: "one-piece-06", numero: "18", codice: "2026", nome: "Vivi", foto: "immagini/18.webp?v=2026-09-27b", info: "Codice VS369" },
-  { id: "one-piece-20", numero: "19", codice: "2026", nome: "Usopp", foto: "immagini/19.webp?v=2026-09-27b", info: "Decorazione per penna · codice VS376" },
-  { id: "one-piece-21", numero: "20", codice: "2026", nome: "Frutto Homo Homo", foto: "immagini/20.webp?v=2026-09-27b", info: "Sostegno per cavetti · codice VS377" },
-  { id: "one-piece-08", numero: "21", codice: "2026", nome: "Crocodile", foto: "immagini/21.webp?v=2026-09-27b", info: "Codice VS378" },
-  { id: "one-piece-19", numero: "22", codice: "2026", nome: "Luffy", foto: "immagini/22.webp?v=2026-09-27b", info: "Decorazione per penna · codice VS379" },
-  { id: "one-piece-14", numero: "23", codice: "2026", nome: "Luffy d'oro", foto: "immagini/23.webp?v=2026-09-27b", info: "Variante rara, tutta dorata · codice VS504" },
-  { id: "one-piece-24", numero: "24", codice: "2026", nome: "Luffy d'oro", info: "Variante rara, tutta dorata · codice VS513", foto: "immagini/24.webp?v=2026-09-27b" },
-  { id: "one-piece-25", numero: "25", codice: "2026", nome: "Luffy d'oro - special", info: "Variante rara, tutta dorata · codice VS513A", foto: "immagini/25.webp?v=2026-09-27b" },
+  { id: "one-piece-23", numero: "12 - VS343", codice: "2026", nome: "Going Merry", foto: "immagini/12.webp?v=2026-09-27b", info: "Sostegno per telefono" },
+  { id: "one-piece-04", numero: "13 - VS344", codice: "2026", nome: "Usopp", foto: "immagini/13.webp?v=2026-09-27b" },
+  { id: "one-piece-18", numero: "14 - VS363", codice: "2026", nome: "Laboon", foto: "immagini/14.webp?v=2026-09-27b", info: "Decorazione per zip" },
+  { id: "one-piece-22", numero: "15 - VS364", codice: "2026", nome: "Frutto Gom Gom", foto: "immagini/15.webp?v=2026-09-27b", info: "Sostegno per cavetti" },
+  { id: "one-piece-10", numero: "16 - VS367", codice: "2026", nome: "Wapol", foto: "immagini/16.webp?v=2026-09-27b" },
+  { id: "one-piece-09", numero: "17 - VS368", codice: "2026", nome: "Mr. 5", foto: "immagini/17.webp?v=2026-09-27b" },
+  { id: "one-piece-06", numero: "18 - VS369", codice: "2026", nome: "Vivi", foto: "immagini/18.webp?v=2026-09-27b" },
+  { id: "one-piece-20", numero: "19 - VS376", codice: "2026", nome: "Usopp", foto: "immagini/19.webp?v=2026-09-27b", info: "Decorazione per penna" },
+  { id: "one-piece-21", numero: "20 - VS377", codice: "2026", nome: "Frutto Homo Homo", foto: "immagini/20.webp?v=2026-09-27b", info: "Sostegno per cavetti" },
+  { id: "one-piece-08", numero: "21 - VS378", codice: "2026", nome: "Crocodile", foto: "immagini/21.webp?v=2026-09-27b" },
+  { id: "one-piece-19", numero: "22 - VS379", codice: "2026", nome: "Luffy", foto: "immagini/22.webp?v=2026-09-27b", info: "Decorazione per penna" },
+  { id: "one-piece-14", numero: "23 - VS504", codice: "2026", nome: "Luffy d'oro", foto: "immagini/23.webp?v=2026-09-27b", info: "Variante rara, tutta dorata" },
+  { id: "one-piece-24", numero: "24 - VS513", codice: "2026", nome: "Luffy d'oro", info: "Variante rara, tutta dorata", foto: "immagini/24.webp?v=2026-09-27b" },
+  { id: "one-piece-25", numero: "25 - VS513A", codice: "2026", nome: "Luffy d'oro - special", info: "Variante rara, tutta dorata", foto: "immagini/25.webp?v=2026-09-27b" },
 ];
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
-<script src="../../../script.js?v=2026-09-27"></script>
+<script src="../../../script.js?v=2026-09-27b"></script>
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../comune/app.js?v=2026-09-27d"></script>
+<script src="../../../comune/app.js?v=2026-09-27e"></script>
 </body>
 </html>

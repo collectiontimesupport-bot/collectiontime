@@ -86,6 +86,16 @@ h1 .titolo-testo {
 /* riga sotto il titolo: conteggio a sinistra, strumenti a destra */
 .bar { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; }
 .sub { margin: 0; color: var(--muted); }
+/* barra di avanzamento sotto il conteggio (la crea app.js): si riempie d'ambra */
+.avanz-barra { width: min(240px, 60vw); height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.avanz-barra span { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--amber); transition: width .4s ease; }
+/* riga sotto il titolo: "2026 · 25 sorpresine" (la crea app.js) */
+header h1:has(+ .info-serie) { min-height: 0; margin-bottom: 6px; }   /* la riga sta attaccata al titolo */
+.info-serie { margin: 0 0 26px; text-align: center; color: var(--muted); font-size: .9375rem; }
+/* descrizione della serie in fondo alla pagina (la crea app.js) */
+.descr-serie { max-width: 720px; margin: 36px 0 18px; padding: 14px 16px; border-radius: 12px; background: var(--riquadro); }
+.descr-serie p { margin: 0; line-height: 1.55; }
+.descr-serie .descr-conta { margin-top: 6px; color: var(--muted); font-size: .9375rem; }
 /* conteggio con sotto il pulsante "Stampa" */
 .conta-stampa { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -142,12 +152,14 @@ select, .field input[type=text] {
    Ogni oggetto è un <li class="pen"> (creato da app.js) con dentro:
      - il pulsante .open con la foto (.pic) → segna/toglie "Ce l'ho"
      - il nome (.nome), solo se CONFIG.mostraNomi (LEGO)
+     - dentro la foto, in alto a destra, la tesserina "Ce l'ho" (.spunta)
+     - la matita ✎ dei dettagli, in alto a sinistra sulla foto (.edit)
      - il riquadro con il numero (.code)
-     - la riga con la casella "Ce l'ho" e la matita ✎ (.row)
      - la riga dei doppioni "Doppi − 0 +" (.doppi)
    ===================================================================== */
 .pen {
   container-type: inline-size; container-name: pen;   /* permette di adattare l'oggetto alla sua larghezza (vedi sezione 10) */
+  position: relative;                                 /* la matita ✎ si appoggia in alto a sinistra */
   min-width: 0;
   display: grid; gap: 6px; justify-items: stretch;
 }
@@ -174,9 +186,12 @@ select, .field input[type=text] {
   display: block;
 }
 
-/* oggetto NON posseduto: grigio e sbiadito */
-.pic img.pen-img { filter: grayscale(1); opacity: .32; transition: opacity .3s ease; }
+/* oggetto NON posseduto: grigio e sbiadito
+   (--spento e --spento-op sono in sito.css: nel tema scuro il grigio è più chiaro) */
+.pic img.pen-img { filter: var(--spento, grayscale(1)); opacity: var(--spento-op, .32); transition: opacity .3s ease; }
 @media (hover: hover) { .pen .open:hover .pic img.pen-img { opacity: .6; } }
+/* sagoma vuota degli oggetti senza foto: nel tema scuro diventa chiara (--sagoma in sito.css) */
+.pic img.ghost { filter: var(--sagoma, none); }
 /* oggetto posseduto: a colori */
 .pen.owned .pic img.pen-img,
 .pen.owned .open:hover .pic img.pen-img { filter: none; opacity: 1; }
@@ -230,18 +245,35 @@ select, .field input[type=text] {
 .code.limited { color: var(--titolo); }                 /* edizione limitata: numero del colore del titolo */
 .code.none { color: var(--muted); font-weight: 400; }   /* oggetto senza numero: "N°" grigio */
 
-/* riga "☐ Ce l'ho   ✎" */
-.row { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
-.have { display: flex; align-items: center; gap: 4px; font-size: .8125rem; color: var(--muted); cursor: pointer; }
-.have input { accent-color: var(--amber); margin: 0; width: 16px; height: 16px; }
-.pen.owned .have { color: var(--ink); font-weight: 600; }
+/* TESSERINA "CE L'HO" in alto a destra sulla foto (come il logo):
+   vuota e grigia = mi manca, ambra con la spunta = ce l'ho.
+   Si preme la foto (o la tesserina): è tutto un solo pulsante.
+   Grandezza: 22% della larghezza dell'oggetto, tra 16 e 26 px. */
+.spunta {
+  position: absolute; top: 2px; right: 2px; z-index: 1;
+  width: clamp(16px, 22cqw, 26px); aspect-ratio: 1;
+  box-sizing: border-box; border: 2px solid var(--line); border-radius: 26%;
+  background: var(--white);
+}
+.pen.owned .spunta {
+  border-color: var(--amber);
+  background: var(--amber) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8.2 16.6l5.2 5 11.1-10.4' fill='none' stroke='%231A2140' stroke-width='4.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 88% no-repeat;
+  box-shadow: 0 1px 4px rgba(26, 33, 64, .2);
+}
+@media (hover: hover) { .pen .open:hover .spunta { border-color: var(--amber); } }
+
+/* matita ✎ dei dettagli, in alto a sinistra sulla foto */
 .edit {
+  position: absolute; top: 0; left: 0; z-index: 1;
   background: transparent; border: 0; border-radius: 6px;
-  padding: 2px 6px; color: var(--muted); font-size: 1rem; line-height: 1;
+  padding: 2px 4px; color: var(--muted); font-size: 1rem; line-height: 1;
 }
 .edit:hover { color: var(--amber); }
 
-/* riga "Doppi  − 2 +" sotto "Ce l'ho": quanti doppioni hai da scambiare (la crea app.js) */
+/* numero di un oggetto che hai: cornice ambra */
+.pen.owned .code { border-color: var(--amber); background: color-mix(in srgb, var(--amber) 10%, var(--white)); }
+
+/* riga "Doppi  − 2 +" sotto il numero: quanti doppioni hai da scambiare (la crea app.js) */
 .doppi { display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: .8125rem; color: var(--muted); }
 .doppi .conta { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--white); }
 .doppi button { border: 0; background: none; padding: 1px 7px; font-size: 1rem; line-height: 1.2; color: var(--ink); }
@@ -277,7 +309,7 @@ dialog {
 dialog::backdrop { background: rgba(10, 14, 30, .55); }   /* sfondo scuro dietro la finestra */
 
 /* foto grande in alto */
-.dlg-pic { position: relative; background: #fff; height: min(320px, 42vh); padding: 12px; display: block; }
+.dlg-pic { position: relative; background: var(--white); height: min(320px, 42vh); padding: 12px; display: block; }
 .dlg-pic img { width: 100%; height: 100%; object-fit: contain; }
 .nophoto { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; color: var(--muted); font-size: .9rem; }
 
@@ -342,10 +374,10 @@ input[readonly] { pointer-events: none; }
 .chips { display: contents; }
 .chip {
   display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 10px; border-radius: 999px;
-  background: color-mix(in srgb, var(--amber) 12%, #fff); color: var(--amber); font-size: .8125rem;
+  background: color-mix(in srgb, var(--amber) 12%, var(--white)); color: var(--amber); font-size: .8125rem;
 }
 .chip button { all: unset; cursor: pointer; padding: 0 6px; font-size: 1rem; line-height: 1; border-radius: 999px; }
-.chip button:hover { background: color-mix(in srgb, var(--amber) 20%, #fff); }
+.chip button:hover { background: color-mix(in srgb, var(--amber) 20%, var(--white)); }
 
 /* hashtag suggeriti (#Halloween, #Natale…) */
 .tagsug { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .75rem; color: var(--muted); }
@@ -371,11 +403,9 @@ input[readonly] { pointer-events: none; }
 /* =====================================================================
    10. ADATTAMENTI
    ===================================================================== */
-/* oggetti molto stretti: nascondo la scritta "Ce l'ho" e lascio la casella */
+/* oggetti molto stretti: matita più piccola e contatore senza la scritta "Doppi" */
 @container pen (max-width: 90px) {
-  .have-text { display: none; }
-  .row { justify-content: center; gap: 6px; }
-  .edit { padding: 2px 3px; font-size: .9rem; }
+  .edit { padding: 1px 2px; font-size: .85rem; }
   .doppi .etichetta { display: none; }   /* resta solo  − 2 +  */
   .doppi { justify-content: center; }
 }
@@ -414,6 +444,19 @@ input[readonly] { pointer-events: none; }
 .serie-titolo .serie-scambi { margin-left: auto; align-self: center; padding: 6px 12px; border-radius: 8px; background: var(--amber); color: var(--white); font-size: .8125rem; font-weight: 600; text-decoration: none; }
 .serie-titolo .serie-scambi:hover { text-decoration: none; background: color-mix(in srgb, var(--amber) 88%, #000); }
 .raccolta .empty .st-btn { margin-top: 12px; }
+/* "Non la cerco più" sotto ogni serie di "Mi mancano": scritta piccola, a destra */
+.non-cerco { display: block; margin: 10px 0 0 auto; padding: 4px 0; border: 0; background: none; color: var(--muted); font-size: .8125rem; text-decoration: underline; text-underline-offset: 3px; }
+.non-cerco:hover { color: var(--ink); }
+/* tendina grigia in fondo con le serie che non cerco più, ognuna con "Riprendi" */
+.pausa { margin-top: 36px; border-radius: 12px; background: var(--riquadro); }
+.pausa summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; font-weight: 700; cursor: pointer; list-style: none; }
+.pausa summary::-webkit-details-marker { display: none; }
+.pausa summary::after { content: ""; width: 9px; height: 9px; border-right: 2.5px solid var(--amber); border-bottom: 2.5px solid var(--amber); transform: rotate(45deg); transition: transform .2s; }
+.pausa[open] summary::after { transform: rotate(-135deg); }
+.pausa-serie { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.pausa-serie b { display: block; color: var(--muted); }
+.pausa-serie small { color: var(--muted); font-size: .8125rem; }
+.pausa-serie .st-btn { flex: none; padding: 7px 14px; }
 /* "Cerca": campo sempre aperto */
 .cerca-aperta { width: min(460px, 100%); margin: 8px auto 24px; padding-left: 10px; }
 .cerca-aperta svg { width: 20px; height: 20px; flex: none; }

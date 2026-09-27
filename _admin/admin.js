@@ -721,13 +721,16 @@ $('srRighe').addEventListener('click', e => {
   disegnaSerie();
 });
 /* NUMERI IN ORDINE: se tutti i numeri della serie sono numeri semplici (01, 02, 03…),
-   dopo uno spostamento o un pezzo tolto li rimetto in ordine dall'alto: 01, 02, 03…
+   anche con il codice o "USA" dopo il trattino ("01 - NV129", "13 - USA"),
+   dopo uno spostamento o un pezzo tolto rimetto in ordine dall'alto solo il numero
+   (01, 02, 03…): quello che c'è dopo " - " resta attaccato al suo pezzo.
    Numeri speciali (es. "01-A", "LE") = non tocco niente: li cambi tu.
    L'id e la foto di ogni pezzo NON cambiano (chi l'ha segnato "Ce l'ho" lo ritrova). */
 function rinumera() {
-  if (!sr.righe.length || !sr.righe.every(r => /^\d+$/.test(String(r.o.numero)))) return;
-  const cifre = Math.max(2, ...sr.righe.map(r => String(r.o.numero).length));
-  sr.righe.forEach((r, i) => { r.o.numero = pad(i + 1, cifre); });
+  const parti = sr.righe.map(r => /^(\d+)( - .+)?$/.exec(String(r.o.numero)));
+  if (!sr.righe.length || !parti.every(Boolean)) return;
+  const cifre = Math.max(2, ...parti.map(m => m[1].length));
+  sr.righe.forEach((r, i) => { r.o.numero = pad(i + 1, cifre) + (parti[i][2] || ''); });
 }
 $('srFile').addEventListener('change', async () => {
   const f = $('srFile').files[0]; if (!f || srFotoPer == null) return;

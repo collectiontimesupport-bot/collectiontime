@@ -18,7 +18,8 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="/sito.css?v=2026-09-26l">
+<link rel="stylesheet" href="/sito.css?v=2026-09-27">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <style>
   /* Base della pagina (st-wrap), titolo (st-titolo) e pulsante (st-btn) sono in sito.css:
      qui solo ciò che è diverso in questa pagina. */
@@ -35,7 +36,7 @@
 
 <!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
-  <svg class="clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#1A2140" stroke-width="1.6"/><path d="M12 12V6.5M12 12l4 2.3" fill="none" stroke="#F2A900" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="1" fill="#1A2140"/></svg>
+  <svg class="clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 12V6.5M12 12l4 2.3" fill="none" stroke="#F2A900" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
   <h1 class="st-titolo">Questo pezzo non è ancora in collezione</h1>
   <p>La pagina che cerchi non esiste o è stata spostata.</p>
   <a class="st-btn" href="/">Torna alle collezioni</a>
@@ -44,6 +45,6 @@
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
-<script src="/script.js?v=2026-09-27"></script>
+<script src="/script.js?v=2026-09-27b"></script>
 </body>
 </html>
