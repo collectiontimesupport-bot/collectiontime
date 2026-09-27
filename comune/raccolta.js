@@ -10,7 +10,10 @@
      raccolta.js  → questo file
    La parte dopo # nell'indirizzo sceglie cosa mostrare:
      #/mancanti   quelle che mancano (di base: solo nelle serie iniziate)
-     #/doppioni   i doppioni, con la lista da copiare per gli scambi
+     #/doppioni   i doppioni
+   In "Mi mancano" e "Doppioni" ogni serie ha il pulsante "Cerco e scambio":
+   apre la pagina della serie con la finestra Stampa già pronta per un PDF
+   o un'immagine con CERCO (mi mancano) e SCAMBIO (doppioni) — lo fa app.js.
      #/cerca      cerca in tutta la categoria (nome, numero, codice, serie)
    "Ce l'ho" e i doppioni sono gli STESSI delle pagine delle serie:
    ogni serie li salva nel browser nel suo archivio (INDICE → db), con
@@ -85,9 +88,11 @@
     const stretta = s.pr >= 3;
     return `<div class="${esc(s.cl)}"><ul class="grid" style="--proporzione:${s.pr}; --pen-vh:${stretta ? 260 : 170}px; grid-template-columns: repeat(auto-fill, minmax(${stretta ? 56 : 110}px, 1fr))">${oggetti.map(o => oggetto(s, o)).join('')}</ul></div>`;
   }
-  /* titolo di una serie, con il link alla sua pagina */
-  const titoloSerie = (s, extra) =>
-    `<div class="serie-titolo"><h2><a href="../${s.p}/index.html">${esc(s.t)}</a></h2><small>${[s.g, s.d, extra].filter(Boolean).map(esc).join(' · ')}</small></div>`;
+  /* titolo di una serie, con il link alla sua pagina;
+     con scambi = true anche il pulsante "Cerco e scambio" (vedi in cima) */
+  const titoloSerie = (s, extra, scambi) =>
+    `<div class="serie-titolo"><h2><a href="../${s.p}/index.html">${esc(s.t)}</a></h2><small>${[s.g, s.d, extra].filter(Boolean).map(esc).join(' · ')}</small>`
+    + (scambi ? `<a class="serie-scambi" href="../${s.p}/index.html#cerco-scambio">Cerco e scambio</a>` : '') + '</div>';
   /* intestazione: link alla categoria, titolo, conteggio e strumenti */
   const testa = (titolo, sotto, strumenti) => `<a class="st-back" href="../index.html">&larr; ${esc(INDICE.categoria)}</a>
     <header><h1><span class="titolo-testo">${titolo}</span></h1>
@@ -106,26 +111,19 @@
     const tot = elenco.reduce((t, s) => t + s.x.length - quante(s), 0);
     app.innerHTML = testa('MI MANCANO', plurale(tot, 'oggetto', 'oggetti') + ' in ' + plurale(elenco.length, 'serie', 'serie'),
       menu('iniziate', [['1', 'Serie che ho iniziato'], ['0', 'Tutte le serie']], soloIniziate ? '1' : '0', 'Quali serie') + menuGruppi())
-      + (elenco.map(s => { const m = s.x.filter(o => !ce[o[0]]); return titoloSerie(s, m.length === 1 ? 'ne manca 1' : 'ne mancano ' + m.length) + griglia(s, m); }).join('')
+      + (elenco.map(s => { const m = s.x.filter(o => !ce[o[0]]); return titoloSerie(s, m.length === 1 ? 'ne manca 1' : 'ne mancano ' + m.length, true) + griglia(s, m); }).join('')
         || vuoto(soloIniziate ? 'Non hai ancora iniziato nessuna serie. Segna con "Ce l\'ho" quello che hai: qui vedrai cosa manca per completare le serie.' : 'Non ti manca niente!'))
       + '<p class="hint" style="margin-top:28px">Premi su una foto per segnare che ce l\'hai. Con + e − conti i doppioni.</p>';
   }
 
-  /* DOPPIONI: quelli segnati con +, con la lista da copiare */
+  /* DOPPIONI: quelli segnati con + */
   function doppioni() {
     const elenco = SERIE.filter(s => (!gruppo || s.g === gruppo) && doppiDi(s));
     const tot = elenco.reduce((t, s) => t + doppiDi(s), 0);
     app.innerHTML = testa('DOPPIONI', plurale(tot, 'doppione', 'doppioni') + (elenco.length ? ' in ' + plurale(elenco.length, 'serie', 'serie') : ''),
-      menuGruppi() + (tot ? '<button type="button" class="btn primary" id="copia">Copia la lista per gli scambi</button>' : ''))
-      + (elenco.map(s => titoloSerie(s) + griglia(s, s.x.filter(o => doppi[o[0]]))).join('')
+      menuGruppi())
+      + (elenco.map(s => titoloSerie(s, '', true) + griglia(s, s.x.filter(o => doppi[o[0]]))).join('')
         || vuoto('Nessun doppione. Hai qualcosa in più? Premi + sotto la foto, nella pagina della serie.'));
-    const b = document.getElementById('copia');
-    if (b) b.onclick = () => {
-      const righe = elenco.map(s => s.t + (s.d ? ' (' + s.d + ')' : '') + ': ' + s.x.filter(o => doppi[o[0]])
-        .map(o => [o[1], o[2]].filter(Boolean).join(' ') + (doppi[o[0]] > 1 ? ' ×' + doppi[o[0]] : '')).join(', '));
-      navigator.clipboard.writeText('I miei doppioni · ' + INDICE.categoria + ' · Collection Time\n\n' + righe.join('\n'))
-        .then(() => avviso('Lista copiata: incollala in un messaggio.'), () => avviso('Non riesco a copiare la lista.'));
-    };
   }
 
   /* CERCA: in tutta la categoria */

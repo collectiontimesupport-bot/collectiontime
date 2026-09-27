@@ -383,6 +383,9 @@ input[readonly] { pointer-events: none; }
 .serie-titolo a { color: var(--titolo); text-decoration: none; }
 .serie-titolo a:hover { text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 3px; text-underline-offset: 5px; }
 .serie-titolo small { color: var(--muted); font-size: .875rem; }
+/* pulsante "Cerco e scambio" a destra del titolo (apre la stampa CERCO / SCAMBIO della serie) */
+.serie-titolo .serie-scambi { margin-left: auto; align-self: center; padding: 6px 12px; border-radius: 8px; background: var(--amber); color: var(--white); font-size: .8125rem; font-weight: 600; text-decoration: none; }
+.serie-titolo .serie-scambi:hover { text-decoration: none; background: color-mix(in srgb, var(--amber) 88%, #000); }
 .raccolta .empty .st-btn { margin-top: 12px; }
 /* "Cerca": campo sempre aperto */
 .cerca-aperta { width: min(460px, 100%); margin: 8px auto 24px; padding-left: 10px; }

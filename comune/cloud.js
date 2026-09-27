@@ -49,7 +49,10 @@ import { getFirestore, doc, getDoc, setDoc, deleteDoc } from 'https://www.gstati
    (copiati da https://collection-time-dd8fe.firebaseapp.com/__/auth/handler,
    handler.js, experiments.js, iframe, iframe.js) e _config.yml la rende visibile.
    Nella console di Google Cloud (API e servizi → Credenziali → client web)
-   è autorizzato l'indirizzo https://collectiontime.com/__/auth/handler */
+   sono autorizzati DUE indirizzi: https://collectiontime.com/__/auth/handler
+   e https://collectiontime.com/__/auth/handler/ (con la barra finale: GitHub
+   aggiunge la barra perché "handler" è una cartella; senza questo indirizzo
+   Google risponde "Errore 400: redirect_uri_mismatch"). */
 const FIREBASE = {
   apiKey: 'AIzaSyCgch5N04Z8YBprYCyJiMj_cYoXfz32b7c',
   authDomain: 'collectiontime.com',

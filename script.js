@@ -10,6 +10,7 @@
    5) avviso(testo): l'avviso temporaneo in basso, usato anche da app.js
    6) la barra in basso delle categorie (Serie · Mi mancano · Doppioni · Cerca)
    7) le card divise per anno in tendine (solo le liste con data-per-anno)
+   8) le statistiche delle visite (GoatCounter, senza cookie)
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js?v=2026-09-26"></script>
    (dentro una sottocartella: <script src="../script.js?v=2026-09-26"></script>)
@@ -462,3 +463,17 @@ caricaParte('footer-placeholder', 'footer.html');
 perAnno();          // prima della ricerca: le card vengono spostate nelle tendine
 avviaCerca();
 barraCategoria();
+
+/* ---------- Statistiche delle visite (GoatCounter) ----------
+   Conta le pagine viste SENZA cookie e senza dati personali: i numeri si
+   vedono su https://collectiontime.goatcounter.com (o dall'area admin).
+   Solo sul sito vero (collectiontime.com): le prove sul Mac non contano.
+   Per non contare le TUE visite: apri https://www.collectiontime.com/#toggle-goatcounter
+   una volta su ogni tuo dispositivo e premi il pulsante che compare. */
+if (/(^|\.)collectiontime\.com$/.test(location.hostname)) {
+  const gc = document.createElement('script');
+  gc.async = true;
+  gc.dataset.goatcounter = 'https://collectiontime.goatcounter.com/count';
+  gc.src = 'https://gc.zgo.at/count.js';
+  document.head.append(gc);
+}

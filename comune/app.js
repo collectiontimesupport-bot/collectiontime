@@ -21,7 +21,7 @@
      · ricerca e filtri
      · disegno della pagina (+ bagliore)
      · finestra "Dettagli"
-     · stampa in PDF o immagine
+     · stampa in PDF o immagine (anche "Cerco e scambio")
      · controlli
      · avvio
    ===================================================================== */
@@ -394,7 +394,7 @@
 
   /* ---------- stampa in PDF ---------- */
   const printDlg = $('printDlg');
-  const kindName = { all: 'tutte', missing: 'mancanti', owned: 'collezione' };
+  const kindName = { all: 'tutte', missing: 'mancanti', owned: 'collezione', scambi: 'cerco-scambio' };
   /* penne da mettere nel PDF secondo la scelta fatta */
   function printList(kind) {
     const all = [...pens].sort(byPos);
@@ -601,6 +601,9 @@
   }
 
   /* crea il PDF (immagine = false) o l'immagine da condividere (immagine = true).
+     "sezioni" = le parti da stampare, ognuna { titolo, sotto, items, scambio }:
+     le stampe normali hanno UNA parte senza titolo; "Cerco e scambio" ne ha due
+     (CERCO e SCAMBIO), ognuna con la sua testata.
      Ogni oggetto ha la sua scheda bianca: foto (intera, mai tagliata), [nome], numero, quadratino.
      L'IMMAGINE ha la stessa grafica del PDF ma è UNA sola, alta quanto serve:
      tutti gli oggetti uno sotto l'altro, senza spazio vuoto in fondo.
@@ -611,7 +614,7 @@
        e tante file quante ne entrano nella pagina. Le schede hanno sempre la stessa misura,
        quindi una serie normale sta in una pagina sola. L'ultima fila si mette al centro. */
   const PDF_COLONNE = 6;   // oggetti per fila nel PDF verticale (più alto = schede più piccole)
-  async function makePdf(list, kind, immagine) {
+  async function makePdf(sezioni, kind, immagine) {
     await loadPdfLib();   // serve anche per l'immagine: misura le scritte
     if (typeof PDFLib === 'undefined') { say('Il modulo per creare il PDF non è disponibile.'); return; }
     say(immagine ? "Sto creando l'immagine…" : 'Sto creando il PDF…');
@@ -640,7 +643,7 @@
     const W = orizzontale ? 841.89 : 595.28, MX = 28;
     let H = orizzontale ? 595.28 : 841.89;                  // l'immagine poi diventa alta quanto serve
     const COLS = orizzontale ? CONFIG.pdfColonne : PDF_COLONNE;
-    let ROWS = orizzontale ? (CONFIG.pdfFile || 2) : 0;     // nel PDF verticale lo calcolo più sotto
+    const ROWS = CONFIG.pdfFile || 2;                       // file per pagina (solo Legami)
     const BAND = 30;                                        // banda blu in alto
     /* titolo scritto su un cartellino bianco, come le schede; TITOLO_H = altezza delle lettere */
     let TITOLO_H = 32;
@@ -670,9 +673,11 @@
        • oggetti alti e stretti (CONFIG.proporzione > 1: penne, lampade) → tutti ALTI UGUALI;
        • foto quadrate (LEGO) → tutte con la STESSA scala, scelta in modo che la foto
          più larga e quella più alta entrino nella scheda (restano in proporzione). */
-    const foto = await Promise.all(list.map(p => (p.image || SLOT_IMG) ? ritaglio(p.image || SLOT_IMG).catch(() => null) : null));
+    const list = sezioni.flatMap(s => s.items);             // tutti gli oggetti, di tutte le parti
+    const fotoLette = await Promise.all(list.map(p => (p.image || SLOT_IMG) ? ritaglio(p.image || SLOT_IMG).catch(() => null) : null));
+    const foto = new Map(list.map((p, i) => [p, fotoLette[i]]));   // oggetto → la sua foto ritagliata
     const altiUguali = (CONFIG.proporzione || 7) > 1;
-    const maxW = Math.max(1, ...foto.map(f => f ? f.w : 0)), maxH = Math.max(1, ...foto.map(f => f ? f.h : 0));
+    const maxW = Math.max(1, ...fotoLette.map(f => f ? f.w : 0)), maxH = Math.max(1, ...fotoLette.map(f => f ? f.h : 0));
     const scala = Math.min(fotoW / maxW, fotoMaxH / maxH);
     const misura = f => {                                   // larghezza e altezza di una foto nel PDF
       const k = altiUguali ? Math.min(fotoW / f.w, fotoMaxH / f.h) : scala;
@@ -680,15 +685,36 @@
     };
     const fotoH = altiUguali ? fotoMaxH : maxH * scala;     // altezza della zona foto
     const cardH = fotoH + 2 * PAD + TESTO_H;
-    if (!orizzontale) ROWS = Math.max(1, Math.floor((spazio + ROW_GAP) / (cardH + ROW_GAP)));   // file che entrano
-    if (immagine) {                                         // immagine: tutte le file, altezza su misura
-      ROWS = Math.ceil(list.length / COLS);
-      H = SOPRA + CART_H + TITOLO_GAP + ROWS * cardH + (ROWS - 1) * ROW_GAP + gridBottom;
+
+    /* FILE: ogni parte = la sua testata (se ha un titolo) + le sue file di schede */
+    const TESTA_H = 24;                                     // altezza della testata di una parte (CERCO, SCAMBIO)
+    const file = [];
+    sezioni.forEach(s => {
+      if (s.titolo) file.push({ testa: s });
+      for (let i = 0; i < s.items.length; i += COLS) file.push({ items: s.items.slice(i, i + COLS), sezione: s });
+    });
+    const alto = ff => ff.reduce((t, f) => t + (f.testa ? TESTA_H : cardH), 0) + Math.max(0, ff.length - 1) * ROW_GAP;   // altezza di un gruppo di file
+
+    /* PAGINE: in ogni pagina metto file finché ci stanno. Una testata non resta mai
+       da sola in fondo alla pagina: va a capo insieme alla sua prima fila.
+       L'immagine invece è una pagina sola, alta quanto serve. */
+    const pagine = [];
+    if (immagine) {
+      pagine.push(file);
+      H = SOPRA + CART_H + TITOLO_GAP + alto(file) + gridBottom;
+    } else {
+      let pg = [];
+      file.forEach((f, i) => {
+        const conSeguente = f.testa && file[i + 1] ? [...pg, f, file[i + 1]] : [...pg, f];
+        if (pg.length && alto(conSeguente) > spazio + 0.5) { pagine.push(pg); pg = []; }
+        pg.push(f);
+      });
+      if (pg.length) pagine.push(pg);
     }
     const areaTop = H - SOPRA, gridTop = areaTop - CART_H - TITOLO_GAP;
-    /* titolo + schede formano un blocco unico, centrato in altezza nella pagina */
-    const righe = Math.min(ROWS, Math.ceil(list.length / COLS));
-    const avanzo = (gridTop - gridBottom - righe * cardH - (righe - 1) * ROW_GAP) / 2;
+    /* titolo + schede formano un blocco unico, centrato in altezza (misurato sulla pagina più piena) */
+    const bloccoH = Math.max(...pagine.map(alto));
+    const avanzo = (gridTop - gridBottom - bloccoH) / 2;
     const cartTop = areaTop - avanzo, primaFila = gridTop - avanzo;
 
     /* scheda bianca con gli angoli arrotondati */
@@ -705,13 +731,23 @@
     }
 
     /* scritta nella banda in alto: che cosa è stato stampato */
-    const cosa = { owned: 'La mia collezione', missing: 'Quelle che mi mancano', all: 'Checklist da compilare' }[kind];
+    const cosa = { owned: 'La mia collezione', missing: 'Quelle che mi mancano', all: 'Checklist da compilare', scambi: 'Cerco e scambio' }[kind];
+
+    /* testata di una parte: cartellino bianco con "CERCO" o "SCAMBIO" e sotto-titolo, poi una riga ambra fino al bordo */
+    function testata(pg, s, top) {
+      const T = pdfText(s.titolo), D = pdfText(s.sotto || ''), SZ = 12, sz = 9;
+      const tw = bold.widthOfTextAtSize(T, SZ), dw = D ? font.widthOfTextAtSize(D, sz) + 10 : 0;
+      const w = tw + dw + 24, h = TESTA_H;
+      pg.drawSvgPath(scheda(w, h), { x: MX, y: top, color: bianco, borderColor: ambra, borderWidth: 1.2 });
+      pg.drawText(T, { x: MX + 12, y: top - h / 2 - SZ * 0.35, size: SZ, font: bold, color: ink });
+      if (D) pg.drawText(D, { x: MX + 12 + tw + 10, y: top - h / 2 - sz * 0.35, size: sz, font, color: grigio });
+      pg.drawRectangle({ x: MX + w + 8, y: top - h / 2 - 0.75, width: W - 2 * MX - w - 8, height: 1.5, color: ambra });
+    }
 
     const sfondo = await metti(sfondoTela(W, H));
     const pages = [];
     let ghost = null;      // sagoma degli slot vuoti: inserita una volta sola
-    const perPage = COLS * ROWS;
-    for (let start = 0; start < list.length; start += perPage) {
+    for (const filePagina of pagine) {
       const page = immagine ? paginaTela(W, H, bold) : doc.addPage([W, H]);
       pages.push(page);
 
@@ -736,59 +772,70 @@
       if (logo) page.drawImage(logo, { x: (W - LOGO_W) / 2, y: cartTop - CART_PY - TITOLO_H, width: LOGO_W, height: TITOLO_H });
       else page.drawText(title, { x: (W - tw) / 2, y: cartTop - CART_PY - TITOLO_H, size: TITOLO_H * 1.35, font: bold, color: ink });
 
-      const chunk = list.slice(start, start + perPage);
-      for (let i = 0; i < chunk.length; i++) {
-        const p = chunk[i];
-        const r = Math.floor(i / COLS), c = i % COLS;
-        const inFila = Math.min(COLS, chunk.length - r * COLS);                 // oggetti in questa fila
-        const spost = orizzontale ? 0 : (COLS - inFila) * colPitch / 2;          // fila corta: al centro (non per Legami)
-        const cx = MX + spost + c * colPitch + colPitch / 2;                     // centro della colonna
-        const top = primaFila - r * (cardH + ROW_GAP);        // bordo alto della scheda
-        const spuntata = kind === 'owned' && p.owned;
+      let top = primaFila;                                  // bordo alto della fila che sto disegnando
+      for (const fila of filePagina) {
+        if (fila.testa) { testata(page, fila.testa, top); top -= TESTA_H + ROW_GAP; continue; }
+        const inFila = fila.items.length;                   // oggetti in questa fila
+        for (let c = 0; c < inFila; c++) {
+          const p = fila.items[c];
+          const spost = orizzontale ? 0 : (COLS - inFila) * colPitch / 2;        // fila corta: al centro (non per Legami)
+          const cx = MX + spost + c * colPitch + colPitch / 2;                   // centro della colonna
+          const spuntata = kind === 'owned' && p.owned;
 
-        /* scheda: bordo ambra se ce l'hai, grigio se no */
-        page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, color: bianco,
-          borderColor: spuntata ? ambra : gray, borderWidth: spuntata ? 1.4 : 0.6 });
+          /* scheda: bordo ambra se ce l'hai, grigio se no */
+          page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, color: bianco,
+            borderColor: spuntata ? ambra : gray, borderWidth: spuntata ? 1.4 : 0.6 });
 
-        /* foto appoggiata in basso nella sua zona, come su uno scaffale */
-        const fotoTop = top - PAD, f = foto[start + i];
-        if (f) {
-          const [dw, dh] = misura(f), x = cx - dw / 2, y = fotoTop - fotoH;
-          if (p.image) page.drawImage(await metti(fotoTela(f, dw, dh, false), true), { x, y, width: dw, height: dh });
-          else {
-            if (!ghost) ghost = await metti(fotoTela(f, dw, dh, true));
-            page.drawImage(ghost, { x, y, width: dw, height: dh });
+          /* foto appoggiata in basso nella sua zona, come su uno scaffale */
+          const fotoTop = top - PAD, f = foto.get(p);
+          if (f) {
+            const [dw, dh] = misura(f), x = cx - dw / 2, y = fotoTop - fotoH;
+            if (p.image) page.drawImage(await metti(fotoTela(f, dw, dh, false), true), { x, y, width: dw, height: dh });
+            else {
+              if (!ghost) ghost = await metti(fotoTela(f, dw, dh, true));
+              page.drawImage(ghost, { x, y, width: dw, height: dh });
+            }
+          }
+          let y = fotoTop - fotoH - GAP;
+
+          /* nome (solo se la collezione lo chiede: CONFIG.mostraNomi), su 1 o 2 righe */
+          if (nomi) {
+            const righe = righeNome(pdfText(p.name || ''), bold, NOME_SIZE, cardW - 2 * PAD);
+            const y0 = y - NOME_RIGA + 2 - (2 - righe.length) * NOME_RIGA / 2;   // 1 riga = centrata nello spazio di 2
+            righe.forEach((t, k) => {
+              const tw = bold.widthOfTextAtSize(t, NOME_SIZE);
+              page.drawText(t, { x: cx - tw / 2, y: y0 - k * NOME_RIGA, size: NOME_SIZE, font: bold, color: ink });
+            });
+            y -= NOME_H;
+          }
+
+          /* riquadro con il numero */
+          const boxY = y - CODE_H;
+          page.drawRectangle({ x: cx - 13, y: boxY, width: 26, height: CODE_H, color: carta, borderColor: gray, borderWidth: 0.6 });
+          const code = pdfText(p.code || '');
+          if (code) {
+            const tw = bold.widthOfTextAtSize(code, 7.5);
+            page.drawText(code, { x: cx - tw / 2, y: boxY + 3.6, size: 7.5, font: bold, color: p.limited ? red : ink });
+          }
+
+          /* parte SCAMBIO: al posto del quadratino, quanti doppioni ho (×2, ×3…; niente se è uno solo) */
+          if (fila.sezione.scambio) {
+            if (p.doppi > 1) {
+              const t = '×' + p.doppi, tw = bold.widthOfTextAtSize(t, 9);
+              page.drawText(t, { x: cx - tw / 2, y: boxY - GAP - BOX + 0.5, size: 9, font: bold, color: ambra });
+            }
+            continue;
+          }
+
+          /* quadratino della checklist (spunta ambra se ce l'hai) */
+          const qy = boxY - GAP - BOX;
+          page.drawRectangle({ x: cx - BOX / 2, y: qy, width: BOX, height: BOX, color: bianco, borderColor: grigio, borderWidth: 0.8 });
+          if (spuntata) {
+            page.drawLine({ start: { x: cx - 2.6, y: qy + 3.9 }, end: { x: cx - 0.7, y: qy + 1.7 }, thickness: 1.3, color: ambra });
+            page.drawLine({ start: { x: cx - 0.7, y: qy + 1.7 }, end: { x: cx + 3, y: qy + 6.4 }, thickness: 1.3, color: ambra });
           }
         }
-        let y = fotoTop - fotoH - GAP;
-
-        /* nome (solo se la collezione lo chiede: CONFIG.mostraNomi), su 1 o 2 righe */
-        if (nomi) {
-          const righe = righeNome(pdfText(p.name || ''), bold, NOME_SIZE, cardW - 2 * PAD);
-          const y0 = y - NOME_RIGA + 2 - (2 - righe.length) * NOME_RIGA / 2;   // 1 riga = centrata nello spazio di 2
-          righe.forEach((t, k) => {
-            const tw = bold.widthOfTextAtSize(t, NOME_SIZE);
-            page.drawText(t, { x: cx - tw / 2, y: y0 - k * NOME_RIGA, size: NOME_SIZE, font: bold, color: ink });
-          });
-          y -= NOME_H;
-        }
-
-        /* riquadro con il numero */
-        const boxY = y - CODE_H;
-        page.drawRectangle({ x: cx - 13, y: boxY, width: 26, height: CODE_H, color: carta, borderColor: gray, borderWidth: 0.6 });
-        const code = pdfText(p.code || '');
-        if (code) {
-          const tw = bold.widthOfTextAtSize(code, 7.5);
-          page.drawText(code, { x: cx - tw / 2, y: boxY + 3.6, size: 7.5, font: bold, color: p.limited ? red : ink });
-        }
-
-        /* quadratino della checklist (spunta ambra se ce l'hai) */
-        const qy = boxY - GAP - BOX;
-        page.drawRectangle({ x: cx - BOX / 2, y: qy, width: BOX, height: BOX, color: bianco, borderColor: grigio, borderWidth: 0.8 });
-        if (spuntata) {
-          page.drawLine({ start: { x: cx - 2.6, y: qy + 3.9 }, end: { x: cx - 0.7, y: qy + 1.7 }, thickness: 1.3, color: ambra });
-          page.drawLine({ start: { x: cx - 0.7, y: qy + 1.7 }, end: { x: cx + 3, y: qy + 6.4 }, thickness: 1.3, color: ambra });
-        }
+        top -= cardH + ROW_GAP;
       }
     }
 
@@ -803,13 +850,26 @@
     tesseraCanvas(fctx, 'rgba(26, 33, 64, .5)', '#1A2140');   // tessera a metà, spunta piena: nessuna macchia
     const filigrana = await metti(fc);
 
+    /* "collectiontime.com" del piè di pagina: disegnato come IMMAGINE, non come testo,
+       così i programmi che aprono il PDF (Anteprima, Acrobat…) non lo trasformano
+       in un link cliccabile. Nel PDF non c'è nessun link. */
+    const SITO_SIZE = 14, sc = document.createElement('canvas'), sctx = sc.getContext('2d'), SK = 4;   // 4 pixel per punto: nitido
+    const sitoW = bold.widthOfTextAtSize('collectiontime.com', SITO_SIZE);
+    sc.width = Math.ceil(sitoW * SK); sc.height = Math.ceil(SITO_SIZE * 1.25 * SK);
+    sctx.scale(SK, SK);
+    sctx.font = '700 ' + SITO_SIZE + 'px Helvetica, Arial, sans-serif';
+    sctx.fillStyle = '#1A2140';
+    sctx.textBaseline = 'alphabetic';
+    sctx.fillText('collectiontime.com', 0, SITO_SIZE);
+    const sito = await metti(sc);
+
     pages.forEach((pg, i) => {
       const WM = Math.min(250, H * 0.6);                    // più piccola nelle immagini basse
-      pg.drawImage(filigrana, { x: (W - WM) / 2, y: primaFila - (righe * cardH + (righe - 1) * ROW_GAP + WM) / 2, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
+      pg.drawImage(filigrana, { x: (W - WM) / 2, y: primaFila - (bloccoH + WM) / 2, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
 
       /* piè di pagina a sinistra: tessera piccola + indirizzo del sito */
       marchio(pg, MX, 36, 18, ink);
-      pg.drawText('collectiontime.com', { x: MX + 24, y: 22, size: 14, font: bold, color: ink });
+      pg.drawImage(sito, { x: MX + 24, y: 22 - SITO_SIZE * 0.25, width: sc.width / SK, height: sc.height / SK });
 
       /* numero di pagina in basso a destra (non nell'immagine: è una sola) */
       if (immagine) return;
@@ -833,11 +893,25 @@
                  : 'PDF salvato nella cartella Download (' + pages.length + (pages.length === 1 ? ' pagina).' : ' pagine).'));
   }
 
+  /* "Cerco e scambio": due parti, CERCO = quelli che mi mancano, SCAMBIO = i doppioni
+     (una parte vuota non si stampa). La voce nella finestra Stampa la aggiungo da qui,
+     così non serve cambiare ogni pagina. */
+  function sezioniScambi() {
+    const cerco = printList('missing'), scambio = printList('all').filter(p => p.doppi > 0);
+    const pezzi = scambio.reduce((t, p) => t + p.doppi, 0);
+    return [{ titolo: 'CERCO', sotto: 'Mi mancano · ' + cerco.length, items: cerco },
+            { titolo: 'SCAMBIO', sotto: 'Doppioni · ' + pezzi, items: scambio, scambio: true }].filter(s => s.items.length);
+  }
+  [...printDlg.querySelectorAll('.choice')].pop().insertAdjacentHTML('afterend',
+    '<label class="choice"><input type="radio" name="printKind" value="scambi"><span><strong>Cerco e scambio</strong> (<span id="cnt-scambi"></span>)'
+    + '<small>Da condividere per gli scambi: in alto quelli che cerco (mi mancano), sotto quelli che scambio (i doppioni).</small></span></label>');
+
   $('btnPrint').addEventListener('click', () => {
     const total = pens.filter(p => p.image || p.owned).length;
     $('cnt-owned').textContent = pens.filter(p => p.owned).length + ' su ' + total;
     $('cnt-missing').textContent = pens.filter(p => !p.owned && p.image).length + ' su ' + total;
     $('cnt-all').textContent = 'vuoto';
+    $('cnt-scambi').textContent = printList('missing').length + ' cerco · ' + pens.filter(p => p.doppi > 0).length + ' scambio';
     printDlg.showModal();
   });
   $('printCancel').addEventListener('click', () => printDlg.close());
@@ -845,14 +919,15 @@
   async function crea(immagine) {
     const chosen = printDlg.querySelector('input[name=printKind]:checked');
     const kind = chosen ? chosen.value : 'owned';
-    const list = printList(kind);
-    if (!list.length) {
-      say(kind === 'owned' ? 'Non hai ancora segnato niente nella tua collezione.' : 'Non ti manca nulla.');
+    const sezioni = kind === 'scambi' ? sezioniScambi() : [{ items: printList(kind) }];
+    if (!sezioni.some(s => s.items.length)) {
+      say(kind === 'owned' ? 'Non hai ancora segnato niente nella tua collezione.'
+        : kind === 'scambi' ? 'Non ti manca nulla e non hai doppioni.' : 'Non ti manca nulla.');
       return;
     }
     printDlg.close();
     try {
-      await makePdf(list, kind, immagine);
+      await makePdf(sezioni, kind, immagine);
     } catch (err) {
       console.error(err);
       /* aperta con doppio clic (file://) il browser vieta di leggere le foto */
@@ -928,5 +1003,12 @@
       say('Questo browser non permette di salvare la collezione (per esempio in navigazione privata).');
     }
     render();
+    /* arrivo dal pulsante "Cerco e scambio" di "Mi mancano" o "Doppioni" (indirizzo che finisce con #cerco-scambio):
+       apro la finestra Stampa già su quella voce, poi tolgo #cerco-scambio dall'indirizzo */
+    if (location.hash === '#cerco-scambio') {
+      history.replaceState(null, '', location.pathname + location.search);
+      $('btnPrint').click();
+      printDlg.querySelector('input[value="scambi"]').checked = true;
+    }
   })();
 })();
