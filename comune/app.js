@@ -402,12 +402,13 @@
 
   /* ---------- stampa in PDF ---------- */
   const printDlg = $('printDlg');
-  const kindName = { all: 'tutte', missing: 'mancanti', owned: 'collezione', scambi: 'cerco-scambio' };
-  /* penne da mettere nel PDF secondo la scelta fatta */
-  function printList(kind) {
+  /* tre scelte nella finestra Stampa: "La mia collezione" (owned), "Cerco e scambio" (scambi)
+     e "Checklist vuota" (all: tutti i pezzi senza spunte, da compilare a mano) */
+  const kindName = { owned: 'collezione', scambi: 'cerco-scambio', all: 'checklist' };
+  /* oggetti da mettere nel PDF: tutti, oppure solo quelli che mi mancano (per "Cerco") */
+  function printList(soloMancanti) {
     const all = [...pens].sort(byPos);
-    if (kind === 'missing') return all.filter(p => !p.owned && p.image);
-    return all; /* "tutte" e "collezione": tutte le penne */
+    return soloMancanti ? all.filter(p => !p.owned && p.image) : all;
   }
   /* carica una foto e aspetta che sia pronta */
   const loadImg = src => new Promise((res, rej) => {
@@ -610,7 +611,7 @@
 
   /* crea il PDF (immagine = false) o l'immagine da condividere (immagine = true).
      "sezioni" = le parti da stampare, ognuna { titolo, sotto, items, scambio }:
-     le stampe normali hanno UNA parte senza titolo; "Cerco e scambio" ne ha due
+     "La mia collezione" e "Checklist vuota" hanno UNA parte senza titolo; "Cerco e scambio" ne ha due
      (CERCO e SCAMBIO), ognuna con la sua testata.
      Ogni oggetto ha la sua scheda bianca: foto (intera, mai tagliata), [nome], numero, quadratino.
      L'IMMAGINE ha la stessa grafica del PDF ma è UNA sola, alta quanto serve:
@@ -739,7 +740,7 @@
     }
 
     /* scritta nella banda in alto: che cosa è stato stampato */
-    const cosa = { owned: 'La mia collezione', missing: 'Quelle che mi mancano', all: 'Checklist da compilare', scambi: 'Cerco e scambio' }[kind];
+    const cosa = { owned: 'La mia collezione', scambi: 'Cerco e scambio', all: 'Checklist da compilare' }[kind];
 
     /* testata di una parte: cartellino bianco con "CERCO" o "SCAMBIO" e sotto-titolo, poi una riga ambra fino al bordo */
     function testata(pg, s, top) {
@@ -817,14 +818,13 @@
             y -= NOME_H;
           }
 
-          /* riquadro con il numero */
+          /* riquadro con il numero: largo almeno 26, si allarga se il numero è lungo (es. "13 - USA"),
+             ma senza mai uscire dalla scheda */
           const boxY = y - CODE_H;
-          page.drawRectangle({ x: cx - 13, y: boxY, width: 26, height: CODE_H, color: carta, borderColor: gray, borderWidth: 0.6 });
-          const code = pdfText(p.code || '');
-          if (code) {
-            const tw = bold.widthOfTextAtSize(code, 7.5);
-            page.drawText(code, { x: cx - tw / 2, y: boxY + 3.6, size: 7.5, font: bold, color: p.limited ? red : ink });
-          }
+          const code = pdfText(p.code || ''), codeW = bold.widthOfTextAtSize(code, 7.5);
+          const boxW = Math.min(cardW - 2 * PAD, Math.max(26, codeW + 10));
+          page.drawRectangle({ x: cx - boxW / 2, y: boxY, width: boxW, height: CODE_H, color: carta, borderColor: gray, borderWidth: 0.6 });
+          if (code) page.drawText(code, { x: cx - codeW / 2, y: boxY + 3.6, size: 7.5, font: bold, color: p.limited ? red : ink });
 
           /* parte SCAMBIO: al posto del quadratino, quanti doppioni ho (×2, ×3…; niente se è uno solo) */
           if (fila.sezione.scambio) {
@@ -902,24 +902,18 @@
   }
 
   /* "Cerco e scambio": due parti, CERCO = quelli che mi mancano, SCAMBIO = i doppioni
-     (una parte vuota non si stampa). La voce nella finestra Stampa la aggiungo da qui,
-     così non serve cambiare ogni pagina. */
+     (una parte vuota non si stampa). */
   function sezioniScambi() {
-    const cerco = printList('missing'), scambio = printList('all').filter(p => p.doppi > 0);
+    const cerco = printList(true), scambio = printList(false).filter(p => p.doppi > 0);
     const pezzi = scambio.reduce((t, p) => t + p.doppi, 0);
     return [{ titolo: 'CERCO', sotto: 'Mi mancano · ' + cerco.length, items: cerco },
             { titolo: 'SCAMBIO', sotto: 'Doppioni · ' + pezzi, items: scambio, scambio: true }].filter(s => s.items.length);
   }
-  [...printDlg.querySelectorAll('.choice')].pop().insertAdjacentHTML('afterend',
-    '<label class="choice"><input type="radio" name="printKind" value="scambi"><span><strong>Cerco e scambio</strong> (<span id="cnt-scambi"></span>)'
-    + '<small>Da condividere per gli scambi: in alto quelli che cerco (mi mancano), sotto quelli che scambio (i doppioni).</small></span></label>');
 
   $('btnPrint').addEventListener('click', () => {
     const total = pens.filter(p => p.image || p.owned).length;
     $('cnt-owned').textContent = pens.filter(p => p.owned).length + ' su ' + total;
-    $('cnt-missing').textContent = pens.filter(p => !p.owned && p.image).length + ' su ' + total;
-    $('cnt-all').textContent = 'vuoto';
-    $('cnt-scambi').textContent = printList('missing').length + ' cerco · ' + pens.filter(p => p.doppi > 0).length + ' scambio';
+    $('cnt-scambi').textContent = printList(true).length + ' cerco · ' + pens.filter(p => p.doppi > 0).length + ' scambio';
     printDlg.showModal();
   });
   $('printCancel').addEventListener('click', () => printDlg.close());
@@ -927,10 +921,9 @@
   async function crea(immagine) {
     const chosen = printDlg.querySelector('input[name=printKind]:checked');
     const kind = chosen ? chosen.value : 'owned';
-    const sezioni = kind === 'scambi' ? sezioniScambi() : [{ items: printList(kind) }];
+    const sezioni = kind === 'scambi' ? sezioniScambi() : [{ items: printList(false) }];
     if (!sezioni.some(s => s.items.length)) {
-      say(kind === 'owned' ? 'Non hai ancora segnato niente nella tua collezione.'
-        : kind === 'scambi' ? 'Non ti manca nulla e non hai doppioni.' : 'Non ti manca nulla.');
+      say('Non ti manca nulla e non hai doppioni.');
       return;
     }
     printDlg.close();
