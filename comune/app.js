@@ -549,12 +549,18 @@
     });
   }
 
-  /* titolo del PDF: lo disegno con lo stesso carattere e colore del titolo della pagina */
+  /* titolo del PDF: lo disegno con lo stesso carattere e colore del titolo della pagina.
+     Il colore lo leggo SEMPRE come nel tema chiaro (il PDF ha lo sfondo chiaro): per un attimo
+     metto data-tema="chiaro", leggo e rimetto com'era (senza che lo schermo cambi). */
   async function titoloTela() {
     const el = document.querySelector('.titolo-testo');
     if (!el) return null;
-    const cs = getComputedStyle(el), text = el.textContent.trim(), size = 200;
-    const font = '700 ' + size + 'px ' + cs.fontFamily;
+    const radice = document.documentElement, tema = radice.dataset.tema;
+    radice.dataset.tema = 'chiaro';
+    const cs = getComputedStyle(el), colore = cs.color, famiglia = cs.fontFamily;
+    if (tema === undefined) delete radice.dataset.tema; else radice.dataset.tema = tema;
+    const text = el.textContent.trim(), size = 200;
+    const font = '700 ' + size + 'px ' + famiglia;
     try { if (document.fonts && document.fonts.load) await document.fonts.load(font, text); } catch (e) { /* uso il carattere disponibile */ }
     const c = document.createElement('canvas'), ctx = c.getContext('2d');
     ctx.font = font;
@@ -563,7 +569,7 @@
     c.width = Math.ceil(m.width) + 2 * pad;
     c.height = su + giu + 2 * pad;                          // alta quanto le lettere: niente spazio vuoto
     ctx.font = font;
-    ctx.fillStyle = cs.color;
+    ctx.fillStyle = colore;
     ctx.textBaseline = 'alphabetic';
     ctx.fillText(text, pad, pad + su);
     return c;
@@ -965,17 +971,28 @@
 
     const blob = immagine ? await fileDi(pages[0].tela, 'image/jpeg')
                           : new Blob([await doc.save()], { type: 'application/pdf' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
     /* nome del file, es. "collection-time_legami-erasable_mancanti_2026-09-23.pdf" (o .jpg) */
     const oggi = new Date(), dd = n => String(n).padStart(2, '0');                 // data del tuo computer (non quella di Londra)
-    a.download = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + (immagine ? '.jpg' : '.pdf');
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    say(immagine ? 'Immagine salvata nella cartella Download.'
-                 : 'PDF salvato nella cartella Download (' + pages.length + (pages.length === 1 ? ' pagina).' : ' pagine).'));
+    const nome = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + (immagine ? '.jpg' : '.pdf');
+    const scarica = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = nome;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      say(immagine ? 'Immagine salvata nella cartella Download.'
+                   : 'PDF salvato nella cartella Download (' + pages.length + (pages.length === 1 ? ' pagina).' : ' pagine).'));
+    };
+    /* IMMAGINE sul telefono: apro subito il menu Condividi (lì c'è "Salva immagine" → finisce
+       nelle Foto, con tutte le altre). Niente finestre in più: se il telefono non lo permette,
+       o sul computer, si scarica come prima. */
+    const jpg = immagine && typeof File === 'function' ? new File([blob], nome, { type: 'image/jpeg' }) : null;
+    if (jpg && navigator.canShare && navigator.canShare({ files: [jpg] }) && matchMedia('(pointer: coarse)').matches) {
+      navigator.share({ files: [jpg] }).catch(err => { if (!err || err.name !== 'AbortError') scarica(); });
+    }
+    else scarica();
   }
 
   /* "Cerco e scambio": due parti, CERCO = quelli che mi mancano, SCAMBIO = i doppioni

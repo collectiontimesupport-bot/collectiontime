@@ -113,7 +113,7 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-apri { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 /* pulsante pieno blu scuro (Contatti, pagina 404) */
 .st-btn { display: inline-block; background: var(--ink); color: var(--white); font-weight: 600; font-size: .9375rem; text-decoration: none; padding: 10px 22px; border-radius: 8px; transition: background .15s, color .15s; }
-.st-btn:hover { background: var(--amber); color: var(--ink); }
+.st-btn:hover { background: var(--amber); color: var(--blu); }
 
 /* ---------- banda in alto ----------
    "position: sticky; top: 0" la tiene ferma in cima mentre si scorre.
@@ -198,7 +198,7 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-guida ol svg { width: 18px; height: 18px; vertical-align: -3px; }
 .st-guida form { margin: 16px 0 0; text-align: right; }
 .st-guida button { padding: 8px 18px; border: 0; border-radius: 8px; background: var(--ink); color: var(--white); font: inherit; font-weight: 600; font-size: .9375rem; cursor: pointer; }
-.st-guida button:hover { background: var(--amber); color: var(--ink); }
+.st-guida button:hover { background: var(--amber); color: var(--blu); }
 
 /* ---------- finestra "Account" (Accedi con Google, la crea comune/cloud.js) ----------
    Stessa finestra di "Aggiungi alla Home", con più pulsanti in basso. */
@@ -322,7 +322,7 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-promemoria button { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line); background: none; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
 .st-promemoria button[data-p="accedi"] { background: var(--ink); border-color: var(--ink); color: var(--white); }
 .st-promemoria button:hover { border-color: var(--amber); }
-.st-promemoria button[data-p="accedi"]:hover { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+.st-promemoria button[data-p="accedi"]:hover { background: var(--amber); border-color: var(--amber); color: var(--blu); }
 
 /* ---------- pulsante del profilo e menu del profilo (li crea comune/cloud.js) ----------
    Dopo l'accesso il pulsante in alto diventa un cerchietto con l'iniziale;
@@ -330,7 +330,7 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 #stAccedi:has(.st-avatar) { padding: 0; border: 0; }
 .st-avatar { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
   background: var(--ink); color: var(--white); font: 700 1rem/1 system-ui, -apple-system, "Segoe UI", sans-serif; }
-#stAccedi:hover .st-avatar { background: var(--amber); color: var(--ink); }
+#stAccedi:hover .st-avatar { background: var(--amber); color: var(--blu); }
 .st-avatar.grande { width: 46px; height: 46px; font-size: 1.25rem; flex: none; }
 .st-profilo { position: fixed; right: 12px; z-index: 40; width: min(300px, calc(100vw - 24px)); padding: 16px;
   border: 1px solid var(--line); border-radius: 14px; background: var(--white); color: var(--ink);

@@ -147,7 +147,7 @@ const Motore = (() => {
   }
   const STILE_TUTTI = `  /* collegamento "Vedi tutti … insieme" (come nella home LEGO) */
   .tutte-link { text-align: center; margin: -18px 0 28px; }
-  .tutte-link a { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--amber); color: var(--ink); font-weight: 600; text-decoration: none; }
+  .tutte-link a { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--amber); color: var(--blu); font-weight: 600; text-decoration: none; }
   .tutte-link a:hover { filter: brightness(1.06); }
 `;
   /* aggiunge il pulsante (e il suo stile, se manca) sopra le card */
