@@ -1011,6 +1011,24 @@
     printDlg.showModal();
   });
   $('printCancel').addEventListener('click', () => printDlg.close());
+
+  /* "Condividi": manda il LINK di questa pagina (chi scarica il PDF/l'immagine non può
+     condividerli da lì, il link sì). Sul telefono apre il menu Condividi di sistema;
+     dove non c'è (PC, browser che non lo supportano), copia il link e lo dice con "avviso". */
+  $('btnShare').addEventListener('click', async () => {
+    const dati = { title: document.title, url: location.href };
+    if (navigator.share && matchMedia('(pointer: coarse)').matches) {
+      try { await navigator.share(dati); } catch (err) { if (!err || err.name !== 'AbortError') copiaLink(); }
+    } else copiaLink();
+  });
+  async function copiaLink() {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      say('Link copiato: incollalo dove vuoi.');
+    } catch (err) {
+      say(location.href);
+    }
+  }
   /* "Crea PDF" (da stampare) e "Crea immagine" (da condividere) */
   async function crea(immagine) {
     const chosen = printDlg.querySelector('input[name=printKind]:checked');
