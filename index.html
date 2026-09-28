@@ -26,7 +26,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=2026-09-27">
+<link rel="stylesheet" href="sito.css?v=2026-09-28">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
 <link rel="preload" href="comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
@@ -85,6 +85,15 @@
       <input type="search" placeholder="Cerca una categoria" aria-label="Cerca una categoria" tabindex="-1" autocomplete="off">
     </div>
   </div>
+  <!-- Numeri del sito (pezzi, serie, categorie e, da 150 in su, iscritti) e Novità (le ultime serie create):
+       li riempie script.js con comune/home.json, che scrive da solo l'area amministratore. Lasciare vuoti. -->
+  <div class="st-numeri" id="homeNumeri" hidden></div>
+  <section class="st-sezione" id="homeNovita" hidden>
+    <h2 class="st-sez-titolo">Novità</h2>
+    <ul class="st-novita"></ul>
+  </section>
+  <!-- ! MODIFICA: titolo sopra le card delle categorie -->
+  <h2 class="st-sez-titolo">Tutte le categorie</h2>
   <p class="st-nessuna" hidden>Nessuna categoria trovata.</p>
   <!-- Una card per ogni categoria: per aggiungerne una, copia un <li> ... </li> e cambia link e testi.
        data-cerca = parole in più che la ricerca trova (es. le collezioni che ci sono dentro). -->
@@ -155,6 +164,15 @@
       </a>
     </li>
   </ul>
+  <!-- ! MODIFICA: "Come funziona" in 3 passi (titolo e testi) -->
+  <section class="st-sezione st-sezione-fondo">
+    <h2 class="st-sez-titolo">Come funziona</h2>
+    <ol class="st-passi">
+      <li><strong>Trova la serie</strong><span>Scegli la categoria e apri la serie che collezioni.</span></li>
+      <li><strong>Spunta i pezzi</strong><span>Tocca quelli che hai: si illuminano. Segna anche i doppioni.</span></li>
+      <li><strong>Vedi cosa ti manca</strong><span>In «Mi mancano» trovi la lista pronta da stampare o condividere.</span></li>
+    </ol>
+  </section>
 </main>
 
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
@@ -163,6 +181,6 @@
 <!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=2026-09-27c"></script>
+<script src="script.js?v=2026-09-28"></script>
 </body>
 </html>

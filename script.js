@@ -13,6 +13,8 @@
    8) le statistiche delle visite (GoatCounter, senza cookie)
    9) il percorso in alto (Kinder Ferrero › Kinder Joy › One Piece)
   10) l'aspetto del sito: Automatico · Chiaro · Scuro (in fondo alla pagina)
+  11) nella Home: i numeri del sito e le Novità (da comune/home.json)
+  12) la barra "6 su 9" sulle card delle serie in cui hai segnato qualcosa
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js?v=2026-09-27c"></script>
    (dentro una sottocartella: <script src="../script.js?v=2026-09-27c"></script>,
@@ -526,6 +528,82 @@ function attivaAspetto(box) {
   }));
 }
 
+/* ---------- Home: numeri e Novità ----------
+   Solo nella Home: riempie <div id="homeNumeri"> (pezzi, serie, categorie, iscritti)
+   e <section id="homeNovita"> (le ultime serie create) con comune/home.json.
+   Quel file lo scrive da solo l'area amministratore (voce "comune/home.json" in
+   _admin/admin.js): non serve toccarlo a mano. Se non si legge, le due parti restano nascoste.
+   ! MODIFICA: ISCRITTI_MINIMO = da quanti iscritti in su si mostra il numero;
+     NOVITA_IN_HOME = quante Novità si vedono. */
+const ISCRITTI_MINIMO = 150;
+const NOVITA_IN_HOME = 4;
+const conPunti = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');   // 3177 → "3.177"
+async function homeNumeriNovita() {
+  const numeri = document.getElementById('homeNumeri'), novita = document.getElementById('homeNovita');
+  if (!numeri && !novita) return;                           // non siamo nella Home
+  let d;
+  try { d = await (await fetch(new URL('comune/home.json', BASE), { cache: 'no-cache' })).json(); } catch (e) { return; }
+  const n = d.numeri || {};
+  const voci = [[n.pezzi, 'pezzi catalogati'], [n.serie, 'serie'], [n.categorie, 'categorie']];
+  if (n.iscritti >= ISCRITTI_MINIMO) voci.push([n.iscritti, 'collezionisti iscritti']);
+  if (numeri) {
+    numeri.replaceChildren(...voci.filter(v => v[0]).map(([x, t]) => {
+      const div = document.createElement('div'), b = document.createElement('b'), s = document.createElement('span');
+      b.textContent = conPunti(x); s.textContent = t; div.append(b, s); return div;
+    }));
+    numeri.hidden = !numeri.children.length;
+  }
+  const lista = (d.novita || []).slice(0, NOVITA_IN_HOME);
+  if (!novita || !lista.length) return;
+  novita.querySelector('ul').replaceChildren(...lista.map(s => {
+    const li = document.createElement('li'), a = document.createElement('a');
+    a.href = new URL(s.u + 'index.html', BASE).href;
+    a.innerHTML = '<span class="st-nuova">Nuova</span>' + (s.c ? '<img alt="" loading="lazy" decoding="async">' : '') + '<strong></strong><small></small>';
+    if (s.c) a.querySelector('img').src = new URL(s.c, BASE).href;
+    a.querySelector('strong').textContent = s.t;
+    a.querySelector('small').textContent = s.g;
+    li.append(a); return li;
+  }));
+  novita.hidden = false;
+}
+
+/* ---------- Barra sulle card delle serie ----------
+   Nelle pagine con le card delle serie (es. Kinder Sorpresa), sulle serie in cui
+   hai segnato almeno un pezzo compare, accanto ad "Apri", una barra ambra con
+   "6 su 9" (numeri in grassetto quando la serie è completa).
+   Chi non ha mai segnato niente non scarica niente in più. Gli altri leggono
+   l'elenco della categoria (la-mia-collezione/indice.js, lo stesso di "Mi mancano")
+   e l'archivio del browser di ogni serie. Le serie nuove si vedono da sole
+   quando l'area amministratore rifà l'indice. L'aspetto è in sito.css. */
+async function barreSerie() {
+  const dentro = dentroCatalogo(), cat = dentro.split(/[/?#]/)[0];
+  const card = [...document.querySelectorAll('a.st-card')];
+  if (!cat || cat.startsWith('_') || dentro.includes('/la-mia-collezione/') || !card.length || !window.indexedDB || !indexedDB.databases) return;
+  try {
+    const miei = new Set(await archivi());                   // le serie in cui hai segnato qualcosa
+    if (!miei.size) return;
+    const t = await (await fetch(new URL(cat + '/la-mia-collezione/indice.js', CATALOGO), { cache: 'no-cache' })).text();
+    const I = JSON.parse(t.slice(t.indexOf('{', t.search(/const INDICE\s*=/)), t.lastIndexOf('}') + 1));
+    const perIndirizzo = new Map(I.serie.map(s => [new URL(cat + '/' + s.p + '/', CATALOGO).href, s]));
+    for (const a of card) {
+      const s = perIndirizzo.get(a.href.replace(/index\.html$/, '')), apri = a.querySelector('.st-apri');
+      if (!s || !apri || !miei.has(s.db)) continue;
+      const db = await apriArchivio(s.db), righe = await leggi(db);
+      db.close();
+      const ids = new Set(s.x.map(o => o[0]));
+      const ce = righe.filter(r => ids.has(r.id) && (r.owned === true || r.doppi > 0)).length, tot = s.x.length;
+      if (!ce) continue;
+      const riga = document.createElement('div');
+      riga.className = 'st-riga-apri' + (ce >= tot ? ' finita' : '');
+      riga.innerHTML = '<span class="st-progresso"><i></i></span><span class="st-quanti"></span>';
+      riga.querySelector('i').style.width = Math.round(ce * 100 / tot) + '%';
+      riga.querySelector('.st-quanti').textContent = ce + ' su ' + tot;
+      apri.replaceWith(riga);
+      riga.prepend(apri);
+    }
+  } catch (e) { /* senza indice o archivio leggibile le card restano come sono */ }
+}
+
 /* ---------- Avvio ---------- */
 
 caricaParte('header-placeholder', 'header.html');
@@ -534,6 +612,8 @@ percorso();
 perAnno();          // prima della ricerca: le card vengono spostate nelle tendine
 avviaCerca();
 barraCategoria();
+homeNumeriNovita();
+barreSerie();
 
 /* ---------- Statistiche delle visite (GoatCounter) ----------
    Conta le pagine viste SENZA cookie e senza dati personali: i numeri si
