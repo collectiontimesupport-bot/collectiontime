@@ -18,7 +18,7 @@
      • nel cloud c'è UN documento per persona: collezioni/<codice utente>
        { versione: 1, aggiornato: <ora>, collezioni: { … } }
        "collezioni" ha lo stesso formato del file di Esporta
-     • quando cambi qualcosa, qualche secondo dopo il cloud si aggiorna
+     • quando cambi qualcosa, 20 secondi dopo (o subito se chiudi la pagina) il cloud si aggiorna
      • aprendo il sito (una volta per visita) si scarica quello che hai
        cambiato su un altro dispositivo
      • al primo accesso su un dispositivo che ha GIÀ delle spunte (e anche
@@ -139,13 +139,18 @@ function sincronizza() {
 }
 
 /* ogni modifica (spunta, doppione, hashtag, Importa) arriva qui da script.js:
-   segno "sporco" e mando al cloud dopo qualche secondo di calma */
+   segno "sporco" e mando al cloud dopo SECONDI_CALMA secondi senza altre modifiche.
+   Più secondi = meno salvataggi (il piano gratuito di Firebase ne permette 20.000 al giorno):
+   chi spunta 50 penne di fila fa UN salvataggio invece di tanti. Non si perde niente:
+   chiudendo o nascondendo la pagina salvo subito (vedi sotto).
+   ! MODIFICA: SECONDI_CALMA (prima erano 4) */
+const SECONDI_CALMA = 20;
 window.addEventListener('ct-modifica', () => {
   const s = leggiStato();
   if (!auth.currentUser) return;
   scriviStato(Object.assign(s, { sporco: true }));
   clearTimeout(timer);
-  timer = setTimeout(sincronizza, 4000);
+  timer = setTimeout(sincronizza, SECONDI_CALMA * 1000);
 });
 /* chiudendo o nascondendo la pagina mando subito quello che manca */
 document.addEventListener('visibilitychange', () => {
