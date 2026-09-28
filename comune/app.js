@@ -144,7 +144,7 @@
 
   /* ---------- disegno della pagina ---------- */
   /* scrive "12 possedute su 103 · 3 doppioni" (gli oggetti senza foto non contano),
-     riempie la barra ambra sotto e mette i numeri nella tendina: "Tutte (103)", "Ce le ho (12)"… */
+     riempie la barra ambra sotto e mette i numeri nella tendina: "Tutte (103)", "In possesso (12)"… */
   let barra = null;
   function updateCount(shown) {
     const owned = pens.filter(p => p.owned).length;
