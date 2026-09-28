@@ -15,8 +15,8 @@
   10) l'aspetto del sito: Automatico · Chiaro · Scuro (nella pagina Impostazioni)
   11) la barra "6 su 9" sulle card delle serie in cui hai segnato qualcosa
    Da richiamare in ogni pagina con una sola riga:
-   <script src="script.js?v=2026-09-28c"></script>
-   (dentro una sottocartella: <script src="../script.js?v=2026-09-28c"></script>,
+   <script src="script.js?v=2026-09-28d"></script>
+   (dentro una sottocartella: <script src="../script.js?v=2026-09-28d"></script>,
     in una pagina di una serie: <script src="../../../script.js?v=…"></script>)
    Nelle pagine delle collezioni va PRIMA di comune/app.js.
    ========================================================== */
@@ -228,7 +228,13 @@ async function scriviTutto(collezioni, sostituisci) {
 let cloud = null;
 /* cloud.js prende la stessa versione (?v=) di script.js: se cambi cloud.js, cambia la versione di script.js in tutte le pagine */
 const caricaCloud = () => cloud || (cloud = import(conVersione('comune/cloud.js').href));
-function segnaAccesso(si) { try { si ? localStorage.setItem('ct-accesso', '1') : localStorage.removeItem('ct-accesso'); } catch (e) {} }
+/* ricorda nel browser se c'è l'accesso; quando cambia avvisa la pagina con l'evento "ct-accesso"
+   (lo usa la pagina Impostazioni per mostrare le statistiche appena accedi) */
+function segnaAccesso(si) {
+  let prima = null;
+  try { prima = localStorage.getItem('ct-accesso') === '1'; si ? localStorage.setItem('ct-accesso', '1') : localStorage.removeItem('ct-accesso'); } catch (e) {}
+  if (prima !== !!si) window.dispatchEvent(new Event('ct-accesso'));
+}
 function segnalaModifica() { window.dispatchEvent(new Event('ct-modifica')); }
 try { if (localStorage.getItem('ct-accesso') === '1') caricaCloud(); } catch (e) {}
 

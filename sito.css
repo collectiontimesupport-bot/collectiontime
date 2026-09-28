@@ -370,9 +370,14 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-ma-testa b { display: block; font-size: 1.0625rem; }
 .st-ma-testa small { color: var(--muted); font-size: .8125rem; word-break: break-all; }
 .st-ma-numeri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
-.st-ma-numeri div { padding: 8px 4px; border-radius: 10px; background: var(--riquadro); text-align: center; }
+.st-ma-numeri > span { padding: 8px 4px; border-radius: 10px; background: var(--riquadro); text-align: center; }
 .st-ma-numeri b { display: block; font-size: 1.25rem; }
 .st-ma-numeri small { color: var(--muted); font-size: .75rem; }
+/* numeri del menu = link alle statistiche: "Le mie statistiche ›" sotto, ambra al passaggio */
+.st-ma-stat { display: block; color: inherit; text-decoration: none; text-align: center; }
+.st-ma-stat > small { color: var(--muted); font-size: .8125rem; font-weight: 600; }
+.st-ma-stat:hover > small { color: var(--amber); }
+.st-ma-stat:hover .st-ma-numeri > span { outline: 1px solid var(--amber); }
 .st-ma-nota { margin: 2px 0 8px; color: var(--muted); font-size: .75rem; text-align: center; }
 .st-ma-sezione { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; }
 .st-profilo .st-link, .st-account-copia .st-link { justify-self: start; padding: 6px 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: .9375rem; text-align: left; cursor: pointer; }

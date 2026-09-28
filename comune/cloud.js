@@ -404,7 +404,10 @@ function disegnaMenu() {
   menu.innerHTML =
     '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(nomeDi(u).charAt(0).toUpperCase()) + '</span>'
     + '<div><b>' + esc(nomeDi(u)) + '</b><small>' + esc(u.email || '') + '</small></div></div>'
-    + '<div class="st-ma-numeri"><div><b>' + n.ce + '</b><small>Ce l\'ho</small></div><div><b>' + n.doppi + '</b><small>Doppioni</small></div><div><b>' + n.collezioni + '</b><small>Collezioni</small></div></div>'
+    /* i numeri sono un link alle statistiche (pagina Impostazioni) */
+    + '<a class="st-ma-stat" href="' + new URL('impostazioni.html#statistiche', BASE).href + '">'
+    +   '<span class="st-ma-numeri"><span><b>' + n.ce + '</b><small>Ce l\'ho</small></span><span><b>' + n.doppi + '</b><small>Doppioni</small></span><span><b>' + n.collezioni + '</b><small>Collezioni</small></span></span>'
+    +   '<small>Le mie statistiche ›</small></a>'
     + '<p class="st-ma-nota">' + notaCloud() + '</p>'
     /* "Impostazioni": pagina impostazioni.html nella cartella principale (BASE è di script.js) */
     + '<a class="st-link st-ma-imp" href="' + new URL('impostazioni.html', BASE).href + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>Impostazioni</a>'

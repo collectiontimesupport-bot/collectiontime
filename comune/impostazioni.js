@@ -2,6 +2,9 @@
    impostazioni.js — "Le mie statistiche" della pagina Impostazioni
    (Collection Time) · lo usa SOLO impostazioni.html, dopo script.js
    ---------------------------------------------------------------------
+   SOLO PER CHI HA FATTO L'ACCESSO (scelta: le statistiche sono un vantaggio dell'account).
+   Chi non ha l'account vede l'invito ad accedere (testo SENZA_ACCOUNT qui sotto);
+   appena accede le statistiche compaiono da sole (evento "ct-accesso" di script.js).
    Mostra:
      • 4 numeri: pezzi che hai, doppioni, serie iniziate, serie complete
      • "Le mie serie": UN solo elenco di tutte le serie in cui hai segnato
@@ -21,13 +24,19 @@
    Aspetto: sito.css, voce "pagina Impostazioni".
    ===================================================================== */
 
-(async () => {
-  const box = document.getElementById('stStatistiche');
-  if (!box) return;
+const box = document.getElementById('stStatistiche');
+if (box) { mostraStatistiche(); window.addEventListener('ct-accesso', mostraStatistiche); }
+
+async function mostraStatistiche() {
   const PER_VOLTA = 10;   // ! MODIFICA: quante serie si vedono prima di "Mostra altre"
   const PIU_DI = 8;       // ! MODIFICA: da quante serie in su compare la ricerca
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const semplice = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');   // senza accenti
+  const SENZA_ACCOUNT = '<p class="st-imp-nota">Le statistiche sono per chi ha un account: accedi per vedere la tua collezione in numeri e l\'elenco di tutte le serie che hai iniziato.</p>'
+    + '<p><button type="button" class="st-btn" data-accedi>Accedi</button></p>';   // data-accedi: stessa finestra del pulsante "Accedi" in alto (script.js)
+  let conAccount = false;
+  try { conAccount = localStorage.getItem('ct-accesso') === '1'; } catch (e) {}
+  if (!conAccount) { box.innerHTML = SENZA_ACCOUNT; return; }
   const VUOTO = '<p class="st-imp-nota">Non hai ancora segnato niente. Apri una serie dal <a href="' + new URL('index.html', BASE).href + '">catalogo</a> e tocca gli oggetti che hai: qui vedrai la tua collezione in numeri.</p>';
 
   let mie = [];
@@ -96,8 +105,9 @@
     altre.hidden = resto <= 0;
     altre.textContent = 'Mostra altre ' + Math.min(resto, PER_VOLTA) + (resto > PER_VOLTA ? ' (ne restano ' + resto + ')' : '');
   }
-  box.addEventListener('change', () => { quante = PER_VOLTA; mostra(); });
-  box.addEventListener('input', e => { if (e.target.id === 'impCerca') { quante = PER_VOLTA; mostra(); } });
-  document.getElementById('impAltre').addEventListener('click', () => { quante += PER_VOLTA; mostra(); });
+  /* onchange / oninput / onclick (e non addEventListener): se l'elenco si ridisegna non si sommano */
+  box.onchange = () => { quante = PER_VOLTA; mostra(); };
+  box.oninput = e => { if (e.target.id === 'impCerca') { quante = PER_VOLTA; mostra(); } };
+  document.getElementById('impAltre').onclick = () => { quante += PER_VOLTA; mostra(); };
   mostra();
-})();
+}

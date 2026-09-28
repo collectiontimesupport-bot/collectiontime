@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2026-09-27">
 <link rel="manifest" href="site.webmanifest">
 <!-- Stile comune del sito (sezioni "pagine di solo testo" e "pagina Impostazioni") -->
-<link rel="stylesheet" href="sito.css?v=2026-09-28c">
+<link rel="stylesheet" href="sito.css?v=2026-09-28d">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 </head>
 <body class="st-semplice">
@@ -31,7 +31,8 @@
   <h1>Impostazioni</h1>
   <p class="lead">La tua collezione in numeri, l'aspetto del sito e il tuo account.</p>
 
-  <h2>Le mie statistiche</h2>
+  <!-- id="statistiche": i numeri del menu del profilo portano qui (impostazioni.html#statistiche) -->
+  <h2 id="statistiche">Le mie statistiche</h2>
   <div id="stStatistiche"><p class="st-imp-nota">Conto la tua collezione…</p></div>
 
   <h2>Aspetto</h2>
@@ -44,9 +45,8 @@
 
   <h2>Account e dati</h2>
   <div id="stImpAccount">
-    <p>Non hai fatto l'accesso: la collezione è salvata solo in questo browser. Accedi per salvarla nel cloud e ritrovarla su tutti i tuoi dispositivi.</p>
-    <!-- data-accedi: apre la stessa finestra del pulsante "Accedi" in alto (script.js) -->
-    <p><button type="button" class="st-btn" data-accedi>Accedi</button></p>
+    <!-- il pulsante "Accedi" è già in "Le mie statistiche" (comune/impostazioni.js): qui non si ripete -->
+    <p>Non hai fatto l'accesso: la collezione è salvata solo in questo browser. Con l'account la salvi nel cloud e la ritrovi su tutti i tuoi dispositivi.</p>
     <!-- data-backup: Scarica / Carica un file, li fa funzionare script.js -->
     <p class="st-imp-voce"><b>Copia di sicurezza</b> <span>
       <button type="button" data-backup="esporta" class="st-link">Scarica un file</button>
@@ -60,7 +60,7 @@
 <!-- script.js: bande, Accedi, Aspetto (questa riga serve in ogni pagina).
      comune/impostazioni.js: le statistiche (solo in questa pagina).
      "?v=…" = versione del file, cioè la DATA dell'ultima modifica: quando cambi un file .js o .css metti la data di oggi in tutte le pagine. -->
-<script src="script.js?v=2026-09-28c"></script>
-<script src="comune/impostazioni.js?v=2026-09-28c"></script>
+<script src="script.js?v=2026-09-28d"></script>
+<script src="comune/impostazioni.js?v=2026-09-28d"></script>
 </body>
 </html>
