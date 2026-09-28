@@ -26,7 +26,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=2026-09-28">
+<link rel="stylesheet" href="sito.css?v=2026-09-28b">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
 <link rel="preload" href="comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
@@ -85,13 +85,19 @@
       <input type="search" placeholder="Cerca una categoria" aria-label="Cerca una categoria" tabindex="-1" autocomplete="off">
     </div>
   </div>
-  <!-- Numeri del sito (pezzi, serie, categorie e, da 150 in su, iscritti) e Novità (le ultime serie create):
-       li riempie script.js con comune/home.json, che scrive da solo l'area amministratore. Lasciare vuoti. -->
-  <div class="st-numeri" id="homeNumeri" hidden></div>
-  <section class="st-sezione" id="homeNovita" hidden>
+  <!-- NUMERI E NOVITÀ: li riscrive da sola l'area amministratore ("Nuova serie", "Pubblica", "Statistiche").
+       NON modificare a mano fino a "FINE NUMERI E NOVITÀ": si perderebbe. Come cambiarli: _admin/admin.js, voce "Numeri e Novità della Home". -->
+  <div class="st-numeri"><div><b>3.177</b><span>pezzi catalogati</span></div><div><b>247</b><span>serie</span></div><div><b>8</b><span>categorie</span></div></div>
+  <section class="st-sezione">
     <h2 class="st-sez-titolo">Novità</h2>
-    <ul class="st-novita"></ul>
+    <ul class="st-novita">
+      <li><a href="catalogo/kinder/kinder-joy/one-piece/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/kinder/kinder-joy/one-piece/immagini/copertina.webp?v=2026-09-27" alt="" decoding="async"><strong>One Piece</strong><small>Kinder Ferrero · Kinder Joy</small></a></li>
+      <li><a href="catalogo/mcdonalds/gadget/kpop-demon-hunters-photocard/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/mcdonalds/gadget/kpop-demon-hunters-photocard/immagini/copertina.webp?v=1" alt="" decoding="async"><strong>KPop Demon Hunters - Photocard</strong><small>McDonald's · Gadget</small></a></li>
+      <li><a href="catalogo/lego/shrek/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/lego/shrek/immagini/copertina.webp" alt="" decoding="async"><strong>Shrek</strong><small>LEGO Minifigures</small></a></li>
+      <li><a href="catalogo/legami/legami-erasable/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/legami/legami-erasable/immagini/copertina.webp?v=1" alt="" decoding="async"><strong>Erasable Pens</strong><small>Legami Milano</small></a></li>
+    </ul>
   </section>
+  <!-- FINE NUMERI E NOVITÀ -->
   <!-- ! MODIFICA: titolo sopra le card delle categorie -->
   <h2 class="st-sez-titolo">Tutte le categorie</h2>
   <p class="st-nessuna" hidden>Nessuna categoria trovata.</p>
@@ -181,6 +187,6 @@
 <!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=2026-09-28"></script>
+<script src="script.js?v=2026-09-28b"></script>
 </body>
 </html>

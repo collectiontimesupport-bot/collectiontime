@@ -6,30 +6,5 @@
   "categorie": 8,
   "iscritti": 0
  },
- "novita": [
-  {
-   "u": "catalogo/kinder/kinder-joy/one-piece/",
-   "t": "One Piece",
-   "g": "Kinder Ferrero · Kinder Joy",
-   "c": "catalogo/kinder/kinder-joy/one-piece/immagini/copertina.webp?v=2026-09-27"
-  },
-  {
-   "u": "catalogo/mcdonalds/gadget/kpop-demon-hunters-photocard/",
-   "t": "KPop Demon Hunters - Photocard",
-   "g": "McDonald's · Gadget",
-   "c": "catalogo/mcdonalds/gadget/kpop-demon-hunters-photocard/immagini/copertina.webp?v=1"
-  },
-  {
-   "u": "catalogo/lego/shrek/",
-   "t": "Shrek",
-   "g": "LEGO Minifigures",
-   "c": "catalogo/lego/shrek/immagini/copertina.webp"
-  },
-  {
-   "u": "catalogo/legami/legami-erasable/",
-   "t": "Erasable Pens",
-   "g": "Legami Milano",
-   "c": "catalogo/legami/legami-erasable/immagini/copertina.webp?v=1"
-  }
- ]
+ "novita": []
 }
