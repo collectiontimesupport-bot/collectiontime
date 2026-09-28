@@ -400,6 +400,14 @@ input[readonly] { pointer-events: none; }
 .choice input { margin: 4px 0 0; accent-color: var(--amber); width: 16px; height: 16px; flex: none; }
 .choice small { display: block; color: var(--muted); font-size: .8125rem; line-height: 1.35; }
 #printDlg .dlg-body:focus { outline: none; }
+/* "Mi mancano" e "Doppioni" affiancate sulla stessa riga, larghe uguali */
+.choice-coppia { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choice-coppia .choice { margin: 0; padding: 10px; min-width: 0; }
+.choice-coppia strong { white-space: nowrap; }
+/* voce spenta (serve l'accesso) e invito ad accedere */
+.choice.chiusa { opacity: .5; cursor: default; }
+.print-accedi { margin: 10px 0 0; font-size: .8125rem; line-height: 1.4; color: var(--muted); }
+.print-accedi button { padding: 0; border: 0; background: none; color: var(--amber); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
 
 /* =====================================================================
    10. ADATTAMENTI

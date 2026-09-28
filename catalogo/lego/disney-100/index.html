@@ -50,7 +50,7 @@
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie LEGO -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-28">
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-09-29">
 <link rel="stylesheet" href="../css/stile.css?v=2026-09-27">
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
      Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
@@ -132,7 +132,7 @@
 <dialog id="printDlg">
   <div class="dlg-body" tabindex="-1" autofocus>
     <h2 class="dlg-title">Cosa vuoi stampare?</h2>
-    <p class="sub">Un PDF da stampare o un'immagine da condividere.</p>
+    <p class="sub">Crea un'immagine da condividere.</p>
     <label class="choice">
       <input type="radio" name="printKind" value="owned" checked>
       <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le minifigure, con il quadratino spuntato dove ce l'hai.</small></span>
@@ -148,8 +148,7 @@
     <div class="actions">
       <span class="spacer"></span>
       <button type="button" class="btn" id="printCancel">Annulla</button>
-      <button type="button" class="btn" id="printImg">Crea immagine</button>
-      <button type="button" class="btn primary" id="printGo">Crea PDF</button>
+      <button type="button" class="btn primary" id="printImg">Crea immagine</button>
     </div>
   </div>
 </dialog>
@@ -260,6 +259,6 @@ const ELENCO = [
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../comune/app.js?v=2026-09-28"></script>
+<script src="../../../comune/app.js?v=2026-09-29"></script>
 </body>
 </html>

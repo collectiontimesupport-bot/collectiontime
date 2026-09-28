@@ -21,7 +21,7 @@
      · ricerca e filtri
      · disegno della pagina (+ bagliore)
      · finestra "Dettagli"
-     · stampa in PDF o immagine (anche "Cerco e scambio")
+     · immagine da condividere (anche "Cerco e scambio")
      · controlli
      · avvio
    ===================================================================== */
@@ -477,11 +477,14 @@
   $('btnClose').addEventListener('click', () => dlg.close());
   dlg.addEventListener('close', () => { editing = null; render(); });
 
-  /* ---------- stampa in PDF ---------- */
+  /* ---------- immagine da condividere ---------- */
   const printDlg = $('printDlg');
-  /* tre scelte nella finestra Stampa: "La mia collezione" (owned), "Cerco e scambio" (scambi)
-     e "Checklist vuota" (all: tutti i pezzi senza spunte, da compilare a mano) */
-  const kindName = { owned: 'collezione', scambi: 'cerco-scambio', all: 'checklist' };
+  /* le scelte nella finestra Stampa: "La mia collezione" (owned), "Cerco e scambio" (scambi),
+     "Mi mancano" (mancanti: solo quelli che cerco), "Doppioni" (doppioni: solo quelli che ho doppi,
+     per chi vende invece di scambiare) e "Checklist vuota" (all: tutti i pezzi senza spunte).
+     Il nome qui sotto finisce nel nome del file; le voci mancanti/doppioni le aggiungo alla finestra
+     più sotto da qui, così non serve cambiare ogni pagina. */
+  const kindName = { owned: 'collezione', scambi: 'cerco-scambio', mancanti: 'mi-mancano', doppioni: 'doppioni', all: 'checklist' };
   /* oggetti da mettere nel PDF: tutti, oppure solo quelli che mi mancano (per "Cerco") */
   function printList(soloMancanti) {
     const all = [...pens].sort(byPos);
@@ -532,10 +535,9 @@
   }
   /* tela → file (JPEG o PNG), per metterla nel PDF o per scaricarla */
   const fileDi = (c, tipo) => new Promise(r => c.toBlob(r, tipo, 0.9));
-  const byteDi = async (c, tipo) => new Uint8Array(await (await fileDi(c, tipo)).arrayBuffer());
 
   /* La libreria dei PDF (comune/pdf-lib.min.js, circa 500 KB) viene scaricata
-     SOLO la prima volta che si preme "Crea PDF": così la pagina si apre più in fretta.
+     SOLO la prima volta che si preme "Crea immagine": così la pagina si apre più in fretta.
      Il percorso si ricava da quello di app.js: stanno nella stessa cartella. */
   const PDF_LIB = document.currentScript.src.replace(/[^/]*$/, '') + 'pdf-lib.min.js';
   function loadPdfLib() {
@@ -692,7 +694,7 @@
     });
   }
 
-  /* crea il PDF (immagine = false) o l'immagine da condividere (immagine = true).
+  /* crea l'immagine da condividere (un file JPEG). Il disegno è nato per il PDF, per questo si parla di pagine e punti.
      "sezioni" = le parti da stampare, ognuna { titolo, sotto, items, scambio }:
      "La mia collezione" e "Checklist vuota" hanno UNA parte senza titolo; "Cerco e scambio" ne ha due
      (CERCO e SCAMBIO), ognuna con la sua testata.
@@ -706,22 +708,16 @@
        e tante file quante ne entrano nella pagina. Le schede hanno sempre la stessa misura,
        quindi una serie normale sta in una pagina sola. L'ultima fila si mette al centro. */
   const PDF_COLONNE = 6;   // oggetti per fila nel PDF verticale (più alto = schede più piccole)
-  async function makePdf(sezioni, kind, immagine) {
+  async function makeImmagine(sezioni, kind) {
     await loadPdfLib();   // serve anche per l'immagine: misura le scritte
     if (typeof PDFLib === 'undefined') { say('Il modulo per creare il PDF non è disponibile.'); return; }
-    say(immagine ? "Sto creando l'immagine…" : 'Sto creando il PDF…');
+    say("Sto creando l'immagine…");
     const { PDFDocument, StandardFonts, rgb, LineCapStyle } = PDFLib;
     const doc = await PDFDocument.create();
-    doc.setTitle(pdfText(CONFIG.titolo));
-    doc.setAuthor('Collection Time');                 // proprietà del file (autore, programma)
-    doc.setCreator('collectiontime.com');
-    doc.setProducer('Collection Time');
     const font = await doc.embedFont(StandardFonts.Helvetica);
     const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-    /* una tela va dentro il PDF (come JPEG o PNG); nell'immagine si usa così com'è */
-    const metti = async (c, jpeg) => immagine ? c : jpeg ? doc.embedJpg(await byteDi(c, 'image/jpeg')) : doc.embedPng(await byteDi(c, 'image/png'));
     const titolo = await titoloTela();
-    const logo = titolo ? await metti(titolo) : null;
+    const logo = titolo ? titolo : null;
 
     /* ---- colori ---- */
     const ink = rgb(26 / 255, 33 / 255, 64 / 255);          // blu scuro del sito
@@ -790,19 +786,8 @@
     /* PAGINE: in ogni pagina metto file finché ci stanno. Una testata non resta mai
        da sola in fondo alla pagina: va a capo insieme alla sua prima fila.
        L'immagine invece è una pagina sola, alta quanto serve. */
-    const pagine = [];
-    if (immagine) {
-      pagine.push(file);
-      H = SOPRA + CART_H + TITOLO_GAP + alto(file) + gridBottom;
-    } else {
-      let pg = [];
-      file.forEach((f, i) => {
-        const conSeguente = f.testa && file[i + 1] ? [...pg, f, file[i + 1]] : [...pg, f];
-        if (pg.length && alto(conSeguente) > spazio + 0.5) { pagine.push(pg); pg = []; }
-        pg.push(f);
-      });
-      if (pg.length) pagine.push(pg);
-    }
+    const pagine = [file];
+    H = SOPRA + CART_H + TITOLO_GAP + alto(file) + gridBottom;
     const areaTop = H - SOPRA, gridTop = areaTop - CART_H - TITOLO_GAP;
     /* titolo + schede formano un blocco unico, centrato in altezza (misurato sulla pagina più piena) */
     const bloccoH = Math.max(...pagine.map(alto));
@@ -823,7 +808,7 @@
     }
 
     /* scritta nella banda in alto: che cosa è stato stampato */
-    const cosa = { owned: 'La mia collezione', scambi: 'Cerco e scambio', all: 'Checklist da compilare' }[kind];
+    const cosa = { owned: 'La mia collezione', scambi: 'Cerco e scambio', mancanti: 'Mi mancano', doppioni: 'Doppioni', all: 'Checklist da compilare' }[kind];
 
     /* testata di una parte: cartellino bianco con "CERCO" o "SCAMBIO" e sotto-titolo, poi una riga ambra fino al bordo */
     function testata(pg, s, top) {
@@ -836,11 +821,11 @@
       pg.drawRectangle({ x: MX + w + 8, y: top - h / 2 - 0.75, width: W - 2 * MX - w - 8, height: 1.5, color: ambra });
     }
 
-    const sfondo = await metti(sfondoTela(W, H));
+    const sfondo = sfondoTela(W, H);
     const pages = [];
     let ghost = null;      // sagoma degli slot vuoti: inserita una volta sola
     for (const filePagina of pagine) {
-      const page = immagine ? paginaTela(W, H, bold) : doc.addPage([W, H]);
+      const page = paginaTela(W, H, bold);
       pages.push(page);
 
       /* sfondo: carta avorio + motivo di tessere Collection Time */
@@ -882,9 +867,9 @@
           const fotoTop = top - PAD, f = foto.get(p);
           if (f) {
             const [dw, dh] = misura(f), x = cx - dw / 2, y = fotoTop - fotoH;
-            if (p.image) page.drawImage(await metti(fotoTela(f, dw, dh, false), true), { x, y, width: dw, height: dh });
+            if (p.image) page.drawImage(fotoTela(f, dw, dh, false, true), { x, y, width: dw, height: dh });
             else {
-              if (!ghost) ghost = await metti(fotoTela(f, dw, dh, true));
+              if (!ghost) ghost = fotoTela(f, dw, dh);
               page.drawImage(ghost, { x, y, width: dw, height: dh });
             }
           }
@@ -939,7 +924,7 @@
     const fctx = fc.getContext('2d');
     fctx.scale(16, 16);
     tesseraCanvas(fctx, 'rgba(26, 33, 64, .5)', '#1A2140');   // tessera a metà, spunta piena: nessuna macchia
-    const filigrana = await metti(fc);
+    const filigrana = fc;
 
     /* "collectiontime.com" del piè di pagina: disegnato come IMMAGINE, non come testo,
        così i programmi che aprono il PDF (Anteprima, Acrobat…) non lo trasformano
@@ -952,9 +937,9 @@
     sctx.fillStyle = '#1A2140';
     sctx.textBaseline = 'alphabetic';
     sctx.fillText('collectiontime.com', 0, SITO_SIZE);
-    const sito = await metti(sc);
+    const sito = sc;
 
-    pages.forEach((pg, i) => {
+    pages.forEach(pg => {
       const WM = Math.min(250, H * 0.6);                    // più piccola nelle immagini basse
       pg.drawImage(filigrana, { x: (W - WM) / 2, y: primaFila - (bloccoH + WM) / 2, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
 
@@ -962,18 +947,12 @@
       marchio(pg, MX, 36, 18, ink);
       pg.drawImage(sito, { x: MX + 24, y: 22 - SITO_SIZE * 0.25, width: sc.width / SK, height: sc.height / SK });
 
-      /* numero di pagina in basso a destra (non nell'immagine: è una sola) */
-      if (immagine) return;
-      const t = (i + 1) + ' su ' + pages.length;
-      const tw = font.widthOfTextAtSize(t, 9);
-      pg.drawText(t, { x: W - MX - tw, y: 22, size: 9, font, color: grigio });
     });
 
-    const blob = immagine ? await fileDi(pages[0].tela, 'image/jpeg')
-                          : new Blob([await doc.save()], { type: 'application/pdf' });
-    /* nome del file, es. "collection-time_legami-erasable_mancanti_2026-09-23.pdf" (o .jpg) */
+    const blob = await fileDi(pages[0].tela, 'image/jpeg');
+    /* nome del file, es. "collection-time_legami-erasable_mancanti_2026-09-23.jpg" */
     const oggi = new Date(), dd = n => String(n).padStart(2, '0');                 // data del tuo computer (non quella di Londra)
-    const nome = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + (immagine ? '.jpg' : '.pdf');
+    const nome = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + '.jpg';
     const scarica = () => {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -982,32 +961,90 @@
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-      say(immagine ? 'Immagine salvata nella cartella Download.'
-                   : 'PDF salvato nella cartella Download (' + pages.length + (pages.length === 1 ? ' pagina).' : ' pagine).'));
+      say('Immagine salvata nella cartella Download.');
     };
     /* IMMAGINE sul telefono: apro subito il menu Condividi (lì c'è "Salva immagine" → finisce
        nelle Foto, con tutte le altre). Niente finestre in più: se il telefono non lo permette,
        o sul computer, si scarica come prima. */
-    const jpg = immagine && typeof File === 'function' ? new File([blob], nome, { type: 'image/jpeg' }) : null;
+    const jpg = typeof File === 'function' ? new File([blob], nome, { type: 'image/jpeg' }) : null;
     if (jpg && navigator.canShare && navigator.canShare({ files: [jpg] }) && matchMedia('(pointer: coarse)').matches) {
       navigator.share({ files: [jpg] }).catch(err => { if (!err || err.name !== 'AbortError') scarica(); });
     }
     else scarica();
   }
 
-  /* "Cerco e scambio": due parti, CERCO = quelli che mi mancano, SCAMBIO = i doppioni
-     (una parte vuota non si stampa). */
-  function sezioniScambi() {
-    const cerco = printList(true), scambio = printList(false).filter(p => p.doppi > 0);
-    const pezzi = scambio.reduce((t, p) => t + p.doppi, 0);
-    return [{ titolo: 'CERCO', sotto: 'Mi mancano · ' + cerco.length, items: cerco },
-            { titolo: 'SCAMBIO', sotto: 'Doppioni · ' + pezzi, items: scambio, scambio: true }].filter(s => s.items.length);
+  /* ---------- immagini personali solo per chi ha fatto l'accesso ----------
+     Senza accesso si può creare solo la "Checklist vuota" (value="all").
+     Le altre voci (La mia collezione, Cerco e scambio, Mi mancano, Doppioni) si spengono
+     e compare l'invito ad accedere. ! MODIFICA: per lasciare libera un'altra voce
+     aggiungi il suo value a LIBERE. ct-accesso lo scrive script.js quando si accede. */
+  const LIBERE = ['all'];
+  const conAccount = () => { try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; } };
+  function bloccaStampa() {
+    const si = conAccount();
+    const voci = [...printDlg.querySelectorAll('input[name=printKind]')];
+    voci.forEach(i => {
+      const chiusa = !si && !LIBERE.includes(i.value);
+      i.disabled = chiusa;
+      i.closest('label').classList.toggle('chiusa', chiusa);
+    });
+    const scelta = voci.find(i => i.checked);
+    if (!scelta || scelta.disabled) (voci.find(i => !i.disabled) || {}).checked = true;
+    let nota = printDlg.querySelector('.print-accedi');
+    if (!nota) {
+      nota = document.createElement('p');
+      nota.className = 'print-accedi';
+      nota.innerHTML = 'Per creare l\'immagine della tua collezione, dei "Mi mancano" e dei "Doppioni" serve un account gratuito. ' +
+        '<button type="button" data-accedi>Accedi</button>';
+      printDlg.querySelector('.actions').before(nota);
+      nota.querySelector('button').addEventListener('click', () => printDlg.close());   // poi apre l'accesso script.js
+    }
+    nota.hidden = si;
   }
+
+  /* Le parti di "Cerco e scambio" (una parte vuota non si stampa):
+     CERCO = quelli che mi mancano, SCAMBIO = i doppioni.
+     "Mi mancano" e "Doppioni" usano UNA sola di queste parti, con un titolo più adatto. */
+  const parteMancanti = titolo => { const l = printList(true); return { titolo, sotto: 'Mi mancano · ' + l.length, items: l }; };
+  const parteDoppioni = titolo => {
+    const l = printList(false).filter(p => p.doppi > 0);
+    return { titolo, sotto: 'Doppioni · ' + l.reduce((t, p) => t + p.doppi, 0), items: l, scambio: true };
+  };
+  const sezioniDi = {
+    scambi:   () => [parteMancanti('CERCO'), parteDoppioni('SCAMBIO')],
+    mancanti: () => [parteMancanti('MI MANCANO')],
+    doppioni: () => [parteDoppioni('DOPPIONI')],
+    owned:    () => [{ items: printList(false) }],
+    all:      () => [{ items: printList(false) }]
+  };
+
+  /* aggiungo alla finestra Stampa le voci "Mi mancano" e "Doppioni" (subito dopo "Cerco e scambio") */
+  (function () {
+    const dopo = printDlg.querySelector('input[value="scambi"]');
+    if (!dopo || printDlg.querySelector('input[value="mancanti"]')) return;
+    const voce = (valore, nome, id) => {   // una riga sola, senza spiegazione: la finestra resta corta
+      const l = document.createElement('label');
+      l.className = 'choice';
+      l.innerHTML = '<input type="radio" name="printKind" value="' + valore + '"><span><strong>' + nome +
+        '</strong> (<span id="' + id + '"></span>)</span>';
+      return l;
+    };
+    const fine = dopo.closest('label');
+    /* le due voci stanno affiancate sulla stessa riga (l'aspetto è in collezione.css: .choice-coppia) */
+    const coppia = document.createElement('div');
+    coppia.className = 'choice-coppia';
+    coppia.append(voce('mancanti', 'Mi mancano', 'cnt-mancanti'), voce('doppioni', 'Doppioni', 'cnt-doppioni'));
+    fine.after(coppia);
+  })();
 
   $('btnPrint').addEventListener('click', () => {
     const total = pens.filter(p => p.image || p.owned).length;
     $('cnt-owned').textContent = pens.filter(p => p.owned).length + ' su ' + total;
-    $('cnt-scambi').textContent = printList(true).length + ' cerco · ' + pens.filter(p => p.doppi > 0).length + ' scambio';
+    const nMancanti = printList(true).length, nDoppioni = pens.filter(p => p.doppi > 0).length;
+    $('cnt-scambi').textContent = nMancanti + ' cerco · ' + nDoppioni + ' scambio';
+    $('cnt-mancanti').textContent = nMancanti;
+    $('cnt-doppioni').textContent = nDoppioni;
+    bloccaStampa();
     printDlg.showModal();
   });
   $('printCancel').addEventListener('click', () => printDlg.close());
@@ -1029,25 +1066,25 @@
       say(location.href);
     }
   }
-  /* "Crea PDF" (da stampare) e "Crea immagine" (da condividere) */
-  async function crea(immagine) {
+  /* "Crea immagine" (da condividere) */
+  async function crea() {
     const chosen = printDlg.querySelector('input[name=printKind]:checked');
     const kind = chosen ? chosen.value : 'owned';
-    const sezioni = kind === 'scambi' ? sezioniScambi() : [{ items: printList(false) }];
+    if (!conAccount() && !LIBERE.includes(kind)) { say('Accedi per creare questa immagine.'); return; }
+    const sezioni = sezioniDi[kind]().filter(s => s.items.length || kind === 'owned' || kind === 'all');
     if (!sezioni.some(s => s.items.length)) {
-      say('Non ti manca nulla e non hai doppioni.');
+      say({ mancanti: 'Non ti manca nulla.', doppioni: 'Non hai doppioni.' }[kind] || 'Non ti manca nulla e non hai doppioni.');
       return;
     }
     printDlg.close();
     try {
-      await makePdf(sezioni, kind, immagine);
+      await makeImmagine(sezioni, kind);
     } catch (err) {
       console.error(err);
       /* aperta con doppio clic (file://) il browser vieta di leggere le foto */
-      const cosa = immagine ? "L'immagine" : 'Il PDF';
       say(location.protocol === 'file:'
-        ? cosa + ' non si può creare con la pagina aperta dal Finder: aprila dal sito o da un server locale.'
-        : 'Non sono riuscito a creare ' + (immagine ? "l'immagine." : 'il PDF.'));
+        ? "L'immagine non si può creare con la pagina aperta dal Finder: aprila dal sito o da un server locale."
+        : "Non sono riuscito a creare l'immagine.");
     }
   }
   $('printGo').addEventListener('click', () => crea(false));
@@ -1125,8 +1162,9 @@
        apro la finestra Stampa già su quella voce, poi tolgo #cerco-scambio dall'indirizzo */
     if (location.hash === '#cerco-scambio') {
       history.replaceState(null, '', location.pathname + location.search);
+      const scambi = printDlg.querySelector('input[value="scambi"]');
+      if (conAccount()) scambi.checked = true;
       $('btnPrint').click();
-      printDlg.querySelector('input[value="scambi"]').checked = true;
     }
   })();
 })();
