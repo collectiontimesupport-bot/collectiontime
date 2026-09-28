@@ -1087,8 +1087,7 @@
         : "Non sono riuscito a creare l'immagine.");
     }
   }
-  $('printGo').addEventListener('click', () => crea(false));
-  $('printImg').addEventListener('click', () => crea(true));
+  $('printImg').addEventListener('click', crea);
 
   /* ---------- controlli ----------
      La lente apre e chiude il campo (lo fa script.js, come nelle altre pagine);
