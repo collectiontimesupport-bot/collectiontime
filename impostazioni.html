@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Impostazioni · Collection Time</title>
+<!-- Pagina personale (cambia per ognuno): Google non la deve mostrare, e non è nella sitemap -->
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1A2140">
+<!-- Icone: come nelle altre pagine (se sostituisci un'icona, metti la data di oggi in "?v=…") -->
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2026-09-27">
+<link rel="manifest" href="site.webmanifest">
+<!-- Stile comune del sito (sezioni "pagine di solo testo" e "pagina Impostazioni") -->
+<link rel="stylesheet" href="sito.css?v=2026-09-28c">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+</head>
+<body class="st-semplice">
+<!-- Banda in alto (logo, Accedi): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============
+     Si arriva qui dal menu del profilo (voce "Impostazioni") e dal link nella banda in basso.
+     Tre parti:
+       1) Le mie statistiche → la riempie comune/impostazioni.js (NON scrivere dentro #stStatistiche)
+       2) Aspetto           → i pulsanti li fa funzionare script.js (voce "Aspetto"): i data-tema NON vanno cambiati
+       3) Account e dati    → quello scritto qui lo vede chi NON ha fatto l'accesso;
+                              dopo l'accesso comune/cloud.js lo sostituisce (voce "Impostazioni: Account e dati") -->
+<main class="st-testo st-impostazioni">
+  <h1>Impostazioni</h1>
+  <p class="lead">La tua collezione in numeri, l'aspetto del sito e il tuo account.</p>
+
+  <h2>Le mie statistiche</h2>
+  <div id="stStatistiche"><p class="st-imp-nota">Conto la tua collezione…</p></div>
+
+  <h2>Aspetto</h2>
+  <!-- Automatico = segue il telefono/computer (chiaro di giorno, scuro se è impostato così) -->
+  <div class="st-aspetto" role="group" aria-label="Aspetto del sito">
+    <button type="button" data-tema="auto">Automatico</button>
+    <button type="button" data-tema="chiaro">Chiaro</button>
+    <button type="button" data-tema="scuro">Scuro</button>
+  </div>
+
+  <h2>Account e dati</h2>
+  <div id="stImpAccount">
+    <p>Non hai fatto l'accesso: la collezione è salvata solo in questo browser. Accedi per salvarla nel cloud e ritrovarla su tutti i tuoi dispositivi.</p>
+    <!-- data-accedi: apre la stessa finestra del pulsante "Accedi" in alto (script.js) -->
+    <p><button type="button" class="st-btn" data-accedi>Accedi</button></p>
+    <!-- data-backup: Scarica / Carica un file, li fa funzionare script.js -->
+    <p class="st-imp-voce"><b>Copia di sicurezza</b> <span>
+      <button type="button" data-backup="esporta" class="st-link">Scarica un file</button>
+      <button type="button" data-backup="importa" class="st-link">Carica un file</button></span></p>
+  </div>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<!-- script.js: bande, Accedi, Aspetto (questa riga serve in ogni pagina).
+     comune/impostazioni.js: le statistiche (solo in questa pagina).
+     "?v=…" = versione del file, cioè la DATA dell'ultima modifica: quando cambi un file .js o .css metti la data di oggi in tutte le pagine. -->
+<script src="script.js?v=2026-09-28c"></script>
+<script src="comune/impostazioni.js?v=2026-09-28c"></script>
+</body>
+</html>

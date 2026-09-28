@@ -203,14 +203,6 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 /* link (FAQ, Contatti, Note legali, Privacy) */
 .st-band-link { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 16px 0 14px; }
 /* avviso legale e © */
-/* "Aspetto: Automatico · Chiaro · Scuro" (lo fa funzionare script.js) */
-.st-aspetto { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 14px; color: var(--soft); }
-.st-aspetto div { display: inline-flex; border: 1px solid #6B7396; border-radius: 8px; overflow: hidden; }
-.st-aspetto button { padding: 5px 12px; border: 0; background: none; color: var(--bianco); font: inherit; cursor: pointer; }
-.st-aspetto button + button { border-left: 1px solid #6B7396; }
-.st-aspetto button[aria-pressed="true"] { background: var(--amber); color: var(--blu); font-weight: 600; }
-.st-aspetto button:hover:not([aria-pressed="true"]) { color: var(--amber); }
-@media (max-width: 600px) { .st-aspetto { justify-content: center; } }   /* sul telefono la banda è centrata */
 .st-band-legale { border-top: 1px solid var(--band-line); padding-top: 12px; color: var(--soft); font-size: .75rem; line-height: 1.55; }
 .st-band-legale p { margin: 0 0 8px; }
 .st-band-legale p:last-child { margin: 0; }
@@ -386,34 +378,79 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-profilo .st-link, .st-account-copia .st-link { justify-self: start; padding: 6px 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: .9375rem; text-align: left; cursor: pointer; }
 .st-profilo .st-link:hover, .st-account-copia .st-link:hover { color: var(--amber); }
 .st-ma-fondo { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
-.st-profilo .st-rosso { color: var(--errore); font-size: .8125rem; }
-.st-ma-nome { display: grid; gap: 8px; margin: 4px 0; }
-.st-ma-nome input { padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; color: var(--ink); }
-.st-ma-nome input:focus { outline: none; border-color: var(--amber); }
-.st-ma-nome div { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
-.st-ma-nome button[type=submit] { padding: 7px 16px; border: 0; border-radius: 8px; background: var(--ink); color: var(--white); font: inherit; font-weight: 600; cursor: pointer; }
 /* in fondo alla finestra Accedi: "Non vuoi un account? Copia di sicurezza" */
 .st-account-copia { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
 .st-account-copia .st-ma-sezione { display: none; }
 .st-account-copia .st-link { font-size: .8125rem; text-decoration: underline; }
 /* se è aperto il promemoria in basso, l'avviso breve compare in alto (sotto la banda) per non sovrapporsi */
 body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
-/* "Elimina account…" lontano da "Esci": piccolo, grigio, su una riga a parte in fondo al menu */
-.st-profilo .st-ma-elimina { justify-self: end; margin-top: 18px; padding: 2px 0; color: var(--muted); font-size: .75rem; text-decoration: underline; }
-.st-profilo .st-ma-elimina:hover { color: var(--errore); }
 /* finestra di conferma: "Elimina per sempre" in rosso, lontano da "Annulla" */
 .st-elimina-azioni { justify-content: space-between; }
 .st-account .st-rosso { color: var(--errore); border-color: #E8B4B0; }
 .st-account .st-rosso:hover { color: var(--errore); border-color: var(--errore); }
-/* menu del profilo: le voci allineate a destra (il menu si apre sul lato destro),
-   "Elimina account…" invece a sinistra, lontano da "Esci" */
+/* menu del profilo: le voci allineate a destra (il menu si apre sul lato destro) */
 .st-profilo .st-link { justify-self: end; text-align: right; }
+/* "Impostazioni" nel menu del profilo: con la rotellina, sopra la copia di sicurezza */
+.st-profilo .st-ma-imp { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; }
+.st-ma-imp svg { width: 18px; height: 18px; flex: none; }
 .st-profilo .st-ma-sezione { text-align: right; }
-.st-profilo .st-ma-fondo { justify-content: flex-end; }
-.st-profilo .st-ma-elimina { justify-self: start; text-align: left; }
 /* "Esci" nel menu del profilo: pulsante rosso pieno, largo quanto il menu */
 .st-profilo .st-ma-fondo { display: block; }
 .st-esci { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 10px; border: 0; border-radius: 10px;
   background: #C62828; color: var(--bianco); font: inherit; font-weight: 700; cursor: pointer; }
 .st-esci svg { width: 18px; height: 18px; }
 .st-esci:hover { background: #A51F1F; }
+
+/* ---------- pagina Impostazioni (impostazioni.html) ----------
+   Statistiche: le scrive comune/impostazioni.js · Account e dati: comune/cloud.js
+   Usa anche le voci "pagine di solo testo" (titolo, tendine come nelle FAQ)
+   e "barra sulle card delle serie" (.st-progresso, .st-quanti). */
+.st-imp-nota { color: var(--muted); font-size: .9375rem; }
+/* i 4 numeri (Ce l'ho, Doppioni, Serie iniziate, Complete): 4 riquadri, 2 per fila sul telefono */
+.st-imp-numeri { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0 10px; }
+.st-imp-numeri div { padding: 12px 6px; border-radius: 12px; background: var(--riquadro); text-align: center; line-height: 1.2; }
+.st-imp-numeri b { display: block; font-size: 1.5rem; }
+.st-imp-numeri small { color: var(--muted); font-size: .8125rem; }
+@media (max-width: 480px) { .st-imp-numeri { grid-template-columns: repeat(2, 1fr); } }
+/* "Le mie serie": menu Tutte/In corso/Complete, menu categorie, ricerca (stile dei menu delle serie) */
+.st-imp-sotto { margin: 22px 0 10px; font-size: 1rem; }
+.st-imp-comandi { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+.st-imp-comandi select, .st-imp-comandi input { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); font: inherit; font-size: .9375rem; }
+.st-imp-comandi select { flex: 0 1 auto; min-width: 0; }
+.st-imp-comandi input { flex: 1 1 180px; min-width: 0; }
+@media (max-width: 600px) { .st-imp-comandi select { flex: 1 1 0; } .st-imp-comandi input { flex-basis: 100%; } }   /* telefono: i due menu affiancati, la ricerca sotto */
+.st-imp-comandi :focus { outline: none; border-color: var(--amber); }
+/* una serie per riga: titolo (+ categoria piccola sotto) · barra · "6 su 9" (sul telefono barra e numeri vanno sotto) */
+.st-imp-serie { list-style: none; margin: 0; padding: 0; }
+.st-imp-serie li { display: grid; grid-template-columns: minmax(0, 1fr) 110px 170px; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .9375rem; }
+.st-imp-tit { display: grid; line-height: 1.3; }
+.st-imp-tit small { color: var(--muted); font-size: .8125rem; }
+.st-impostazioni .st-imp-serie a { text-decoration: none; font-weight: 600; }
+.st-impostazioni .st-imp-serie a:hover { text-decoration: underline; text-decoration-color: var(--amber); }
+.st-imp-serie .st-quanti { color: var(--muted); font-size: .875rem; text-align: right; }
+.st-imp-serie .finita .st-quanti { color: var(--ink); font-weight: 700; }   /* serie completa */
+@media (max-width: 600px) { .st-imp-serie li { grid-template-columns: 1fr 150px; gap: 6px 12px; } .st-imp-tit { grid-column: 1 / -1; } }
+.st-imp-altre { margin: 12px 0 0; text-align: center; }   /* "Mostra altre 10" */
+/* Aspetto: Automatico · Chiaro · Scuro (lo fa funzionare script.js) */
+.st-aspetto { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.st-aspetto button { padding: 8px 18px; border: 0; background: none; color: var(--ink); font: inherit; cursor: pointer; }
+.st-aspetto button + button { border-left: 1px solid var(--line); }
+.st-aspetto button[aria-pressed="true"] { background: var(--amber); color: var(--blu); font-weight: 600; }   /* scritta blu scuro sull'ambra */
+.st-aspetto button:hover:not([aria-pressed="true"]) { color: var(--amber); }
+/* Account e dati: una voce per riga (nome a sinistra, pulsanti a destra) */
+.st-impostazioni .st-ma-testa { display: flex; align-items: center; gap: 12px; }
+.st-impostazioni .st-ma-testa b { display: block; }
+.st-impostazioni .st-ma-testa small { color: var(--muted); font-size: .875rem; word-break: break-all; }
+.st-imp-voce { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 16px; margin: 0; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.st-imp-voce span { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--muted); }
+.st-impostazioni .st-link { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; }
+.st-impostazioni .st-link:hover { color: var(--amber); }
+button.st-btn { border: 0; font-family: inherit; cursor: pointer; }
+.st-imp-nome { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.st-imp-nome input { flex: 1 1 200px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; color: var(--ink); background: var(--white); }
+.st-imp-nome input:focus { outline: none; border-color: var(--amber); }
+.st-impostazioni .st-esci { width: auto; min-width: 200px; margin-top: 22px; }
+/* "Elimina account…": piccolo e grigio, lontano da "Esci" */
+.st-imp-elimina { margin-top: 28px; }
+.st-impostazioni .st-imp-elimina .st-link { color: var(--muted); font-size: .8125rem; text-decoration-color: currentColor; text-decoration-thickness: 1px; }
+.st-impostazioni .st-imp-elimina .st-link:hover { color: var(--errore); }

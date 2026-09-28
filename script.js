@@ -12,11 +12,11 @@
    7) le card divise per anno in tendine (solo le liste con data-per-anno)
    8) le statistiche delle visite (GoatCounter, senza cookie)
    9) il percorso in alto (Kinder Ferrero › Kinder Joy › One Piece)
-  10) l'aspetto del sito: Automatico · Chiaro · Scuro (in fondo alla pagina)
+  10) l'aspetto del sito: Automatico · Chiaro · Scuro (nella pagina Impostazioni)
   11) la barra "6 su 9" sulle card delle serie in cui hai segnato qualcosa
    Da richiamare in ogni pagina con una sola riga:
-   <script src="script.js?v=2026-09-27c"></script>
-   (dentro una sottocartella: <script src="../script.js?v=2026-09-27c"></script>,
+   <script src="script.js?v=2026-09-28c"></script>
+   (dentro una sottocartella: <script src="../script.js?v=2026-09-28c"></script>,
     in una pagina di una serie: <script src="../../../script.js?v=…"></script>)
    Nelle pagine delle collezioni va PRIMA di comune/app.js.
    ========================================================== */
@@ -42,7 +42,6 @@ async function caricaParte(idSegnaposto, file) {
     box.innerHTML = html;
     sistemaLink(box);
     nascondiHomeSeInstallato();
-    attivaAspetto(box);
   } catch (e) {
     console.warn('Impossibile caricare ' + file + ':', e);
   }
@@ -270,7 +269,8 @@ document.addEventListener('click', e => {
   /* "Copia di sicurezza" (menu del profilo e finestra Accedi): Scarica un file / Carica un file */
   if (e.target.closest('[data-backup="esporta"]')) protetto(esporta)();
   else if (e.target.closest('[data-backup="importa"]')) document.getElementById('stImportaFile').click();
-  else if (e.target.closest('#stAccedi')) caricaCloud().then(m => m.apriAccount(), () => avviso('Non riesco a collegarmi: controlla la connessione e riprova.'));
+  /* #stAccedi = pulsante in alto · data-accedi = pulsante "Accedi" della pagina Impostazioni */
+  else if (e.target.closest('#stAccedi, [data-accedi]')) caricaCloud().then(m => m.apriAccount(), () => avviso('Non riesco a collegarmi: controlla la connessione e riprova.'));
 });
 document.addEventListener('change', e => {
   if (e.target.id !== 'stImportaFile') return;
@@ -512,12 +512,14 @@ function percorso() {
 }
 
 /* ---------- Aspetto: Automatico · Chiaro · Scuro ----------
+   I pulsanti sono nella pagina Impostazioni (impostazioni.html, class="st-aspetto").
    La scelta si ricorda nel browser (ct-tema) e si scrive in <html data-tema="…">;
    i colori scuri sono in sito.css (voce "TEMA SCURO"). La riga <script> nel <head>
    di ogni pagina la rimette subito, prima che la pagina si veda, senza lampi di bianco. */
 function temaScelto() { try { return localStorage.getItem('ct-tema') || 'auto'; } catch (e) { return 'auto'; } }
-function attivaAspetto(box) {
-  const pulsanti = [...box.querySelectorAll('.st-aspetto button')];
+function attivaAspetto() {
+  const pulsanti = [...document.querySelectorAll('.st-aspetto button')];
+  if (!pulsanti.length) return;                                // pagina senza i pulsanti
   const segna = t => pulsanti.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tema === t)));
   segna(temaScelto());
   pulsanti.forEach(b => b.addEventListener('click', () => {
@@ -579,6 +581,7 @@ perAnno();          // prima della ricerca: le card vengono spostate nelle tendi
 avviaCerca();
 barraCategoria();
 barreSerie();
+attivaAspetto();
 
 /* ---------- Statistiche delle visite (GoatCounter) ----------
    Conta le pagine viste SENZA cookie e senza dati personali: i numeri si

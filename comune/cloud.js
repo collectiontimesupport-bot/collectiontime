@@ -265,12 +265,13 @@ async function eliminaDati() {
   await svuotaQui();
 }
 
-/* ---------- pulsante nella banda in alto, finestra "Accedi" e menu del profilo ----------
+/* ---------- pulsante nella banda in alto, finestra "Accedi", menu del profilo e Impostazioni ----------
    Il pulsante (id stAccedi) è in header.html:
      • senza accesso dice "Accedi" e apre la FINESTRA di accesso (Google o email)
      • dopo l'accesso diventa un cerchietto con l'iniziale e apre il MENU DEL PROFILO
-       (nome, email, numeri della collezione, cambia nome/password, copia di
-       sicurezza, esci, elimina account), come nelle app.
+       (nome, email, numeri della collezione, Impostazioni, copia di sicurezza, esci), come nelle app.
+   Cambia nome, cambia password ed Elimina account sono nella pagina Impostazioni
+   (impostazioni.html, parte "Account e dati"), che si riempie qui sotto.
    "Copia di sicurezza" (Scarica / Carica un file) sono i vecchi Esporta / Importa:
    i pulsanti hanno data-backup="esporta" / "importa" e li fa funzionare script.js.
    Aspetto: sito.css, voci "finestra Account" e "menu del profilo". */
@@ -280,6 +281,7 @@ const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const COPIA = '<p class="st-ma-sezione">Copia di sicurezza</p>'
   + '<button type="button" data-backup="esporta" class="st-link">Scarica un file</button>'
   + '<button type="button" data-backup="importa" class="st-link">Carica un file</button>';
+const PORTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></svg>';   // icona di "Esci"
 
 function aggiornaPulsante(utente) {
   const b = document.getElementById('stAccedi');
@@ -298,6 +300,22 @@ function aggiornaPulsante(utente) {
 function aggiornaVista() {
   if (auth.currentUser && finestra && finestra.open) finestra.close();   // accesso appena fatto: chiudo la finestra
   if (menu && !menu.hidden) disegnaMenu();
+  disegnaImpostazioni();
+}
+/* "Salvata nel cloud · 28 settembre, 10:40" (menu del profilo e Impostazioni) */
+function notaCloud() {
+  const s = leggiStato();
+  const quando = s.ultimo ? new Date(s.ultimo).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
+  return s.sporco ? 'Salvataggio nel cloud in corso…' : quando ? 'Salvata nel cloud · ' + quando : 'Salvata nel cloud';
+}
+/* le azioni sull'account, usate dal menu del profilo e dalla pagina Impostazioni */
+async function azioneAccount(m) {
+  if (m === 'esci') esci();
+  else if (m === 'elimina') confermaElimina();
+  else if (m === 'password') {                                 // il modo più sicuro: un'email per sceglierne una nuova
+    try { await sendPasswordResetEmail(auth, auth.currentUser.email); avviso('Ti ho mandato un\'email per scegliere la nuova password (guarda anche nello spam).'); }
+    catch (err) { avviso(messaggioErrore(err)); }
+  }
 }
 
 /* ===== FINESTRA "Accedi" (solo per chi non ha fatto l'accesso) ===== */
@@ -367,9 +385,8 @@ function apriFinestra() {
 }
 
 /* ===== MENU DEL PROFILO (dopo l'accesso) =====
-   modo: '' normale · 'nome' sta cambiando il nome.
-   "Elimina account" è lontano da "Esci" e apre una finestra di conferma a parte. */
-let menu = null, modo = '', numeri = null;
+   Corto apposta: le altre voci dell'account sono nella pagina Impostazioni. */
+let menu = null, numeri = null;
 async function contaNumeri() {
   const tutte = await leggiTutto();
   const v = Object.values(tutte);
@@ -381,25 +398,19 @@ async function contaNumeri() {
   if (menu && !menu.hidden) disegnaMenu();
 }
 function disegnaMenu() {
-  const u = auth.currentUser, s = leggiStato();
+  const u = auth.currentUser;
   if (!u) return chiudiMenu();
-  const quando = s.ultimo ? new Date(s.ultimo).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
   const n = numeri || { ce: '…', doppi: '…', collezioni: '…' };
   menu.innerHTML =
     '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(nomeDi(u).charAt(0).toUpperCase()) + '</span>'
     + '<div><b>' + esc(nomeDi(u)) + '</b><small>' + esc(u.email || '') + '</small></div></div>'
     + '<div class="st-ma-numeri"><div><b>' + n.ce + '</b><small>Ce l\'ho</small></div><div><b>' + n.doppi + '</b><small>Doppioni</small></div><div><b>' + n.collezioni + '</b><small>Collezioni</small></div></div>'
-    + '<p class="st-ma-nota">' + (s.sporco ? 'Salvataggio nel cloud in corso…' : quando ? 'Salvata nel cloud · ' + quando : 'Salvata nel cloud') + '</p>'
-    + (modo === 'nome'
-      ? '<form class="st-ma-nome"><input name="nome" maxlength="40" value="' + esc(u.displayName || '') + '" placeholder="Il tuo nome" autocomplete="nickname" required>'
-        + '<div><button type="button" data-m="annulla" class="st-link">Annulla</button><button type="submit">Salva</button></div></form>'
-      : '<button type="button" data-m="nome" class="st-link">Cambia nome</button>'
-        + (conPassword(u) ? '<button type="button" data-m="password" class="st-link">Cambia password</button>' : ''))
+    + '<p class="st-ma-nota">' + notaCloud() + '</p>'
+    /* "Impostazioni": pagina impostazioni.html nella cartella principale (BASE è di script.js) */
+    + '<a class="st-link st-ma-imp" href="' + new URL('impostazioni.html', BASE).href + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>Impostazioni</a>'
     + COPIA
     /* "Esci": pulsante rosso pieno, largo quanto il menu, con l'icona della porta */
-    + '<div class="st-ma-fondo"><button type="button" data-m="esci" class="st-esci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></svg>Esci</button></div>'
-    + '<button type="button" data-m="elimina" class="st-link st-ma-elimina">Elimina account…</button>';
-  if (modo === 'nome') { const i = menu.querySelector('input'); i.focus(); i.select(); }
+    + '<div class="st-ma-fondo"><button type="button" data-m="esci" class="st-esci">' + PORTA + 'Esci</button></div>';
 }
 function apriMenu() {
   if (!menu) {
@@ -408,42 +419,65 @@ function apriMenu() {
     menu.setAttribute('role', 'dialog');
     menu.setAttribute('aria-label', 'Il mio profilo');
     menu.hidden = true;
-    menu.addEventListener('click', async e => {
+    menu.addEventListener('click', e => {
       const b = e.target.closest('button');
       if (!b) return;
-      if (b.dataset.backup) return chiudiMenu();               // Scarica / Carica un file: li gestisce script.js
-      const m = b.dataset.m;
-      if (m === 'nome') { modo = 'nome'; disegnaMenu(); }
-      else if (m === 'annulla') { modo = ''; disegnaMenu(); }
-      else if (m === 'password') {                             // il modo più sicuro: un'email per sceglierne una nuova
-        try { await sendPasswordResetEmail(auth, auth.currentUser.email); avviso('Ti ho mandato un\'email per scegliere la nuova password (guarda anche nello spam).'); }
-        catch (err) { avviso(messaggioErrore(err)); }
-        chiudiMenu();
-      }
-      else if (m === 'esci') { chiudiMenu(); esci(); }
-      else if (m === 'elimina') { chiudiMenu(); confermaElimina(); }
-    });
-    menu.addEventListener('submit', async e => {               // salva il nuovo nome
-      e.preventDefault();
-      const nome = e.target.nome.value.trim().slice(0, 40);
-      if (!nome) return;
-      try { await updateProfile(auth.currentUser, { displayName: nome }); aggiornaPulsante(auth.currentUser); avviso('Nome cambiato.'); }
-      catch (err) { avviso('Non sono riuscito a cambiare il nome. Riprova.'); }
-      modo = ''; disegnaMenu();
+      chiudiMenu();                                            // Scarica / Carica un file li gestisce script.js
+      if (b.dataset.m) azioneAccount(b.dataset.m);
     });
     /* clic fuori dal menu o tasto Esc: si chiude */
-    /* (composedPath: vale anche se il clic ha ridisegnato il menu, es. "Cambia nome") */
     document.addEventListener('click', e => { if (!menu.hidden && !e.composedPath().includes(menu) && !e.target.closest('#stAccedi')) chiudiMenu(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) chiudiMenu(); });
     document.body.append(menu);
   }
   const barra = document.querySelector('.st-top');
   menu.style.top = (barra ? barra.getBoundingClientRect().bottom + 6 : 70) + 'px';   // subito sotto la banda in alto
-  modo = '';
   menu.hidden = false;
   disegnaMenu();
   contaNumeri();
 }
+function chiudiMenu() { if (menu) menu.hidden = true; }
+
+/* ===== IMPOSTAZIONI: Account e dati (solo nella pagina impostazioni.html) =====
+   Dopo l'accesso sostituisce il testo per chi non ha l'account (scritto in impostazioni.html) con:
+   nome e email, Cambia nome, Cambia password (solo account con email), copia di sicurezza,
+   Esci ed "Elimina account…" (piccolo e lontano da Esci, con una finestra di conferma).
+   cambioNome = true mentre si scrive il nuovo nome. Aspetto: sito.css, voce "pagina Impostazioni". */
+let cambioNome = false;
+function disegnaImpostazioni() {
+  const box = document.getElementById('stImpAccount'), u = auth.currentUser;
+  if (!box || !u) return;
+  if (!box.dataset.pronto) {                                   // una volta sola: clic e modulo del nome
+    box.dataset.pronto = '1';
+    box.addEventListener('click', e => {
+      const m = (e.target.closest('button[data-m]') || {}).dataset?.m;
+      if (m === 'nome' || m === 'annulla') { cambioNome = m === 'nome'; disegnaImpostazioni(); }
+      else if (m) azioneAccount(m);
+    });
+    box.addEventListener('submit', async e => {                // salva il nuovo nome
+      e.preventDefault();
+      const nome = e.target.nome.value.trim().slice(0, 40);
+      if (!nome) return;
+      try { await updateProfile(auth.currentUser, { displayName: nome }); aggiornaPulsante(auth.currentUser); avviso('Nome cambiato.'); }
+      catch (err) { avviso('Non sono riuscito a cambiare il nome. Riprova.'); }
+      cambioNome = false; disegnaImpostazioni();
+    });
+  }
+  box.innerHTML =
+    '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(nomeDi(u).charAt(0).toUpperCase()) + '</span>'
+    + '<div><b>' + esc(nomeDi(u)) + '</b><small>' + esc(u.email || '') + '</small></div></div>'
+    + '<p class="st-imp-nota">' + notaCloud() + '</p>'
+    + (cambioNome
+      ? '<form class="st-imp-nome"><input name="nome" maxlength="40" value="' + esc(u.displayName || '') + '" placeholder="Il tuo nome" autocomplete="nickname" required>'
+        + '<button type="button" data-m="annulla" class="st-link">Annulla</button><button type="submit" class="st-btn">Salva</button></form>'
+      : '<p class="st-imp-voce"><b>Nome</b><span><button type="button" data-m="nome" class="st-link">Cambia nome</button></span></p>')
+    + '<p class="st-imp-voce"><b>Accesso</b><span>' + (conPassword(u) ? '<button type="button" data-m="password" class="st-link">Cambia password</button>' : 'con Google') + '</span></p>'
+    + '<p class="st-imp-voce"><b>Copia di sicurezza</b><span><button type="button" data-backup="esporta" class="st-link">Scarica un file</button> <button type="button" data-backup="importa" class="st-link">Carica un file</button></span></p>'
+    + '<p><button type="button" data-m="esci" class="st-esci">' + PORTA + 'Esci</button></p>'
+    + '<p class="st-imp-elimina"><button type="button" data-m="elimina" class="st-link">Elimina account…</button></p>';
+  if (cambioNome) { const i = box.querySelector('input'); i.focus(); i.select(); }
+}
+
 /* finestra di conferma per eliminare l'account: "Annulla" è il pulsante evidenziato */
 function confermaElimina() {
   const d = document.createElement('dialog');
@@ -457,7 +491,6 @@ function confermaElimina() {
   document.body.append(d);
   d.showModal();
 }
-function chiudiMenu() { if (menu) { menu.hidden = true; modo = ''; } }
 
 /* il pulsante in alto (script.js chiama questa funzione) */
 export function apriAccount() {
