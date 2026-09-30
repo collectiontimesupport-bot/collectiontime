@@ -1,28 +1,29 @@
 <!doctype html>
 <!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
 <!-- =====================================================================
-     LEGAMI BULB FICTION — pagina della collezione delle lampade (Collection Time)
+     ASTUCCI SUPER KAWAII — pagina della collezione (Legami Milano)
      ---------------------------------------------------------------------
-     Com'è fatta questa cartella:
+     Pagina creata dall'area amministratore. Com'è fatta questa cartella:
 
-       index.html           ← questa pagina: struttura, IMPOSTAZIONI ed
-                              ELENCO DELLE LAMPADE (le uniche parti da toccare
-                              per aggiungere o cambiare lampade)
-       (l'aspetto grafico è in comune/collezione.css e ../css/stile.css;
-        il funzionamento, app.js, e la libreria dei PDF stanno nella
-        cartella "comune" del sito: sono gli stessi per tutte le collezioni)
-       immagini/            ← le foto delle lampade in WebP trasparente (leggere)
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI (CONFIG)
+                              ed ELENCO DEGLI ASTUCCI (in fondo)
+       immagini/            ← le foto in WebP trasparente (01.webp, 02.webp…)
+                              e copertina.webp (la foto della card, se c'è)
+       (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
+        collezioni, e nel file css/stile.css della categoria;
+        il funzionamento, app.js, sta nella cartella "comune" del sito)
 
-     ▸ PER AGGIUNGERE UNA LAMPADA: vai in fondo alla pagina, al blocco
-       "ELENCO DELLE LAMPADE", e segui le istruzioni scritte lì.
+     ▸ PER CAMBIARE NOMI, FOTO, ORDINE, QUANTI PER FILA E GRANDEZZA:
+       area amministratore (_admin/index.html) → "Modifica una serie".
+       A mano: blocco "ELENCO DEGLI ASTUCCI" in fondo a questa pagina.
      ===================================================================== -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- ! MODIFICA: nome di questa pagina in og:title, description, og:description e indirizzo in og:url (righe qui sotto). Il <title> lo rifà da solo "Pubblica" (og:title + la pagina di sopra, es. "Adventure Time · Charms · Collection Time") -->
-<title>Legami Bulb Fiction · Collection Time</title>
-<meta name="description" content="Legami Bulb Fiction: la checklist completa. Segna quelle che hai e scopri quelle che ti mancano.">
+<title>Astucci Super Kawaii · Legami · Collection Time</title>
+<meta name="description" content="Astucci Super Kawaii: Portapenne da Tavolo. Checklist completa: segna quelli che hai e scopri quelli che ti mancano.">
 <meta name="theme-color" content="#1A2140">
 <!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
      I file stanno nella cartella principale e in "icone/".
@@ -35,10 +36,10 @@
 <link rel="manifest" href="../../../site.webmanifest">
 <meta property="og:site_name" content="Collection Time">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Legami Bulb Fiction · Collection Time">
-<meta property="og:description" content="Legami Bulb Fiction: la checklist completa. Segna quelle che hai e scopri quelle che ti mancano.">
-<meta property="og:url" content="https://collectiontime.com/catalogo/legami/legami-lampada/">
-<meta property="og:image" content="https://collectiontime.com/catalogo/legami/legami-lampada/immagini/anteprima.jpg?v=2026-09-27">
+<meta property="og:title" content="Astucci Super Kawaii · Collection Time">
+<meta property="og:description" content="Astucci Super Kawaii: Portapenne da Tavolo. Checklist completa: segna quelli che hai e scopri quelli che ti mancano.">
+<meta property="og:url" content="https://collectiontime.com/catalogo/legami/astucci-super-kawaii/">
+<meta property="og:image" content="https://collectiontime.com/catalogo/legami/astucci-super-kawaii/immagini/anteprima.jpg?v=2026-09-30">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -55,8 +56,8 @@
 <link rel="stylesheet" href="../css/stile.css?v=2026-09-27">
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
      Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
-<link rel="canonical" href="https://collectiontime.com/catalogo/legami/legami-lampada/">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Legami","item":"https://collectiontime.com/catalogo/legami/"},{"@type":"ListItem","position":3,"name":"Legami Bulb Fiction","item":"https://collectiontime.com/catalogo/legami/legami-lampada/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Legami Bulb Fiction","url":"https://collectiontime.com/catalogo/legami/legami-lampada/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Legami Bulb Fiction: la checklist completa. Segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/catalogo/legami/legami-lampada/immagini/anteprima.jpg?v=2026-09-27","mainEntity":{"@type":"ItemList","numberOfItems":22,"itemListElement":[{"@type":"ListItem","position":1,"name":"01 · BABBO NATALE"},{"@type":"ListItem","position":2,"name":"02 · RENNA"},{"@type":"ListItem","position":3,"name":"03 · FIOCCO DI NEVE"},{"@type":"ListItem","position":4,"name":"04 · ALBERO DI NATALE"},{"@type":"ListItem","position":5,"name":"05 · CUORE"},{"@type":"ListItem","position":6,"name":"06 · CACTUS"},{"@type":"ListItem","position":7,"name":"07 · FENICOTTERO"},{"@type":"ListItem","position":8,"name":"08 · ARCOBALENO"},{"@type":"ListItem","position":9,"name":"09 · GATTO"},{"@type":"ListItem","position":10,"name":"10 · MARGHERITA"},{"@type":"ListItem","position":11,"name":"11 · FARFALLA"},{"@type":"ListItem","position":12,"name":"12 · ALIENO"},{"@type":"ListItem","position":13,"name":"13 · UNICORNO"},{"@type":"ListItem","position":14,"name":"14 · DREAM BIG"},{"@type":"ListItem","position":15,"name":"15 · BE HAPPY"},{"@type":"ListItem","position":16,"name":"16 · GOOD VIBES"},{"@type":"ListItem","position":17,"name":"17 · BELIEVE IN MAGIC"},{"@type":"ListItem","position":18,"name":"18 · JOY"},{"@type":"ListItem","position":19,"name":"19 · FANTASMA"},{"@type":"ListItem","position":20,"name":"20 · WE ARE DREAMERS"},{"@type":"ListItem","position":21,"name":"21 · LOVE IS IN THE AIR"},{"@type":"ListItem","position":22,"name":"22 · BOOO!"}]}}]}</script>
+<link rel="canonical" href="https://collectiontime.com/catalogo/legami/astucci-super-kawaii/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Legami","item":"https://collectiontime.com/catalogo/legami/"},{"@type":"ListItem","position":3,"name":"Astucci Super Kawaii","item":"https://collectiontime.com/catalogo/legami/astucci-super-kawaii/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Astucci Super Kawaii","url":"https://collectiontime.com/catalogo/legami/astucci-super-kawaii/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Astucci Super Kawaii: Portapenne da Tavolo. Checklist completa: segna quelli che hai e scopri quelli che ti mancano.","image":"https://collectiontime.com/catalogo/legami/astucci-super-kawaii/immagini/anteprima.jpg?v=2026-09-30","mainEntity":{"@type":"ItemList","numberOfItems":3,"itemListElement":[{"@type":"ListItem","position":1,"name":"01 · PANDA"},{"@type":"ListItem","position":2,"name":"02 · PANDA"},{"@type":"ListItem","position":3,"name":"03 · ORSO"}]}}]}</script>
 </head>
 <body>
 
@@ -64,14 +65,14 @@
 <div id="header-placeholder"></div>
 
 <div class="wrap">
-  <!-- Link per tornare alla pagina Legami -->
+  <!-- Link per tornare alla pagina Legami Milano -->
   <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
-  <a class="st-back" href="../index.html">&larr; Legami</a>
+  <a class="st-back" href="../index.html">&larr; Legami Milano</a>
 
   <!-- ============ TITOLO E STRUMENTI ============ -->
   <header>
     <!-- ! MODIFICA: titolo della pagina -->
-    <h1 id="pageTitle"><span class="titolo-testo">LEGAMI BULB FICTION</span></h1>
+    <h1 id="pageTitle"><span class="titolo-testo">ASTUCCI SUPER KAWAII</span></h1>
     <div class="bar">
       <!-- "5 possedute su 21": il testo lo scrive app.js -->
       <div class="conta-stampa">  <!-- conteggio e, sotto, il pulsante Stampa -->
@@ -91,7 +92,7 @@
         </div>
         <!-- Filtro: tutte / possedute / mancanti -->
         <select id="filter" aria-label="Mostra">
-          <option value="all" id="optAll">Tutte</option>
+          <option value="all" id="optAll">Tutti</option>
           <option value="owned" id="optOwned">In possesso</option>
           <option value="missing">Mi mancano</option>
         </select>
@@ -104,9 +105,9 @@
     </div>
   </header>
 
-  <!-- ============ GRIGLIA DELLE LAMPADE ============
-       Resta vuota qui: app.js crea una scheda <li> per ogni lampada
-       dell'ELENCO DELLE LAMPADE (in fondo a questa pagina). -->
+  <!-- ============ GRIGLIA DEGLI ASTUCCI ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni riga
+       dell'ELENCO (in fondo a questa pagina). -->
   <ul class="grid" id="grid"></ul>
 
   <!-- Messaggi quando non c'è nulla da mostrare -->
@@ -121,7 +122,7 @@
        La copia di sicurezza (Scarica / Carica un file) è nel menu Accedi / profilo e vale per tutto il sito. -->
   <footer>
     <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
-    <p class="hint">Premi su una lampada per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
+    <p class="hint">Premi su un astuccio per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
   </footer>
 </div>
 
@@ -136,7 +137,7 @@
     <p class="sub">Crea un'immagine da condividere.</p>
     <label class="choice">
       <input type="radio" name="printKind" value="owned" checked>
-      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le lampade, con il quadratino spuntato dove ce l'hai.</small></span>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutti gli astucci, con il quadratino spuntato dove ce l'hai.</small></span>
     </label>
     <label class="choice">
       <input type="radio" name="printKind" value="scambi">
@@ -192,81 +193,52 @@
    ===================================================================== */
 // ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
 const CONFIG = {
-  id: "legami-lampada",            // nome usato nei PDF
-  dbName: "catalogo-legami-lampada", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
-  titolo: "Legami Bulb Fiction",   // titolo della scheda del browser e del PDF
-  nome: "lampada",                 // come si chiama un elemento
-  possedute: "possedute",          // "5 possedute su 21"
-  colonne: 7,                      // quanti per fila sugli schermi larghi (sui telefoni diminuiscono da soli)
-  proporzione: 1.7,                // altezza ÷ larghezza dell'oggetto più largo (calcolata dalle foto)
-  altezza: 250,                    // altezza delle foto sugli schermi larghi, in pixel (più alto = più grandi)
-  pdfColonne: 7,                   // quanti per fila nel PDF
-  pdfFile: 2,                      // file di lampade per pagina del PDF (solo Legami: le altre pagine hanno il PDF verticale)
+  id: "astucci-super-kawaii",            // nome usato nei PDF
+  dbName: "catalogo-astucci-super-kawaii", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "Astucci Super Kawaii",   // titolo della scheda del browser e del PDF
+  nome: "astuccio",                 // come si chiama un elemento
+  possedute: "posseduti",          // "5 posseduti su 18"
+  colonne: 6,                      // quanti per fila sugli schermi larghi (sui telefoni diminuiscono da soli)
+  proporzione: 1.35,               // altezza ÷ larghezza dell'oggetto più largo (calcolata dalle foto)
+  altezza: 340,                    // altezza delle foto sugli schermi larghi, in pixel (più alto = più grandi)
+  pdfColonne: 6,                   // quanti per fila nel PDF
+  pdfFile: 2,                      // file di foto per pagina del PDF (solo Legami: le altre pagine hanno il PDF verticale)
   suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua", "Limited Edition"]   // hashtag proposti nei dettagli
 };
 
 /* =====================================================================
-   ELENCO DELLE LAMPADE  ★ QUI SI AGGIUNGONO LE LAMPADE ★
+   ELENCO DEGLI ASTUCCI  ★ QUI SI AGGIUNGONO O CAMBIANO ★
    ---------------------------------------------------------------------
-   Ogni riga { … } è UNA lampada. Le lampade compaiono sulla pagina
-   nello stesso ordine di questo elenco (in ordine di codice).
+   Ogni riga { … } è un astuccio, nello stesso ordine della pagina.
 
-   COME AGGIUNGERE UNA LAMPADA
-     1. Salva la foto con lo sfondo trasparente nella cartella
-        "immagini" in formato WebP, che pesa circa la metà del PNG
-        (es. immagini/20.webp). Da PNG a WebP: apri squoosh.app,
-        trascina la foto, a destra scegli "WebP" qualità 88 e scarica.
-        Va bene anche un PNG, ma il sito diventa più lento.
-        Alta circa 640 pixel,
-        senza margini vuoti.
-     2. Copia una riga qui sotto, incollala nel punto dove vuoi che
-        compaia e cambia i valori.
-     3. Salva questo file e ricarica la pagina: la lampada c'è già.
+   PIÙ FACILE: area amministratore → "Modifica una serie" (aggiunge le
+   righe, prepara le foto e aggiorna "Mi mancano", "Doppioni" e "Cerca").
+
+   A MANO: copia una riga, incollala dove vuoi che compaia, cambia i valori,
+   poi nell'area amministratore premi "Aggiorna catalogo".
 
    I CAMPI
-     id        codice unico, in ordine: "lampada-001", "lampada-002"…
-               Serve al browser per ricordare se ce l'hai: non usare lo
-               stesso id due volte (per una nuova: l'ultimo + 1).
-     numero    ultime due cifre del codice (VCLB0012 → "12")
-     codice    codice Legami (es. "VCLB0012")
-               (se non c'è un codice, metti l'anno)
-     nome      nome della lampada (es. "ALIENO")
-     foto      percorso della foto: "immagini/NOMEFILE.webp"
-               Se sostituisci la foto con un file nuovo con lo STESSO nome,
-               aggiungi o cambia "?v=…" in fondo mettendo la data di oggi (es. "immagini/01.webp?v=2026-09-26"; i numeri già scritti, tipo ?v=2, vanno bene così):
-               obbliga il browser a scaricare la foto nuova invece di quella vecchia salvata.
-               Finché non hai la foto vera usa "immagini/in-arrivo.webp"
-               (sagoma nera con il "?"), come la 20.
-     hashtag   evento: ["Natale"], ["San Valentino"], ["Halloween"] — facoltativo
-     info      informazioni fisse (es. "Prima versione con stellina")  — facoltativo
+     id        codice unico (es. l'ultimo + 1): serve al browser per ricordare
+               se ce l'hai. Non usarlo due volte e non cambiarlo dopo la pubblicazione.
+     numero    il numero mostrato sotto la foto
+     codice    codice o anno
+     nome      nome
+     foto      "immagini/NN.webp?v=DATA" (sfondo trasparente, WebP: le prepara
+               l'area amministratore). Se sostituisci una foto con una con lo
+               STESSO nome, metti la data di oggi in "?v=" (es. ?v=2026-09-30):
+               così i browser scaricano quella nuova e non quella vecchia salvata.
+     info      facoltativo: testo fisso nei dettagli
+     hashtag   facoltativo, es. ["Natale"]
+     (altri campi, se ci sono: come nelle righe già scritte)
 
    Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
    virgolette "…".
    ===================================================================== */
 // ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
 const ELENCO = [
-  { id: "lampada-001", numero: "01", codice: "VCLB0001", nome: "BABBO NATALE", foto: "immagini/01.webp", hashtag: ["Natale"] },
-  { id: "lampada-002", numero: "02", codice: "VCLB0002", nome: "RENNA", foto: "immagini/02.webp", hashtag: ["Natale"] },
-  { id: "lampada-003", numero: "03", codice: "VCLB0003", nome: "FIOCCO DI NEVE", foto: "immagini/03.webp", hashtag: ["Natale"] },
-  { id: "lampada-004", numero: "04", codice: "VCLB0004", nome: "ALBERO DI NATALE", foto: "immagini/04.webp", hashtag: ["Natale"] },
-  { id: "lampada-005", numero: "05", codice: "VCLB0005", nome: "CUORE", foto: "immagini/05.webp", hashtag: ["San Valentino"] },
-  { id: "lampada-006", numero: "06", codice: "VCLB0006", nome: "CACTUS", foto: "immagini/06.webp" },
-  { id: "lampada-007", numero: "07", codice: "VCLB0007", nome: "FENICOTTERO", foto: "immagini/07.webp" },
-  { id: "lampada-008", numero: "08", codice: "VCLB0008", nome: "ARCOBALENO", foto: "immagini/08.webp" },
-  { id: "lampada-009", numero: "09", codice: "VCLB0009", nome: "GATTO", foto: "immagini/09.webp" },
-  { id: "lampada-010", numero: "10", codice: "VCLB0010", nome: "MARGHERITA", foto: "immagini/10.webp" },
-  { id: "lampada-011", numero: "11", codice: "VCLB0011", nome: "FARFALLA", foto: "immagini/11.webp" },
-  { id: "lampada-012", numero: "12", codice: "VCLB0012", nome: "ALIENO", foto: "immagini/12.webp" },
-  { id: "lampada-013", numero: "13", codice: "VCLB0013", nome: "UNICORNO", foto: "immagini/13.webp" },
-  { id: "lampada-014", numero: "14", codice: "VCLB0014", nome: "DREAM BIG", foto: "immagini/14.webp" },
-  { id: "lampada-015", numero: "15", codice: "VCLB0015", nome: "BE HAPPY", foto: "immagini/15.webp" },
-  { id: "lampada-016", numero: "16", codice: "VCLB0016", nome: "GOOD VIBES", foto: "immagini/16.webp" },
-  { id: "lampada-017", numero: "17", codice: "VCLB0017", nome: "BELIEVE IN MAGIC", foto: "immagini/17.webp" },
-  { id: "lampada-018", numero: "18", codice: "VCLB0018", nome: "JOY", foto: "immagini/18.webp", hashtag: ["Natale"] },
-  { id: "lampada-019", numero: "19", codice: "VCLB0019", nome: "FANTASMA", foto: "immagini/19.webp", hashtag: ["Halloween"] },
-  { id: "lampada-020", numero: "20", codice: "VCLB0020", nome: "WE ARE DREAMERS", foto: "immagini/in-arrivo.webp", info: "Esclusiva per le boutique Legami" },
-  { id: "lampada-021", numero: "21", codice: "VCLB0021", nome: "LOVE IS IN THE AIR", foto: "immagini/21.webp", hashtag: ["San Valentino"] },
-  { id: "lampada-022", numero: "22", codice: "VCLB0022", nome: "BOOO!", foto: "immagini/22.webp", hashtag: ["Halloween"] },
+  { id: "astucci-super-kawaii-02", numero: "01", nome: "PANDA", foto: "immagini/02.webp?v=2026-09-30", info: "Prima versione con logo in rilievo", codice: "SKA0001" },
+  { id: "astucci-super-kawaii-03", numero: "02", nome: "PANDA", foto: "immagini/03.webp?v=2026-09-30", info: "Versione con logo rosso", codice: "SKA0001" },
+  { id: "astucci-super-kawaii-01", numero: "03", nome: "ORSO", foto: "immagini/01.webp?v=2026-09-30", codice: "SKA0002" },
 ];
 </script>
 
