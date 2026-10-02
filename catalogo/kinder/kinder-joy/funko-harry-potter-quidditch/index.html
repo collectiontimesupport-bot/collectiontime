@@ -6,7 +6,7 @@
      Pagina creata dall'area amministratore. Com'è fatta questa cartella:
 
        index.html           ← questa pagina: struttura, IMPOSTAZIONI (CONFIG)
-                              ed ELENCO DELLE SORPRESINA (in fondo)
+                              ed ELENCO DELLE SORPRESINE (in fondo)
        immagini/            ← le foto in WebP trasparente (01.webp, 02.webp…)
                               e copertina.webp (la foto della card, se c'è)
        (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
@@ -15,7 +15,7 @@
 
      ▸ PER CAMBIARE NOMI, FOTO, ORDINE, QUANTI PER FILA E GRANDEZZA:
        area amministratore (_admin/index.html) → "Modifica una serie".
-       A mano: blocco "ELENCO DELLE SORPRESINA" in fondo a questa pagina.
+       A mano: blocco "ELENCO DELLE SORPRESINE" in fondo a questa pagina.
      ===================================================================== -->
 <html lang="it">
 <head>
@@ -50,7 +50,7 @@
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../../comune/collezione.css?v=2026-09-29b">
+<link rel="stylesheet" href="../../../../comune/collezione.css?v=2026-10-02">
 <link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
      Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
@@ -104,7 +104,7 @@
     </div>
   </header>
 
-  <!-- ============ GRIGLIA DELLE SORPRESINA ============
+  <!-- ============ GRIGLIA DELLE SORPRESINE ============
        Resta vuota qui: app.js crea una scheda <li> per ogni riga
        dell'ELENCO (in fondo a questa pagina). -->
   <ul class="grid" id="grid"></ul>
@@ -121,7 +121,7 @@
        La copia di sicurezza (Scarica / Carica un file) è nel menu Accedi / profilo e vale per tutto il sito. -->
   <footer>
     <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
-    <p class="hint">Premi su una sorpresina per segnare che ce l'hai. Con ✎ vedi i dettagli, le info e gli hashtag.</p>
+    <p class="hint">Premi su una sorpresina per segnare che ce l'hai. Con info vedi i dettagli, le info e gli hashtag.</p>
   </footer>
 </div>
 
@@ -136,7 +136,7 @@
     <p class="sub">Crea un'immagine da condividere.</p>
     <label class="choice">
       <input type="radio" name="printKind" value="owned" checked>
-      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le sorpresina, con il quadratino spuntato dove ce l'hai.</small></span>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le sorpresine, con il quadratino spuntato dove ce l'hai.</small></span>
     </label>
     <label class="choice">
       <input type="radio" name="printKind" value="scambi">
@@ -154,7 +154,7 @@
   </div>
 </dialog>
 
-<!-- ============ FINESTRA "DETTAGLI" (si apre con ✎) ============ -->
+<!-- ============ FINESTRA "DETTAGLI" (si apre con "info") ============ -->
 <dialog id="dlg">
   <form id="editForm">
     <!-- foto grande -->
@@ -204,7 +204,7 @@ const CONFIG = {
 };
 
 /* =====================================================================
-   ELENCO DELLE SORPRESINA  ★ QUI SI AGGIUNGONO O CAMBIANO ★
+   ELENCO DELLE SORPRESINE  ★ QUI SI AGGIUNGONO O CAMBIANO ★
    ---------------------------------------------------------------------
    Ogni riga { … } è una sorpresina, nello stesso ordine della pagina.
 

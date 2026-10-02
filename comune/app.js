@@ -301,8 +301,8 @@
   /* Crea la scheda <li> di un oggetto:
        <li class="pen [owned]">
          <button class="open"> <div class="pic"> [bagliore] <img class="pen-img"> <span class="spunta"> </div> </button>
-         <button class="edit">✎</button>   ← matita dei dettagli, in alto a sinistra sulla foto
          [<div class="nome">Nome</div>]   ← solo se CONFIG.mostraNomi
+         <button class="edit">info</button>   ← pulsante "info" dei dettagli: sotto la foto (e sotto il nome, se c'è)
          <div class="code">01</div>
          <div class="doppi"> Doppi − 0 + </div>   ← solo per gli oggetti con la foto
        </li>
@@ -353,7 +353,7 @@
     const edit = document.createElement('button');
     edit.type = 'button';
     edit.className = 'edit';
-    edit.textContent = '\u270E';
+    edit.textContent = 'info';
     edit.setAttribute('aria-label', 'Dettagli');
     edit.title = 'Dettagli';
     edit.addEventListener('click', () => openEdit(p));
@@ -365,7 +365,7 @@
       nome.className = 'nome';
       nome.append(document.createElement('span'));
       nome.firstChild.textContent = p.name;
-      li.append(btn, edit, nome, code, ...doppi);
+      li.append(btn, nome, edit, code, ...doppi);   /* foto, nome, pulsante "info", numero */
     } else {
       li.append(btn, edit, code, ...doppi);
     }
@@ -381,7 +381,7 @@
     updateCount(list.length);
   }
 
-  /* ---------- finestra "Dettagli" (si apre con la matita ✎) ----------
+  /* ---------- finestra "Dettagli" (si apre con il pulsante "info") ----------
      Codice, colore, numero, nome e info sono fissi (campi di sola lettura
      nell'HTML): chi visita cambia solo gli hashtag e "Ce l'ho". */
   let editTags = [];

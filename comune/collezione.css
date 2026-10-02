@@ -154,13 +154,12 @@ select, .field input[type=text] {
      - il pulsante .open con la foto (.pic) → segna/toglie "Ce l'ho"
      - il nome (.nome), solo se CONFIG.mostraNomi (LEGO)
      - dentro la foto, in alto a destra, la tesserina "Ce l'ho" (.spunta)
-     - la matita ✎ dei dettagli, in alto a sinistra sulla foto (.edit)
+     - il pulsante "info" dei dettagli, sotto la foto (.edit)
      - il riquadro con il numero (.code)
      - la riga dei doppioni "Doppi − 0 +" (.doppi)
    ===================================================================== */
 .pen {
   container-type: inline-size; container-name: pen;   /* permette di adattare l'oggetto alla sua larghezza (vedi sezione 10) */
-  position: relative;                                 /* la matita ✎ si appoggia in alto a sinistra */
   min-width: 0;
   display: grid; gap: 6px; justify-items: stretch;
 }
@@ -263,13 +262,13 @@ select, .field input[type=text] {
 }
 @media (hover: hover) { .pen .open:hover .spunta { border-color: var(--amber); } }
 
-/* matita ✎ dei dettagli, in alto a sinistra sulla foto */
+/* pulsante "info" sotto la foto: apre la finestra dei dettagli (stesso aspetto su ogni oggetto) */
 .edit {
-  position: absolute; top: 0; left: 0; z-index: 1;
-  background: transparent; border: 0; border-radius: 6px;
-  padding: 2px 4px; color: var(--muted); font-size: 1rem; line-height: 1;
+  width: 100%; height: 20px; padding: 0;
+  background: var(--white); border: 1.5px solid var(--line); border-radius: 8px;
+  color: var(--muted); font-family: inherit; font-size: .68rem; font-weight: 700; line-height: 17px; text-align: center;
 }
-.edit:hover { color: var(--amber); }
+.edit:hover { color: var(--amber); border-color: var(--amber); }
 
 /* numero di un oggetto che hai: cornice ambra */
 .pen.owned .code { border-color: var(--amber); background: rgba(242, 169, 0, .1); background: color-mix(in srgb, var(--amber) 10%, var(--white)); }   /* rgba = riserva per i browser vecchi */
@@ -300,7 +299,7 @@ footer { margin-top: 48px; display: flex; flex-wrap: wrap; gap: 8px; align-items
 footer .hint { flex-basis: 100%; margin: 0 0 4px; }
 
 /* =====================================================================
-   7. FINESTRA "DETTAGLI" (si apre con la matita ✎)
+   7. FINESTRA "DETTAGLI" (si apre con il pulsante "info")
    ===================================================================== */
 dialog {
   border: 1px solid var(--line); border-radius: 14px;
@@ -412,9 +411,9 @@ input[readonly] { pointer-events: none; }
 /* =====================================================================
    10. ADATTAMENTI
    ===================================================================== */
-/* oggetti molto stretti: matita più piccola e contatore senza la scritta "Doppi" */
+/* oggetti molto stretti: pulsante "info" più piccolo e contatore senza la scritta "Doppi" */
 @container pen (max-width: 90px) {
-  .edit { padding: 1px 2px; font-size: .85rem; }
+  .edit { width: 88%; justify-self: center; font-size: .62rem; }   /* un po' più stretto, così i pulsanti vicini non si toccano */
   .doppi .etichetta { display: none; }   /* resta solo  − 2 +  */
   .doppi { justify-content: center; }
 }

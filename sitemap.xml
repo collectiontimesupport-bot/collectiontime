@@ -2,6 +2,9 @@
 <!-- sitemap.xml — elenco delle pagine di Collection Time per i motori di ricerca.
      Lo rifà da solo l'area amministratore (scheda Pubblica): NON modificarlo a mano. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>https://collectiontime.com/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/coolthings/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/adventure-time/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/barbie/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/ben-10-omniverse/</loc><lastmod>2026-10-02</lastmod></url>
@@ -20,7 +23,6 @@
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/hello-kitty-western/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/hello-kitty-yoga/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/horror/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/minions-bob-tim/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/molang-charm-friends/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/molang-pajanimals/</loc><lastmod>2026-10-02</lastmod></url>
@@ -42,6 +44,7 @@
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/tokidoki-till-death/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/tokidoki-unicorno/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/tutti/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/adventure-time/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/ben-10-omniverse/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/care-bears-besties/</loc><lastmod>2026-10-02</lastmod></url>
@@ -59,7 +62,6 @@
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/hello-kitty-tutty-frutty/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/hello-kitty-western/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/hello-kitty-yoga/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/molang-charm-friends/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/molang-pajanimals/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/ninja-turtles/</loc><lastmod>2026-10-02</lastmod></url>
@@ -79,35 +81,42 @@
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/tokidoki-moofia/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/tokidoki-till-death/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/figure-3d/tutti/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/coolthings/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/eurospin/harry-potter/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/eurospin/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/eurospin/harry-potter/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/eurospin/kung-fu-panda-4/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/eurospin/minions-fruit-sounds/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/eurospin/sonic/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/eurospin/star-wars-flash-heroes/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/eurospin/the-simpsons/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/dc-funko/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/funko-harry-potter-quidditch/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/funko-jurassic-world/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/minecraft/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/mondiali-2026/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/one-piece/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/stranger-things/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/super-mario/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/bosco-degli-auguri/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/champion-ghost/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/christmas-battle/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/citta-delle-note/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/colorbots/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/disney-playmobil/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/fantasmini/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/folletti-di-natale/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/fortunosi/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/hello-kitty/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/justice-league/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/leo-venturas/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/madagascar-2/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/monster-hotel-halloween/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natale-2026/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natoons-famiglie/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/panda-party/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pasqua-2026/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/piramolli/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pixie-2007/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pixie-2009/</loc><lastmod>2026-10-02</lastmod></url>
@@ -116,13 +125,14 @@
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/presepe-2004/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/puffi-2010/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/ranopla/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/sirene/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-sorpresa/super-giraffe/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/aida-degli-alberi/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/amicozze/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/banda-bidon/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/gnomburloni/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/golden-garfield/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/lattimbri/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/lunes/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/magicanti/</loc><lastmod>2026-10-02</lastmod></url>
@@ -133,10 +143,10 @@
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/sbottigliati/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/svitatelli/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/merendine-ferrero/toto-sapore/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/legami/astucci/astucci-super-kawaii/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/legami/astucci/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/legami/astucci/legami-astucci/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/legami/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/legami/astucci/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/legami/astucci/astucci-super-kawaii/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/legami/astucci/legami-astucci/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/legami/legami-erasable/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/legami/legami-lampada/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/legami/legami-lovely-friends/</loc><lastmod>2026-10-02</lastmod></url>
@@ -144,6 +154,7 @@
   <url><loc>https://collectiontime.com/catalogo/legami/matite-squishy/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/legami/penne-squishy/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/legami/tote-bag/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/lego/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/dc-super-heroes/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/dfb/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/disney-100/</loc><lastmod>2026-10-02</lastmod></url>
@@ -153,7 +164,6 @@
   <url><loc>https://collectiontime.com/catalogo/lego/f1-race-cars/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/harry-potter-serie-1/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/harry-potter-serie-2/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/lego/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/looney-tunes/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/marvel-studios-serie-1/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/marvel-studios-serie-2/</loc><lastmod>2026-10-02</lastmod></url>
@@ -199,8 +209,8 @@
   <url><loc>https://collectiontime.com/catalogo/lego/the-simpsons-serie-1/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/the-simpsons-serie-2/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lego/tutte/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/lidl/fresh-heads/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lidl/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/lidl/fresh-heads/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lidl/stikeez/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lidl/stikeez/stikeez-2014/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lidl/stikeez/stikeez-2015/</loc><lastmod>2026-10-02</lastmod></url>
@@ -211,12 +221,13 @@
   <url><loc>https://collectiontime.com/catalogo/lidl/stikeez/stikeez-2020/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lidl/stikeez/stikeez-cosmos-invaders/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/lidl/stikeez/tutti/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/mcdonalds/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/back-to-school-2025/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/back-to-school-2026/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/fifa-world-cup-2026-bicchieri/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/friends-personaggi/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/friends-tazze/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/kpop-demon-hunters-photocard/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/merry-grinchmas-calze/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/palloni/</loc><lastmod>2026-10-02</lastmod></url>
@@ -224,8 +235,10 @@
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/super-mario-galaxy-monete/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/teli-mare/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/gadget/the-minecraft-movie-meal/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/adopt-me-volanti/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/adopt-me/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/build-a-bear-halloween/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/care-bears-halloween/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/cattivissimo-me-4/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/crayola-pianeta-mcdonalds/</loc><lastmod>2026-10-02</lastmod></url>
@@ -238,7 +251,6 @@
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/hot-wheels-nitro-junior-games/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/il-grinch/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/il-mondo-di-karma/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/jurassic-world-teoria-del-caos/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/lil-mcdonalds/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/mario-kart-8-deluxe/</loc><lastmod>2026-10-02</lastmod></url>
@@ -268,7 +280,6 @@
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/tinytan/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/tom-e-jerry/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/uno-x-anime/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/mcdonalds/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/libri/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/raccolta-punti/</loc><lastmod>2026-10-02</lastmod></url>
@@ -276,13 +287,12 @@
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/raccolta-punti/raccolta-punti-colazione-2022/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/raccolta-punti/raccolta-punti-colazione-2023/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/raccolta-punti/raccolta-punti-colazione-2024/</loc><lastmod>2026-10-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/mulino-bianco/sorpresine/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/sorpresine/animabili-serie-1/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/sorpresine/animabili-serie-2/</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/mulino-bianco/sorpresine/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/sorpresine/sorpresine-gommine-2023/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/contatti.html</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/faq.html</loc><lastmod>2026-10-02</lastmod></url>
-  <url><loc>https://collectiontime.com/</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/note-legali.html</loc><lastmod>2026-10-02</lastmod></url>
   <url><loc>https://collectiontime.com/privacy.html</loc><lastmod>2026-10-02</lastmod></url>
 </urlset>
