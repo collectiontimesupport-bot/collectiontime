@@ -37,7 +37,10 @@
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const semplice = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');   // senza accenti
   const plurale = (n, uno, tanti) => n + ' ' + (n === 1 ? uno : tanti);
-  const quante = s => s.x.filter(o => ce[o[0]]).length;
+  /* varianti estere (6° valore di ogni pezzo = paese): per chi non è in quel paese non contano per completare la serie
+     e non compaiono in "Mi mancano" (paeseEstero è in script.js, voce 14) */
+  const principali = s => s.x.filter(o => !paeseEstero(o[5]));
+  const quante = s => principali(s).filter(o => ce[o[0]]).length;
   const doppiDi = s => s.x.reduce((t, o) => t + (doppi[o[0]] || 0), 0);
   const fotoDi = (s, o) => '../' + s.p + '/' + o[3];
   const LENTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
@@ -78,7 +81,8 @@
   /* un oggetto, fatto come nelle pagine delle serie (stesse classi di comune/collezione.css):
      "Ce l'ho" si segna premendo la foto (tesserina .spunta in alto a destra) */
   function oggetto(s, o) {
-    const [id, numero, nome] = o, si = !!ce[id], n = doppi[id] || 0;
+    const [id, num, nome] = o, si = !!ce[id], n = doppi[id] || 0;
+    const numero = o[5] && !String(num).includes(' - ') ? num + ' - ' + o[5] : num;   // variante estera: "01 - USA"
     return `<li class="pen${si ? ' owned' : ''}">
       <button type="button" class="open" data-ce="${id}" aria-pressed="${si}" aria-label="Ce l'ho: ${esc(nome || numero)}"><div class="pic"><img class="pen-img" src="${fotoDi(s, o)}" alt="${esc(nome || numero)}"${s.nomi ? '' : ` title="${esc(nome)}"`} loading="lazy" decoding="async" draggable="false"><span class="spunta" aria-hidden="true"></span></div></button>
       ${s.nomi ? `<div class="nome"><span>${esc(nome)}</span></div>` : ''}
@@ -118,14 +122,14 @@
   /* MI MANCANO: per ogni serie, gli oggetti che non hai (le serie "in pausa" stanno chiuse nella tendina in fondo) */
   let soloIniziate = true, gruppo = '';
   function mancanti() {
-    const tutte = SERIE.filter(s => (!gruppo || s.g === gruppo) && quante(s) < s.x.length && (!soloIniziate || quante(s) > 0));
+    const tutte = SERIE.filter(s => (!gruppo || s.g === gruppo) && quante(s) < principali(s).length && (!soloIniziate || quante(s) > 0));
     const elenco = tutte.filter(s => !pausa.has(s.db));
     const ferme = tutte.filter(s => pausa.has(s.db));
-    const manca = s => s.x.length - quante(s);
+    const manca = s => principali(s).length - quante(s);
     const tot = elenco.reduce((t, s) => t + manca(s), 0);
     app.innerHTML = testa('MI MANCANO', plurale(tot, 'oggetto', 'oggetti') + ' in ' + plurale(elenco.length, 'serie', 'serie'),
       menu('iniziate', [['1', 'Serie che ho iniziato'], ['0', 'Tutte le serie']], soloIniziate ? '1' : '0', 'Quali serie') + menuGruppi())
-      + (elenco.map(s => { const m = s.x.filter(o => !ce[o[0]]); return titoloSerie(s, m.length === 1 ? 'ne manca 1' : 'ne mancano ' + m.length, true) + griglia(s, m)
+      + (elenco.map(s => { const m = principali(s).filter(o => !ce[o[0]]); return titoloSerie(s, m.length === 1 ? 'ne manca 1' : 'ne mancano ' + m.length, true) + griglia(s, m)
           + `<button type="button" class="non-cerco" data-pausa="${esc(s.db)}">Non la cerco più</button>`; }).join('')
         || (ferme.length ? '' : vuoto(soloIniziate ? 'Non hai ancora iniziato nessuna serie. Segna con "Ce l\'ho" quello che hai: qui vedrai cosa manca per completare le serie.' : 'Non ti manca niente!')))
       + (ferme.length ? `<details class="pausa"><summary>Non le cerco più (${ferme.length})</summary>`

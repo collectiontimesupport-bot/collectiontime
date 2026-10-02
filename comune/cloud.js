@@ -102,6 +102,21 @@ function impronta(collezioni) {
   return JSON.stringify(ordina(collezioni || {}));
 }
 
+/* ---------- paese dell'utente (nel documento del cloud) ----------
+   Il documento ha anche  paese: "IT"  (e paeseAuto: true se l'ha indovinato il sito e non l'ha scelto lui).
+   Serve alle statistiche dell'area amministratore (mappa degli iscritti) e a far seguire lo stesso paese
+   su ogni dispositivo. Si scrive al PROSSIMO salvataggio:
+     • se l'utente l'ha scelto in Impostazioni (paeseScelto) → si salva quello;
+     • se non l'ha scelto e il cloud ha già un paese scelto da lui → lo adotto anche su questo dispositivo;
+     • se non c'è niente → si salva quello indovinato (paeseRilevato), con paeseAuto.
+   Restituisce i campi da scrivere, oppure null se il cloud è già a posto. paeseScelto e paeseRilevato sono in script.js. */
+function paesePerCloud(nube) {
+  const scelto = paeseScelto();
+  if (scelto) return nube && nube.paese === scelto && !nube.paeseAuto ? null : { paese: scelto };
+  if (nube && nube.paese && !nube.paeseAuto) { try { localStorage.setItem('ct-paese', nube.paese); } catch (e) {} return null; }
+  return nube && nube.paese ? null : { paese: paeseRilevato(), paeseAuto: true };
+}
+
 /* ---------- sincronizzazione ---------- */
 let inCorso = null, timer = null;
 function sincronizza() {
@@ -126,9 +141,19 @@ function sincronizza() {
     const cambiaQui = daScrivereQui && impronta(finale) !== impronta(locale);
     if (cambiaQui) await scriviTutto(finale, true);
     let aggiornato = nube && nube.aggiornato;
-    if (!nube || impronta(finale) !== impronta(nube.collezioni)) {
-      aggiornato = Date.now();
-      await setDoc(documento(utente.uid), { versione: 1, aggiornato, collezioni: finale });
+    const paese = paesePerCloud(nube);                                       // null = il paese nel cloud è già giusto
+    const paeseDoc = paese || (nube && nube.paese ? Object.assign({ paese: nube.paese }, nube.paeseAuto ? { paeseAuto: true } : {}) : {});
+    const cambiaCollezioni = !nube || impronta(finale) !== impronta(nube.collezioni);
+    if (cambiaCollezioni || paese) {
+      if (cambiaCollezioni) aggiornato = Date.now();                         // se cambia solo il paese, "aggiornato" resta com'è (gli altri dispositivi non riscaricano niente)
+      /* Le regole di Firestore ammettono SOLO i campi elencati in hasOnly([...]) (console di Firebase → Firestore → Regole).
+         Se "paese" e "paeseAuto" non ci sono ancora, Google rifiuta il salvataggio: in quel caso riprovo SENZA il paese,
+         così la collezione si salva comunque. Per salvare anche il paese aggiungi 'paese' e 'paeseAuto' a quella lista. */
+      try { await setDoc(documento(utente.uid), Object.assign({ versione: 1, aggiornato, collezioni: finale }, paeseDoc)); }
+      catch (e) {
+        if (!paeseDoc.paese) throw e;
+        await setDoc(documento(utente.uid), { versione: 1, aggiornato, collezioni: finale });
+      }
     }
     scriviStato({ uid: utente.uid, ultimo: aggiornato, sporco: false });
     aggiornaVista();

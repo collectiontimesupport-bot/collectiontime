@@ -26,7 +26,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../sito.css?v=2026-10-02">
+<link rel="stylesheet" href="../../sito.css?v=2026-10-02l">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <style>
   /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
@@ -92,6 +92,34 @@
     <li data-cerca="Minions Fruit Sounds 2022 frutta verdura suono Carl Mela Tim Carota Jerry Pomodoro Kevin Banana Bob Fragola Dave Peperone"><a class="st-card" href="minions-fruit-sounds/index.html"><div class="thumb"><img src="minions-fruit-sounds/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Minions Fruit Sounds</h2><p>I Minions vestiti da frutta e verdura, con il suono.</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Star Wars Flash Heroes 2021 Yoda Chewbacca Kylo Ren Rey R2-D2 Darth Vader Boba Fett C-3PO Darth Maul Leia Han Solo Stormtrooper"><a class="st-card" href="star-wars-flash-heroes/index.html"><div class="thumb"><img src="star-wars-flash-heroes/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Star Wars Flash Heroes</h2><p>I personaggi 3D di Star Wars che si illuminano.</p><span class="st-apri">Apri</span></a></li>
   </ul>
+  <!-- ============ FAI PARTE DELLA COMMUNITY (gruppi di questa categoria) ============
+       Gruppi (Facebook, WhatsApp…) per chi vuole collaborare: NON sono i social di Collection Time.
+       Si gestiscono dall'area amministratore → Impostazioni del sito → "Community": per ogni gruppo
+       c'è la spunta, il nome e il link. Non modificare a mano le righe tra SOCIAL-INIZIO
+       e SOCIAL-FINE (un social con "hidden" è spento, il suo link resta salvato).
+       Se nessun social è acceso, la sezione sparisce da sola ("hidden" sul <section>).
+       Quando copi una categoria per farne una nuova, tieni questo blocco: l'area amministratore lo riempie. -->
+  <section class="st-collabora" hidden>
+    <h2>Fai parte della community di Eurospin</h2>
+    <p>Entra in un gruppo: segnalazioni, scambi e idee.</p>
+    <!-- SOCIAL-INIZIO -->
+    <ul class="st-social">
+    </ul>
+    <!-- SOCIAL-FINE -->
+  </section>
+
+  <!-- ============ HAI UN GRUPPO? PROPONILO (banda uguale a quella dei gruppi) ============
+       Chi ha un gruppo su questa categoria può proporlo con una mail: il pulsante apre la posta con
+       oggetto e testo già scritti (l'indirizzo lo mette script.js, voce "Proponi il tuo gruppo": non compare in chiaro).
+       Si accende e si spegne dall'area amministratore → Impostazioni del sito → "Community" ("hidden" = spenta).
+       Il nome dopo "su" va anche in data-proponi="…". -->
+  <section class="st-collabora st-proponi">
+    <a href="../../contatti.html" data-proponi="Eurospin">
+      <span class="st-soc-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg></span>
+      <span class="st-soc-t"><b>Hai un gruppo su Eurospin?</b><small>Scrivici e lo aggiungiamo qui</small></span>
+      <span class="st-soc-ar" aria-hidden="true">›</span>
+    </a>
+  </section>
 </main>
 
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
@@ -100,6 +128,6 @@
 <!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../../script.js?v=2026-10-02b"></script>
+<script src="../../script.js?v=2026-10-02m"></script>
 </body>
 </html>

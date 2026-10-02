@@ -58,17 +58,24 @@
     const id = r.id || ('penna-' + String(r.foto || i).split('/').pop().replace(/\.[a-z]+$/i, ''));
     if (idVisti.has(id)) console.warn('ELENCO: l\'id "' + id + '" è usato due volte. Cambiane uno!');
     idVisti.add(id);
+    /* paese = "variante estera": pezzo uscito solo in quel paese (es. paese: "USA"). Per chi NON è in quel paese
+       sta sotto "Varianti estere" e non conta per completare la serie (vedi comune/../script.js, voce 14).
+       Il paese compare accanto al numero ("01 - USA") e nelle Info ("Uscito solo in USA"). */
+    const paese = r.paese || '';
+    const numero = r.numero || '';
     return {
       id,
       pos: i,                                  /* posizione = ordine nell'elenco */
-      code: r.numero || '',
+      code: paese && numero && !numero.includes(' - ') ? numero + ' - ' + paese : numero,
+      paese,
+      estero: paeseEstero(paese),              /* true = variante estera per chi guarda (paeseEstero è in script.js) */
       codice: r.codice || '',
       name: r.nome || '',
       colorName: r.colore || '',
       colorHex: r.hex || '',
       limited: !!r.limitata,
       tags: Array.isArray(r.hashtag) ? r.hashtag.slice() : [],
-      info: r.info || '',                      /* testo fisso "Info": si cambia solo nell'HTML */
+      info: (r.info || '') + (paese && !/uscit[oa] solo/i.test(r.info || '') ? (r.info ? '. ' : '') + 'Uscito solo ' + (/^estero$/i.test(paese) ? 'all\'estero' : 'in ' + paese) : ''),   /* testo fisso "Info": si cambia solo nell'HTML */
       image: r.foto || ''                      /* percorso della foto, es. "immagini/01.webp" */
     };
   });
@@ -78,10 +85,12 @@
   let pens = [];           /* tutti gli oggetti, con le spunte e gli hashtag di chi guarda */
   let filterMode = 'all';  /* filtro scelto: all / owned / missing / doppi */
   /* ordine: 1 = dalla prima, -1 = dall'ultima.
-     La scelta resta salvata SOLO su questo dispositivo (localStorage "ct-ordine"),
-     non nel cloud, e vale per tutte le pagine delle collezioni. */
+     La scelta resta salvata SOLO su questo dispositivo (localStorage), non nel cloud,
+     e vale SOLO per questa pagina: ogni serie, lista e categoria ricorda il suo ordine
+     (chiave "ct-ordine:" + indirizzo della pagina). */
+  const CHIAVE_ORDINE = 'ct-ordine:' + location.pathname.replace(/index\.html$/, '');
   let sortDir = 1;
-  try { if (localStorage.getItem('ct-ordine') === 'desc') sortDir = -1; } catch (e) {}
+  try { if (localStorage.getItem(CHIAVE_ORDINE) === 'desc') sortDir = -1; localStorage.removeItem('ct-ordine'); } catch (e) {}   // "ct-ordine" = vecchia scelta unica per tutte le pagine: tolta
   let query = '';          /* testo scritto nella ricerca */
   let editing = null;      /* oggetto aperto nella finestra "Dettagli" */
 
@@ -135,7 +144,7 @@
     const terms = foldText(query).replace(/#/g, ' ').split(/\s+/).filter(Boolean);
     return pens
       .filter(p => filterMode === 'owned' ? p.owned
-        : filterMode === 'missing' ? (!p.owned && p.image)
+        : filterMode === 'missing' ? (!p.owned && p.image && !p.estero)      /* le varianti estere non mancano per completare la serie */
         : filterMode === 'doppi' ? p.doppi > 0
         : true)
       .filter(p => { if (!terms.length) return true; const hay = searchText(p); return terms.every(t => hay.includes(t)); })
@@ -147,13 +156,17 @@
      riempie la barra ambra sotto e mette i numeri nella tendina: "Tutte (103)", "In possesso (12)"… */
   let barra = null;
   function updateCount(shown) {
-    const owned = pens.filter(p => p.owned).length;
-    const total = pens.filter(p => p.image || p.owned).length;
+    /* il conteggio e la barra contano solo i pezzi della serie: le varianti estere (p.estero) restano fuori */
+    const base = pens.filter(p => !p.estero);
+    const owned = base.filter(p => p.owned).length;
+    const total = base.filter(p => p.image || p.owned).length;
     const doppi = pens.reduce((t, p) => t + p.doppi, 0);
     let t = owned + ' ' + CONFIG.possedute + ' su ' + total;
     if (doppi) t += ' · ' + doppi + (doppi === 1 ? ' doppione' : ' doppioni');
     if (typeof shown === 'number' && shown !== pens.length) t += ' · ' + shown + (shown === 1 ? ' visibile' : ' visibili');
     $('count').textContent = t;
+    const estere = grid.querySelector('.estere-titolo small');   /* "2 su 5" accanto a "Varianti estere": si aggiorna quando spunti */
+    if (estere) estere.textContent = testoEstere();
     /* barra di avanzamento (la creo la prima volta, subito sotto il conteggio) */
     if (!barra) {
       barra = document.createElement('div');
@@ -167,7 +180,7 @@
     barra.firstChild.style.width = perc + '%';
     barra.setAttribute('aria-valuenow', String(perc));
     /* numeri tra parentesi nelle voci della tendina (il testo di base resta quello scritto nella pagina) */
-    const quanti = { all: pens.length, owned, missing: pens.filter(p => !p.owned && p.image).length, doppi: pens.filter(p => p.doppi > 0).length };
+    const quanti = { all: pens.length, owned, missing: pens.filter(p => !p.owned && p.image && !p.estero).length, doppi: pens.filter(p => p.doppi > 0).length };
     [...$('filter').options].forEach(o => {
       if (!o.dataset.testo) o.dataset.testo = o.textContent;
       if (o.value in quanti) o.textContent = o.dataset.testo + ' (' + quanti[o.value] + ')';
@@ -191,7 +204,8 @@
     if (!h1 || !SEED.length) return;
     const anni = new Set(SEED.map(s => s.codice));
     const anno = anni.size === 1 && /^(19|20)\d\d$/.test(SEED[0].codice) ? SEED[0].codice : '';
-    const quanti = SEED.length + ' ' + (SEED.length === 1 ? CONFIG.nome : plurale(CONFIG.nome));
+    const principali = SEED.filter(s => !s.estero).length, estere = SEED.length - principali;
+    const quanti = principali + ' ' + (principali === 1 ? CONFIG.nome : plurale(CONFIG.nome)) + (estere ? ' + ' + estere + ' estere' : '');
     const p = document.createElement('p');
     p.className = 'info-serie';
     p.textContent = [anno, quanti].filter(Boolean).join(' · ');
@@ -215,13 +229,14 @@
     const nomeGruppo = gruppo ? gruppo.textContent.replace(/^\s*\u2190\s*/, '').trim() : '';
     const anni = new Set(SEED.map(x => x.codice));
     const anno = anni.size === 1 && /^(19|20)\d\d$/.test(SEED[0].codice) ? SEED[0].codice : '';
-    const codici = SEED.map(x => (/ - (.+)$/.exec(x.code) || [])[1]).filter(c => c && c !== 'USA');
-    const cosa = SEED.length + ' ' + (SEED.length === 1 ? CONFIG.nome : plurale(CONFIG.nome));
+    const principali = SEED.filter(x => !x.estero);           /* la descrizione parla solo dei pezzi della serie, non delle varianti estere */
+    const codici = principali.map(x => (/ - (.+)$/.exec(x.paese ? x.code.replace(' - ' + x.paese, '') : x.code) || [])[1]).filter(Boolean);
+    const cosa = principali.length + ' ' + (principali.length === 1 ? CONFIG.nome : plurale(CONFIG.nome));
     const tra = [nomeGruppo, anno].filter(Boolean).join(', ');
     const sec = document.createElement('section');
     sec.className = 'descr-serie';
     const p = document.createElement('p');
-    p.textContent = 'La checklist completa ' + (SEED.length === 1 ? 'di 1 ' + CONFIG.nome : 'delle ' + cosa) + ' di «' + CONFIG.titolo + '»'
+    p.textContent = 'La checklist completa ' + (principali.length === 1 ? 'di 1 ' + CONFIG.nome : 'delle ' + cosa) + ' di «' + CONFIG.titolo + '»'
       + (tra ? ' (' + tra + ')' : '') + ', con foto, nome e ' + (codici.length ? 'codice' : 'numero') + ' di ognuna'
       + (codici.length > 1 ? ' (da ' + codici[0] + ' a ' + codici[codici.length - 1] + ').' : '.');
     sec.append(p);
@@ -372,10 +387,31 @@
     return li;
   }
 
+  /* riga di titolo "Varianti estere · 2 su 5" (occupa tutta la larghezza della griglia: aspetto in collezione.css, .estere-titolo).
+     Dice quante ne hai: sono un extra, non contano nel "posseduti su…" della serie. */
+  const testoEstere = () => {
+    const tutte = pens.filter(p => p.estero && (p.image || p.owned));
+    return tutte.filter(p => p.owned).length + ' su ' + tutte.length + ' · non contano per completare la serie';
+  };
+  function titoloEstere() {
+    const li = document.createElement('li');
+    li.className = 'estere-titolo';
+    const t = document.createElement('b');
+    t.textContent = 'Varianti estere';
+    const n = document.createElement('small');
+    n.textContent = testoEstere();
+    li.append(t, n);
+    return li;
+  }
+
   /* ridisegna tutta la griglia */
   function render() {
     const list = visiblePens();
-    grid.replaceChildren(...list.map(card));
+    /* prima i pezzi della serie, poi (se ce ne sono) il titolo "Varianti estere" e le varianti */
+    const nodi = list.filter(p => !p.estero).map(card);
+    const estere = list.filter(p => p.estero);
+    if (estere.length) nodi.push(titoloEstere(), ...estere.map(card));
+    grid.replaceChildren(...nodi);
     $('noResults').hidden = list.length > 0 || pens.length === 0;
     $('emptyAll').hidden = pens.length > 0;
     updateCount(list.length);
@@ -488,7 +524,7 @@
   /* oggetti da mettere nel PDF: tutti, oppure solo quelli che mi mancano (per "Cerco") */
   function printList(soloMancanti) {
     const all = [...pens].sort(byPos);
-    return soloMancanti ? all.filter(p => !p.owned && p.image) : all;
+    return soloMancanti ? all.filter(p => !p.owned && p.image && !p.estero) : all;
   }
   /* carica una foto e aspetta che sia pronta */
   const loadImg = src => new Promise((res, rej) => {
@@ -1025,8 +1061,9 @@
   })();
 
   $('btnPrint').addEventListener('click', () => {
-    const total = pens.filter(p => p.image || p.owned).length;
-    $('cnt-owned').textContent = pens.filter(p => p.owned).length + ' su ' + total;
+    const base = pens.filter(p => !p.estero);
+    const total = base.filter(p => p.image || p.owned).length;
+    $('cnt-owned').textContent = base.filter(p => p.owned).length + ' su ' + total;
     const nMancanti = printList(true).length, nDoppioni = pens.filter(p => p.doppi > 0).length;
     $('cnt-scambi').textContent = nMancanti + ' cerco · ' + nDoppioni + ' scambio';
     $('cnt-mancanti').textContent = nMancanti;
@@ -1086,7 +1123,7 @@
   $('sort').value = sortDir === -1 ? 'desc' : 'asc';   /* mostra l'ordine salvato */
   $('sort').addEventListener('change', e => {
     sortDir = e.target.value === 'desc' ? -1 : 1;
-    try { localStorage.setItem('ct-ordine', e.target.value); } catch (err) {}
+    try { localStorage.setItem(CHIAVE_ORDINE, e.target.value); } catch (err) {}
     render();
   });
 

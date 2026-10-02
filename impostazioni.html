@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2026-09-27">
 <link rel="manifest" href="site.webmanifest">
 <!-- Stile comune del sito (sezioni "pagine di solo testo" e "pagina Impostazioni") -->
-<link rel="stylesheet" href="sito.css?v=2026-10-02">
+<link rel="stylesheet" href="sito.css?v=2026-10-02l">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 </head>
 <body class="st-semplice">
@@ -25,11 +25,12 @@
      Tre parti:
        1) Le mie statistiche → la riempie comune/impostazioni.js (NON scrivere dentro #stStatistiche)
        2) Aspetto           → i pulsanti li fa funzionare script.js (voce "Aspetto"): i data-tema NON vanno cambiati
-       3) Account e dati    → quello scritto qui lo vede chi NON ha fatto l'accesso;
+       3) Il tuo paese      → il menu lo riempie script.js (voce 14)
+       4) Account e dati    → quello scritto qui lo vede chi NON ha fatto l'accesso;
                               dopo l'accesso comune/cloud.js lo sostituisce (voce "Impostazioni: Account e dati") -->
 <main class="st-testo st-impostazioni">
   <h1>Impostazioni</h1>
-  <p class="lead">La tua collezione in numeri, l'aspetto del sito e il tuo account.</p>
+  <p class="lead">La tua collezione in numeri, l'aspetto del sito, il tuo paese e il tuo account.</p>
 
   <!-- id="statistiche": i numeri del menu del profilo portano qui (impostazioni.html#statistiche) -->
   <h2 id="statistiche">Le mie statistiche</h2>
@@ -42,6 +43,11 @@
     <button type="button" data-tema="chiaro">Chiaro</button>
     <button type="button" data-tema="scuro">Scuro</button>
   </div>
+
+  <!-- Il tuo paese: il menu lo riempie e lo fa funzionare script.js (voce 14, funzione attivaPaese) -->
+  <h2>Il tuo paese</h2>
+  <div class="st-imp-comandi"><select id="stPaese" aria-label="Il tuo paese"></select></div>
+  <p class="st-imp-nota">Serve per mostrarti come normali i pezzi del tuo paese: gli altri stanno sotto «Varianti estere».</p>
 
   <h2>Account e dati</h2>
   <div id="stImpAccount">
@@ -60,7 +66,7 @@
 <!-- script.js: bande, Accedi, Aspetto (questa riga serve in ogni pagina).
      comune/impostazioni.js: le statistiche (solo in questa pagina).
      "?v=…" = versione del file, cioè la DATA dell'ultima modifica: quando cambi un file .js o .css metti la data di oggi in tutte le pagine. -->
-<script src="script.js?v=2026-10-02b"></script>
-<script src="comune/impostazioni.js?v=2026-09-28d"></script>
+<script src="script.js?v=2026-10-02m"></script>
+<script src="comune/impostazioni.js?v=2026-10-02m"></script>
 </body>
 </html>

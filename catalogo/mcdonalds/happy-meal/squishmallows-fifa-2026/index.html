@@ -45,13 +45,13 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../../sito.css?v=2026-10-02">
+<link rel="stylesheet" href="../../../../sito.css?v=2026-10-02l">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie McDonald's -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../../comune/collezione.css?v=2026-10-02b">
+<link rel="stylesheet" href="../../../../comune/collezione.css?v=2026-10-02m">
 <link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
      Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
@@ -229,37 +229,37 @@ const CONFIG = {
    ===================================================================== */
 // ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
 const ELENCO = [
-  { id: "squishmallows-fifa-2026-01", numero: "01 - USA", codice: "2026", nome: "Monty", foto: "immagini/01.webp?v=1", info: "Border collie. Uscito solo in USA" },
-  { id: "squishmallows-fifa-2026-02", numero: "02 - USA", codice: "2026", nome: "Lindsay", foto: "immagini/02.webp?v=1", info: "Leopardo. Uscito solo in USA" },
-  { id: "squishmallows-fifa-2026-03", numero: "03 - USA", codice: "2026", nome: "Clutch", foto: "immagini/03.webp?v=2026-09-26", info: "Aquila. Mascotte degli Stati Uniti. Uscito solo in USA", hashtag: ["Mascotte"] },
-  { id: "squishmallows-fifa-2026-04", numero: "04 - USA", codice: "2026", nome: "Zayu", foto: "immagini/04.webp?v=1", info: "Giaguaro. Mascotte del Messico. Uscito solo in USA", hashtag: ["Mascotte"] },
-  { id: "squishmallows-fifa-2026-05", numero: "05 - USA", codice: "2026", nome: "Maple", foto: "immagini/05.webp?v=1", info: "Alce. Mascotte del Canada. Uscito solo in USA", hashtag: ["Mascotte"] },
+  { id: "squishmallows-fifa-2026-01", numero: "01", paese: "USA", codice: "2026", nome: "Monty", foto: "immagini/01.webp?v=1", info: "Border collie. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-02", numero: "02", paese: "USA", codice: "2026", nome: "Lindsay", foto: "immagini/02.webp?v=1", info: "Leopardo. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-03", numero: "03", paese: "USA", codice: "2026", nome: "Clutch", foto: "immagini/03.webp?v=2026-09-26", info: "Aquila. Mascotte degli Stati Uniti. Uscito solo in USA", hashtag: ["Mascotte"] },
+  { id: "squishmallows-fifa-2026-04", numero: "04", paese: "USA", codice: "2026", nome: "Zayu", foto: "immagini/04.webp?v=1", info: "Giaguaro. Mascotte del Messico. Uscito solo in USA", hashtag: ["Mascotte"] },
+  { id: "squishmallows-fifa-2026-05", numero: "05", paese: "USA", codice: "2026", nome: "Maple", foto: "immagini/05.webp?v=1", info: "Alce. Mascotte del Canada. Uscito solo in USA", hashtag: ["Mascotte"] },
   { id: "squishmallows-fifa-2026-06", numero: "06", codice: "2026", nome: "Boyle", foto: "immagini/06.webp?v=2026-09-26", info: "Pipistrello. Uscito anche in Italia", hashtag: ["Italia"] },
   { id: "squishmallows-fifa-2026-07", numero: "07", codice: "2026", nome: "Barella", foto: "immagini/07.webp?v=1", info: "Pesce combattente. Uscito anche in Italia", hashtag: ["Italia"] },
   { id: "squishmallows-fifa-2026-08", numero: "08", codice: "2026", nome: "Nya", foto: "immagini/08.webp?v=1", info: "Leopardo delle nevi. Uscito anche in Italia", hashtag: ["Italia"] },
   { id: "squishmallows-fifa-2026-09", numero: "09", codice: "2026", nome: "Gordon", foto: "immagini/09.webp?v=1", info: "Squalo. Uscito anche in Italia", hashtag: ["Italia"] },
-  { id: "squishmallows-fifa-2026-10", numero: "10 - USA", codice: "2026", nome: "Jim", foto: "immagini/10.webp?v=1", info: "Alpaca. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-10", numero: "10", paese: "USA", codice: "2026", nome: "Jim", foto: "immagini/10.webp?v=1", info: "Alpaca. Uscito solo in USA" },
   { id: "squishmallows-fifa-2026-11", numero: "11", codice: "2026", nome: "Cam", foto: "immagini/11.webp?v=1", info: "Gatto. Uscito anche in Italia", hashtag: ["Italia"] },
   { id: "squishmallows-fifa-2026-12", numero: "12", codice: "2026", nome: "Maui", foto: "immagini/12.webp?v=1", info: "Ananas. Uscito anche in Italia", hashtag: ["Italia"] },
   { id: "squishmallows-fifa-2026-13", numero: "13", codice: "2026", nome: "Benny", foto: "immagini/13.webp?v=2026-09-26", info: "Bigfoot. Uscito anche in Italia", hashtag: ["Italia"] },
   { id: "squishmallows-fifa-2026-14", numero: "14", codice: "2026", nome: "Debra", foto: "immagini/14.webp?v=1", info: "Capibara. Uscito anche in Italia", hashtag: ["Italia"] },
-  { id: "squishmallows-fifa-2026-15", numero: "15 - USA", codice: "2026", nome: "Avery", foto: "immagini/15.webp?v=2026-09-26", info: "Germano reale. Uscito solo in USA" },
-  { id: "squishmallows-fifa-2026-16", numero: "16 - USA", codice: "2026", nome: "Monica", foto: "immagini/16.webp?v=2026-09-26", info: "Assolotto. Uscito solo in USA" },
-  { id: "squishmallows-fifa-2026-17", numero: "17 - USA", codice: "2026", nome: "Donny", foto: "immagini/17.webp?v=2026-09-26", info: "Koala. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-15", numero: "15", paese: "USA", codice: "2026", nome: "Avery", foto: "immagini/15.webp?v=2026-09-26", info: "Germano reale. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-16", numero: "16", paese: "USA", codice: "2026", nome: "Monica", foto: "immagini/16.webp?v=2026-09-26", info: "Assolotto. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-17", numero: "17", paese: "USA", codice: "2026", nome: "Donny", foto: "immagini/17.webp?v=2026-09-26", info: "Koala. Uscito solo in USA" },
   { id: "squishmallows-fifa-2026-18", numero: "18", codice: "2026", nome: "Olma", foto: "immagini/18.webp?v=1", info: "Gatto fragola. Uscito anche in Italia", hashtag: ["Italia"] },
-  { id: "squishmallows-fifa-2026-19", numero: "19 - USA", codice: "2026", nome: "Waverly", foto: "immagini/19.webp?v=1", info: "Farfalla. Uscito solo in USA" },
-  { id: "squishmallows-fifa-2026-20", numero: "20 - USA", codice: "2026", nome: "Jude", foto: "immagini/20.webp?v=2026-09-26", info: "Elefante. Uscito solo in USA" },
-  { id: "squishmallows-fifa-2026-21", numero: "21 - USA", codice: "2026", nome: "Erica", foto: "immagini/21.webp?v=1", info: "Cincillà. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-19", numero: "19", paese: "USA", codice: "2026", nome: "Waverly", foto: "immagini/19.webp?v=1", info: "Farfalla. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-20", numero: "20", paese: "USA", codice: "2026", nome: "Jude", foto: "immagini/20.webp?v=2026-09-26", info: "Elefante. Uscito solo in USA" },
+  { id: "squishmallows-fifa-2026-21", numero: "21", paese: "USA", codice: "2026", nome: "Erica", foto: "immagini/21.webp?v=1", info: "Cincillà. Uscito solo in USA" },
   { id: "squishmallows-fifa-2026-22", numero: "22", codice: "2026", nome: "Dolan", foto: "immagini/22.webp?v=1", info: "Dinosauro. Uscito anche in Italia", hashtag: ["Italia"] },
   { id: "squishmallows-fifa-2026-23", numero: "23", codice: "2026", nome: "Winnie", foto: "immagini/23.webp?v=2026-09-26", info: "Tricheco. Uscito anche in Italia", hashtag: ["Italia"] },
 ];
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
-<script src="../../../../script.js?v=2026-10-02b"></script>
+<script src="../../../../script.js?v=2026-10-02m"></script>
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../../comune/app.js?v=2026-10-02b"></script>
+<script src="../../../../comune/app.js?v=2026-10-02m"></script>
 </body>
 </html>

@@ -25,6 +25,8 @@
   --piastra: transparent; /* dietro le scritte colorate delle card in Home: chiara nel tema scuro */
   --riquadro: #F5F6F9; /* riquadri grigi chiarissimi (numeri nel menu profilo) */
   --errore: #B3261E;  /* rosso degli errori */
+  --crema: #FFF6DC;   /* fondo della sezione "Fai parte della community" */
+  --crema-line: #F2D27A; /* bordo della stessa sezione */
   /* colori che NON cambiano nel tema scuro (banda in basso, spunta sull'ambra) */
   --blu: #1A2140;
   --bianco: #FFFFFF;
@@ -46,14 +48,14 @@
 @media (prefers-color-scheme: dark) {
   :root[data-tema="auto"] {
     --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
-    --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126;
+    --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126; --crema: #232A4D; --crema-line: #6E5A22;
     --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg);
     color-scheme: dark;
   }
 }
 :root[data-tema="scuro"] {
   --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
-  --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126;
+  --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126; --crema: #232A4D; --crema-line: #6E5A22;
   --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg);
   color-scheme: dark;
 }
@@ -366,7 +368,12 @@ body.con-barra .st-avviso { bottom: calc(76px + env(safe-area-inset-bottom)); } 
    una riga per anno con l'anno grande, quante serie ha e la freccia ambra;
    al clic si apre e mostra le sue card. */
 .st-anni { display: grid; gap: 0; border-top: 1px solid var(--line); }
-.st-cards + .st-anni { margin-top: 32px; }   /* spazio tra le card senza anno (sopra) e le tendine */
+.st-cards + .st-anni { margin-top: 32px; }
+/* pulsante "Apri tutte le tendine": acceso (ambra) quando sono tutte aperte */
+.st-anni-tutte { display: block; margin: 0 0 12px auto; padding: 8px 16px; font: 600 .875rem/1 inherit; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; transition: background .15s, color .15s; }
+.st-anni-tutte:hover { border-color: var(--amber); }
+.st-anni-tutte[aria-pressed="true"] { background: var(--amber); border-color: var(--amber); color: var(--blu); }   /* scritta blu scuro sull'ambra pieno */
+.st-cards + .st-anni-tutte { margin-top: 32px; }   /* spazio tra le card senza anno (sopra) e le tendine */
 .st-anno { border-bottom: 1px solid var(--line); }
 .st-anno summary { display: flex; align-items: baseline; gap: 14px; padding: 16px 4px; cursor: pointer; list-style: none; }
 .st-anno summary::-webkit-details-marker { display: none; }
@@ -498,3 +505,44 @@ button.st-btn { border: 0; font-family: inherit; cursor: pointer; }
 .st-imp-elimina { margin-top: 28px; }
 .st-impostazioni .st-imp-elimina .st-link { color: var(--muted); font-size: .8125rem; text-decoration-color: currentColor; text-decoration-thickness: 1px; }
 .st-impostazioni .st-imp-elimina .st-link:hover { color: var(--errore); }
+
+/* ---------- "Fai parte della community": i gruppi in fondo a ogni categoria ----------
+   Il blocco sta in fondo a catalogo/<categoria>/index.html (tra SOCIAL-INIZIO e SOCIAL-FINE) e lo gestisce
+   l'area amministratore → Impostazioni del sito → "Community": per ogni gruppo c'è la spunta, il nome, il link
+   e (facoltativa) una descrizione. Striscia crema con una scheda bianca per gruppo; colori: --crema e --crema-line (in alto). */
+.st-collabora { margin-top: 48px; padding: 20px 22px; background: var(--crema); border: 1px solid var(--crema-line); border-radius: 14px; }
+.st-collabora h2 { margin: 0 0 4px; font-size: 1.125rem; }
+.st-collabora p { margin: 0; color: var(--muted); font-size: .9375rem; }
+.st-social { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 14px 0 0; padding: 0; list-style: none; }
+.st-social a, .st-proponi a { display: flex; align-items: center; gap: 14px; height: 100%; padding: 14px 18px; background: var(--white); border: 1px solid var(--crema-line); border-radius: 14px; color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
+.st-social a:hover, .st-proponi a:hover { border-color: var(--amber); transform: translateY(-1px); }
+/* cerchio ambra con il logo del social in blu scuro (il disegno lo scrive l'area amministratore; stesso colore per tutti i social) */
+.st-soc-ic { flex: none; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--amber); }
+.st-soc-ic svg { width: 30px; height: 30px; fill: var(--blu); }
+.st-soc-t { min-width: 0; }
+.st-soc-t b { display: block; overflow-wrap: anywhere; }
+.st-soc-t small { color: var(--muted); font-size: .8125rem; }
+.st-soc-ar { margin-left: auto; font-size: 1.25rem; font-weight: 700; color: var(--amber); }
+@media (prefers-reduced-motion: reduce) { .st-social a, .st-proponi a { transition: none; } .st-social a:hover, .st-proponi a:hover { transform: none; } }
+/* "Hai un gruppo su …? Scrivici": una riga discreta sotto i gruppi, senza banda né scheda (icona piccola + testo + freccia) */
+.st-collabora.st-proponi { margin-top: 32px; padding: 0; background: none; border: 0; border-radius: 0; }
+.st-collabora:not([hidden]) + .st-collabora.st-proponi { margin-top: 14px; }
+.st-collabora.st-proponi a { display: inline-flex; align-items: center; gap: 10px; height: auto; max-width: none; padding: 0; background: none; border: 0; border-radius: 0; font-size: .9375rem; transform: none; }
+.st-proponi .st-soc-ic { width: 26px; height: 26px; }
+.st-proponi .st-soc-ic svg { width: 14px; height: 14px; }
+.st-proponi .st-soc-t b { display: inline; font-weight: 600; }
+.st-proponi .st-soc-t small { margin-left: 6px; font-size: inherit; }
+.st-proponi .st-soc-ar { margin-left: 2px; font-size: 1.125rem; }
+.st-proponi a:hover .st-soc-t b { text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+/* ---------- "Seguici": i social di Collection Time (Home) ----------
+   Striscia blu notte con un pulsante ambra per social; il disegno del logo lo scrive l'area amministratore. */
+.st-seguici { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 40px; padding: 22px 26px; background: var(--band-bg); border-radius: 14px; color: var(--bianco); }
+.st-seguici-t { flex: 1 1 240px; }
+.st-seguici h2 { margin: 0 0 2px; font-size: 1.125rem; color: var(--bianco); }
+.st-seguici p { margin: 0; color: var(--soft); font-size: .9375rem; }
+.st-seguici ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.st-seguici a { display: inline-flex; align-items: center; gap: 10px; padding: 7px 18px 7px 7px; background: var(--amber); border-radius: 999px; color: var(--blu); font-weight: 700; text-decoration: none; transition: background .15s; }
+.st-seguici a:hover { background: var(--bianco); }
+.st-seguici .ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--blu); }
+.st-seguici .ic svg { width: 18px; height: 18px; fill: var(--amber); }

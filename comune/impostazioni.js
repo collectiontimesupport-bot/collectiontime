@@ -48,9 +48,12 @@ async function mostraStatistiche() {
       if (!s) continue;                                        // archivio di una serie che non c'è più
       const db = await apriArchivio(nome), righe = await leggi(db);
       db.close();
-      const ce = Math.min(righe.filter(r => r.owned === true || r.doppi > 0).length, s[2]);
+      /* s[4] (se c'è) = varianti estere { id: paese }: per chi non è in quel paese non contano per completare la serie */
+      const esteri = s[4] || {}, fuori = id => !!esteri[id] && paeseEstero(esteri[id]);
+      const tot = s[2] - Object.keys(esteri).filter(fuori).length;
+      const ce = Math.min(righe.filter(r => !fuori(r.id) && (r.owned === true || r.doppi > 0)).length, tot);
       if (!ce) continue;
-      mie.push({ link: new URL(s[0] + '/', CATALOGO).href, t: s[1], tot: s[2], cat: s[3], ce,
+      mie.push({ link: new URL(s[0] + '/', CATALOGO).href, t: s[1], tot, cat: s[3], ce,
                  doppi: righe.reduce((n, r) => n + (r.doppi > 0 ? r.doppi : 0), 0) });
     }
   } catch (e) {

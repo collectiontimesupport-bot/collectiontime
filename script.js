@@ -16,6 +16,7 @@
   11) la barra "6 su 9" sulle card delle serie in cui hai segnato qualcosa
   12) le categorie fissate in alto nella Home (tenendo premuto, solo con l'account)
   13) il carosello delle Novità nella Home (frecce quando le Novità sono più di quelle visibili)
+  14) il paese di chi visita (per le "Varianti estere": pezzi usciti solo in alcuni paesi)
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js?v=2026-09-28d"></script>
    (dentro una sottocartella: <script src="../script.js?v=2026-09-28d"></script>,
@@ -468,6 +469,22 @@ function perAnno() {
       box.append(d);
     });
     lista.after(box);
+    /* pulsante "Apri tutte / Chiudi tutte le tendine" (solo se le tendine sono più di una) */
+    if (anni.size > 1) {
+      const tutte = document.createElement('button');
+      tutte.type = 'button';
+      tutte.className = 'st-anni-tutte';
+      const visibili = () => [...box.querySelectorAll('.st-anno')].filter(d => !d.hidden);
+      const aggiorna = () => {                           // acceso = tutte aperte
+        const aperte = visibili().every(d => d.open);
+        tutte.setAttribute('aria-pressed', aperte);
+        tutte.textContent = aperte ? 'Chiudi tutte le tendine' : 'Apri tutte le tendine';
+      };
+      tutte.addEventListener('click', () => { const apri = tutte.getAttribute('aria-pressed') !== 'true'; visibili().forEach(d => { d.open = apri; }); aggiorna(); });
+      box.addEventListener('toggle', aggiorna, true);    // anche se apri/chiudi una tendina a mano (o la ricerca le apre)
+      aggiorna();
+      box.before(tutte);
+    }
     if (senzaAnno.length) lista.replaceChildren(...senzaAnno);   // la lista resta sopra, solo con le card senza anno
     else lista.remove();
   });
@@ -568,8 +585,8 @@ async function barreSerie() {
       if (!s || !apri || !miei.has(s.db)) continue;
       const db = await apriArchivio(s.db), righe = await leggi(db);
       db.close();
-      const ids = new Set(s.x.map(o => o[0]));
-      const ce = righe.filter(r => ids.has(r.id) && (r.owned === true || r.doppi > 0)).length, tot = s.x.length;
+      const ids = new Set(s.x.filter(o => !paeseEstero(o[5])).map(o => o[0]));   // le varianti estere non contano per completare la serie
+      const ce = righe.filter(r => ids.has(r.id) && (r.owned === true || r.doppi > 0)).length, tot = ids.size;
       if (!ce) continue;
       const riga = document.createElement('div');
       riga.className = 'st-riga-apri' + (ce >= tot ? ' finita' : '');
@@ -660,6 +677,84 @@ function carosello() {
   aggiorna();
 }
 
+/* ---------- Il paese di chi visita (14) ----------
+   Serve per le "Varianti estere": i pezzi di una serie con un paese scritto (campo  paese  nell'ELENCO,
+   es. paese: "USA") sono "estero" per chi NON è in quel paese: stanno sotto il titolo "Varianti estere" e
+   non contano per completare la serie. Per chi è in quel paese sono pezzi normali.
+   Il paese si sceglie in Impostazioni (menu "Il tuo paese"). Se non lo si sceglie lo indovino io:
+   prima dal fuso orario del dispositivo (Europe/Rome = Italia), poi dalla lingua del browser, poi Italia.
+   La scelta resta sul dispositivo (localStorage "ct-paese") e, con l'account, nel cloud (comune/cloud.js).
+   ! MODIFICA: PAESI = i paesi del menu (sigle ISO a 2 lettere); TZ_PAESE = fusi orari → paese. */
+const PAESI = ('AE AL AR AT AU BA BE BG BR BY CA CH CL CN CO CY CZ DE DK EE EG ES FI FR GB GR HK HR HU ID IE IL IN IS IT JP KR LT LU LV MA ME MK MT MX MY NL NO NZ PE PH PL PT RO RS RU SA SE SG SI SK TH TR TW UA US UY VN ZA').split(' ');
+const TZ_PAESE = {
+  'Europe/Rome': 'IT', 'Europe/Vatican': 'IT', 'Europe/San_Marino': 'IT', 'Europe/Berlin': 'DE', 'Europe/Paris': 'FR', 'Europe/Madrid': 'ES',
+  'Atlantic/Canary': 'ES', 'Europe/London': 'GB', 'Europe/Dublin': 'IE', 'Europe/Lisbon': 'PT', 'Europe/Brussels': 'BE', 'Europe/Amsterdam': 'NL',
+  'Europe/Vienna': 'AT', 'Europe/Zurich': 'CH', 'Europe/Warsaw': 'PL', 'Europe/Prague': 'CZ', 'Europe/Budapest': 'HU', 'Europe/Bucharest': 'RO',
+  'Europe/Athens': 'GR', 'Europe/Stockholm': 'SE', 'Europe/Oslo': 'NO', 'Europe/Copenhagen': 'DK', 'Europe/Helsinki': 'FI', 'Europe/Istanbul': 'TR',
+  'Europe/Kiev': 'UA', 'Europe/Kyiv': 'UA', 'Europe/Moscow': 'RU', 'Europe/Belgrade': 'RS', 'Europe/Zagreb': 'HR', 'Europe/Ljubljana': 'SI',
+  'Europe/Bratislava': 'SK', 'Europe/Sofia': 'BG', 'Europe/Luxembourg': 'LU', 'Europe/Malta': 'MT',
+  'America/New_York': 'US', 'America/Chicago': 'US', 'America/Denver': 'US', 'America/Los_Angeles': 'US', 'America/Phoenix': 'US',
+  'America/Anchorage': 'US', 'Pacific/Honolulu': 'US', 'America/Toronto': 'CA', 'America/Vancouver': 'CA', 'America/Mexico_City': 'MX',
+  'America/Sao_Paulo': 'BR', 'America/Argentina/Buenos_Aires': 'AR', 'America/Santiago': 'CL', 'America/Bogota': 'CO', 'America/Lima': 'PE',
+  'Asia/Tokyo': 'JP', 'Asia/Seoul': 'KR', 'Asia/Shanghai': 'CN', 'Asia/Hong_Kong': 'HK', 'Asia/Singapore': 'SG', 'Asia/Kolkata': 'IN',
+  'Asia/Calcutta': 'IN', 'Asia/Dubai': 'AE', 'Asia/Jerusalem': 'IL', 'Australia/Sydney': 'AU', 'Australia/Melbourne': 'AU',
+  'Pacific/Auckland': 'NZ', 'Africa/Johannesburg': 'ZA', 'Africa/Casablanca': 'MA', 'Africa/Cairo': 'EG'
+};
+/* nomi con cui si può scrivere un paese nell'ELENCO oltre al suo nome italiano (es. paese: "USA") */
+const ALIAS_PAESI = { 'usa': 'US', 'u.s.a.': 'US', 'stati uniti': 'US', 'stati uniti d\'america': 'US', 'uk': 'GB', 'inghilterra': 'GB', 'gran bretagna': 'GB',
+  'regno unito': 'GB', 'corea': 'KR', 'corea del sud': 'KR', 'emirati': 'AE', 'repubblica ceca': 'CZ', 'olanda': 'NL' };
+const senzaAccenti = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+
+/* il paese indovinato (sigla): fuso orario, poi lingua del browser, poi Italia */
+function paeseRilevato() {
+  let fuso = '';
+  try { fuso = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+  if (TZ_PAESE[fuso]) return TZ_PAESE[fuso];
+  for (const l of (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language])) {
+    const r = /-([A-Za-z]{2})$/.exec(l || '');
+    if (r && PAESI.includes(r[1].toUpperCase())) return r[1].toUpperCase();
+  }
+  return 'IT';
+}
+/* il paese scelto in Impostazioni (sigla) o, se non l'ha scelto, quello indovinato */
+function paeseScelto() { try { const c = localStorage.getItem('ct-paese'); return PAESI.includes(c) ? c : ''; } catch (e) { return ''; } }
+function paeseVisitatore() { return paeseScelto() || paeseRilevato(); }
+/* elenco [sigla, nome in italiano] ordinato per nome (per il menu di Impostazioni e per capire i nomi scritti nell'ELENCO) */
+let nomiPaesiCache = null;
+function nomiPaesi() {
+  if (!nomiPaesiCache) {
+    let nomi = null;
+    try { nomi = new Intl.DisplayNames(['it'], { type: 'region' }); } catch (e) {}
+    nomiPaesiCache = PAESI.map(c => [c, nomi ? nomi.of(c) : c]).sort((a, b) => a[1].localeCompare(b[1], 'it'));
+  }
+  return nomiPaesiCache;
+}
+/* da un paese scritto a mano ("USA", "Germania", "de") alla sigla; '' se non lo riconosco */
+function codicePaese(testo) {
+  const t = senzaAccenti(testo || '');
+  if (!t) return '';
+  if (ALIAS_PAESI[t]) return ALIAS_PAESI[t];
+  const trovato = nomiPaesi().find(([c, n]) => senzaAccenti(n) === t || c.toLowerCase() === t);
+  return trovato ? trovato[0] : '';
+}
+/* true se il pezzo con questo paese è "estero" per chi guarda (paese vuoto = pezzo normale per tutti) */
+function paeseEstero(testo) { return !!testo && codicePaese(testo) !== paeseVisitatore(); }
+
+/* Menu "Il tuo paese" della pagina Impostazioni (<select id="stPaese">): mostra il paese che vale adesso
+   (quello scelto o, se non l'hai scelto, quello indovinato). Cambiandolo si salva sul dispositivo e,
+   con l'account, nel cloud (segnalaModifica → comune/cloud.js). La pagina si ridisegna al prossimo caricamento. */
+function attivaPaese() {
+  const m = document.getElementById('stPaese');
+  if (!m) return;
+  m.innerHTML = nomiPaesi().map(([c, n]) => '<option value="' + c + '">' + n + '</option>').join('');
+  m.value = paeseVisitatore();
+  m.addEventListener('change', () => {
+    try { localStorage.setItem('ct-paese', m.value); } catch (e) {}
+    segnalaModifica();
+    avviso('Paese salvato.');
+  });
+}
+
 /* ---------- Avvio ---------- */
 
 caricaParte('header-placeholder', 'header.html');
@@ -670,6 +765,7 @@ avviaCerca();
 barraCategoria();
 barreSerie();
 attivaAspetto();
+attivaPaese();
 pinCategorie();
 carosello();
 
@@ -686,3 +782,14 @@ if (/(^|\.)collectiontime\.com$/.test(location.hostname)) {
   gc.src = 'https://gc.zgo.at/count.js';
   document.head.append(gc);
 }
+
+/* ---------- Proponi il tuo gruppo ----------
+   Nelle pagine delle categorie la banda "Hai un gruppo su …? Scrivici" ha un link con  data-proponi="Nome categoria".
+   Qui diventa un'email già scritta (oggetto e testo con il nome della categoria). L'indirizzo è composto qui,
+   così non compare in chiaro nel codice delle pagine (meno spam). Senza JavaScript il link porta a Contatti. */
+document.querySelectorAll('a[data-proponi]').forEach(a => {
+  const cat = a.dataset.proponi;
+  a.href = 'mailto:' + 'collectiontime.support' + '@' + 'gmail.com'
+    + '?subject=' + encodeURIComponent('Il mio gruppo su ' + cat + ' · Collection Time')
+    + '&body=' + encodeURIComponent('Ciao! Ho un gruppo dedicato a ' + cat + ' e vorrei proporlo.\n\nNome del gruppo:\nSocial (Facebook, WhatsApp, Telegram…):\nLink per entrare:\nDi cosa si parla:\n');
+});
