@@ -26,7 +26,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=2026-09-28d">
+<link rel="stylesheet" href="sito.css?v=2026-10-02">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
 <link rel="preload" href="comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
@@ -88,11 +88,11 @@
   </div>
   <!-- NUMERI E NOVITÀ: li riscrive da sola l'area amministratore ("Nuova serie", "Pubblica", "Statistiche").
        NON modificare a mano fino a "FINE NUMERI E NOVITÀ": si perderebbe. Come cambiarli: _admin/admin.js, voce "Numeri e Novità della Home". -->
-  <div class="st-numeri"><div><b>3.262</b><span>pezzi catalogati</span></div><div><b>252</b><span>serie</span></div><div><b>8</b><span>categorie</span></div></div>
+  <div class="st-numeri"><div><b>3.343</b><span>pezzi catalogati</span></div><div><b>255</b><span>serie</span></div><div><b>8</b><span>categorie</span></div></div>
   <section class="st-sezione">
     <h2 class="st-sez-titolo">Novità</h2>
     <ul class="st-novita">
-      <li><a href="catalogo/kinder/kinder-joy/one-piece/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/kinder/kinder-joy/one-piece/immagini/copertina.webp?v=2026-09-27" alt="" decoding="async"><strong>One Piece</strong><small>Kinder Ferrero · Kinder Joy</small></a></li>
+      <li><a href="catalogo/kinder/kinder-joy/one-piece/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/kinder/kinder-joy/one-piece/immagini/copertina.webp?v=2026-09-27" alt="" decoding="async"><strong>Funko One Piece</strong><small>Kinder Ferrero · Kinder Joy</small></a></li>
       <li><a href="catalogo/mcdonalds/gadget/kpop-demon-hunters-photocard/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/mcdonalds/gadget/kpop-demon-hunters-photocard/immagini/copertina.webp?v=1" alt="" decoding="async"><strong>KPop Demon Hunters - Photocard</strong><small>McDonald's · Gadget</small></a></li>
       <li><a href="catalogo/lego/shrek/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/lego/shrek/immagini/copertina.webp" alt="" decoding="async"><strong>Shrek</strong><small>LEGO Minifigures</small></a></li>
       <li><a href="catalogo/legami/legami-erasable/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/legami/legami-erasable/immagini/copertina.webp?v=1" alt="" decoding="async"><strong>Erasable Pens</strong><small>Legami Milano</small></a></li>
@@ -105,7 +105,8 @@
   <!-- Una card per ogni categoria: per aggiungerne una, copia un <li> ... </li> e cambia link e testi.
        data-cerca = parole in più che la ricerca trova (es. le collezioni che ci sono dentro). -->
   <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
-  <ul class="st-cards">
+  <!-- data-pin-max = quante categorie può fissare in alto chi ha l'account (tenendo premuto): si cambia dall'area amministratore → Impostazioni sito -->
+  <ul class="st-cards" data-pin-max="3">
     <li data-cerca="Erasable Pens Lovely Friends penne gel penne cancellabili Bulb Fiction lampade lampada Astucci astuccio Portachiavi portachiavi peluche Tiny Super Soft">
       <a class="st-card" href="catalogo/legami/index.html" aria-label="Legami Milano">
         <!-- logo scritto: --titolo = colore della collezione (rosso Legami) -->
@@ -188,6 +189,6 @@
 <!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=2026-09-28e"></script>
+<script src="script.js?v=2026-10-02"></script>
 </body>
 </html>

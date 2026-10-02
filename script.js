@@ -14,6 +14,8 @@
    9) il percorso in alto (Kinder Ferrero › Kinder Joy › One Piece)
   10) l'aspetto del sito: Automatico · Chiaro · Scuro (nella pagina Impostazioni)
   11) la barra "6 su 9" sulle card delle serie in cui hai segnato qualcosa
+  12) le categorie fissate in alto nella Home (tenendo premuto, solo con l'account)
+  13) il carosello delle Novità nella Home (frecce quando le Novità sono più di quelle visibili)
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js?v=2026-09-28d"></script>
    (dentro una sottocartella: <script src="../script.js?v=2026-09-28d"></script>,
@@ -435,7 +437,7 @@ function barraCategoria() {
    e le card vengono raccolte in tendine, una per anno, che si aprono al clic.
    L'anno è il primo numero tipo 1993 o 2010 scritto nel testo della card
    (nel <p>: "9 sorpresine<br>2010"). Le card si scrivono come sempre,
-   dalla più recente: l'ordine delle tendine segue l'ordine delle card.
+   dalla più recente; le tendine sono sempre ordinate dall'anno più recente al più vecchio.
    Le card SENZA anno (es. una cartella come "Squishmallows") restano
    normali, sopra le tendine.
    Mentre si cerca con la lente le tendine con risultati si aprono da sole
@@ -453,7 +455,9 @@ function perAnno() {
     });
     const box = document.createElement('div');
     box.className = 'st-anni';
-    anni.forEach((card, anno) => {
+    /* tendine dall'anno più recente al più vecchio, qualunque sia l'ordine delle card
+       (una serie nuova del 2023 messa in cima alla lista finisce sotto il 2026); dentro ogni anno l'ordine delle card resta quello della pagina */
+    [...anni].sort((a, b) => b[0] - a[0]).forEach(([anno, card]) => {
       const d = document.createElement('details');
       d.className = 'st-anno';
       d.innerHTML = '<summary><span class="st-anno-num">' + anno + '</span><span class="st-anno-quante">' + card.length + ' serie</span></summary>';
@@ -578,6 +582,84 @@ async function barreSerie() {
   } catch (e) { /* senza indice o archivio leggibile le card restano come sono */ }
 }
 
+/* ---------- Categorie fissate in alto (Home) ----------
+   Chi ha fatto l'accesso può tenere premuto (mezzo secondo) su una categoria per fissarla in cima
+   alla Home; tenendo premuto di nuovo la toglie. La scelta resta SOLO sul dispositivo (localStorage "ct-pin":
+   non pesa sul cloud). Il massimo di categorie fissabili lo decidi tu dall'area amministratore
+   (Impostazioni sito): sta in index.html, nella lista delle categorie, come data-pin-max="3".
+   L'aspetto della categoria fissata è in sito.css (voce "categorie fissate"). */
+function pinCategorie() {
+  const lista = document.querySelector('ul.st-cards[data-pin-max]');
+  if (!lista) return;
+  const max = Math.max(0, parseInt(lista.dataset.pinMax, 10) || 3);
+  const originali = [...lista.children];                                   // ordine scritto nella pagina
+  const chiave = li => (li.querySelector('a.st-card') || {}).href || '';
+  const leggiPin = () => { try { return JSON.parse(localStorage.getItem('ct-pin')) || []; } catch (e) { return []; } };
+  const salvaPin = v => { try { localStorage.setItem('ct-pin', JSON.stringify(v)); } catch (e) {} };
+  const loggato = () => { try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; } };
+  const suggerimento = document.createElement('p');
+  suggerimento.className = 'st-pin-hint';
+  suggerimento.textContent = 'Tieni premuta una categoria per fissarla in alto (al massimo ' + max + ').';
+  lista.before(suggerimento);
+  const disegna = () => {
+    const si = loggato() && max > 0;
+    const fissate = si ? leggiPin().map(h => originali.find(li => chiave(li) === h)).filter(Boolean).slice(0, max) : [];
+    lista.replaceChildren(...fissate, ...originali.filter(li => !fissate.includes(li)));
+    originali.forEach(li => li.classList.toggle('st-fissata', fissate.includes(li)));
+    suggerimento.hidden = !si;
+  };
+  let timer = null, partito = null, lungo = false;
+  const ferma = () => { clearTimeout(timer); timer = null; };
+  lista.addEventListener('pointerdown', e => {
+    const li = e.target.closest('li');
+    if (!li || !loggato() || max < 1 || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    partito = { x: e.clientX, y: e.clientY }; lungo = false;
+    timer = setTimeout(() => {
+      lungo = true;
+      const h = chiave(li), pin = leggiPin().filter(x => originali.some(o => chiave(o) === x));
+      if (pin.includes(h)) { salvaPin(pin.filter(x => x !== h)); avviso('Categoria tolta dalle fissate'); }
+      else if (pin.length >= max) { avviso('Puoi fissare al massimo ' + max + ' categorie: togline una tenendola premuta'); return; }
+      else { salvaPin([...pin, h]); avviso('Categoria fissata in alto'); }
+      disegna();
+    }, 550);
+  });
+  lista.addEventListener('pointermove', e => { if (timer && partito && Math.hypot(e.clientX - partito.x, e.clientY - partito.y) > 8) ferma(); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => lista.addEventListener(ev, ferma));
+  lista.addEventListener('scroll', ferma, true);
+  /* dopo una pressione lunga non apro la categoria, né il menu del telefono */
+  lista.addEventListener('click', e => { if (lungo) { e.preventDefault(); e.stopPropagation(); lungo = false; } }, true);
+  lista.addEventListener('contextmenu', e => { if (lungo || timer) e.preventDefault(); });
+  window.addEventListener('ct-accesso', disegna);
+  disegna();
+}
+
+/* ---------- Carosello delle Novità (Home) ----------
+   Le Novità scorrono di lato (l'aspetto è in sito.css, voce "Novità"): si vedono 4 card per volta
+   (4 in fila sul computer, 2 × 2 sul telefono) e le altre arrivano scorrendo, senza cambiare grandezza.
+   Qui solo le frecce, che compaiono quando le Novità sono più di quelle visibili. */
+function carosello() {
+  const ul = document.querySelector('ul.st-novita');
+  if (!ul) return;
+  ul.parentElement.classList.add('st-car');
+  const freccia = (verso, testo) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'st-car-freccia ' + (verso < 0 ? 'prima' : 'dopo'); b.textContent = verso < 0 ? '\u2039' : '\u203A'; b.setAttribute('aria-label', testo);
+    b.addEventListener('click', () => ul.scrollBy({ left: verso * ul.clientWidth, behavior: 'smooth' }));
+    return b;
+  };
+  const prima = freccia(-1, 'Novità precedenti'), dopo = freccia(1, 'Novità successive');
+  ul.after(prima, dopo);
+  const aggiorna = () => {
+    const piu = ul.scrollWidth > ul.clientWidth + 2;
+    prima.hidden = dopo.hidden = !piu;
+    prima.disabled = ul.scrollLeft < 2;
+    dopo.disabled = ul.scrollLeft + ul.clientWidth >= ul.scrollWidth - 2;
+  };
+  ul.addEventListener('scroll', aggiorna, { passive: true });
+  window.addEventListener('resize', aggiorna);
+  aggiorna();
+}
+
 /* ---------- Avvio ---------- */
 
 caricaParte('header-placeholder', 'header.html');
@@ -588,6 +670,8 @@ avviaCerca();
 barraCategoria();
 barreSerie();
 attivaAspetto();
+pinCategorie();
+carosello();
 
 /* ---------- Statistiche delle visite (GoatCounter) ----------
    Conta le pagine viste SENZA cookie e senza dati personali: i numeri si

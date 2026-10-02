@@ -497,7 +497,14 @@
     i.onerror = () => rej(new Error('immagine non leggibile'));
     i.src = src;
   });
-  const pdfText = t => String(t).replace(/[^\x20-\x7E\xA0-\xFF]/g, '?');
+  /* testo da disegnare: tolgo solo i caratteri di controllo. Stelle (★) e cuori (♥) restano:
+     la tela li disegna con il carattere del dispositivo (con il vecchio PDF diventavano "?") */
+  const pdfText = t => String(t).replace(/[\u0000-\u001F]/g, '');
+  /* "righello" per misurare le scritte: ha lo stesso comando widthOfTextAtSize di prima, ma misura sulla tela
+     con lo stesso carattere con cui si disegna (così misura giusto anche ★ ♥ e le lettere accentate) */
+  const misuraCtx = document.createElement('canvas').getContext('2d');
+  const righello = peso => ({ widthOfTextAtSize(t, size) { misuraCtx.font = peso + ' ' + size + 'px Helvetica, Arial, sans-serif'; return misuraCtx.measureText(t).width; } });
+  const rgb = (r, g, b) => ({ red: r, green: g, blue: b });
 
   /* foto di un oggetto per il PDF, in due passi:
      1) ritaglio(): carica la foto e trova il riquadro dove c'è davvero il
@@ -535,21 +542,6 @@
   }
   /* tela → file (JPEG o PNG), per metterla nel PDF o per scaricarla */
   const fileDi = (c, tipo) => new Promise(r => c.toBlob(r, tipo, 0.9));
-
-  /* La libreria dei PDF (comune/pdf-lib.min.js, circa 500 KB) viene scaricata
-     SOLO la prima volta che si preme "Crea immagine": così la pagina si apre più in fretta.
-     Il percorso si ricava da quello di app.js: stanno nella stessa cartella. */
-  const PDF_LIB = document.currentScript.src.replace(/[^/]*$/, '') + 'pdf-lib.min.js';
-  function loadPdfLib() {
-    if (typeof PDFLib !== 'undefined') return Promise.resolve();
-    return new Promise(resolve => {
-      const sc = document.createElement('script');
-      sc.src = PDF_LIB;
-      sc.onload = resolve;
-      sc.onerror = resolve;   /* se non si carica, makePdf mostra un avviso */
-      document.head.appendChild(sc);
-    });
-  }
 
   /* titolo del PDF: lo disegno con lo stesso carattere e colore del titolo della pagina.
      Il colore lo leggo SEMPRE come nel tema chiaro (il PDF ha lo sfondo chiaro): per un attimo
@@ -709,13 +701,8 @@
        quindi una serie normale sta in una pagina sola. L'ultima fila si mette al centro. */
   const PDF_COLONNE = 6;   // oggetti per fila nel PDF verticale (più alto = schede più piccole)
   async function makeImmagine(sezioni, kind) {
-    await loadPdfLib();   // serve anche per l'immagine: misura le scritte
-    if (typeof PDFLib === 'undefined') { say('Il modulo per creare il PDF non è disponibile.'); return; }
     say("Sto creando l'immagine…");
-    const { PDFDocument, StandardFonts, rgb, LineCapStyle } = PDFLib;
-    const doc = await PDFDocument.create();
-    const font = await doc.embedFont(StandardFonts.Helvetica);
-    const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+    const font = righello('400'), bold = righello('700');
     const titolo = await titoloTela();
     const logo = titolo ? titolo : null;
 
@@ -804,7 +791,7 @@
       const scale = size / 32;
       pg.drawSvgPath(TESSERA, { x, y, scale, color: ambra });
       const P = SPUNTA.map(([px, py]) => ({ x: x + px * scale, y: y - py * scale }));
-      for (let k = 0; k < 2; k++) pg.drawLine({ start: P[k], end: P[k + 1], thickness: SPESSORI[k] * scale, color: spunta, lineCap: LineCapStyle.Round });
+      for (let k = 0; k < 2; k++) pg.drawLine({ start: P[k], end: P[k + 1], thickness: SPESSORI[k] * scale, color: spunta, lineCap: true });
     }
 
     /* scritta nella banda in alto: che cosa è stato stampato */
