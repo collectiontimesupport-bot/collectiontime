@@ -16,7 +16,8 @@
   11) la barra "6 su 9" sulle card delle serie in cui hai segnato qualcosa
   12) le categorie fissate in alto nella Home (tenendo premuto, solo con l'account)
   13) il carosello delle Novità nella Home (frecce quando le Novità sono più di quelle visibili)
-  14) il paese di chi visita (per le "Varianti estere": pezzi usciti solo in alcuni paesi)
+  14) il paese di chi visita (per le "Varianti estere" dei pezzi e per le serie solo estere, sotto il titolo "Estero")
+  15) la lingua: italiano di base, inglese a scelta (link "English" nella banda in basso e voce "Lingua" in Impostazioni)
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js?v=2026-09-28d"></script>
    (dentro una sottocartella: <script src="../script.js?v=2026-09-28d"></script>,
@@ -32,6 +33,13 @@ const BASE = new URL('.', document.currentScript.src);
    a header.html e footer.html, così anche loro si aggiornano subito. */
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
+
+/* ---------- La lingua (voce 15) ----------
+   Le pagine sono scritte in italiano. Se il visitatore sceglie English (ricordato nel browser come ct-lingua)
+   si carica comune/lingua-en.js: un dizionario italiano → inglese che traduce la pagina e anche i testi che
+   compaiono dopo (avvisi, finestre). Chi legge in italiano non scarica niente in più. */
+const LINGUA = (() => { try { return localStorage.getItem('ct-lingua') === 'en' ? 'en' : 'it'; } catch (e) { return 'it'; } })();
+if (LINGUA === 'en') document.head.append(Object.assign(document.createElement('script'), { src: conVersione('comune/lingua-en.js').href }));
 
 /* ---------- Header e footer ---------- */
 
@@ -372,6 +380,7 @@ function avviaCerca() {
       if (!li.hidden) visibili++;
     });
     if (nessuna) nessuna.hidden = visibili > 0;
+    document.querySelectorAll('.st-estero').forEach(s => { s.hidden = ![...s.querySelectorAll('li')].some(li => !li.hidden); });   // titolo "Estero" nascosto se non c'è nessun risultato
     aggiornaAnni(parole.length > 0);
   }
   function apri() { box.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); campo.tabIndex = 0; campo.focus(); }
@@ -464,8 +473,10 @@ function perAnno() {
       d.innerHTML = '<summary><span class="st-anno-num">' + anno + '</span><span class="st-anno-quante">' + card.length + ' serie</span></summary>';
       const ul = document.createElement('ul');
       ul.className = 'st-cards';
-      ul.append(...card);
-      d.append(ul);
+      ul.append(...card.filter(li => !eEstera(li)));
+      if (ul.children.length) d.append(ul);
+      const estere = card.filter(eEstera);                 // serie solo estere: restano nella tendina del loro anno, sotto le altre
+      if (estere.length) d.append(sezioneEstere(estere));
       box.append(d);
     });
     lista.after(box);
@@ -653,7 +664,7 @@ function pinCategorie() {
 /* ---------- Carosello delle Novità (Home) ----------
    Le Novità scorrono di lato (l'aspetto è in sito.css, voce "Novità"): si vedono 4 card per volta
    (4 in fila sul computer, 2 × 2 sul telefono) e le altre arrivano scorrendo, senza cambiare grandezza.
-   Qui solo le frecce, che compaiono quando le Novità sono più di quelle visibili. */
+   Qui le frecce (compaiono quando le Novità sono più di quelle visibili) e lo scorrimento automatico. */
 function carosello() {
   const ul = document.querySelector('ul.st-novita');
   if (!ul) return;
@@ -675,6 +686,28 @@ function carosello() {
   ul.addEventListener('scroll', aggiorna, { passive: true });
   window.addEventListener('resize', aggiorna);
   aggiorna();
+
+  /* Scorrimento automatico: ogni SECONDI_AUTO secondi passa alle card successive e, in fondo, torna all'inizio.
+     Si ferma finché il mouse è sopra, un dito tocca il carosello (riparte dopo PAUSA_TOCCO secondi) o si usa la tastiera;
+     non gira se la scheda del browser è in secondo piano o se le Novità stanno tutte in vista.
+     ! MODIFICA: SECONDI_AUTO = ogni quanti secondi cambia (0 = niente scorrimento automatico). */
+  const SECONDI_AUTO = 8, PAUSA_TOCCO = 10;
+  if (!SECONDI_AUTO) return;
+  let fermo = false, ripresa;
+  const ferma = () => { clearTimeout(ripresa); fermo = true; };
+  const riparti = (dopo = 0) => { clearTimeout(ripresa); ripresa = setTimeout(() => { fermo = false; }, dopo * 1000); };
+  const riquadro = ul.parentElement;
+  riquadro.addEventListener('mouseenter', ferma);
+  riquadro.addEventListener('mouseleave', () => riparti());
+  riquadro.addEventListener('focusin', ferma);
+  riquadro.addEventListener('focusout', () => riparti());
+  riquadro.addEventListener('touchstart', ferma, { passive: true });
+  riquadro.addEventListener('touchend', () => riparti(PAUSA_TOCCO), { passive: true });
+  setInterval(() => {
+    if (fermo || document.hidden || dopo.hidden) return;
+    if (ul.scrollLeft + ul.clientWidth >= ul.scrollWidth - 2) ul.scrollTo({ left: 0, behavior: 'smooth' });
+    else ul.scrollBy({ left: ul.clientWidth, behavior: 'smooth' });
+  }, SECONDI_AUTO * 1000);
 }
 
 /* ---------- Il paese di chi visita (14) ----------
@@ -737,8 +770,47 @@ function codicePaese(testo) {
   const trovato = nomiPaesi().find(([c, n]) => senzaAccenti(n) === t || c.toLowerCase() === t);
   return trovato ? trovato[0] : '';
 }
-/* true se il pezzo con questo paese è "estero" per chi guarda (paese vuoto = pezzo normale per tutti) */
-function paeseEstero(testo) { return !!testo && codicePaese(testo) !== paeseVisitatore(); }
+/* Gruppi di paesi che si possono scrivere al posto di un paese (es. paese: "Europa"): chi è in uno di questi paesi vede la cosa come normale.
+   ! MODIFICA: per un gruppo nuovo aggiungi una riga (nome in minuscolo, senza accenti: sigle dei paesi della lista PAESI) e il suo nome nell'elenco
+   <datalist id="paesiLista"> dell'area amministratore (_admin/index.html). */
+const GRUPPI_PAESI = {
+  'europa': 'AL AT BA BE BG BY CH CY CZ DE DK EE ES FI FR GB GR HR HU IE IS IT LT LU LV ME MK MT NL NO PL PT RO RS RU SE SI SK TR UA',
+  'asia': 'AE CN HK ID IL IN JP KR MY PH SA SG TH TW VN',
+  'america del nord': 'CA MX US',
+  'america latina': 'AR BR CL CO MX PE UY',
+  'oceania': 'AU NZ',
+  'africa': 'EG MA ZA',
+  'occidente': 'AT AU BE BG CA CH CY CZ DE DK EE ES FI FR GB GR HR HU IE IS IT LT LU LV MT NL NO NZ PL PT RO SE SI SK US'
+};
+/* paese (o più paesi/gruppi separati da virgola, es. "USA, Canada" o "Europa") che comprende il paese di chi guarda? */
+function paeseCoincide(testo) {
+  const mio = paeseVisitatore();
+  return String(testo).split(/[,;]/).some(p => (GRUPPI_PAESI[senzaAccenti(p)] || '').split(' ').includes(mio) || codicePaese(p) === mio);
+}
+/* true se la cosa con questo paese è "estera" per chi guarda (paese vuoto = normale per tutti) */
+function paeseEstero(testo) { return !!testo && !paeseCoincide(testo); }
+
+/* Serie solo estere (tag paese): una card con  data-paese="USA"  nella lista (es. <li data-paese="USA">…) è "estera" per chi NON è in quel paese:
+   sta sotto un piccolo titolo "Estero", dopo le card normali, senza tendina. Per chi è in quel paese è una card normale.
+   Nelle liste divise per anno (data-per-anno) resta nella tendina del suo anno: il titolo "Estero" sta dentro la tendina, sotto le card normali
+   (lo fa perAnno con sezioneEstere). Il tag si scrive dall'area amministratore (Nuova serie, Modifica una serie, Pagine e card).
+   Senza tag = normale per tutti. L'aspetto del titolo è in sito.css (voce "Estero"). */
+const eEstera = li => paeseEstero(li.dataset.paese);
+function sezioneEstere(card) {
+  const box = document.createElement('section');
+  box.className = 'st-estero';
+  box.innerHTML = '<h2 class="st-estero-titolo">Estero</h2><ul class="st-cards"></ul>';
+  box.querySelector('ul').append(...card);
+  return box;
+}
+/* liste senza tendine (e le card senza anno di una lista per anno): le serie estere vanno in una sezione "Estero" sotto la lista */
+function serieEstere() {
+  document.querySelectorAll('ul.st-cards').forEach(lista => {
+    if (lista.closest('.st-anno, .st-estero')) return;     // quelle dentro le tendine o già spostate le ha sistemate perAnno / questa funzione
+    const estere = [...lista.children].filter(eEstera);
+    if (estere.length) lista.after(sezioneEstere(estere));
+  });
+}
 
 /* Menu "Il tuo paese" della pagina Impostazioni (<select id="stPaese">): mostra il paese che vale adesso
    (quello scelto o, se non l'hai scelto, quello indovinato). Cambiandolo si salva sul dispositivo e,
@@ -746,7 +818,11 @@ function paeseEstero(testo) { return !!testo && codicePaese(testo) !== paeseVisi
 function attivaPaese() {
   const m = document.getElementById('stPaese');
   if (!m) return;
-  m.innerHTML = nomiPaesi().map(([c, n]) => '<option value="' + c + '">' + n + '</option>').join('');
+  /* nomi nella lingua scelta; nomiPaesi() (in italiano) resta per capire i nomi scritti nell'ELENCO */
+  let nomi = null;
+  try { nomi = new Intl.DisplayNames([LINGUA], { type: 'region' }); } catch (e) {}
+  const voci = nomiPaesi().map(([c, n]) => [c, nomi ? nomi.of(c) : n]).sort((a, b) => a[1].localeCompare(b[1], LINGUA));
+  m.innerHTML = voci.map(([c, n]) => '<option value="' + c + '">' + n + '</option>').join('');
   m.value = paeseVisitatore();
   m.addEventListener('change', () => {
     try { localStorage.setItem('ct-paese', m.value); } catch (e) {}
@@ -755,17 +831,30 @@ function attivaPaese() {
   });
 }
 
+/* Cambio lingua: il link "English / Italiano" nella banda in basso (id="stLingua", scritto in footer.html)
+   e il menu "Lingua" della pagina Impostazioni (<select id="stLinguaMenu">). Si salva sul dispositivo e la pagina si ricarica. */
+function scegliLingua(l) { try { localStorage.setItem('ct-lingua', l); } catch (e) {} location.reload(); }
+function attivaLingua() {
+  const m = document.getElementById('stLinguaMenu');
+  if (m) { m.value = LINGUA; m.addEventListener('change', () => scegliLingua(m.value)); }
+  document.addEventListener('click', e => {                      // il link in basso arriva dopo (fetch): si ascolta il clic sulla pagina
+    if (e.target.closest('#stLingua')) { e.preventDefault(); scegliLingua(LINGUA === 'en' ? 'it' : 'en'); }
+  });
+}
+
 /* ---------- Avvio ---------- */
 
 caricaParte('header-placeholder', 'header.html');
 caricaParte('footer-placeholder', 'footer.html');
 percorso();
-perAnno();          // prima della ricerca: le card vengono spostate nelle tendine
+perAnno();          // prima della ricerca: le card vengono spostate nelle tendine (le serie solo estere dentro la tendina del loro anno)
+serieEstere();      // le serie solo estere delle liste senza tendine vanno sotto il titolo "Estero"
 avviaCerca();
 barraCategoria();
 barreSerie();
 attivaAspetto();
 attivaPaese();
+attivaLingua();
 pinCategorie();
 carosello();
 

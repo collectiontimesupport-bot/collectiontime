@@ -363,6 +363,11 @@ body.con-barra .st-avviso { bottom: calc(76px + env(safe-area-inset-bottom)); } 
 .st-barra a[aria-current="page"]::before { content: ""; position: absolute; top: -1px; left: 50%; width: 36px; height: 3px; margin-left: -18px; background: var(--amber); border-radius: 0 0 2px 2px; }
 @media print { .st-barra { display: none; } }
 
+/* ---------- "Estero" ----------
+   Serie solo estere (li con data-paese, le sposta script.js sotto le altre): un piccolo titolo e le loro card. */
+.st-estero { margin-top: 32px; }
+.st-estero-titolo { margin: 0 0 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 1.05rem; color: var(--ink); }
+
 /* ---------- tendine degli anni ----------
    Card divise per anno (liste con data-per-anno, le crea script.js):
    una riga per anno con l'anno grande, quante serie ha e la freccia ambra;

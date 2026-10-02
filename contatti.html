@@ -25,7 +25,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=2026-10-02l">
+<link rel="stylesheet" href="sito.css?v=2026-10-02m">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <style>
   /* Base della pagina (st-wrap) e pulsante (st-btn) sono in sito.css: qui solo ciò che è diverso in questa pagina. */
@@ -80,16 +80,17 @@
     <!-- SEGUICI-FINE -->
   </section>
 
-  <!-- ! MODIFICA: consigli su cosa scrivere; per aggiungere un punto copia una riga <li>…</li> -->
+  <!-- data-en="…" = versione inglese (vedi faq.html); se cambi l'italiano cambia anche quello.
+       ! MODIFICA: consigli su cosa scrivere; per aggiungere un punto copia una riga <li>…</li> -->
   <h2>Per una segnalazione</h2>
   <ul class="cosa">
-    <li>la <b>collezione</b> e la <b>serie</b> (per esempio "LEGO · Serie 25");</li>
-    <li>il <b>numero</b> o il nome dell'oggetto;</li>
-    <li>cosa c'è di sbagliato o cosa manca;</li>
-    <li>se puoi, una <b>foto</b> del pezzo o della confezione.</li>
+    <li data-en="the <b>collection</b> and the <b>series</b> (for example “LEGO · Series 25”);">la <b>collezione</b> e la <b>serie</b> (per esempio "LEGO · Serie 25");</li>
+    <li data-en="the <b>number</b> or the name of the item;">il <b>numero</b> o il nome dell'oggetto;</li>
+    <li data-en="what is wrong or what is missing;">cosa c'è di sbagliato o cosa manca;</li>
+    <li data-en="if you can, a <b>photo</b> of the piece or the packaging.">se puoi, una <b>foto</b> del pezzo o della confezione.</li>
   </ul>
   <!-- ! MODIFICA: tempo di risposta indicativo -->
-  <p class="nota">Il sito lo curo nel tempo libero: di solito rispondo entro qualche giorno. Grazie a chi segnala errori e pezzi mancanti!</p>
+  <p class="nota" data-en="I run the site in my spare time: I usually reply within a few days. Thanks to everyone who reports mistakes and missing pieces!">Il sito lo curo nel tempo libero: di solito rispondo entro qualche giorno. Grazie a chi segnala errori e pezzi mancanti!</p>
 </main>
 
 <!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
@@ -98,7 +99,7 @@
 <!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=2026-10-02m"></script>
+<script src="script.js?v=2026-10-02o"></script>
 <script>
 /* L'indirizzo viene composto qui, così non compare in chiaro nel codice della pagina (meno spam) */
 (function () {

@@ -96,6 +96,7 @@ header h1:has(+ .info-serie) { min-height: 0; margin-bottom: 6px; }   /* la riga
 .descr-serie { max-width: 720px; margin: 36px 0 18px; padding: 14px 16px; border-radius: 12px; background: var(--riquadro); }
 .descr-serie p { margin: 0; line-height: 1.55; }
 .descr-serie .descr-conta { margin-top: 6px; color: var(--muted); font-size: .9375rem; }
+.descr-serie .segnala { display: inline-block; margin-top: 10px; padding: 5px 12px; border-color: var(--amber); background: transparent; color: inherit; text-decoration: none; font-size: .875rem; }   /* tasto "Segnala un problema": solo contorno ambra, non pieno, per non dare fastidio */
 /* conteggio con sotto i pulsanti "Stampa" e "Condividi", fianco a fianco */
 .conta-stampa { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .riga-bottoni { display: flex; gap: 8px; flex-wrap: wrap; }

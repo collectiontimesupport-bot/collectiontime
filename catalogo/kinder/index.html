@@ -26,7 +26,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../sito.css?v=2026-10-02l">
+<link rel="stylesheet" href="../../sito.css?v=2026-10-02m">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <style>
   /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
@@ -43,6 +43,10 @@
   .st-card { --foto-h: 170px; }
   .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
   .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
+  /* collegamento "Vedi tutte le sorpresine per codice" */
+  .tutte-link { text-align: center; margin: -18px 0 28px; }
+  .tutte-link a { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--amber); color: var(--blu); font-weight: 600; text-decoration: none; }
+  .tutte-link a:hover { filter: brightness(1.06); }
 </style>
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
      Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
@@ -70,6 +74,8 @@
     </div>
   </div>
   <p class="st-nessuna" hidden>Nessuna collezione trovata.</p>
+  <!-- collegamento alla pagina con TUTTE le sorpresine insieme, in ordine di codice (cartella "tutte") -->
+  <p class="tutte-link"><a href="tutte/index.html">Vedi tutte le sorpresine per codice &rarr;</a></p>
   <!-- Una card per ogni gruppo: per aggiungerne uno, copia un <li> ... </li> e cambia cartella e testi.
        data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi delle serie). -->
   <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
@@ -125,6 +131,6 @@
 <!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
-<script src="../../script.js?v=2026-10-02m"></script>
+<script src="../../script.js?v=2026-10-02o"></script>
 </body>
 </html>

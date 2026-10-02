@@ -1,0 +1,350 @@
+<!doctype html>
+<!-- =====================================================================
+     KINDER · TUTTE LE SORPRESINE PER CODICE — tutte le sorpresine di Kinder
+     Sorpresa, Kinder Joy e Merendine Ferrero in una sola pagina, divise per
+     famiglia di codice (VS, VT, NV, TT…) e in ordine di numero.
+     ---------------------------------------------------------------------
+     Questa pagina NON ha un elenco suo: legge le serie dalle tre pagine
+     dei gruppi (../kinder-sorpresa, ../kinder-joy, ../merendine-ferrero,
+     nell'ordine delle card) e le sorpresine dall'ELENCO di ogni pagina di
+     serie. Quindi, quando aggiungi una serie o cambi un nome/codice, qui si
+     aggiorna da solo: non c'è niente da copiare.
+     IL CODICE è la parte dopo il trattino nel "numero" della sorpresina
+     (es. numero: "01 - VS039" → codice VS039). La FAMIGLIA è la parte di
+     lettere (VS, VT, 2S…). Le famiglie sono messe in ordine di anno secondo
+     la tabella FAMIGLIE nello script (C 2004 … VS 2026), dentro la famiglia per numero.
+     Le sorpresine senza codice (le serie più vecchie) stanno in fondo, in
+     ordine di anno: sotto la foto c'è l'anno al posto del codice.
+     Le spunte "In possesso" sono le stesse delle pagine delle serie (stesso
+     archivio nel browser): toccando una sorpresina qui, cambia anche là.
+     Le foto piccole stanno in "immagini/mini/" di ogni serie (160 × 160 px,
+     leggere per il telefono); se ne manca una usa la foto grande.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tutte le sorpresine Kinder per codice · Kinder Ferrero · Collection Time</title>
+<meta name="description" content="Tutte le sorpresine Kinder in ordine di codice (VS, VT, NV, TT…): segna quelle che hai e scopri quelle che ti mancano.">
+<meta name="theme-color" content="#1A2140">
+<link rel="icon" href="../../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../../favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2026-09-27">
+<link rel="manifest" href="../../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tutte le sorpresine Kinder per codice · Collection Time">
+<meta property="og:description" content="Tutte le sorpresine Kinder in ordine di codice (VS, VT, NV, TT…): segna quelle che hai e scopri quelle che ti mancano.">
+<meta property="og:url" content="https://collectiontime.com/catalogo/kinder/tutte/">
+<meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-02m">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto") -->
+<style>
+  /* Base della pagina, link "indietro" e avviso in basso sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  :root {
+    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+    --titolo: var(--ink); }   /* colore del testo del sito: blu scuro (chiaro nel tema scuro), quasi nero */
+  .st-wrap { max-width: 1400px; padding: 12px 16px 60px; }
+  h1 { margin: 0; text-align: center; font: 900 clamp(1.8rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
+  @media (max-width: 520px) { h1 { font-size: 8.5vw; } }
+
+  /* riga sotto il titolo: conteggio a sinistra, filtro a destra */
+  .bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin: 22px 0 12px; }
+  .conta { margin: 0; color: var(--muted); }
+  .conta strong { color: var(--ink); }
+  .filtro { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .filtro button { font: inherit; font-size: .9375rem; border: 0; background: var(--white); color: var(--ink); padding: 8px 14px; cursor: pointer; }
+  .filtro button + button { border-left: 1px solid var(--line); }
+  .filtro button[aria-pressed="true"] { background: var(--ink); color: var(--white); }
+
+  /* casella per cercare un codice o un nome */
+  .cerca { width: 100%; font: inherit; font-size: 1rem; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: var(--ink); }
+
+  /* una TENDINA per famiglia di codice (aspetto e pulsante "Apri tutte" sono in sito.css, come le tendine degli anni):
+     chiuse all'inizio, si aprono al clic. Qui solo la griglia dentro la tendina. */
+  .st-anni { margin-top: 4px; }
+  .st-anno > .tutte { padding: 4px 0 24px; }
+
+  /* GRIGLIA: sorpresine di fila; sotto ogni foto il codice.
+     Ogni casella è larga almeno 84px sul telefono e 104px sul PC. */
+  .tutte { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px 6px; }
+  @media (min-width: 768px) { .tutte { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px 8px; } }
+  .tutte li { text-align: center; }
+  .tutte button { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 1; border-radius: 10px; cursor: pointer; }
+  .tutte button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .tutte img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  /* il codice sotto la foto */
+  .tutte .cod { display: block; margin-top: 2px; font-size: .75rem; font-weight: 600; color: var(--muted); }
+  /* sorpresina che NON ho: grigia e sbiadita; quella che ho: a colori */
+  .tutte li:not(.ce) img { filter: var(--spento, grayscale(1)); opacity: var(--spento-op, .3); }   /* grigio: più chiaro nel tema scuro (sito.css) */
+  .tutte li.ce button { background: color-mix(in srgb, var(--amber) 14%, var(--white)); }
+  .tutte li.ce .cod { color: var(--ink); }
+  @media (hover: hover) { .tutte li:not(.ce) button:hover img { opacity: .6; } }
+  .attesa, .nessuna { text-align: center; color: var(--muted); padding: 40px 0; }
+  .hint { color: var(--muted); font-size: .875rem; margin: 20px 0 0; }
+</style>
+<link rel="canonical" href="https://collectiontime.com/catalogo/kinder/tutte/">
+<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
+     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
+<link rel="canonical" href="https://collectiontime.com/catalogo/kinder/tutte/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Kinder Ferrero","item":"https://collectiontime.com/catalogo/kinder/"},{"@type":"ListItem","position":3,"name":"Tutte le sorpresine Kinder per codice","item":"https://collectiontime.com/catalogo/kinder/tutte/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Tutte le sorpresine Kinder per codice","url":"https://collectiontime.com/catalogo/kinder/tutte/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Tutte le sorpresine Kinder in ordine di codice (VS, VT, NV, TT…): segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/icone/anteprima.jpg"}]}</script>
+</head>
+<body>
+<!-- Banda in alto: la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Kinder Ferrero</a>
+  <!-- ! MODIFICA: titolo della pagina -->
+  <h1>TUTTE LE SORPRESINE</h1>
+  <div class="bar">
+    <p class="conta" id="conta"></p>
+    <div class="filtro" role="group" aria-label="Mostra">
+      <button type="button" data-f="tutte" aria-pressed="true">Tutte</button>
+      <button type="button" data-f="ce">In possesso</button>
+      <button type="button" data-f="manca">Mi mancano</button>
+    </div>
+  </div>
+  <input class="cerca" id="cerca" type="search" placeholder="Cerca un codice o un nome" aria-label="Cerca un codice o un nome" autocomplete="off">
+  <p class="attesa" id="attesa">Carico le sorpresine…</p>
+  <p class="nessuna" id="nessuna" hidden>Nessuna sorpresina trovata.</p>
+  <!-- pulsante per aprire / chiudere tutte le tendine (il testo lo cambia lo script) -->
+  <button type="button" class="st-anni-tutte" id="apriTutte" aria-pressed="false" hidden>Apri tutte le tendine</button>
+  <!-- una tendina per famiglia di codice, con dentro le sorpresine: la riempie lo script qui sotto -->
+  <div class="st-anni" id="gruppi"></div>
+  <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina…) qui sotto -->
+  <p class="hint">Tocca una sorpresina per segnare che ce l'hai (o toglierlo). Tieni il dito sopra (o passa col mouse) per vedere il nome e la serie. Sotto ogni foto c'è il codice.</p>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const STORE = 'penne';
+  const archivi = new Map();   /* nome dell'archivio → archivio aperto */
+  let pezzi = [];              /* { id, nome, serie, anno, cod, foto, db, ce, li } */
+  let filtro = 'tutte';
+  let testo = '';
+
+  /* ! MODIFICA: i gruppi Kinder da mettere insieme, nell'ordine in cui compaiono (sono le cartelle accanto a questa pagina) */
+  const GRUPPI = ['kinder-sorpresa', 'kinder-joy', 'merendine-ferrero'];
+
+  const richiesta = r => new Promise((ok, ko) => { r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+  function apri(nome) {
+    if (!archivi.has(nome)) {
+      const r = indexedDB.open(nome, 1);
+      r.onupgradeneeded = () => r.result.createObjectStore(STORE, { keyPath: 'id' });
+      archivi.set(nome, richiesta(r));
+    }
+    return archivi.get(nome);
+  }
+  /* confronto per la ricerca: minuscolo, senza spazi e trattini (così "vs 400" trova "VS400") */
+  const norma = s => s.toLowerCase().replace(/[\s-]/g, '');
+
+  /* 1) le serie di un gruppo, nell'ordine delle card della sua pagina */
+  async function serie(gruppo) {
+    const html = await (await fetch('../' + gruppo + '/index.html')).text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return [...doc.querySelectorAll('a.st-card')].map(a => ({
+      cartella: gruppo + '/' + a.getAttribute('href').replace(/\/?index\.html$/, ''),
+      titolo: (a.querySelector('h2') || a).textContent.trim()
+    }));
+  }
+  /* 2) le sorpresine di una serie, lette dall'ELENCO della sua pagina */
+  async function sorpresine(s) {
+    const html = await (await fetch('../' + s.cartella + '/index.html')).text();
+    const db = (html.match(/dbName:\s*"([^"]+)"/) || [])[1] || ('catalogo-kinder-' + s.cartella);   /* archivio della serie (CONFIG.dbName) */
+    /* ogni sorpresina è una riga { id: "…", numero: "…", codice: "…", nome: "…", foto: "…" }:
+       leggo i campi uno per uno, così l'ordine dei campi nella riga non conta */
+    const campo = (riga, nome) => { const m = riga.match(new RegExp('\\b' + nome + ':\\s*"((?:[^"\\\\]|\\\\.)*)"')); return m ? m[1] : ''; };
+    const righe = [...html.matchAll(/\{\s*id:\s*"[^}]*\}/g)].map(m => m[0]).filter(r => campo(r, 'numero'));
+    return righe.map((r, i) => {
+      const cod = ((campo(r, 'numero').match(/^\s*\d+\s*-\s*(.+)$/) || [])[1] || '').trim();    /* "01 - VS039" → "VS039" */
+      /* il codice si divide in famiglia (VS), numero (39) e lettera finale (A): "2S-043" → 2S, 43 · "VS294A" → VS, 294, A */
+      const p = cod.match(/^(.*?)-?(\d+)([A-Za-z]?)$/) || [];
+      const foto = campo(r, 'foto');                                                   /* es. immagini/01.webp?v=2026-10-01 */
+      return {
+        id: campo(r, 'id'), nome: campo(r, 'nome').replace(/\\(.)/g, '$1'), serie: s.titolo, anno: Number(campo(r, 'codice')) || 0,
+        cod, fam: cod ? (p[1] || cod) : '', num: Number(p[2]) || 0, suf: p[3] || '',
+        pos: s.ordine * 1000 + i,        /* posizione nel sito: per tenere in ordine i pezzi senza codice */
+        foto: '../' + s.cartella + '/' + foto, db, ce: false
+      };
+    });
+  }
+
+  /* LE FAMIGLIE DI CODICE E L'ANNO IN CUI È COMINCIATA OGNUNA (come nei cataloghi dei collezionisti).
+     Le famiglie sono messe in quest'ordine, dalla più vecchia. Una famiglia non scritta qui (es. un nuovo
+     codice del 2027) va comunque al suo posto, secondo l'anno della sua prima serie.
+     ! MODIFICA: quando esce una nuova famiglia di codice aggiungila in fondo (es. VX: 2027). */
+  const FAMIGLIE = { C: 2004, S: 2005, '2S': 2006, ST: 2006, TT: 2007, NV: 2008, DE: 2009, UN: 2010, DC: 2011, TR: 2012, FT: 2013,
+                     FF: 2014, FS: 2015, SD: 2016, SE: 2017, EN: 2018, DV: 2019, VV: 2020, VU: 2021, VD: 2022, VT: 2023, VQ: 2024, VC: 2025, VS: 2026 };
+
+  /* 3) ordine: famiglie per anno (tabella qui sopra), dentro la famiglia per numero;
+        i pezzi senza codice in fondo, per anno. Un pezzo senza codice a cui metti il codice nell'ELENCO
+        della sua serie entra da solo nella sua famiglia, al posto giusto. */
+  function ordina() {
+    const fam = new Map();
+    const senza = [];
+    pezzi.forEach(p => {
+      if (!p.cod) { senza.push(p); return; }
+      const base = p.fam.replace(/-.*$/, '');                     /* "S-N" (Folletti di Natale) sta con la famiglia S */
+      if (!fam.has(base)) fam.set(base, { nome: base, anno: FAMIGLIE[base] || p.anno, lista: [] });
+      const f = fam.get(base);
+      if (!FAMIGLIE[base]) f.anno = Math.min(f.anno, p.anno);
+      f.lista.push(p);
+    });
+    const gruppi = [...fam.values()].sort((a, b) => a.anno - b.anno || a.nome.localeCompare(b.nome));
+    gruppi.forEach(f => f.lista.sort((a, b) => (a.fam !== f.nome) - (b.fam !== f.nome) || a.fam.localeCompare(b.fam) || a.num - b.num || a.suf.localeCompare(b.suf) || a.anno - b.anno || a.pos - b.pos));
+    if (senza.length) gruppi.push({ nome: 'Senza codice', lista: senza.sort((a, b) => a.anno - b.anno || a.pos - b.pos) });
+    return gruppi;
+  }
+
+  /* 4) disegna le tendine (una per famiglia), chiuse */
+  let sezioni = [];            /* { el, conta, f } */
+  function crea(gruppi) {
+    const frag = document.createDocumentFragment();
+    gruppi.forEach(f => {
+      const sec = document.createElement('details');
+      sec.className = 'st-anno';
+      const sum = document.createElement('summary');
+      const nome = document.createElement('span');
+      nome.className = 'st-anno-num'; nome.textContent = f.nome;
+      sum.append(nome);
+      if (f.anno) {
+        const an = document.createElement('span');
+        an.className = 'st-anno-quante'; an.textContent = 'dal ' + f.anno;        /* "VS · dal 2026" */
+        sum.append(an);
+      }
+      const conta = document.createElement('span');
+      conta.className = 'st-anno-quante';
+      sum.append(conta);
+      const ul = document.createElement('ul');
+      ul.className = 'tutte';
+      f.lista.forEach(p => {
+        const li = document.createElement('li');
+        li.className = p.ce ? 'ce' : '';
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.title = p.nome + ' — ' + p.serie + (p.anno ? ' (' + p.anno + ')' : '');
+        b.setAttribute('aria-label', (p.cod || p.anno) + ', ' + p.nome + ', ' + p.serie);
+        b.setAttribute('aria-pressed', String(p.ce));
+        const img = document.createElement('img');
+        img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
+        img.width = 160; img.height = 160;
+        img.src = p.foto.replace('/immagini/', '/immagini/mini/');     /* foto piccola */
+        img.onerror = () => { img.onerror = null; img.src = p.foto; };  /* se manca, la grande */
+        b.append(img);
+        const cod = document.createElement('span');
+        cod.className = 'cod';
+        cod.textContent = p.cod || (p.anno || '');                      /* senza codice: l'anno */
+        li.append(b, cod);
+        p.li = li; p.b = b;
+        b.addEventListener('click', () => segna(p));
+        ul.append(li);
+      });
+      sec.append(sum, ul);
+      frag.append(sec);
+      sezioni.push({ el: sec, conta, f });
+    });
+    $('gruppi').append(frag);
+  }
+
+  /* 5) conteggi, filtro e ricerca */
+  function disegna() {
+    const n = pezzi.filter(p => p.ce).length;
+    $('conta').innerHTML = '<strong>' + n + '</strong> su ' + pezzi.length + ' · me ne mancano ' + (pezzi.length - n);
+    const t = norma(testo);
+    const cercando = !!t || filtro !== 'tutte';       /* con ricerca o filtro le tendine con risultati si aprono da sole; a fine ricerca si richiudono */
+    let visibili = 0;
+    sezioni.forEach(s => {
+      let qui = 0;
+      s.f.lista.forEach(p => {
+        const ok = !((filtro === 'ce' && !p.ce) || (filtro === 'manca' && p.ce)) &&
+                   (!t || norma(p.cod + ' ' + p.nome + ' ' + p.serie + ' ' + p.anno).includes(t));
+        p.li.hidden = !ok;
+        if (ok) qui++;
+      });
+      s.el.hidden = !qui;
+      if (cercando) s.el.open = qui > 0; else if (eraCercando) s.el.open = false;
+      visibili += qui;
+      s.conta.textContent = s.f.lista.filter(p => p.ce).length + ' su ' + s.f.lista.length;
+    });
+    eraCercando = cercando;
+    $('nessuna').hidden = !!visibili;
+    aggiornaPulsante();
+  }
+  let eraCercando = false;
+
+  /* pulsante "Apri tutte / Chiudi tutte le tendine": acceso (ambra) quando sono tutte aperte */
+  function aggiornaPulsante() {
+    const aperte = sezioni.filter(s => !s.el.hidden).every(s => s.el.open);
+    const bt = $('apriTutte');
+    bt.hidden = sezioni.length < 2;
+    bt.setAttribute('aria-pressed', aperte);
+    bt.textContent = aperte ? 'Chiudi tutte le tendine' : 'Apri tutte le tendine';
+  }
+  $('apriTutte').addEventListener('click', () => {
+    const apri = $('apriTutte').getAttribute('aria-pressed') !== 'true';
+    sezioni.forEach(s => { if (!s.el.hidden) s.el.open = apri; });
+    aggiornaPulsante();
+  });
+  $('gruppi').addEventListener('toggle', aggiornaPulsante, true);     /* anche se ne apri o chiudi una a mano */
+
+  /* segna / toglie "In possesso" nello stesso archivio della pagina della serie */
+  async function segna(p) {
+    p.ce = !p.ce;
+    p.li.classList.toggle('ce', p.ce);
+    p.b.setAttribute('aria-pressed', String(p.ce));
+    disegna();
+    try {
+      const db = await apri(p.db);
+      const vecchia = await richiesta(db.transaction(STORE).objectStore(STORE).get(p.id));
+      /* tengo gli hashtag già salvati e cambio solo la spunta (come la pagina della serie) */
+      await richiesta(db.transaction(STORE, 'readwrite').objectStore(STORE).put(Object.assign(vecchia || { id: p.id }, { owned: p.ce })));
+      if (typeof segnalaModifica === 'function') segnalaModifica();   /* avvisa il sito: con l'account aggiorna il cloud (script.js) */
+    } catch (e) { /* questo browser non permette di salvare le spunte */ }
+  }
+
+  (async () => {
+    try {
+      /* le serie di tutti i gruppi, poi le sorpresine di ogni serie (gli elenchi sono piccoli) */
+      const perGruppo = await Promise.all(GRUPPI.map(g => serie(g).catch(() => [])));
+      const tutteSerie = perGruppo.flat().map((s, i) => Object.assign(s, { ordine: i }));
+      pezzi = (await Promise.all(tutteSerie.map(s => sorpresine(s).catch(() => [])))).flat();
+      /* spunte già salvate nel browser */
+      const perDb = new Map();
+      pezzi.forEach(p => { if (!perDb.has(p.db)) perDb.set(p.db, []); perDb.get(p.db).push(p); });
+      await Promise.all([...perDb].map(async ([nome, ps]) => {
+        try {
+          const db = await apri(nome);
+          const salvate = await richiesta(db.transaction(STORE).objectStore(STORE).getAll());
+          const ce = new Set(salvate.filter(x => x.owned === true).map(x => x.id));
+          ps.forEach(p => { p.ce = ce.has(p.id); });
+        } catch (e) { /* archivio non leggibile: restano da spuntare */ }
+      }));
+      $('attesa').hidden = true;
+      crea(ordina());
+      disegna();
+    } catch (e) {
+      $('attesa').textContent = 'Non riesco a caricare le sorpresine. Riprova tra poco.';
+    }
+  })();
+
+  document.querySelectorAll('.filtro button').forEach(b => b.addEventListener('click', () => {
+    filtro = b.dataset.f;
+    document.querySelectorAll('.filtro button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    disegna();
+  }));
+  $('cerca').addEventListener('input', e => { testo = e.target.value; disegna(); });
+})();
+</script>
+<!-- Banda in alto e in basso, Accedi: questa riga serve in ogni pagina -->
+<script src="../../../script.js?v=2026-10-02o"></script>
+</body>
+</html>

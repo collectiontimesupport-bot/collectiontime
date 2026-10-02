@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2026-09-27">
 <link rel="manifest" href="site.webmanifest">
 <!-- Stile comune del sito (sezioni "pagine di solo testo" e "pagina Impostazioni") -->
-<link rel="stylesheet" href="sito.css?v=2026-10-02l">
+<link rel="stylesheet" href="sito.css?v=2026-10-02m">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 </head>
 <body class="st-semplice">
@@ -25,7 +25,7 @@
      Tre parti:
        1) Le mie statistiche → la riempie comune/impostazioni.js (NON scrivere dentro #stStatistiche)
        2) Aspetto           → i pulsanti li fa funzionare script.js (voce "Aspetto"): i data-tema NON vanno cambiati
-       3) Il tuo paese      → il menu lo riempie script.js (voce 14)
+       3) Lingua e Il tuo paese → i menu li fa funzionare script.js (voci 15 e 14)
        4) Account e dati    → quello scritto qui lo vede chi NON ha fatto l'accesso;
                               dopo l'accesso comune/cloud.js lo sostituisce (voce "Impostazioni: Account e dati") -->
 <main class="st-testo st-impostazioni">
@@ -43,6 +43,10 @@
     <button type="button" data-tema="chiaro">Chiaro</button>
     <button type="button" data-tema="scuro">Scuro</button>
   </div>
+
+  <!-- Lingua: il menu lo fa funzionare script.js (voce 15). L'inglese è in comune/lingua-en.js -->
+  <h2>Lingua</h2>
+  <div class="st-imp-comandi"><select id="stLinguaMenu" aria-label="Lingua" translate="no"><option value="it">Italiano</option><option value="en">English</option></select></div>
 
   <!-- Il tuo paese: il menu lo riempie e lo fa funzionare script.js (voce 14, funzione attivaPaese) -->
   <h2>Il tuo paese</h2>
@@ -66,7 +70,7 @@
 <!-- script.js: bande, Accedi, Aspetto (questa riga serve in ogni pagina).
      comune/impostazioni.js: le statistiche (solo in questa pagina).
      "?v=…" = versione del file, cioè la DATA dell'ultima modifica: quando cambi un file .js o .css metti la data di oggi in tutte le pagine. -->
-<script src="script.js?v=2026-10-02m"></script>
+<script src="script.js?v=2026-10-02o"></script>
 <script src="comune/impostazioni.js?v=2026-10-02m"></script>
 </body>
 </html>

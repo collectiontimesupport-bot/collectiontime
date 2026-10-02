@@ -240,6 +240,16 @@
       + (tra ? ' (' + tra + ')' : '') + ', con foto, nome e ' + (codici.length ? 'codice' : 'numero') + ' di ognuna'
       + (codici.length > 1 ? ' (da ' + codici[0] + ' a ' + codici[codici.length - 1] + ').' : '.');
     sec.append(p);
+    /* Tasto "Segnala un problema" (solo contorno ambra, discreto): apre un'email già scritta con il nome della serie, così chi trova un errore
+       (foto, nome, numero…) te lo dice subito. L'indirizzo è composto qui per non stare in chiaro nella pagina (meno spam).
+       Il testo del tasto si traduce in comune/lingua-en.js; l'email arriva sempre in italiano. */
+    const segnala = document.createElement('a');
+    segnala.className = 'btn segnala';
+    segnala.textContent = 'Segnala un problema';
+    segnala.href = 'mailto:' + 'collectiontime.support' + '@' + 'gmail.com'
+      + '?subject=' + encodeURIComponent('Segnalazione · ' + CONFIG.titolo)
+      + '&body=' + encodeURIComponent('Ciao! Ho trovato un problema nella serie «' + CONFIG.titolo + '» (' + location.href + ').\n\nCosa non va (foto, nome, numero…):\n');
+    sec.append(segnala);
     fondo.before(sec);
     fetch(new URL('comune/collezionisti.json', RADICE)).then(r => r.ok ? r.json() : null).then(d => {
       const n = d && d.serie && d.serie[CONFIG.dbName];
@@ -247,7 +257,7 @@
       const b = document.createElement('p');
       b.className = 'descr-conta';
       b.textContent = n + ' collezionisti la stanno completando su Collection Time: inizia anche tu!';
-      sec.append(b);
+      segnala.before(b);                                  /* la frase dei collezionisti sta sopra il tasto */
     }).catch(() => {});
   }
   descrizione();
