@@ -202,6 +202,8 @@
     "Sezioni della categoria": "Category sections",
     "Chiudi tutte le tendine": "Close all sections",
     "Apri tutte le tendine": "Open all sections",
+    "Dalla più vecchia": "Oldest first",
+    "Dalla più recente": "Newest first",
     "Tutti i gruppi": "All groups",
     "Tieni premuta una categoria per fissarla in alto": "Press and hold a category to pin it to the top",
 

@@ -85,6 +85,9 @@
   @media (hover: hover) { .tutte li:not(.ce) button:hover img { opacity: .6; } }
   .attesa, .nessuna { text-align: center; color: var(--muted); padding: 40px 0; }
   .hint { color: var(--muted); font-size: .875rem; margin: 20px 0 0; }
+  /* riga dei due pulsanti sopra le tendine (ordine + apri/chiudi tutte), allineati a destra */
+  .st-ordine-riga { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+  .st-ordine-riga .st-anni-tutte { margin: 0; }
 </style>
 <link rel="canonical" href="https://collectiontime.com/catalogo/kinder/tutte/">
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
@@ -113,7 +116,11 @@
   <p class="attesa" id="attesa">Carico le sorpresine…</p>
   <p class="nessuna" id="nessuna" hidden>Nessuna sorpresina trovata.</p>
   <!-- pulsante per aprire / chiudere tutte le tendine (il testo lo cambia lo script) -->
-  <button type="button" class="st-anni-tutte" id="apriTutte" aria-pressed="false" hidden>Apri tutte le tendine</button>
+  <!-- due pulsanti affiancati: ordine delle tendine (dalla più recente / dalla più vecchia) e apri/chiudi tutte -->
+  <div class="st-ordine-riga" id="rigaTendine" hidden>
+    <button type="button" class="st-anni-tutte" id="ordineFam">Dalla più recente</button>
+    <button type="button" class="st-anni-tutte" id="apriTutte" aria-pressed="false">Apri tutte le tendine</button>
+  </div>
   <!-- una tendina per famiglia di codice, con dentro le sorpresine: la riempie lo script qui sotto -->
   <div class="st-anni" id="gruppi"></div>
   <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina…) qui sotto -->
@@ -285,7 +292,7 @@
   function aggiornaPulsante() {
     const aperte = sezioni.filter(s => !s.el.hidden).every(s => s.el.open);
     const bt = $('apriTutte');
-    bt.hidden = sezioni.length < 2;
+    $('rigaTendine').hidden = sezioni.length < 2;
     bt.setAttribute('aria-pressed', aperte);
     bt.textContent = aperte ? 'Chiudi tutte le tendine' : 'Apri tutte le tendine';
   }
@@ -293,6 +300,20 @@
     const apri = $('apriTutte').getAttribute('aria-pressed') !== 'true';
     sezioni.forEach(s => { if (!s.el.hidden) s.el.open = apri; });
     aggiornaPulsante();
+  });
+  /* ORDINE DELLE TENDINE (solo in questa pagina): "asc" = dalla famiglia più vecchia (C 2004 … VS 2026),
+     "desc" = dalla più recente. "Senza codice" resta sempre in fondo.
+     Ogni volta che si apre la pagina parte dalla più recente: la scelta NON viene memorizzata. */
+  let ordineFam = 'desc';
+  function applicaOrdine() {
+    const fam = sezioni.filter(s => s.f.nome !== 'Senza codice');
+    const senza = sezioni.filter(s => s.f.nome === 'Senza codice');
+    (ordineFam === 'desc' ? [...fam].reverse() : fam).concat(senza).forEach(s => $('gruppi').append(s.el));   /* append sposta la tendina nel nuovo posto */
+    $('ordineFam').textContent = ordineFam === 'desc' ? 'Dalla più recente' : 'Dalla più vecchia';
+  }
+  $('ordineFam').addEventListener('click', () => {
+    ordineFam = ordineFam === 'desc' ? 'asc' : 'desc';
+    applicaOrdine();
   });
   $('gruppi').addEventListener('toggle', aggiornaPulsante, true);     /* anche se ne apri o chiudi una a mano */
 
@@ -330,6 +351,7 @@
       }));
       $('attesa').hidden = true;
       crea(ordina());
+      applicaOrdine();
       disegna();
     } catch (e) {
       $('attesa').textContent = 'Non riesco a caricare le sorpresine. Riprova tra poco.';
