@@ -76,7 +76,8 @@
       limited: !!r.limitata,
       tags: Array.isArray(r.hashtag) ? r.hashtag.slice() : [],
       info: (r.info || '') + (paese && !/uscit[oa] solo/i.test(r.info || '') ? (r.info ? '. ' : '') + 'Uscito solo ' + (/^estero$/i.test(paese) ? 'all\'estero' : 'in ' + paese) : ''),   /* testo fisso "Info": si cambia solo nell'HTML */
-      image: r.foto || ''                      /* percorso della foto, es. "immagini/01.webp" */
+      image: r.foto || '',                     /* percorso della foto, es. "immagini/01.webp" */
+      fotoInfo: Array.isArray(r.fotoInfo) ? r.fotoInfo.filter(Boolean) : []   /* foto extra nelle Info (si scorrono): fotoInfo: ["immagini/01-b.webp", ...] */
     };
   });
 
@@ -482,6 +483,68 @@
     if (tagInput.value.trim()) { addTag(tagInput.value); tagInput.value = ''; }
   });
 
+  /* ---------- foto extra nelle Info (carosello) ----------
+     Se un oggetto ha  fotoInfo: ["immagini/01-b.webp", ...]  nell'elenco, sotto il testo "Info" compare una
+     fila di foto che si scorre col dito (o con le frecce / i puntini). Senza fotoInfo non compare nulla. */
+  let fotoBox = null;
+  function mostraFotoInfo(p) {
+    if (!fotoBox) {
+      fotoBox = document.createElement('div');
+      fotoBox.className = 'info-foto';
+      fotoBox.innerHTML = '<div class="if-scorri" tabindex="0" aria-label="Foto"></div>' +
+        '<button type="button" class="if-freccia if-prec" aria-label="Foto precedente">\u2039</button>' +
+        '<button type="button" class="if-freccia if-succ" aria-label="Foto successiva">\u203A</button>' +
+        '<div class="if-punti"></div>';
+      $('fInfoBox').after(fotoBox);
+      const sc = fotoBox.querySelector('.if-scorri');
+      const vai = d => sc.scrollBy({ left: d * sc.clientWidth, behavior: 'smooth' });
+      fotoBox.querySelector('.if-prec').addEventListener('click', () => vai(-1));
+      fotoBox.querySelector('.if-succ').addEventListener('click', () => vai(1));
+      sc.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); vai(-1); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); vai(1); }
+      });
+      sc.addEventListener('scroll', () => aggiornaFotoInfo(), { passive: true });
+    }
+    const sc = fotoBox.querySelector('.if-scorri');
+    const foto = p.fotoInfo || [];
+    fotoBox.hidden = !foto.length;
+    sc.replaceChildren(...foto.map((src, i) => {
+      const im = document.createElement('img');
+      im.src = src; im.alt = (p.name || 'Foto') + ' (' + (i + 1) + '/' + foto.length + ')';
+      im.loading = 'lazy'; im.draggable = false;
+      im.style.cursor = 'zoom-in'; im.addEventListener('click', () => ingrandisciFoto(src, im.alt));
+      return im;
+    }));
+    sc.scrollLeft = 0;
+    fotoBox.querySelector('.if-punti').replaceChildren(...foto.map(() => document.createElement('span')));
+    fotoBox.classList.toggle('una', foto.length < 2);   /* una sola foto: niente frecce né puntini */
+    aggiornaFotoInfo();
+  }
+  /* clic su una foto delle Info: si ingrandisce a tutto schermo (clic, ✕ o Esc per chiudere) */
+  let zoomDlg = null;
+  function ingrandisciFoto(src, alt) {
+    if (!zoomDlg) {
+      zoomDlg = document.createElement('dialog');
+      zoomDlg.className = 'if-zoom';
+      zoomDlg.innerHTML = '<img alt=""><button type="button" class="if-zoom-x" aria-label="Chiudi">\u2715</button>';
+      zoomDlg.addEventListener('click', () => zoomDlg.close());
+      document.body.appendChild(zoomDlg);
+    }
+    const im = zoomDlg.querySelector('img');
+    im.src = src; im.alt = alt || '';
+    zoomDlg.showModal();
+  }
+  function aggiornaFotoInfo() {
+    if (!fotoBox) return;
+    const sc = fotoBox.querySelector('.if-scorri');
+    const n = sc.children.length;
+    const i = n ? Math.min(n - 1, Math.round(sc.scrollLeft / (sc.clientWidth || 1))) : 0;
+    [...fotoBox.querySelector('.if-punti').children].forEach((d, k) => d.classList.toggle('on', k === i));
+    fotoBox.querySelector('.if-prec').disabled = i <= 0;
+    fotoBox.querySelector('.if-succ').disabled = i >= n - 1;
+  }
+
   /* apre la finestra "Dettagli" di un oggetto */
   function openEdit(p) {
     editing = p;
@@ -501,6 +564,7 @@
     }
     $('fInfo').textContent = p.info;
     $('fInfoBox').hidden = !p.info;          /* "Info": nascosta se l'oggetto non ne ha */
+    mostraFotoInfo(p);                       /* foto extra da scorrere (se ci sono) */
     editTags = p.tags.slice();
     tagInput.value = '';
     renderTags();
@@ -532,9 +596,14 @@
      più sotto da qui, così non serve cambiare ogni pagina. */
   const kindName = { owned: 'collezione', scambi: 'cerco-scambio', mancanti: 'mi-mancano', doppioni: 'doppioni', all: 'checklist' };
   /* oggetti da mettere nel PDF: tutti, oppure solo quelli che mi mancano (per "Cerco") */
+  let conEstere = false;   /* interruttore "Stampa anche le varianti estere" nella finestra Stampa: parte sempre spento */
   function printList(soloMancanti) {
     const all = [...pens].sort(byPos);
-    return soloMancanti ? all.filter(p => !p.owned && p.image && !p.estero) : all;
+    /* le varianti estere (p.estero) NON si stampano, né per Kinder né per McDonald's: solo i pezzi della serie,
+       a meno che si accenda "Stampa anche le varianti estere". Se TUTTI i pezzi della pagina sono esteri
+       (serie solo estera) si stampa tutto comunque. */
+    const stampabili = (conEstere || !all.some(p => !p.estero)) ? all : all.filter(p => !p.estero);
+    return soloMancanti ? stampabili.filter(p => !p.owned && p.image) : stampabili;
   }
   /* carica una foto e aspetta che sia pronta */
   const loadImg = src => new Promise((res, rej) => {
@@ -1070,14 +1139,29 @@
     fine.after(coppia);
   })();
 
-  $('btnPrint').addEventListener('click', () => {
-    const base = pens.filter(p => !p.estero);
+  /* interruttore "Stampa anche le varianti estere": compare solo se la pagina ha varianti estere (e non è tutta estera) */
+  const estereVoce = (function () {
+    const l = document.createElement('label');
+    l.className = 'print-estere';
+    l.innerHTML = '<input type="checkbox" id="printEstere"><span>Stampa anche le varianti estere</span>';
+    printDlg.querySelector('.actions').before(l);
+    return l;
+  })();
+  const estereCasella = estereVoce.querySelector('input');
+  function conteggiStampa() {
+    const base = conEstere ? pens : pens.filter(p => !p.estero);
     const total = base.filter(p => p.image || p.owned).length;
     $('cnt-owned').textContent = base.filter(p => p.owned).length + ' su ' + total;
-    const nMancanti = printList(true).length, nDoppioni = pens.filter(p => p.doppi > 0).length;
+    const nMancanti = printList(true).length, nDoppioni = printList(false).filter(p => p.doppi > 0).length;
     $('cnt-scambi').textContent = nMancanti + ' cerco · ' + nDoppioni + ' scambio';
     $('cnt-mancanti').textContent = nMancanti;
     $('cnt-doppioni').textContent = nDoppioni;
+  }
+  estereCasella.addEventListener('change', () => { conEstere = estereCasella.checked; conteggiStampa(); });
+  $('btnPrint').addEventListener('click', () => {
+    conEstere = false; estereCasella.checked = false;                      /* ogni volta che si apre, spento */
+    estereVoce.hidden = !(pens.some(p => p.estero) && pens.some(p => !p.estero));
+    conteggiStampa();
     bloccaStampa();
     printDlg.showModal();
   });

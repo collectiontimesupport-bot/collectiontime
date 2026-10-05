@@ -245,6 +245,7 @@
 
     /* — finestra Stampa / immagine da condividere — */
     "Cosa vuoi stampare?": "What do you want to print?",
+    "Stampa anche le varianti estere": "Also print foreign variants",
     "Crea un'immagine da condividere.": "Create an image to share.",
     "La mia collezione": "My collection",
     "Cerco e scambio": "Wanted & trading",

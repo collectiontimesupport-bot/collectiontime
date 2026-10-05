@@ -1,0 +1,621 @@
+<!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
+<!-- =====================================================================
+     APPLAYDU 2024 — pagina della collezione (Kinder Ferrero)
+     ---------------------------------------------------------------------
+     Pagina creata dall'area amministratore. Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI (CONFIG)
+                              ed ELENCO DELLE SORPRESINE (in fondo)
+       immagini/            ← le foto in WebP trasparente (01.webp, 02.webp…)
+                              e copertina.webp (la foto della card, se c'è)
+       (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
+        collezioni, e nel file css/stile.css della categoria;
+        il funzionamento, app.js, sta nella cartella "comune" del sito)
+
+     ▸ PER CAMBIARE NOMI, FOTO, ORDINE, QUANTI PER FILA E GRANDEZZA:
+       area amministratore (_admin/index.html) → "Modifica una serie".
+       A mano: blocco "ELENCO DELLE SORPRESINE" in fondo a questa pagina.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in og:title, description, og:description e indirizzo in og:url (righe qui sotto). Il <title> lo rifà da solo "Pubblica" (og:title + la pagina di sopra, es. "Adventure Time · Charms · Collection Time") -->
+<title>Applaydu 2024 · Kinder Sorpresa · Collection Time</title>
+<meta name="description" content="Applaydu 2024: 375 sorpresine. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/".
+     favicon-96.png = icona della scheda (PNG: Safari non mostra le icone SVG).
+     Se sostituisci un'icona con un file con lo STESSO nome, metti la data di oggi in "?v=…"
+     (es. apple-touch-icon.png?v=2026-09-27) in tutte le pagine: così il browser scarica quella nuova. -->
+<link rel="icon" href="../../../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../../../favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="../../../../apple-touch-icon.png?v=2026-09-27">
+<link rel="manifest" href="../../../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Applaydu 2024 · Collection Time">
+<meta property="og:description" content="Applaydu 2024: 375 sorpresine. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.">
+<meta property="og:url" content="https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2024/">
+<meta property="og:image" content="https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2024/immagini/anteprima.jpg?v=2026-10-05">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../../../sito.css?v=2026-10-05a">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+
+<!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
+<!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
+     in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
+<link rel="stylesheet" href="../../../../comune/collezione.css?v=2026-10-05a">
+<link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
+<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
+     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
+<link rel="canonical" href="https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2024/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Kinder Ferrero","item":"https://collectiontime.com/catalogo/kinder/"},{"@type":"ListItem","position":3,"name":"Kinder Sorpresa","item":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/"},{"@type":"ListItem","position":4,"name":"Applaydu 2024","item":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2024/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Applaydu 2024","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2024/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Applaydu 2024: 375 sorpresine. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2024/immagini/anteprima.jpg?v=2026-10-05","mainEntity":{"@type":"ItemList","numberOfItems":375,"itemListElement":[{"@type":"ListItem","position":1,"name":"01 - VU050D · Trottola Corona: arancione"},{"@type":"ListItem","position":2,"name":"02 - VU050E · Trottola Corona: azzurra"},{"@type":"ListItem","position":3,"name":"03 - VU490E · Scatola dei ricordi blu"},{"@type":"ListItem","position":4,"name":"04 - VU490G · Scatola dei ricordi arancione"},{"@type":"ListItem","position":5,"name":"05 - VU492K · Ragazze Pastello: Elly"},{"@type":"ListItem","position":6,"name":"06 - VU492L · Ragazze Pastello: Bella"},{"@type":"ListItem","position":7,"name":"07 - VD057B · Fotocamera Rivelatrice: verde scuro"},{"@type":"ListItem","position":8,"name":"08 - VD057C · Fotocamera Rivelatrice: arancione"},{"@type":"ListItem","position":9,"name":"09 - VD058B · Fotocamera Rivelatrice: bianca"},{"@type":"ListItem","position":10,"name":"10 - VD144C · Anello Spirale di Fiori 1"},{"@type":"ListItem","position":11,"name":"11 - VD145C · Anello Spirale di Fiori 2"},{"@type":"ListItem","position":12,"name":"12 - VD203 · Robot Camminatori: rosso"},{"@type":"ListItem","position":13,"name":"13 - VD203A · Robot Camminatori: dorato"},{"@type":"ListItem","position":14,"name":"14 - VD215A · Farfalla viola chiaro e scuro"},{"@type":"ListItem","position":15,"name":"15 - VD216B · Farfalla giallo-arancio"},{"@type":"ListItem","position":16,"name":"16 - VD431D · Scatola dei ricordi viola"},{"@type":"ListItem","position":17,"name":"17 - VD431F · Scatola dei ricordi gialla"},{"@type":"ListItem","position":18,"name":"18 - VT013A · Ornitorinco blu"},{"@type":"ListItem","position":19,"name":"19 - VT021 · Slimy: polpo"},{"@type":"ListItem","position":20,"name":"20 - VT021A · Polpo sulla cartolina"},{"@type":"ListItem","position":21,"name":"21 - VT022 · Slimy: lumaca"},{"@type":"ListItem","position":22,"name":"22 - VT023 · Da Fata a Fiore: Lily"},{"@type":"ListItem","position":23,"name":"23 - VT023A · Da Fata a Fiore: Lily, fiore verde"},{"@type":"ListItem","position":24,"name":"24 - VT023B · Da Fata a Fiore: Lily, fiore verde chiaro"},{"@type":"ListItem","position":25,"name":"25 - VT024 · Da Fata a Fiore: Nora"},{"@type":"ListItem","position":26,"name":"26 - VT024A · Da Fata a Fiore: Nora, ali gialle"},{"@type":"ListItem","position":27,"name":"27 - VT024B · Da Fata a Fiore: Nora, ali blu"},{"@type":"ListItem","position":28,"name":"28 - VT025 · Fata Fiore: Nora"},{"@type":"ListItem","position":29,"name":"29 - VT025A · Fata Fiore: Regina"},{"@type":"ListItem","position":30,"name":"30 - VT025B · Fata Fiore: Jasmin"},{"@type":"ListItem","position":31,"name":"31 - VT026 · Fata Fiore: Lily"},{"@type":"ListItem","position":32,"name":"32 - VT026A · Fata Fiore: Stella"},{"@type":"ListItem","position":33,"name":"33 - VT026B · Fata Fiore: Ruby"},{"@type":"ListItem","position":34,"name":"34 - VT030 · Da Fata a Principessa: Nora"},{"@type":"ListItem","position":35,"name":"35 - VT030A · Da Fata a Principessa: Lily"},{"@type":"ListItem","position":36,"name":"36 - VT034 · Sorelle alla Moda: Olivia"},{"@type":"ListItem","position":37,"name":"37 - VT034A · Sorelle alla Moda: Sara"},{"@type":"ListItem","position":38,"name":"38 - VT035 · Braccialetto Animali di Cristallo: Rescal"},{"@type":"ListItem","position":39,"name":"39 - VT035A · Braccialetto Animali di Cristallo: Rescal verde"},{"@type":"ListItem","position":40,"name":"40 - VT035B · Braccialetto Animali di Cristallo: Rescal rosso"},{"@type":"ListItem","position":41,"name":"41 - VT036 · Braccialetto Animali di Cristallo: Hopper"},{"@type":"ListItem","position":42,"name":"42 - VT036A · Braccialetto Animali di Cristallo: Hopper blu"},{"@type":"ListItem","position":43,"name":"43 - VT036B · Braccialetto Animali di Cristallo: Hopper rosa"},{"@type":"ListItem","position":44,"name":"44 - VT037 · Fate Diamante: Dora"},{"@type":"ListItem","position":45,"name":"45 - VT038 · Fate Diamante: Tea"},{"@type":"ListItem","position":46,"name":"46 - VT038A · Fate Diamante: Gipsy"},{"@type":"ListItem","position":47,"name":"47 - VT038B · Fate Diamante: Rose"},{"@type":"ListItem","position":48,"name":"48 - VT039 · Charm delle Migliori Amiche: Friendship"},{"@type":"ListItem","position":49,"name":"49 - VT039A · Charm delle Migliori Amiche: Harmony"},{"@type":"ListItem","position":50,"name":"50 - VT040 · Apri e Scopri: fiore (versione 2023)"},{"@type":"ListItem","position":51,"name":"51 - VT040A · Apri e Scopri: fiore"},{"@type":"ListItem","position":52,"name":"52 - VT040B · Apri e Scopri: fiore (variante)"},{"@type":"ListItem","position":53,"name":"53 - VT041 · Apri e Scopri: farfalla (versione 2023)"},{"@type":"ListItem","position":54,"name":"54 - VT041A · Apri e Scopri: farfalla"},{"@type":"ListItem","position":55,"name":"55 - VT041C · Apri e Scopri: farfalla (variante)"},{"@type":"ListItem","position":56,"name":"56 - VT044 · Veicolo con Fotocamera: Nonna Bebe"},{"@type":"ListItem","position":57,"name":"57 - VT045 · Prendimi: Papa T-Rex"},{"@type":"ListItem","position":58,"name":"58 - VT046 · Spremi e Spara: Scout"},{"@type":"ListItem","position":59,"name":"59 - VT048 · Casetta delle Fate: casa di Nora"},{"@type":"ListItem","position":60,"name":"60 - VT048A · Casetta delle Fate: casa di Lily"},{"@type":"ListItem","position":61,"name":"61 - VT048B · Casetta delle Fate: tetto viola"},{"@type":"ListItem","position":62,"name":"62 - VT048C · Casetta delle Fate: tetto arancione"},{"@type":"ListItem","position":63,"name":"63 - VT048D · Casetta delle Fate: casa di Monika"},{"@type":"ListItem","position":64,"name":"64 - VT048E · Casetta delle Fate: casa di Agnes"},{"@type":"ListItem","position":65,"name":"65 - VT049 · Gioielli di Carta: libellula"},{"@type":"ListItem","position":66,"name":"66 - VT049A · Gioielli di Carta: libellula viola"},{"@type":"ListItem","position":67,"name":"67 - VT052 · Dino Inclinabile: Papa T-Rex"},{"@type":"ListItem","position":68,"name":"68 - VT062 · Fotocamera Dino: Tracker Pro"},{"@type":"ListItem","position":69,"name":"69 - VT063 · Fotocamera Dino: Troy Pro"},{"@type":"ListItem","position":70,"name":"70 - VT064 · Scatola Segreta delle Fate: farfalla"},{"@type":"ListItem","position":71,"name":"71 - VT064A · Scatola Segreta delle Fate: farfalla rosa"},{"@type":"ListItem","position":72,"name":"72 - VT065 · Scatola Segreta delle Fate: stella"},{"@type":"ListItem","position":73,"name":"73 - VT065A · Scatola Segreta delle Fate: stella viola"},{"@type":"ListItem","position":74,"name":"74 - VT076 · Fata Adesiva: Fay"},{"@type":"ListItem","position":75,"name":"75 - VT076A · Fata Adesiva: Joy"},{"@type":"ListItem","position":76,"name":"76 - VT076B · Fata Adesiva: Mochi"},{"@type":"ListItem","position":77,"name":"77 - VT076C · Fata Adesiva: Gaia"},{"@type":"ListItem","position":78,"name":"78 - VT080 · Amici da Sfamare 2: ippopotamo"},{"@type":"ListItem","position":79,"name":"79 - VT081 · Amici da Sfamare 2: tartaruga marina"},{"@type":"ListItem","position":80,"name":"80 - VT084 · Mini Dino 2: Trexy"},{"@type":"ListItem","position":81,"name":"81 - VT085 · Mini Dino 2: Chomp"},{"@type":"ListItem","position":82,"name":"82 - VT086 · Dino Adesivo: Dimitri"},{"@type":"ListItem","position":83,"name":"83 - VT087 · Dino Adesivo: Spino"},{"@type":"ListItem","position":84,"name":"84 - VT088 · Paleontologo: Scoperta Dino"},{"@type":"ListItem","position":85,"name":"85 - VT090 · Amici Mistici: cervo"},{"@type":"ListItem","position":86,"name":"86 - VT094 · Animali con Corona 3: castoro"},{"@type":"ListItem","position":87,"name":"87 - VT094A · Animali con Corona 3: castoro viola"},{"@type":"ListItem","position":88,"name":"88 - VT094B · Animali con Corona 3: castoro arancione"},{"@type":"ListItem","position":89,"name":"89 - VT095 · Animali con Corona 3: coniglio"},{"@type":"ListItem","position":90,"name":"90 - VT095A · Animali con Corona 3: coniglio verde"},{"@type":"ListItem","position":91,"name":"91 - VT095B · Animali con Corona 3: coniglio rosso"},{"@type":"ListItem","position":92,"name":"92 - VT096 · Animali Magici delle Fate: Hoggy"},{"@type":"ListItem","position":93,"name":"93 - VT096A · Animali Magici delle Fate: Hoggy rosa"},{"@type":"ListItem","position":94,"name":"94 - VT096B · Animali Magici delle Fate: Hoggy viola"},{"@type":"ListItem","position":95,"name":"95 - VT097 · Animali Magici delle Fate: Rascal"},{"@type":"ListItem","position":96,"name":"96 - VT097A · Animali Magici delle Fate: Rascal azzurro"},{"@type":"ListItem","position":97,"name":"97 - VT097B · Animali Magici delle Fate: Rascal rosa"},{"@type":"ListItem","position":98,"name":"98 - VT102A · Immagini Nascoste: topo"},{"@type":"ListItem","position":99,"name":"99 - VT114 · Speedy Bob"},{"@type":"ListItem","position":100,"name":"100 - VT114C · Barca Sparatrice: barca n. 5"},{"@type":"ListItem","position":101,"name":"101 - VT114D · Barca Sparatrice: barca n. 11"},{"@type":"ListItem","position":102,"name":"102 - VT151 · Uomini Volanti: Luis"},{"@type":"ListItem","position":103,"name":"103 - VT151A · Uomini Volanti: Troy"},{"@type":"ListItem","position":104,"name":"104 - VT151B · Uomini Volanti: capelli biondi"},{"@type":"ListItem","position":105,"name":"105 - VT151C · Uomini Volanti: capelli neri"},{"@type":"ListItem","position":106,"name":"106 - VT162 · Cacciatori di Dino: Duke"},{"@type":"ListItem","position":107,"name":"107 - VT163 · Cacciatori di Dino: Tracker"},{"@type":"ListItem","position":108,"name":"108 - VT180 · Veicolo con Fotocamera: Nonna Aziz"},{"@type":"ListItem","position":109,"name":"109 - VT181 · Spremi e Spara: Ptero"},{"@type":"ListItem","position":110,"name":"110 - VT202 · Prendimi: Chomp"},{"@type":"ListItem","position":111,"name":"111 - VT204 · Dino Inclinabile: Raptor"},{"@type":"ListItem","position":112,"name":"112 - VT209 · Gioielli di Carta: uccellino"},{"@type":"ListItem","position":113,"name":"113 - VT209A · Gioielli di Carta: uccellino rosa"},{"@type":"ListItem","position":114,"name":"114 - VT217 · Veicoli Dino in Missione: Trucko Saurus"},{"@type":"ListItem","position":115,"name":"115 - VT220 · Veicoli Dino in Missione: veicolo di Chomp"},{"@type":"ListItem","position":116,"name":"116 - VQ005 · Animali Acrobati: rana"},{"@type":"ListItem","position":117,"name":"117 - VQ006 · Animali Acrobati: coniglio"},{"@type":"ListItem","position":118,"name":"118 - VQ007 · Ascolta il Tuo Cuore: koala"},{"@type":"ListItem","position":119,"name":"119 - VQ008 · Ascolta il Tuo Cuore: scimmia"},{"@type":"ListItem","position":120,"name":"120 - VQ009 · Scatole degli Animali: gatto"},{"@type":"ListItem","position":121,"name":"121 - VQ010 · Scatole degli Animali: coniglio"},{"@type":"ListItem","position":122,"name":"122 - VQ012 · Auto Trasformabile: verde"},{"@type":"ListItem","position":123,"name":"123 - VQ012A · Auto Trasformabile: rossa"},{"@type":"ListItem","position":124,"name":"124 - VQ013 · Draghi della Terra: drago di pietra"},{"@type":"ListItem","position":125,"name":"125 - VQ014 · Draghi della Terra: drago d'acqua"},{"@type":"ListItem","position":126,"name":"126 - VQ018 · Pronto Soccorso: pantera"},{"@type":"ListItem","position":127,"name":"127 - VQ019 · Pronto Soccorso: tartaruga marina"},{"@type":"ListItem","position":128,"name":"128 - VQ020 · Controllo Veterinario: Marta"},{"@type":"ListItem","position":129,"name":"129 - VQ021 · Controllo Veterinario: Rita"},{"@type":"ListItem","position":130,"name":"130 - VQ022 · Amiche: Sally"},{"@type":"ListItem","position":131,"name":"131 - VQ023 · Amiche: Amanda"},{"@type":"ListItem","position":132,"name":"132 - VQ024 · Pasti degli Animali: cigni"},{"@type":"ListItem","position":133,"name":"133 - VQ025 · Pasti degli Animali: tartarughe"},{"@type":"ListItem","position":134,"name":"134 - VQ035 · Timbro Personalizzato: orso"},{"@type":"ListItem","position":135,"name":"135 - VQ036 · Timbro Personalizzato: scimmia"},{"@type":"ListItem","position":136,"name":"136 - VQ041 · Amici di Scuola: Tom la rana"},{"@type":"ListItem","position":137,"name":"137 - VQ042 · Amici di Scuola: Sam il camaleonte"},{"@type":"ListItem","position":138,"name":"138 - VQ043 · Animali Pastello: lumaca"},{"@type":"ListItem","position":139,"name":"139 - VQ044 · Animali Pastello: pinguino"},{"@type":"ListItem","position":140,"name":"140 - VQ047 · Timbri Animali: coniglio azzurro"},{"@type":"ListItem","position":141,"name":"141 - VQ048 · Timbri Animali: uccello rosa"},{"@type":"ListItem","position":142,"name":"142 - VQ049 · Artisti dell'Inchiostro: scimmia"},{"@type":"ListItem","position":143,"name":"143 - VQ050 · Artisti dell'Inchiostro: pappagallo"},{"@type":"ListItem","position":144,"name":"144 - VQ051 · Mezzi da Lavoro: frantumatrice"},{"@type":"ListItem","position":145,"name":"145 - VQ052 · Mezzi da Lavoro: palla demolitrice"},{"@type":"ListItem","position":146,"name":"146 - VQ053 · Auto e Aereo: arancione"},{"@type":"ListItem","position":147,"name":"147 - VQ054 · Auto e Aereo: arancione e blu"},{"@type":"ListItem","position":148,"name":"148 - VQ055 · Maestri di Formula 1: gialla"},{"@type":"ListItem","position":149,"name":"149 - VQ056 · Maestri di Formula 1: blu"},{"@type":"ListItem","position":150,"name":"150 - VQ057 · Hot Rod: viola e verde"},{"@type":"ListItem","position":151,"name":"151 - VQ058 · Hot Rod: verde e gialla"},{"@type":"ListItem","position":152,"name":"152 - VQ059 · Carrello Elevatore: giallo"},{"@type":"ListItem","position":153,"name":"153 - VQ059A · Carrello Elevatore: verde"},{"@type":"ListItem","position":154,"name":"154 - VQ063 · Monster Truck Show: rosso e giallo"},{"@type":"ListItem","position":155,"name":"155 - VQ064 · Monster Truck Show: grigio e rosso"},{"@type":"ListItem","position":156,"name":"156 - VQ069 · Moto Impennata: rosso e arancione"},{"@type":"ListItem","position":157,"name":"157 - VQ069A · Mangiamiglia verde"},{"@type":"ListItem","position":158,"name":"158 - VQ070 · Moto Impennata: blu e rossa"},{"@type":"ListItem","position":159,"name":"159 - VQ070A · Roadmaster rossa"},{"@type":"ListItem","position":160,"name":"160 - VQ071 · Pinguino"},{"@type":"ListItem","position":161,"name":"161 - VQ072 · Orso polare"},{"@type":"ListItem","position":162,"name":"162 - VQ076 · Tesori dei Draghi: con cristallo"},{"@type":"ListItem","position":163,"name":"163 - VQ076A · Tesori dei Draghi: con oro"},{"@type":"ListItem","position":164,"name":"164 - VQ078 · Orecchini Animali: giallo"},{"@type":"ListItem","position":165,"name":"165 - VQ078B · Orecchini Animali: rosa"},{"@type":"ListItem","position":166,"name":"166 - VQ079 · Amici da Sfamare 3: rinoceronte"},{"@type":"ListItem","position":167,"name":"167 - VQ081 · Amici da Sfamare 3: zebra"},{"@type":"ListItem","position":168,"name":"168 - VQ082 · Amici da Sfamare 4: orso polare"},{"@type":"ListItem","position":169,"name":"169 - VQ083 · Amici da Sfamare 4: tartaruga"},{"@type":"ListItem","position":170,"name":"170 - VQ084 · Amici da Sfamare 1: coniglietta Kida"},{"@type":"ListItem","position":171,"name":"171 - VQ085 · Amici da Sfamare 1: gatta Marie"},{"@type":"ListItem","position":172,"name":"172 - VQ088 · Mini Draghi: Enrico"},{"@type":"ListItem","position":173,"name":"173 - VQ089 · Mini Draghi: Giordano"},{"@type":"ListItem","position":174,"name":"174 - VQ090 · Drago Sputafuoco: rosso"},{"@type":"ListItem","position":175,"name":"175 - VQ091 · Drago Sputafuoco: oro"},{"@type":"ListItem","position":176,"name":"176 - VQ092 · Braccialetti Colorati: gatti"},{"@type":"ListItem","position":177,"name":"177 - VQ093 · Braccialetti Colorati: cuori"},{"@type":"ListItem","position":178,"name":"178 - VQ094 · Drago da Dito: ali rosse"},{"@type":"ListItem","position":179,"name":"179 - VQ095 · Drago da Dito: ali dorate"},{"@type":"ListItem","position":180,"name":"180 - VQ099 · Drago Cinese: rosso"},{"@type":"ListItem","position":181,"name":"181 - VQ100 · Drago Cinese: oro"},{"@type":"ListItem","position":182,"name":"182 - VQ103 · Auto con Roulotte: roulotte turchese"},{"@type":"ListItem","position":183,"name":"183 - VQ103A · Auto con Roulotte: roulotte rosa"},{"@type":"ListItem","position":184,"name":"184 - VQ106 · Drago: ali rosse"},{"@type":"ListItem","position":185,"name":"185 - VQ107 · Drago: ali dorate"},{"@type":"ListItem","position":186,"name":"186 - VQ108 · Messaggio Segreto del Veterinario: stella marina"},{"@type":"ListItem","position":187,"name":"187 - VQ108A · Messaggio Segreto del Veterinario: marina"},{"@type":"ListItem","position":188,"name":"188 - VQ111 · Drago Cinese Mobile: oro"},{"@type":"ListItem","position":189,"name":"189 - VQ111B · Drago Cinese Mobile: rosso"},{"@type":"ListItem","position":190,"name":"190 - VQ113 · Animali a Tavola: orso"},{"@type":"ListItem","position":191,"name":"191 - VQ114 · Animali a Tavola: pinguino"},{"@type":"ListItem","position":192,"name":"192 - VQ115 · Anelli Gemelli: rosa e viola"},{"@type":"ListItem","position":193,"name":"193 - VQ116 · Anelli Gemelli: verde e verde chiaro"},{"@type":"ListItem","position":194,"name":"194 - VQ144 · Apri e Scopri: farfalla (nuova versione)"},{"@type":"ListItem","position":195,"name":"195 - VQ157 · Animali con Corona 3: coniglio (nuova versione)"},{"@type":"ListItem","position":196,"name":"196 - VQ170 · Da Fata a Principessa 2024: Lily"},{"@type":"ListItem","position":197,"name":"197 - VQ170A · Da Fata a Principessa 2024: Nora"},{"@type":"ListItem","position":198,"name":"198 - VQ178 · Azione in Mare: balena"},{"@type":"ListItem","position":199,"name":"199 - VQ179 · Azione in Mare: squalo"},{"@type":"ListItem","position":200,"name":"200 - VQ180 · Trottole Animali: gialla, delfini"},{"@type":"ListItem","position":201,"name":"201 - VQ181 · Trottole Animali: blu, fenicotteri"},{"@type":"ListItem","position":202,"name":"202 - VQ182 · Trucco Magico degli Animali: scimmia"},{"@type":"ListItem","position":203,"name":"203 - VQ183 · Trucco Magico degli Animali: coniglio"},{"@type":"ListItem","position":204,"name":"204 - VQ187 · Addestratore di Draghi: Iacopo"},{"@type":"ListItem","position":205,"name":"205 - VQ188 · Addestratore di Draghi: Mark"},{"@type":"ListItem","position":206,"name":"206 - VQ189 · Febbre: pinguino"},{"@type":"ListItem","position":207,"name":"207 - VQ190 · Febbre: elefante"},{"@type":"ListItem","position":208,"name":"208 - VQ200 · Amici Mistici: gatto"},{"@type":"ListItem","position":209,"name":"209 - VQ203 · Animali Adesivi: polpi giallo e verde"},{"@type":"ListItem","position":210,"name":"210 - VQ204 · Animali Adesivi: polpi arancione e blu"},{"@type":"ListItem","position":211,"name":"211 - VQ205A · Scatola rossa"},{"@type":"ListItem","position":212,"name":"212 - VQ206A · Scatola arancione"},{"@type":"ListItem","position":213,"name":"213 - VQ208 · Braccialetto delle Fate: turchese"},{"@type":"ListItem","position":214,"name":"214 - VQ209 · Inseguitori su Strada: Kimi"},{"@type":"ListItem","position":215,"name":"215 - VQ209A · Lampo blu"},{"@type":"ListItem","position":216,"name":"216 - VQ210 · Inseguitori su Strada: Mick"},{"@type":"ListItem","position":217,"name":"217 - VQ210A · Stella nera"},{"@type":"ListItem","position":218,"name":"218 - VQ213 · Animali con Corona 3: castoro (nuova versione)"},{"@type":"ListItem","position":219,"name":"219 - VQ214 · Apri e Scopri: fiore (nuova versione)"},{"@type":"ListItem","position":220,"name":"220 - VQ220 · Fata Adesiva: Fay (nuova versione)"},{"@type":"ListItem","position":221,"name":"221 - VQ220A · Fata Adesiva: Joy (nuova versione)"},{"@type":"ListItem","position":222,"name":"222 - VQ231 · Braccialetto delle Fate: viola"},{"@type":"ListItem","position":223,"name":"223 - VQ251 · Braccialetto del Migliore Amico: leone"},{"@type":"ListItem","position":224,"name":"224 - VQ251B · Braccialetto del Migliore Amico: panda"},{"@type":"ListItem","position":225,"name":"225 - VQ266 · Coccinella: rossa"},{"@type":"ListItem","position":226,"name":"226 - VQ266A · Coccinella: gialla"},{"@type":"ListItem","position":227,"name":"227 - VQ294 · Forzieri dei Draghi: rosso"},{"@type":"ListItem","position":228,"name":"228 - VQ295 · Forzieri dei Draghi: dorato"},{"@type":"ListItem","position":229,"name":"229 - VQ329G · Trottola blu"},{"@type":"ListItem","position":230,"name":"230 - VQ329H · Trottola rossa"},{"@type":"ListItem","position":231,"name":"231 - VQ343 · Personaggio Elastico: vestito blu"},{"@type":"ListItem","position":232,"name":"232 - VQ343A · Personaggio Elastico: vestito rosso"},{"@type":"ListItem","position":233,"name":"233 - VQ353 · Trambusto nella Giungla: scimmia gialla"},{"@type":"ListItem","position":234,"name":"234 - VQ353A · Trambusto nella Giungla: scimmia verde"},{"@type":"ListItem","position":235,"name":"235 - VQ353B · Alieno spaziale"},{"@type":"ListItem","position":236,"name":"236 - VQ425 · Giocare col Cibo: pesce blu col verme"},{"@type":"ListItem","position":237,"name":"237 - VQ425A · Giocare col Cibo: pesce rosso con alga"},{"@type":"ListItem","position":238,"name":"238 - VC002 · Ritorno dei Dodo: verde"},{"@type":"ListItem","position":239,"name":"239 - VC002B · Ritorno dei Dodo: blu"},{"@type":"ListItem","position":240,"name":"240 - VC008 · Escavatori: arancione"},{"@type":"ListItem","position":241,"name":"241 - VC009 · Escavatori: verde"},{"@type":"ListItem","position":242,"name":"242 - VC014 · Famiglia di Animali: coniglio"},{"@type":"ListItem","position":243,"name":"243 - VC015 · Famiglia di Animali: topo"},{"@type":"ListItem","position":244,"name":"244 - VC016 · Famiglia di Animali: pinguino"},{"@type":"ListItem","position":245,"name":"245 - VC017 · Famiglia di Animali: foca"},{"@type":"ListItem","position":246,"name":"246 - VC018 · Famiglia di Animali: anatra"},{"@type":"ListItem","position":247,"name":"247 - VC019 · Famiglia di Animali: rana"},{"@type":"ListItem","position":248,"name":"248 - VC020 · Famiglia di Animali: riccio"},{"@type":"ListItem","position":249,"name":"249 - VC021 · Famiglia di Animali: scoiattolo"},{"@type":"ListItem","position":250,"name":"250 - VC023 · Famiglia di Animali: alce"},{"@type":"ListItem","position":251,"name":"251 - VC024 · Famiglia di Animali: pecora"},{"@type":"ListItem","position":252,"name":"252 - VC025 · Famiglia di Animali: granchio"},{"@type":"ListItem","position":253,"name":"253 - VC026 · Famiglia di Animali: scimmia"},{"@type":"ListItem","position":254,"name":"254 - VC029 · Guardami negli Occhi: verde"},{"@type":"ListItem","position":255,"name":"255 - VC029A · Guardami negli Occhi: viola"},{"@type":"ListItem","position":256,"name":"256 - VC033 · Famiglia di Animali: elefante"},{"@type":"ListItem","position":257,"name":"257 - VC034 · Famiglia di Animali: giraffa"},{"@type":"ListItem","position":258,"name":"258 - VC035 · Giochi Subacquei: orca"},{"@type":"ListItem","position":259,"name":"259 - VC035A · Giochi Subacquei: squalo"},{"@type":"ListItem","position":260,"name":"260 - VC038 · Trasportatori: carrello elevatore verde"},{"@type":"ListItem","position":261,"name":"261 - VC041 · Auto rossa"},{"@type":"ListItem","position":262,"name":"262 - VC041A · Auto blu"},{"@type":"ListItem","position":263,"name":"263 - VC045 · Stringi più Mani: polpo viola"},{"@type":"ListItem","position":264,"name":"264 - VC046 · Stringi più Mani: polpo rosso"},{"@type":"ListItem","position":265,"name":"265 - VC047 · Pittori al Lavoro: koala sul tronco"},{"@type":"ListItem","position":266,"name":"266 - VC049 · Pittori al Lavoro: koala verde"},{"@type":"ListItem","position":267,"name":"267 - VC050 · Coccodrillo"},{"@type":"ListItem","position":268,"name":"268 - VC051 · Castoro"},{"@type":"ListItem","position":269,"name":"269 - VC054 · Guardiano delle Chiavi: rana"},{"@type":"ListItem","position":270,"name":"270 - VC056 · Guardiano delle Chiavi: ornitorinco"},{"@type":"ListItem","position":271,"name":"271 - VC059 · Koala"},{"@type":"ListItem","position":272,"name":"272 - VC060 · Pappagallo"},{"@type":"ListItem","position":273,"name":"273 - VC061 · Mi Piace il Pesce: foca bianca"},{"@type":"ListItem","position":274,"name":"274 - VC062 · Mi Piace il Pesce: foca marrone"},{"@type":"ListItem","position":275,"name":"275 - VC063 · Quad"},{"@type":"ListItem","position":276,"name":"276 - VC064 · Auto da cross"},{"@type":"ListItem","position":277,"name":"277 - VC066 · Toy Box blu"},{"@type":"ListItem","position":278,"name":"278 - VC068 · Toy Box arancione"},{"@type":"ListItem","position":279,"name":"279 - VC069 · Vieni più Vicino: coccodrillo verde"},{"@type":"ListItem","position":280,"name":"280 - VC070 · Vieni più Vicino: elefante viola"},{"@type":"ListItem","position":281,"name":"281 - VC072 · Surreale: mostro blu"},{"@type":"ListItem","position":282,"name":"282 - VC074 · Anatra"},{"@type":"ListItem","position":283,"name":"283 - VC075 · Rana"},{"@type":"ListItem","position":284,"name":"284 - VC076 · Non Schiacciarmi: coccodrillo"},{"@type":"ListItem","position":285,"name":"285 - VC077 · Non Schiacciarmi: pappagallo"},{"@type":"ListItem","position":286,"name":"286 - VC079 · Surreale: mostro rosso"},{"@type":"ListItem","position":287,"name":"287 - VC081 · Vieni tra le mie Braccia: mostro blu"},{"@type":"ListItem","position":288,"name":"288 - VC081A · Vieni tra le mie Braccia: mostro arancione"},{"@type":"ListItem","position":289,"name":"289 - VC087 · Trasportatori: carrello elevatore blu"},{"@type":"ListItem","position":290,"name":"290 - VC088 · Stelle della Demolizione: gru arancione"},{"@type":"ListItem","position":291,"name":"291 - VC089 · Stelle della Demolizione: gru verde"},{"@type":"ListItem","position":292,"name":"292 - VC094 · Sul Cantiere: pala rossa"},{"@type":"ListItem","position":293,"name":"293 - VC095 · Stan il Cacciavite"},{"@type":"ListItem","position":294,"name":"294 - VC096 · Sul Cantiere: camion giallo"},{"@type":"ListItem","position":295,"name":"295 - VC116 · Veicoli Cingolati: blu"},{"@type":"ListItem","position":296,"name":"296 - VC120 · Velocità arancione"},{"@type":"ListItem","position":297,"name":"297 - VC121 · Vincitore d'oro"},{"@type":"ListItem","position":298,"name":"298 - VC127 · Coniglietto"},{"@type":"ListItem","position":299,"name":"299 - VC128 · Drago turchese"},{"@type":"ListItem","position":300,"name":"300 - VC129 · Drago rosso"},{"@type":"ListItem","position":301,"name":"301 - VC130 · Drago verde"},{"@type":"ListItem","position":302,"name":"302 - VC131 · Drago azzurro"},{"@type":"ListItem","position":303,"name":"303 - VC132 · Gattino"},{"@type":"ListItem","position":304,"name":"304 - VC140 · Michael il meccanico"},{"@type":"ListItem","position":305,"name":"305 - VC142 · Controllo Koala"},{"@type":"ListItem","position":306,"name":"306 - VC143 · Controllo Pinguino"},{"@type":"ListItem","position":307,"name":"307 - VC144 · Pantera"},{"@type":"ListItem","position":308,"name":"308 - VC145 · Tartaruga marina"},{"@type":"ListItem","position":309,"name":"309 - VC150 · Nutrire i cigni"},{"@type":"ListItem","position":310,"name":"310 - VC151 · Nutrire le tartarughe"},{"@type":"ListItem","position":311,"name":"311 - VC152 · Coniglio"},{"@type":"ListItem","position":312,"name":"312 - VC153 · Scimmia"},{"@type":"ListItem","position":313,"name":"313 - VC155 · Orecchini arancioni"},{"@type":"ListItem","position":314,"name":"314 - VC155A · Orecchini rosa"},{"@type":"ListItem","position":315,"name":"315 - VC160 · Draghi rossi"},{"@type":"ListItem","position":316,"name":"316 - VC161 · Draghi turchesi"},{"@type":"ListItem","position":317,"name":"317 - VC162 · Drago dorato"},{"@type":"ListItem","position":318,"name":"318 - VC163 · Drago verde sul ceppo"},{"@type":"ListItem","position":319,"name":"319 - VC168 · Aggrappati forte"},{"@type":"ListItem","position":320,"name":"320 - VC169 · Dormi bene"},{"@type":"ListItem","position":321,"name":"321 - VC170 · Drago blu"},{"@type":"ListItem","position":322,"name":"322 - VC171 · Drago rosso (2)"},{"@type":"ListItem","position":323,"name":"323 - VC172 · Drago viola"},{"@type":"ListItem","position":324,"name":"324 - VC173 · Drago verde (2)"},{"@type":"ListItem","position":325,"name":"325 - VC174 · Niki"},{"@type":"ListItem","position":326,"name":"326 - VC175 · Moto da corsa blu"},{"@type":"ListItem","position":327,"name":"327 - VC176 · Moto da corsa rossa"},{"@type":"ListItem","position":328,"name":"328 - VC177 · Auto blu (2)"},{"@type":"ListItem","position":329,"name":"329 - VC178 · Auto viola"},{"@type":"ListItem","position":330,"name":"330 - VC179 · Veicoli Cingolati: oro"},{"@type":"ListItem","position":331,"name":"331 - VC181 · Auto rossa (2)"},{"@type":"ListItem","position":332,"name":"332 - VC182 · Auto arancione"},{"@type":"ListItem","position":333,"name":"333 - VC185 · Drago sulla montagna"},{"@type":"ListItem","position":334,"name":"334 - VC186 · Drago nella montagna"},{"@type":"ListItem","position":335,"name":"335 - VC189 · Drago rosso (3)"},{"@type":"ListItem","position":336,"name":"336 - VC190 · Drago blu (2)"},{"@type":"ListItem","position":337,"name":"337 - VC196 · Michael"},{"@type":"ListItem","position":338,"name":"338 - VC197 · Anello fiore blu"},{"@type":"ListItem","position":339,"name":"339 - VC198 · Anello fiore giallo"},{"@type":"ListItem","position":340,"name":"340 - VC202 · Pesce rosso e pesce giallo"},{"@type":"ListItem","position":341,"name":"341 - VC203 · Elefante e uccellino"},{"@type":"ListItem","position":342,"name":"342 - VC204 · Ciondolo cuore arancione"},{"@type":"ListItem","position":343,"name":"343 - VC204A · Ciondolo cuore verde"},{"@type":"ListItem","position":344,"name":"344 - VC206 · Elefante rosa"},{"@type":"ListItem","position":345,"name":"345 - VC210 · Lucchetto rosa"},{"@type":"ListItem","position":346,"name":"346 - VC211 · Lucchetto verde"},{"@type":"ListItem","position":347,"name":"347 - VC212 · Stencil per dipingere verde"},{"@type":"ListItem","position":348,"name":"348 - VC213 · Stencil per dipingere arancione"},{"@type":"ListItem","position":349,"name":"349 - VC214 · Lucchetto cagnolino"},{"@type":"ListItem","position":350,"name":"350 - VC215 · Lucchetto gattino"},{"@type":"ListItem","position":351,"name":"351 - VC216 · Braccialetto viola"},{"@type":"ListItem","position":352,"name":"352 - VC217 · Braccialetto verde"},{"@type":"ListItem","position":353,"name":"353 - VC218 · Lente d'ingrandimento pesce blu"},{"@type":"ListItem","position":354,"name":"354 - VC218A · Lente d'ingrandimento pesce rosso"},{"@type":"ListItem","position":355,"name":"355 - VC224 · Fiore Girevole: azzurro"},{"@type":"ListItem","position":356,"name":"356 - VC224A · Fiore Girevole: rosa"},{"@type":"ListItem","position":357,"name":"357 - VC225 · Jan con ali blu"},{"@type":"ListItem","position":358,"name":"358 - VC225A · Robert con ali rosse"},{"@type":"ListItem","position":359,"name":"359 - VC248 · Mostro blu"},{"@type":"ListItem","position":360,"name":"360 - VC249 · Distruttore verde"},{"@type":"ListItem","position":361,"name":"361 - VC255 · James con cucciolo di drago blu"},{"@type":"ListItem","position":362,"name":"362 - VC255A · Henry con cucciolo di drago rosso"},{"@type":"ListItem","position":363,"name":"363 - VC256 · Timothy il polpo"},{"@type":"ListItem","position":364,"name":"364 - VC257 · Gustave il coccodrillo"},{"@type":"ListItem","position":365,"name":"365 - VC258 · Mare"},{"@type":"ListItem","position":366,"name":"366 - VC258A · Giungla"},{"@type":"ListItem","position":367,"name":"367 - VS010 · Trenino colorato"},{"@type":"ListItem","position":368,"name":"368 - VS012 · Barca con pinguino"},{"@type":"ListItem","position":369,"name":"369 - VS015 · Pinza con slime"},{"@type":"ListItem","position":370,"name":"370 - VS150 · Libro segreto"},{"@type":"ListItem","position":371,"name":"371 - VS152 · Polpo traballante"},{"@type":"ListItem","position":372,"name":"372 - VS426 · Fata farfalla: ali blu e rosse"},{"@type":"ListItem","position":373,"name":"373 - VS426A · Fata farfalla: ali rosse"},{"@type":"ListItem","position":374,"name":"374 - VS438 · Fata farfalla: ali gialle"},{"@type":"ListItem","position":375,"name":"375 - VS438A · Fata farfalla: ali viola"}]}}]}</script>
+</head>
+<body>
+
+<!-- Header del sito: viene riempito con header.html da ../../../../script.js -->
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <!-- Link per tornare alla pagina Kinder Sorpresa -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Kinder Sorpresa</a>
+
+  <!-- ============ TITOLO E STRUMENTI ============ -->
+  <header>
+    <!-- titolo scritto (questa serie non ha un logo): va anche nel PDF -->
+    <!-- ! MODIFICA: titolo della pagina -->
+    <h1 id="pageTitle"><span class="titolo-testo">APPLAYDU 2024</span></h1>
+    <div class="bar">
+      <!-- "5 possedute su 9": il testo lo scrive app.js -->
+      <div class="conta-stampa">  <!-- conteggio e, sotto, il pulsante Stampa -->
+        <p class="sub" id="count"></p>
+        <div class="riga-bottoni">  <!-- Stampa e Condividi, fianco a fianco -->
+          <button class="btn" id="btnPrint" type="button">Stampa</button>
+          <button class="btn" id="btnShare" type="button">Condividi</button>
+        </div>
+      </div>
+      <div class="tools">
+        <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
+        <div class="st-cerca" id="stCerca">
+          <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <!-- Filtro: tutte / possedute / mancanti -->
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutte</option>
+          <option value="owned" id="optOwned">In possesso</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <!-- Ordine: dalla n° 1 o al contrario -->
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dalla prima</option>
+          <option value="desc">Dall'ultima</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ GRIGLIA DELLE SORPRESINE ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni riga
+       dell'ELENCO (in fondo a questa pagina). -->
+  <ul class="grid" id="grid"></ul>
+
+  <!-- Messaggi quando non c'è nulla da mostrare -->
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p>Non ci sono ancora elementi in questa collezione.</p>
+  </section>
+
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       La copia di sicurezza (Scarica / Carica un file) è nel menu Accedi / profilo e vale per tutto il sito. -->
+  <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
+    <p class="hint">Premi su una sorpresina per segnare che ce l'hai. Con info vedi i dettagli, le info e gli hashtag.</p>
+  </footer>
+</div>
+
+<!-- Footer del sito: viene riempito con footer.html da ../../../../script.js -->
+<div id="footer-placeholder"></div>
+
+
+<!-- ============ FINESTRA "STAMPA" ============ -->
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Crea un'immagine da condividere.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le sorpresine, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="scambi">
+      <span><strong>Cerco e scambio</strong> (<span id="cnt-scambi"></span>)<small>Da condividere: in alto quelli che cerco (mi mancano), sotto quelli che scambio (i doppioni).</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong>Checklist vuota</strong><small>Tutte le sorpresine con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn primary" id="printImg">Crea immagine</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ FINESTRA "DETTAGLI" (si apre con "info") ============ -->
+<dialog id="dlg">
+  <form id="editForm">
+    <!-- foto grande -->
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
+    <div class="dlg-body">
+      <!-- Anno e Numero (fissi, non si modificano) -->
+      <div class="trio">
+        <div class="field"><span id="lblCodice">Anno</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
+      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+/* =====================================================================
+   IMPOSTAZIONI DELLA COLLEZIONE
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra serie basta
+   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
+   ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
+const CONFIG = {
+  id: "kinder-sorpresa-applaydu-2024",            // nome usato nei PDF
+  dbName: "catalogo-kinder-kinder-sorpresa-applaydu-2024", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "Applaydu 2024",           // titolo della scheda del browser e del PDF
+  nome: "sorpresina",              // come si chiama un elemento
+  possedute: "possedute",          // "5 possedute su 18"
+  colonne: 8,                     // quanti per fila sugli schermi larghi (sui telefoni diminuiscono da soli)
+  proporzione: 1,                  // altezza ÷ larghezza dell'oggetto più largo (calcolata dalle foto)
+  suggerimenti: [],                // hashtag proposti nei dettagli (es. ["Natale"]); vuoto = nessuno
+  mostraNomi: true                 // true = nome scritto sotto ogni foto; false = solo nei dettagli
+};
+
+/* =====================================================================
+   ELENCO DELLE SORPRESINE  ★ QUI SI AGGIUNGONO O CAMBIANO ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è una sorpresina, nello stesso ordine della pagina.
+
+   PIÙ FACILE: area amministratore → "Modifica una serie" (aggiunge le
+   righe, prepara le foto e aggiorna "Mi mancano", "Doppioni" e "Cerca").
+
+   A MANO: copia una riga, incollala dove vuoi che compaia, cambia i valori,
+   poi nell'area amministratore premi "Aggiorna catalogo".
+
+   I CAMPI
+     id        codice unico (es. l'ultimo + 1): serve al browser per ricordare
+               se ce l'hai. Non usarlo due volte e non cambiarlo dopo la pubblicazione.
+     numero    il numero mostrato sotto la foto
+     codice    codice o anno
+     nome      nome
+     foto      "immagini/NN.webp?v=DATA" (sfondo trasparente, WebP: le prepara
+               l'area amministratore). Se sostituisci una foto con una con lo
+               STESSO nome, metti la data di oggi in "?v=" (es. ?v=2026-10-03):
+               così i browser scaricano quella nuova e non quella vecchia salvata.
+     info      facoltativo: testo fisso nei dettagli
+     hashtag   facoltativo, es. ["Natale"]
+     (altri campi, se ci sono: come nelle righe già scritte)
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…".
+   ===================================================================== */
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  { id: "applaydu-2024-01", numero: "01 - VU050D", codice: "2024", nome: "Trottola Corona: arancione", foto: "immagini/01.webp?v=2026-10-03" },
+  { id: "applaydu-2024-02", numero: "02 - VU050E", codice: "2024", nome: "Trottola Corona: azzurra", foto: "immagini/02.webp?v=2026-10-03" },
+  { id: "applaydu-2024-210", numero: "03 - VU490E", codice: "2024", nome: "Scatola dei ricordi blu", foto: "immagini/210.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-211", numero: "04 - VU490G", codice: "2024", nome: "Scatola dei ricordi arancione", foto: "immagini/211.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-176", numero: "05 - VU492K", codice: "2024", nome: "Ragazze Pastello: Elly", foto: "immagini/176.webp?v=2026-10-03e" },
+  { id: "applaydu-2024-177", numero: "06 - VU492L", codice: "2024", nome: "Ragazze Pastello: Bella", foto: "immagini/177.webp?v=2026-10-03e" },
+  { id: "applaydu-2024-03", numero: "07 - VD057B", codice: "2024", nome: "Fotocamera Rivelatrice: verde scuro", foto: "immagini/03.webp?v=2026-10-03" },
+  { id: "applaydu-2024-271", numero: "08 - VD057C", codice: "2024", nome: "Fotocamera Rivelatrice: arancione", foto: "immagini/271.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-04", numero: "09 - VD058B", codice: "2024", nome: "Fotocamera Rivelatrice: bianca", foto: "immagini/04.webp?v=2026-10-03" },
+  { id: "applaydu-2024-287", numero: "10 - VD144C", codice: "2024", nome: "Anello Spirale di Fiori 1", foto: "immagini/287.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-288", numero: "11 - VD145C", codice: "2024", nome: "Anello Spirale di Fiori 2", foto: "immagini/288.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-05", numero: "12 - VD203", codice: "2024", nome: "Robot Camminatori: rosso", foto: "immagini/05.webp?v=2026-10-03" },
+  { id: "applaydu-2024-06", numero: "13 - VD203A", codice: "2024", nome: "Robot Camminatori: dorato", foto: "immagini/06.webp?v=2026-10-03" },
+  { id: "applaydu-2024-239", numero: "14 - VD215A", codice: "2024", nome: "Farfalla viola chiaro e scuro", foto: "immagini/239.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-240", numero: "15 - VD216B", codice: "2024", nome: "Farfalla giallo-arancio", foto: "immagini/240.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-241", numero: "16 - VD431D", codice: "2024", nome: "Scatola dei ricordi viola", foto: "immagini/241.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-242", numero: "17 - VD431F", codice: "2024", nome: "Scatola dei ricordi gialla", foto: "immagini/242.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-284", numero: "18 - VT013A", codice: "2024", nome: "Ornitorinco blu", foto: "immagini/284.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-07", numero: "19 - VT021", codice: "2024", nome: "Slimy: polpo", foto: "immagini/07.webp?v=2026-10-03" },
+  { id: "applaydu-2024-285", numero: "20 - VT021A", codice: "2024", nome: "Polpo sulla cartolina", foto: "immagini/285.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-08", numero: "21 - VT022", codice: "2024", nome: "Slimy: lumaca", foto: "immagini/08.webp?v=2026-10-03" },
+  { id: "applaydu-2024-115", numero: "22 - VT023", codice: "2024", nome: "Da Fata a Fiore: Lily", foto: "immagini/115.webp?v=2026-10-03d", fotoInfo: ["cartine/VT023.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-367", numero: "23 - VT023A", codice: "2024", nome: "Da Fata a Fiore: Lily, fiore verde", foto: "immagini/367.webp?v=2026-10-04" },
+  { id: "applaydu-2024-368", numero: "24 - VT023B", codice: "2024", nome: "Da Fata a Fiore: Lily, fiore verde chiaro", foto: "immagini/368.webp?v=2026-10-04" },
+  { id: "applaydu-2024-116", numero: "25 - VT024", codice: "2024", nome: "Da Fata a Fiore: Nora", foto: "immagini/116.webp?v=2026-10-03d", fotoInfo: ["cartine/VT024.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-369", numero: "26 - VT024A", codice: "2024", nome: "Da Fata a Fiore: Nora, ali gialle", foto: "immagini/369.webp?v=2026-10-04" },
+  { id: "applaydu-2024-370", numero: "27 - VT024B", codice: "2024", nome: "Da Fata a Fiore: Nora, ali blu", foto: "immagini/370.webp?v=2026-10-04" },
+  { id: "applaydu-2024-117", numero: "28 - VT025", codice: "2024", nome: "Fata Fiore: Nora", foto: "immagini/117.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-293", numero: "29 - VT025A", codice: "2024", nome: "Fata Fiore: Regina", foto: "immagini/293.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-294", numero: "30 - VT025B", codice: "2024", nome: "Fata Fiore: Jasmin", foto: "immagini/294.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-118", numero: "31 - VT026", codice: "2024", nome: "Fata Fiore: Lily", foto: "immagini/118.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-295", numero: "32 - VT026A", codice: "2024", nome: "Fata Fiore: Stella", foto: "immagini/295.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-296", numero: "33 - VT026B", codice: "2024", nome: "Fata Fiore: Ruby", foto: "immagini/296.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-119", numero: "34 - VT030", codice: "2024", nome: "Da Fata a Principessa: Nora", foto: "immagini/119.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-120", numero: "35 - VT030A", codice: "2024", nome: "Da Fata a Principessa: Lily", foto: "immagini/120.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-121", numero: "36 - VT034", codice: "2024", nome: "Sorelle alla Moda: Olivia", foto: "immagini/121.webp?v=2026-10-03d", fotoInfo: ["cartine/VT034.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-122", numero: "37 - VT034A", codice: "2024", nome: "Sorelle alla Moda: Sara", foto: "immagini/122.webp?v=2026-10-03d", fotoInfo: ["cartine/VT034A.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-123", numero: "38 - VT035", codice: "2024", nome: "Braccialetto Animali di Cristallo: Rescal", foto: "immagini/123.webp?v=2026-10-03d", fotoInfo: ["cartine/VT035.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-297", numero: "39 - VT035A", codice: "2024", nome: "Braccialetto Animali di Cristallo: Rescal verde", foto: "immagini/297.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-298", numero: "40 - VT035B", codice: "2024", nome: "Braccialetto Animali di Cristallo: Rescal rosso", foto: "immagini/298.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-124", numero: "41 - VT036", codice: "2024", nome: "Braccialetto Animali di Cristallo: Hopper", foto: "immagini/124.webp?v=2026-10-03d", fotoInfo: ["cartine/VT036.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-299", numero: "42 - VT036A", codice: "2024", nome: "Braccialetto Animali di Cristallo: Hopper blu", foto: "immagini/299.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-300", numero: "43 - VT036B", codice: "2024", nome: "Braccialetto Animali di Cristallo: Hopper rosa", foto: "immagini/300.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-125", numero: "44 - VT037", codice: "2024", nome: "Fate Diamante: Dora", foto: "immagini/125.webp?v=2026-10-03d", fotoInfo: ["cartine/VT037.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-126", numero: "45 - VT038", codice: "2024", nome: "Fate Diamante: Tea", foto: "immagini/126.webp?v=2026-10-03d", fotoInfo: ["cartine/VT038.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-301", numero: "46 - VT038A", codice: "2024", nome: "Fate Diamante: Gipsy", foto: "immagini/301.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-302", numero: "47 - VT038B", codice: "2024", nome: "Fate Diamante: Rose", foto: "immagini/302.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-127", numero: "48 - VT039", codice: "2024", nome: "Charm delle Migliori Amiche: Friendship", foto: "immagini/127.webp?v=2026-10-03d", fotoInfo: ["cartine/VT039.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-128", numero: "49 - VT039A", codice: "2024", nome: "Charm delle Migliori Amiche: Harmony", foto: "immagini/128.webp?v=2026-10-03d", fotoInfo: ["cartine/VT039A.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-129", numero: "50 - VT040", codice: "2024", nome: "Apri e Scopri: fiore (versione 2023)", foto: "immagini/129.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-09", numero: "51 - VT040A", codice: "2024", nome: "Apri e Scopri: fiore", foto: "immagini/09.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-303", numero: "52 - VT040B", codice: "2024", nome: "Apri e Scopri: fiore (variante)", foto: "immagini/303.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-130", numero: "53 - VT041", codice: "2024", nome: "Apri e Scopri: farfalla (versione 2023)", foto: "immagini/130.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-10", numero: "54 - VT041A", codice: "2024", nome: "Apri e Scopri: farfalla", foto: "immagini/10.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-304", numero: "55 - VT041C", codice: "2024", nome: "Apri e Scopri: farfalla (variante)", foto: "immagini/304.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-131", numero: "56 - VT044", codice: "2024", nome: "Veicolo con Fotocamera: Nonna Bebe", foto: "immagini/131.webp?v=2026-10-03d", fotoInfo: ["cartine/VT044.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-132", numero: "57 - VT045", codice: "2024", nome: "Prendimi: Papa T-Rex", foto: "immagini/132.webp?v=2026-10-03d", fotoInfo: ["cartine/VT045.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-133", numero: "58 - VT046", codice: "2024", nome: "Spremi e Spara: Scout", foto: "immagini/133.webp?v=2026-10-03d", fotoInfo: ["cartine/VT046.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-134", numero: "59 - VT048", codice: "2024", nome: "Casetta delle Fate: casa di Nora", foto: "immagini/134.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-135", numero: "60 - VT048A", codice: "2024", nome: "Casetta delle Fate: casa di Lily", foto: "immagini/135.webp?v=2026-10-03d", fotoInfo: ["cartine/VT048A.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-11", numero: "61 - VT048B", codice: "2024", nome: "Casetta delle Fate: tetto viola", foto: "immagini/11.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-12", numero: "62 - VT048C", codice: "2024", nome: "Casetta delle Fate: tetto arancione", foto: "immagini/12.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-305", numero: "63 - VT048D", codice: "2024", nome: "Casetta delle Fate: casa di Monika", foto: "immagini/305.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-306", numero: "64 - VT048E", codice: "2024", nome: "Casetta delle Fate: casa di Agnes", foto: "immagini/306.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-136", numero: "65 - VT049", codice: "2024", nome: "Gioielli di Carta: libellula", foto: "immagini/136.webp?v=2026-10-03d", fotoInfo: ["cartine/VT049.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-307", numero: "66 - VT049A", codice: "2024", nome: "Gioielli di Carta: libellula viola", foto: "immagini/307.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-137", numero: "67 - VT052", codice: "2024", nome: "Dino Inclinabile: Papa T-Rex", foto: "immagini/137.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-138", numero: "68 - VT062", codice: "2024", nome: "Fotocamera Dino: Tracker Pro", foto: "immagini/138.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-139", numero: "69 - VT063", codice: "2024", nome: "Fotocamera Dino: Troy Pro", foto: "immagini/139.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-140", numero: "70 - VT064", codice: "2024", nome: "Scatola Segreta delle Fate: farfalla", foto: "immagini/140.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-371", numero: "71 - VT064A", codice: "2024", nome: "Scatola Segreta delle Fate: farfalla rosa", foto: "immagini/371.webp?v=2026-10-04" },
+  { id: "applaydu-2024-141", numero: "72 - VT065", codice: "2024", nome: "Scatola Segreta delle Fate: stella", foto: "immagini/141.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-359", numero: "73 - VT065A", codice: "2024", nome: "Scatola Segreta delle Fate: stella viola", foto: "immagini/359.webp?v=2026-10-04" },
+  { id: "applaydu-2024-142", numero: "74 - VT076", codice: "2024", nome: "Fata Adesiva: Fay", foto: "immagini/142.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-143", numero: "75 - VT076A", codice: "2024", nome: "Fata Adesiva: Joy", foto: "immagini/143.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-308", numero: "76 - VT076B", codice: "2024", nome: "Fata Adesiva: Mochi", foto: "immagini/308.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-309", numero: "77 - VT076C", codice: "2024", nome: "Fata Adesiva: Gaia", foto: "immagini/309.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-13", numero: "78 - VT080", codice: "2024", nome: "Amici da Sfamare 2: ippopotamo", foto: "immagini/13.webp?v=2026-10-03" },
+  { id: "applaydu-2024-14", numero: "79 - VT081", codice: "2024", nome: "Amici da Sfamare 2: tartaruga marina", foto: "immagini/14.webp?v=2026-10-03" },
+  { id: "applaydu-2024-144", numero: "80 - VT084", codice: "2024", nome: "Mini Dino 2: Trexy", foto: "immagini/144.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-145", numero: "81 - VT085", codice: "2024", nome: "Mini Dino 2: Chomp", foto: "immagini/145.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-146", numero: "82 - VT086", codice: "2024", nome: "Dino Adesivo: Dimitri", foto: "immagini/146.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-147", numero: "83 - VT087", codice: "2024", nome: "Dino Adesivo: Spino", foto: "immagini/147.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-148", numero: "84 - VT088", codice: "2024", nome: "Paleontologo: Scoperta Dino", foto: "immagini/148.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-171", numero: "85 - VT090", codice: "2024", nome: "Amici Mistici: cervo", foto: "immagini/171.webp?v=2026-10-03e" },
+  { id: "applaydu-2024-149", numero: "86 - VT094", codice: "2024", nome: "Animali con Corona 3: castoro", foto: "immagini/149.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-372", numero: "87 - VT094A", codice: "2024", nome: "Animali con Corona 3: castoro viola", foto: "immagini/372.webp?v=2026-10-04" },
+  { id: "applaydu-2024-373", numero: "88 - VT094B", codice: "2024", nome: "Animali con Corona 3: castoro arancione", foto: "immagini/373.webp?v=2026-10-04" },
+  { id: "applaydu-2024-150", numero: "89 - VT095", codice: "2024", nome: "Animali con Corona 3: coniglio", foto: "immagini/150.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-360", numero: "90 - VT095A", codice: "2024", nome: "Animali con Corona 3: coniglio verde", foto: "immagini/360.webp?v=2026-10-04" },
+  { id: "applaydu-2024-361", numero: "91 - VT095B", codice: "2024", nome: "Animali con Corona 3: coniglio rosso", foto: "immagini/361.webp?v=2026-10-04" },
+  { id: "applaydu-2024-151", numero: "92 - VT096", codice: "2024", nome: "Animali Magici delle Fate: Hoggy", foto: "immagini/151.webp?v=2026-10-03d", fotoInfo: ["cartine/VT096.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-362", numero: "93 - VT096A", codice: "2024", nome: "Animali Magici delle Fate: Hoggy rosa", foto: "immagini/362.webp?v=2026-10-04" },
+  { id: "applaydu-2024-363", numero: "94 - VT096B", codice: "2024", nome: "Animali Magici delle Fate: Hoggy viola", foto: "immagini/363.webp?v=2026-10-04" },
+  { id: "applaydu-2024-152", numero: "95 - VT097", codice: "2024", nome: "Animali Magici delle Fate: Rascal", foto: "immagini/152.webp?v=2026-10-03d", fotoInfo: ["cartine/VT097.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-364", numero: "96 - VT097A", codice: "2024", nome: "Animali Magici delle Fate: Rascal azzurro", foto: "immagini/364.webp?v=2026-10-04" },
+  { id: "applaydu-2024-365", numero: "97 - VT097B", codice: "2024", nome: "Animali Magici delle Fate: Rascal rosa", foto: "immagini/365.webp?v=2026-10-04" },
+  { id: "applaydu-2024-366", numero: "98 - VT102A", codice: "2024", nome: "Immagini Nascoste: topo", foto: "immagini/366.webp?v=2026-10-04" },
+  { id: "applaydu-2024-286", numero: "99 - VT114", codice: "2024", nome: "Speedy Bob", foto: "immagini/286.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-15", numero: "100 - VT114C", codice: "2024", nome: "Barca Sparatrice: barca n. 5", foto: "immagini/15.webp?v=2026-10-03" },
+  { id: "applaydu-2024-16", numero: "101 - VT114D", codice: "2024", nome: "Barca Sparatrice: barca n. 11", foto: "immagini/16.webp?v=2026-10-03" },
+  { id: "applaydu-2024-153", numero: "102 - VT151", codice: "2024", nome: "Uomini Volanti: Luis", foto: "immagini/153.webp?v=2026-10-03d", fotoInfo: ["cartine/VT151.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-154", numero: "103 - VT151A", codice: "2024", nome: "Uomini Volanti: Troy", foto: "immagini/154.webp?v=2026-10-03d", fotoInfo: ["cartine/VT151A.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-17", numero: "104 - VT151B", codice: "2024", nome: "Uomini Volanti: capelli biondi", foto: "immagini/17.webp?v=2026-10-03" },
+  { id: "applaydu-2024-18", numero: "105 - VT151C", codice: "2024", nome: "Uomini Volanti: capelli neri", foto: "immagini/18.webp?v=2026-10-03" },
+  { id: "applaydu-2024-155", numero: "106 - VT162", codice: "2024", nome: "Cacciatori di Dino: Duke", foto: "immagini/155.webp?v=2026-10-03d", fotoInfo: ["cartine/VT162.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-156", numero: "107 - VT163", codice: "2024", nome: "Cacciatori di Dino: Tracker", foto: "immagini/156.webp?v=2026-10-03d", fotoInfo: ["cartine/VT163.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-157", numero: "108 - VT180", codice: "2024", nome: "Veicolo con Fotocamera: Nonna Aziz", foto: "immagini/157.webp?v=2026-10-03d", fotoInfo: ["cartine/VT180.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-158", numero: "109 - VT181", codice: "2024", nome: "Spremi e Spara: Ptero", foto: "immagini/158.webp?v=2026-10-03d", fotoInfo: ["cartine/VT181.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-159", numero: "110 - VT202", codice: "2024", nome: "Prendimi: Chomp", foto: "immagini/159.webp?v=2026-10-03d", fotoInfo: ["cartine/VT202.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-160", numero: "111 - VT204", codice: "2024", nome: "Dino Inclinabile: Raptor", foto: "immagini/160.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-161", numero: "112 - VT209", codice: "2024", nome: "Gioielli di Carta: uccellino", foto: "immagini/161.webp?v=2026-10-03d", fotoInfo: ["cartine/VT209.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-310", numero: "113 - VT209A", codice: "2024", nome: "Gioielli di Carta: uccellino rosa", foto: "immagini/310.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-162", numero: "114 - VT217", codice: "2024", nome: "Veicoli Dino in Missione: Trucko Saurus", foto: "immagini/162.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-163", numero: "115 - VT220", codice: "2024", nome: "Veicoli Dino in Missione: veicolo di Chomp", foto: "immagini/163.webp?v=2026-10-03d" },
+  { id: "applaydu-2024-19", numero: "116 - VQ005", codice: "2024", nome: "Animali Acrobati: rana", foto: "immagini/19.webp?v=2026-10-03" },
+  { id: "applaydu-2024-20", numero: "117 - VQ006", codice: "2024", nome: "Animali Acrobati: coniglio", foto: "immagini/20.webp?v=2026-10-03" },
+  { id: "applaydu-2024-21", numero: "118 - VQ007", codice: "2024", nome: "Ascolta il Tuo Cuore: koala", foto: "immagini/21.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-22", numero: "119 - VQ008", codice: "2024", nome: "Ascolta il Tuo Cuore: scimmia", foto: "immagini/22.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-23", numero: "120 - VQ009", codice: "2024", nome: "Scatole degli Animali: gatto", foto: "immagini/23.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-24", numero: "121 - VQ010", codice: "2024", nome: "Scatole degli Animali: coniglio", foto: "immagini/24.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-25", numero: "122 - VQ012", codice: "2024", nome: "Auto Trasformabile: verde", foto: "immagini/25.webp?v=2026-10-03" },
+  { id: "applaydu-2024-26", numero: "123 - VQ012A", codice: "2024", nome: "Auto Trasformabile: rossa", foto: "immagini/26.webp?v=2026-10-03" },
+  { id: "applaydu-2024-27", numero: "124 - VQ013", codice: "2024", nome: "Draghi della Terra: drago di pietra", foto: "immagini/27.webp?v=2026-10-03" },
+  { id: "applaydu-2024-28", numero: "125 - VQ014", codice: "2024", nome: "Draghi della Terra: drago d'acqua", foto: "immagini/28.webp?v=2026-10-03" },
+  { id: "applaydu-2024-29", numero: "126 - VQ018", codice: "2024", nome: "Pronto Soccorso: pantera", foto: "immagini/29.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-30", numero: "127 - VQ019", codice: "2024", nome: "Pronto Soccorso: tartaruga marina", foto: "immagini/30.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-31", numero: "128 - VQ020", codice: "2024", nome: "Controllo Veterinario: Marta", foto: "immagini/31.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-32", numero: "129 - VQ021", codice: "2024", nome: "Controllo Veterinario: Rita", foto: "immagini/32.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-33", numero: "130 - VQ022", codice: "2024", nome: "Amiche: Sally", foto: "immagini/33.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-34", numero: "131 - VQ023", codice: "2024", nome: "Amiche: Amanda", foto: "immagini/34.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-35", numero: "132 - VQ024", codice: "2024", nome: "Pasti degli Animali: cigni", foto: "immagini/35.webp?v=2026-10-03" },
+  { id: "applaydu-2024-36", numero: "133 - VQ025", codice: "2024", nome: "Pasti degli Animali: tartarughe", foto: "immagini/36.webp?v=2026-10-03" },
+  { id: "applaydu-2024-37", numero: "134 - VQ035", codice: "2024", nome: "Timbro Personalizzato: orso", foto: "immagini/37.webp?v=2026-10-03" },
+  { id: "applaydu-2024-38", numero: "135 - VQ036", codice: "2024", nome: "Timbro Personalizzato: scimmia", foto: "immagini/38.webp?v=2026-10-03" },
+  { id: "applaydu-2024-39", numero: "136 - VQ041", codice: "2024", nome: "Amici di Scuola: Tom la rana", foto: "immagini/39.webp?v=2026-10-03" },
+  { id: "applaydu-2024-40", numero: "137 - VQ042", codice: "2024", nome: "Amici di Scuola: Sam il camaleonte", foto: "immagini/40.webp?v=2026-10-03" },
+  { id: "applaydu-2024-41", numero: "138 - VQ043", codice: "2024", nome: "Animali Pastello: lumaca", foto: "immagini/41.webp?v=2026-10-03" },
+  { id: "applaydu-2024-42", numero: "139 - VQ044", codice: "2024", nome: "Animali Pastello: pinguino", foto: "immagini/42.webp?v=2026-10-03" },
+  { id: "applaydu-2024-374", numero: "140 - VQ047", codice: "2024", nome: "Timbri Animali: coniglio azzurro", foto: "immagini/374.webp?v=2026-10-04" },
+  { id: "applaydu-2024-375", numero: "141 - VQ048", codice: "2024", nome: "Timbri Animali: uccello rosa", foto: "immagini/375.webp?v=2026-10-04" },
+  { id: "applaydu-2024-43", numero: "142 - VQ049", codice: "2024", nome: "Artisti dell'Inchiostro: scimmia", foto: "immagini/43.webp?v=2026-10-03" },
+  { id: "applaydu-2024-44", numero: "143 - VQ050", codice: "2024", nome: "Artisti dell'Inchiostro: pappagallo", foto: "immagini/44.webp?v=2026-10-03" },
+  { id: "applaydu-2024-45", numero: "144 - VQ051", codice: "2024", nome: "Mezzi da Lavoro: frantumatrice", foto: "immagini/45.webp?v=2026-10-03" },
+  { id: "applaydu-2024-46", numero: "145 - VQ052", codice: "2024", nome: "Mezzi da Lavoro: palla demolitrice", foto: "immagini/46.webp?v=2026-10-03" },
+  { id: "applaydu-2024-47", numero: "146 - VQ053", codice: "2024", nome: "Auto e Aereo: arancione", foto: "immagini/47.webp?v=2026-10-03" },
+  { id: "applaydu-2024-48", numero: "147 - VQ054", codice: "2024", nome: "Auto e Aereo: arancione e blu", foto: "immagini/48.webp?v=2026-10-03" },
+  { id: "applaydu-2024-49", numero: "148 - VQ055", codice: "2024", nome: "Maestri di Formula 1: gialla", foto: "immagini/49.webp?v=2026-10-03" },
+  { id: "applaydu-2024-50", numero: "149 - VQ056", codice: "2024", nome: "Maestri di Formula 1: blu", foto: "immagini/50.webp?v=2026-10-03" },
+  { id: "applaydu-2024-51", numero: "150 - VQ057", codice: "2024", nome: "Hot Rod: viola e verde", foto: "immagini/51.webp?v=2026-10-03" },
+  { id: "applaydu-2024-52", numero: "151 - VQ058", codice: "2024", nome: "Hot Rod: verde e gialla", foto: "immagini/52.webp?v=2026-10-03" },
+  { id: "applaydu-2024-53", numero: "152 - VQ059", codice: "2024", nome: "Carrello Elevatore: giallo", foto: "immagini/53.webp?v=2026-10-03" },
+  { id: "applaydu-2024-54", numero: "153 - VQ059A", codice: "2024", nome: "Carrello Elevatore: verde", foto: "immagini/54.webp?v=2026-10-03" },
+  { id: "applaydu-2024-55", numero: "154 - VQ063", codice: "2024", nome: "Monster Truck Show: rosso e giallo", foto: "immagini/55.webp?v=2026-10-03" },
+  { id: "applaydu-2024-56", numero: "155 - VQ064", codice: "2024", nome: "Monster Truck Show: grigio e rosso", foto: "immagini/56.webp?v=2026-10-03" },
+  { id: "applaydu-2024-57", numero: "156 - VQ069", codice: "2024", nome: "Moto Impennata: rosso e arancione", foto: "immagini/57.webp?v=2026-10-03" },
+  { id: "applaydu-2024-272", numero: "157 - VQ069A", codice: "2024", nome: "Mangiamiglia verde", foto: "immagini/272.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-58", numero: "158 - VQ070", codice: "2024", nome: "Moto Impennata: blu e rossa", foto: "immagini/58.webp?v=2026-10-03" },
+  { id: "applaydu-2024-273", numero: "159 - VQ070A", codice: "2024", nome: "Roadmaster rossa", foto: "immagini/273.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-274", numero: "160 - VQ071", codice: "2024", nome: "Pinguino", foto: "immagini/274.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-275", numero: "161 - VQ072", codice: "2024", nome: "Orso polare", foto: "immagini/275.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-59", numero: "162 - VQ076", codice: "2024", nome: "Tesori dei Draghi: con cristallo", foto: "immagini/59.webp?v=2026-10-03" },
+  { id: "applaydu-2024-60", numero: "163 - VQ076A", codice: "2024", nome: "Tesori dei Draghi: con oro", foto: "immagini/60.webp?v=2026-10-03" },
+  { id: "applaydu-2024-61", numero: "164 - VQ078", codice: "2024", nome: "Orecchini Animali: giallo", foto: "immagini/61.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-62", numero: "165 - VQ078B", codice: "2024", nome: "Orecchini Animali: rosa", foto: "immagini/62.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-63", numero: "166 - VQ079", codice: "2024", nome: "Amici da Sfamare 3: rinoceronte", foto: "immagini/63.webp?v=2026-10-03" },
+  { id: "applaydu-2024-64", numero: "167 - VQ081", codice: "2024", nome: "Amici da Sfamare 3: zebra", foto: "immagini/64.webp?v=2026-10-03" },
+  { id: "applaydu-2024-65", numero: "168 - VQ082", codice: "2024", nome: "Amici da Sfamare 4: orso polare", foto: "immagini/65.webp?v=2026-10-03" },
+  { id: "applaydu-2024-66", numero: "169 - VQ083", codice: "2024", nome: "Amici da Sfamare 4: tartaruga", foto: "immagini/66.webp?v=2026-10-03" },
+  { id: "applaydu-2024-67", numero: "170 - VQ084", codice: "2024", nome: "Amici da Sfamare 1: coniglietta Kida", foto: "immagini/67.webp?v=2026-10-03" },
+  { id: "applaydu-2024-68", numero: "171 - VQ085", codice: "2024", nome: "Amici da Sfamare 1: gatta Marie", foto: "immagini/68.webp?v=2026-10-03" },
+  { id: "applaydu-2024-69", numero: "172 - VQ088", codice: "2024", nome: "Mini Draghi: Enrico", foto: "immagini/69.webp?v=2026-10-03" },
+  { id: "applaydu-2024-70", numero: "173 - VQ089", codice: "2024", nome: "Mini Draghi: Giordano", foto: "immagini/70.webp?v=2026-10-03" },
+  { id: "applaydu-2024-71", numero: "174 - VQ090", codice: "2024", nome: "Drago Sputafuoco: rosso", foto: "immagini/71.webp?v=2026-10-03" },
+  { id: "applaydu-2024-72", numero: "175 - VQ091", codice: "2024", nome: "Drago Sputafuoco: oro", foto: "immagini/72.webp?v=2026-10-03" },
+  { id: "applaydu-2024-73", numero: "176 - VQ092", codice: "2024", nome: "Braccialetti Colorati: gatti", foto: "immagini/73.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-74", numero: "177 - VQ093", codice: "2024", nome: "Braccialetti Colorati: cuori", foto: "immagini/74.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-75", numero: "178 - VQ094", codice: "2024", nome: "Drago da Dito: ali rosse", foto: "immagini/75.webp?v=2026-10-03" },
+  { id: "applaydu-2024-76", numero: "179 - VQ095", codice: "2024", nome: "Drago da Dito: ali dorate", foto: "immagini/76.webp?v=2026-10-03" },
+  { id: "applaydu-2024-77", numero: "180 - VQ099", codice: "2024", nome: "Drago Cinese: rosso", foto: "immagini/77.webp?v=2026-10-03" },
+  { id: "applaydu-2024-78", numero: "181 - VQ100", codice: "2024", nome: "Drago Cinese: oro", foto: "immagini/78.webp?v=2026-10-03" },
+  { id: "applaydu-2024-79", numero: "182 - VQ103", codice: "2024", nome: "Auto con Roulotte: roulotte turchese", foto: "immagini/79.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-80", numero: "183 - VQ103A", codice: "2024", nome: "Auto con Roulotte: roulotte rosa", foto: "immagini/80.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-81", numero: "184 - VQ106", codice: "2024", nome: "Drago: ali rosse", foto: "immagini/81.webp?v=2026-10-03" },
+  { id: "applaydu-2024-82", numero: "185 - VQ107", codice: "2024", nome: "Drago: ali dorate", foto: "immagini/82.webp?v=2026-10-03" },
+  { id: "applaydu-2024-83", numero: "186 - VQ108", codice: "2024", nome: "Messaggio Segreto del Veterinario: stella marina", foto: "immagini/83.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-84", numero: "187 - VQ108A", codice: "2024", nome: "Messaggio Segreto del Veterinario: marina", foto: "immagini/84.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-85", numero: "188 - VQ111", codice: "2024", nome: "Drago Cinese Mobile: oro", foto: "immagini/85.webp?v=2026-10-03" },
+  { id: "applaydu-2024-86", numero: "189 - VQ111B", codice: "2024", nome: "Drago Cinese Mobile: rosso", foto: "immagini/86.webp?v=2026-10-03" },
+  { id: "applaydu-2024-87", numero: "190 - VQ113", codice: "2024", nome: "Animali a Tavola: orso", foto: "immagini/87.webp?v=2026-10-03" },
+  { id: "applaydu-2024-88", numero: "191 - VQ114", codice: "2024", nome: "Animali a Tavola: pinguino", foto: "immagini/88.webp?v=2026-10-03" },
+  { id: "applaydu-2024-89", numero: "192 - VQ115", codice: "2024", nome: "Anelli Gemelli: rosa e viola", foto: "immagini/89.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-90", numero: "193 - VQ116", codice: "2024", nome: "Anelli Gemelli: verde e verde chiaro", foto: "immagini/90.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-164", numero: "194 - VQ144", codice: "2024", nome: "Apri e Scopri: farfalla (nuova versione)", foto: "immagini/164.webp?v=2026-10-03e", fotoInfo: ["cartine/VQ144.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-166", numero: "195 - VQ157", codice: "2024", nome: "Animali con Corona 3: coniglio (nuova versione)", foto: "immagini/166.webp?v=2026-10-03e", fotoInfo: ["cartine/VQ157.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-168", numero: "196 - VQ170", codice: "2024", nome: "Da Fata a Principessa 2024: Lily", foto: "immagini/168.webp?v=2026-10-03e", fotoInfo: ["cartine/VQ170.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-169", numero: "197 - VQ170A", codice: "2024", nome: "Da Fata a Principessa 2024: Nora", foto: "immagini/169.webp?v=2026-10-03e", fotoInfo: ["cartine/VQ170A.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-91", numero: "198 - VQ178", codice: "2024", nome: "Azione in Mare: balena", foto: "immagini/91.webp?v=2026-10-03" },
+  { id: "applaydu-2024-92", numero: "199 - VQ179", codice: "2024", nome: "Azione in Mare: squalo", foto: "immagini/92.webp?v=2026-10-03" },
+  { id: "applaydu-2024-93", numero: "200 - VQ180", codice: "2024", nome: "Trottole Animali: gialla, delfini", foto: "immagini/93.webp?v=2026-10-03" },
+  { id: "applaydu-2024-94", numero: "201 - VQ181", codice: "2024", nome: "Trottole Animali: blu, fenicotteri", foto: "immagini/94.webp?v=2026-10-03" },
+  { id: "applaydu-2024-95", numero: "202 - VQ182", codice: "2024", nome: "Trucco Magico degli Animali: scimmia", foto: "immagini/95.webp?v=2026-10-03" },
+  { id: "applaydu-2024-96", numero: "203 - VQ183", codice: "2024", nome: "Trucco Magico degli Animali: coniglio", foto: "immagini/96.webp?v=2026-10-03" },
+  { id: "applaydu-2024-97", numero: "204 - VQ187", codice: "2024", nome: "Addestratore di Draghi: Iacopo", foto: "immagini/97.webp?v=2026-10-03" },
+  { id: "applaydu-2024-98", numero: "205 - VQ188", codice: "2024", nome: "Addestratore di Draghi: Mark", foto: "immagini/98.webp?v=2026-10-03" },
+  { id: "applaydu-2024-99", numero: "206 - VQ189", codice: "2024", nome: "Febbre: pinguino", foto: "immagini/99.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-100", numero: "207 - VQ190", codice: "2024", nome: "Febbre: elefante", foto: "immagini/100.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-170", numero: "208 - VQ200", codice: "2024", nome: "Amici Mistici: gatto", foto: "immagini/170.webp?v=2026-10-03e" },
+  { id: "applaydu-2024-376", numero: "209 - VQ203", codice: "2024", nome: "Animali Adesivi: polpi giallo e verde", foto: "immagini/376.webp?v=2026-10-04" },
+  { id: "applaydu-2024-377", numero: "210 - VQ204", codice: "2024", nome: "Animali Adesivi: polpi arancione e blu", foto: "immagini/377.webp?v=2026-10-04" },
+  { id: "applaydu-2024-206", numero: "211 - VQ205A", codice: "2024", nome: "Scatola rossa", foto: "immagini/206.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-207", numero: "212 - VQ206A", codice: "2024", nome: "Scatola arancione", foto: "immagini/207.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-172", numero: "213 - VQ208", codice: "2024", nome: "Braccialetto delle Fate: turchese", foto: "immagini/172.webp?v=2026-10-03e" },
+  { id: "applaydu-2024-101", numero: "214 - VQ209", codice: "2024", nome: "Inseguitori su Strada: Kimi", foto: "immagini/101.webp?v=2026-10-03" },
+  { id: "applaydu-2024-276", numero: "215 - VQ209A", codice: "2024", nome: "Lampo blu", foto: "immagini/276.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-102", numero: "216 - VQ210", codice: "2024", nome: "Inseguitori su Strada: Mick", foto: "immagini/102.webp?v=2026-10-03" },
+  { id: "applaydu-2024-277", numero: "217 - VQ210A", codice: "2024", nome: "Stella nera", foto: "immagini/277.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-167", numero: "218 - VQ213", codice: "2024", nome: "Animali con Corona 3: castoro (nuova versione)", foto: "immagini/167.webp?v=2026-10-03e", fotoInfo: ["cartine/VQ213.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-165", numero: "219 - VQ214", codice: "2024", nome: "Apri e Scopri: fiore (nuova versione)", foto: "immagini/165.webp?v=2026-10-03e", fotoInfo: ["cartine/VQ214.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-174", numero: "220 - VQ220", codice: "2024", nome: "Fata Adesiva: Fay (nuova versione)", foto: "immagini/174.webp?v=2026-10-03e", fotoInfo: ["cartine/VQ220.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-175", numero: "221 - VQ220A", codice: "2024", nome: "Fata Adesiva: Joy (nuova versione)", foto: "immagini/175.webp?v=2026-10-03e", fotoInfo: ["cartine/VQ220A.webp?v=2026-10-05"] },
+  { id: "applaydu-2024-173", numero: "222 - VQ231", codice: "2024", nome: "Braccialetto delle Fate: viola", foto: "immagini/173.webp?v=2026-10-03e" },
+  { id: "applaydu-2024-103", numero: "223 - VQ251", codice: "2024", nome: "Braccialetto del Migliore Amico: leone", foto: "immagini/103.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-104", numero: "224 - VQ251B", codice: "2024", nome: "Braccialetto del Migliore Amico: panda", foto: "immagini/104.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-105", numero: "225 - VQ266", codice: "2024", nome: "Coccinella: rossa", foto: "immagini/105.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-106", numero: "226 - VQ266A", codice: "2024", nome: "Coccinella: gialla", foto: "immagini/106.webp?v=2026-10-03b" },
+  { id: "applaydu-2024-107", numero: "227 - VQ294", codice: "2024", nome: "Forzieri dei Draghi: rosso", foto: "immagini/107.webp?v=2026-10-03" },
+  { id: "applaydu-2024-108", numero: "228 - VQ295", codice: "2024", nome: "Forzieri dei Draghi: dorato", foto: "immagini/108.webp?v=2026-10-03" },
+  { id: "applaydu-2024-208", numero: "229 - VQ329G", codice: "2024", nome: "Trottola blu", foto: "immagini/208.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-209", numero: "230 - VQ329H", codice: "2024", nome: "Trottola rossa", foto: "immagini/209.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-109", numero: "231 - VQ343", codice: "2024", nome: "Personaggio Elastico: vestito blu", foto: "immagini/109.webp?v=2026-10-03" },
+  { id: "applaydu-2024-110", numero: "232 - VQ343A", codice: "2024", nome: "Personaggio Elastico: vestito rosso", foto: "immagini/110.webp?v=2026-10-03" },
+  { id: "applaydu-2024-111", numero: "233 - VQ353", codice: "2024", nome: "Trambusto nella Giungla: scimmia gialla", foto: "immagini/111.webp?v=2026-10-03" },
+  { id: "applaydu-2024-112", numero: "234 - VQ353A", codice: "2024", nome: "Trambusto nella Giungla: scimmia verde", foto: "immagini/112.webp?v=2026-10-03" },
+  { id: "applaydu-2024-278", numero: "235 - VQ353B", codice: "2024", nome: "Alieno spaziale", foto: "immagini/278.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-113", numero: "236 - VQ425", codice: "2024", nome: "Giocare col Cibo: pesce blu col verme", foto: "immagini/113.webp?v=2026-10-03" },
+  { id: "applaydu-2024-114", numero: "237 - VQ425A", codice: "2024", nome: "Giocare col Cibo: pesce rosso con alga", foto: "immagini/114.webp?v=2026-10-03" },
+  { id: "applaydu-2024-311", numero: "238 - VC002", codice: "2024", nome: "Ritorno dei Dodo: verde", foto: "immagini/311.webp?v=2026-10-04" },
+  { id: "applaydu-2024-312", numero: "239 - VC002B", codice: "2024", nome: "Ritorno dei Dodo: blu", foto: "immagini/312.webp?v=2026-10-04" },
+  { id: "applaydu-2024-313", numero: "240 - VC008", codice: "2024", nome: "Escavatori: arancione", foto: "immagini/313.webp?v=2026-10-04" },
+  { id: "applaydu-2024-314", numero: "241 - VC009", codice: "2024", nome: "Escavatori: verde", foto: "immagini/314.webp?v=2026-10-04" },
+  { id: "applaydu-2024-315", numero: "242 - VC014", codice: "2024", nome: "Famiglia di Animali: coniglio", foto: "immagini/315.webp?v=2026-10-04" },
+  { id: "applaydu-2024-316", numero: "243 - VC015", codice: "2024", nome: "Famiglia di Animali: topo", foto: "immagini/316.webp?v=2026-10-04" },
+  { id: "applaydu-2024-317", numero: "244 - VC016", codice: "2024", nome: "Famiglia di Animali: pinguino", foto: "immagini/317.webp?v=2026-10-04" },
+  { id: "applaydu-2024-318", numero: "245 - VC017", codice: "2024", nome: "Famiglia di Animali: foca", foto: "immagini/318.webp?v=2026-10-04" },
+  { id: "applaydu-2024-319", numero: "246 - VC018", codice: "2024", nome: "Famiglia di Animali: anatra", foto: "immagini/319.webp?v=2026-10-04" },
+  { id: "applaydu-2024-320", numero: "247 - VC019", codice: "2024", nome: "Famiglia di Animali: rana", foto: "immagini/320.webp?v=2026-10-04" },
+  { id: "applaydu-2024-321", numero: "248 - VC020", codice: "2024", nome: "Famiglia di Animali: riccio", foto: "immagini/321.webp?v=2026-10-04" },
+  { id: "applaydu-2024-322", numero: "249 - VC021", codice: "2024", nome: "Famiglia di Animali: scoiattolo", foto: "immagini/322.webp?v=2026-10-04" },
+  { id: "applaydu-2024-323", numero: "250 - VC023", codice: "2024", nome: "Famiglia di Animali: alce", foto: "immagini/323.webp?v=2026-10-04" },
+  { id: "applaydu-2024-324", numero: "251 - VC024", codice: "2024", nome: "Famiglia di Animali: pecora", foto: "immagini/324.webp?v=2026-10-04" },
+  { id: "applaydu-2024-325", numero: "252 - VC025", codice: "2024", nome: "Famiglia di Animali: granchio", foto: "immagini/325.webp?v=2026-10-04" },
+  { id: "applaydu-2024-326", numero: "253 - VC026", codice: "2024", nome: "Famiglia di Animali: scimmia", foto: "immagini/326.webp?v=2026-10-04" },
+  { id: "applaydu-2024-327", numero: "254 - VC029", codice: "2024", nome: "Guardami negli Occhi: verde", foto: "immagini/327.webp?v=2026-10-04" },
+  { id: "applaydu-2024-328", numero: "255 - VC029A", codice: "2024", nome: "Guardami negli Occhi: viola", foto: "immagini/328.webp?v=2026-10-04" },
+  { id: "applaydu-2024-329", numero: "256 - VC033", codice: "2024", nome: "Famiglia di Animali: elefante", foto: "immagini/329.webp?v=2026-10-04" },
+  { id: "applaydu-2024-330", numero: "257 - VC034", codice: "2024", nome: "Famiglia di Animali: giraffa", foto: "immagini/330.webp?v=2026-10-04" },
+  { id: "applaydu-2024-331", numero: "258 - VC035", codice: "2024", nome: "Giochi Subacquei: orca", foto: "immagini/331.webp?v=2026-10-04" },
+  { id: "applaydu-2024-332", numero: "259 - VC035A", codice: "2024", nome: "Giochi Subacquei: squalo", foto: "immagini/332.webp?v=2026-10-04" },
+  { id: "applaydu-2024-333", numero: "260 - VC038", codice: "2024", nome: "Trasportatori: carrello elevatore verde", foto: "immagini/333.webp?v=2026-10-04" },
+  { id: "applaydu-2024-243", numero: "261 - VC041", codice: "2024", nome: "Auto rossa", foto: "immagini/243.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-244", numero: "262 - VC041A", codice: "2024", nome: "Auto blu", foto: "immagini/244.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-334", numero: "263 - VC045", codice: "2024", nome: "Stringi più Mani: polpo viola", foto: "immagini/334.webp?v=2026-10-04" },
+  { id: "applaydu-2024-335", numero: "264 - VC046", codice: "2024", nome: "Stringi più Mani: polpo rosso", foto: "immagini/335.webp?v=2026-10-04" },
+  { id: "applaydu-2024-336", numero: "265 - VC047", codice: "2024", nome: "Pittori al Lavoro: koala sul tronco", foto: "immagini/336.webp?v=2026-10-04" },
+  { id: "applaydu-2024-337", numero: "266 - VC049", codice: "2024", nome: "Pittori al Lavoro: koala verde", foto: "immagini/337.webp?v=2026-10-04" },
+  { id: "applaydu-2024-245", numero: "267 - VC050", codice: "2024", nome: "Coccodrillo", foto: "immagini/245.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-246", numero: "268 - VC051", codice: "2024", nome: "Castoro", foto: "immagini/246.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-338", numero: "269 - VC054", codice: "2024", nome: "Guardiano delle Chiavi: rana", foto: "immagini/338.webp?v=2026-10-04" },
+  { id: "applaydu-2024-339", numero: "270 - VC056", codice: "2024", nome: "Guardiano delle Chiavi: ornitorinco", foto: "immagini/339.webp?v=2026-10-04" },
+  { id: "applaydu-2024-247", numero: "271 - VC059", codice: "2024", nome: "Koala", foto: "immagini/247.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-248", numero: "272 - VC060", codice: "2024", nome: "Pappagallo", foto: "immagini/248.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-340", numero: "273 - VC061", codice: "2024", nome: "Mi Piace il Pesce: foca bianca", foto: "immagini/340.webp?v=2026-10-04" },
+  { id: "applaydu-2024-341", numero: "274 - VC062", codice: "2024", nome: "Mi Piace il Pesce: foca marrone", foto: "immagini/341.webp?v=2026-10-04" },
+  { id: "applaydu-2024-249", numero: "275 - VC063", codice: "2024", nome: "Quad", foto: "immagini/249.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-250", numero: "276 - VC064", codice: "2024", nome: "Auto da cross", foto: "immagini/250.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-251", numero: "277 - VC066", codice: "2024", nome: "Toy Box blu", foto: "immagini/251.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-252", numero: "278 - VC068", codice: "2024", nome: "Toy Box arancione", foto: "immagini/252.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-342", numero: "279 - VC069", codice: "2024", nome: "Vieni più Vicino: coccodrillo verde", foto: "immagini/342.webp?v=2026-10-04" },
+  { id: "applaydu-2024-343", numero: "280 - VC070", codice: "2024", nome: "Vieni più Vicino: elefante viola", foto: "immagini/343.webp?v=2026-10-04" },
+  { id: "applaydu-2024-344", numero: "281 - VC072", codice: "2024", nome: "Surreale: mostro blu", foto: "immagini/344.webp?v=2026-10-04" },
+  { id: "applaydu-2024-253", numero: "282 - VC074", codice: "2024", nome: "Anatra", foto: "immagini/253.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-254", numero: "283 - VC075", codice: "2024", nome: "Rana", foto: "immagini/254.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-345", numero: "284 - VC076", codice: "2024", nome: "Non Schiacciarmi: coccodrillo", foto: "immagini/345.webp?v=2026-10-04" },
+  { id: "applaydu-2024-346", numero: "285 - VC077", codice: "2024", nome: "Non Schiacciarmi: pappagallo", foto: "immagini/346.webp?v=2026-10-04" },
+  { id: "applaydu-2024-347", numero: "286 - VC079", codice: "2024", nome: "Surreale: mostro rosso", foto: "immagini/347.webp?v=2026-10-04" },
+  { id: "applaydu-2024-348", numero: "287 - VC081", codice: "2024", nome: "Vieni tra le mie Braccia: mostro blu", foto: "immagini/348.webp?v=2026-10-04" },
+  { id: "applaydu-2024-349", numero: "288 - VC081A", codice: "2024", nome: "Vieni tra le mie Braccia: mostro arancione", foto: "immagini/349.webp?v=2026-10-04" },
+  { id: "applaydu-2024-350", numero: "289 - VC087", codice: "2024", nome: "Trasportatori: carrello elevatore blu", foto: "immagini/350.webp?v=2026-10-04" },
+  { id: "applaydu-2024-351", numero: "290 - VC088", codice: "2024", nome: "Stelle della Demolizione: gru arancione", foto: "immagini/351.webp?v=2026-10-04" },
+  { id: "applaydu-2024-352", numero: "291 - VC089", codice: "2024", nome: "Stelle della Demolizione: gru verde", foto: "immagini/352.webp?v=2026-10-04" },
+  { id: "applaydu-2024-353", numero: "292 - VC094", codice: "2024", nome: "Sul Cantiere: pala rossa", foto: "immagini/353.webp?v=2026-10-04" },
+  { id: "applaydu-2024-255", numero: "293 - VC095", codice: "2024", nome: "Stan il Cacciavite", foto: "immagini/255.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-354", numero: "294 - VC096", codice: "2024", nome: "Sul Cantiere: camion giallo", foto: "immagini/354.webp?v=2026-10-04" },
+  { id: "applaydu-2024-355", numero: "295 - VC116", codice: "2024", nome: "Veicoli Cingolati: blu", foto: "immagini/355.webp?v=2026-10-04" },
+  { id: "applaydu-2024-256", numero: "296 - VC120", codice: "2024", nome: "Velocità arancione", foto: "immagini/256.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-257", numero: "297 - VC121", codice: "2024", nome: "Vincitore d'oro", foto: "immagini/257.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-212", numero: "298 - VC127", codice: "2024", nome: "Coniglietto", foto: "immagini/212.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-180", numero: "299 - VC128", codice: "2024", nome: "Drago turchese", foto: "immagini/180.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-181", numero: "300 - VC129", codice: "2024", nome: "Drago rosso", foto: "immagini/181.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-182", numero: "301 - VC130", codice: "2024", nome: "Drago verde", foto: "immagini/182.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-183", numero: "302 - VC131", codice: "2024", nome: "Drago azzurro", foto: "immagini/183.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-213", numero: "303 - VC132", codice: "2024", nome: "Gattino", foto: "immagini/213.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-258", numero: "304 - VC140", codice: "2024", nome: "Michael il meccanico", foto: "immagini/258.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-214", numero: "305 - VC142", codice: "2024", nome: "Controllo Koala", foto: "immagini/214.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-215", numero: "306 - VC143", codice: "2024", nome: "Controllo Pinguino", foto: "immagini/215.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-216", numero: "307 - VC144", codice: "2024", nome: "Pantera", foto: "immagini/216.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-217", numero: "308 - VC145", codice: "2024", nome: "Tartaruga marina", foto: "immagini/217.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-218", numero: "309 - VC150", codice: "2024", nome: "Nutrire i cigni", foto: "immagini/218.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-219", numero: "310 - VC151", codice: "2024", nome: "Nutrire le tartarughe", foto: "immagini/219.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-220", numero: "311 - VC152", codice: "2024", nome: "Coniglio", foto: "immagini/220.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-221", numero: "312 - VC153", codice: "2024", nome: "Scimmia", foto: "immagini/221.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-222", numero: "313 - VC155", codice: "2024", nome: "Orecchini arancioni", foto: "immagini/222.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-223", numero: "314 - VC155A", codice: "2024", nome: "Orecchini rosa", foto: "immagini/223.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-184", numero: "315 - VC160", codice: "2024", nome: "Draghi rossi", foto: "immagini/184.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-185", numero: "316 - VC161", codice: "2024", nome: "Draghi turchesi", foto: "immagini/185.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-186", numero: "317 - VC162", codice: "2024", nome: "Drago dorato", foto: "immagini/186.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-187", numero: "318 - VC163", codice: "2024", nome: "Drago verde sul ceppo", foto: "immagini/187.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-188", numero: "319 - VC168", codice: "2024", nome: "Aggrappati forte", foto: "immagini/188.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-189", numero: "320 - VC169", codice: "2024", nome: "Dormi bene", foto: "immagini/189.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-190", numero: "321 - VC170", codice: "2024", nome: "Drago blu", foto: "immagini/190.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-191", numero: "322 - VC171", codice: "2024", nome: "Drago rosso (2)", foto: "immagini/191.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-192", numero: "323 - VC172", codice: "2024", nome: "Drago viola", foto: "immagini/192.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-193", numero: "324 - VC173", codice: "2024", nome: "Drago verde (2)", foto: "immagini/193.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-259", numero: "325 - VC174", codice: "2024", nome: "Niki", foto: "immagini/259.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-260", numero: "326 - VC175", codice: "2024", nome: "Moto da corsa blu", foto: "immagini/260.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-261", numero: "327 - VC176", codice: "2024", nome: "Moto da corsa rossa", foto: "immagini/261.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-262", numero: "328 - VC177", codice: "2024", nome: "Auto blu (2)", foto: "immagini/262.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-263", numero: "329 - VC178", codice: "2024", nome: "Auto viola", foto: "immagini/263.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-356", numero: "330 - VC179", codice: "2024", nome: "Veicoli Cingolati: oro", foto: "immagini/356.webp?v=2026-10-04" },
+  { id: "applaydu-2024-264", numero: "331 - VC181", codice: "2024", nome: "Auto rossa (2)", foto: "immagini/264.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-265", numero: "332 - VC182", codice: "2024", nome: "Auto arancione", foto: "immagini/265.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-194", numero: "333 - VC185", codice: "2024", nome: "Drago sulla montagna", foto: "immagini/194.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-195", numero: "334 - VC186", codice: "2024", nome: "Drago nella montagna", foto: "immagini/195.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-196", numero: "335 - VC189", codice: "2024", nome: "Drago rosso (3)", foto: "immagini/196.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-197", numero: "336 - VC190", codice: "2024", nome: "Drago blu (2)", foto: "immagini/197.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-266", numero: "337 - VC196", codice: "2024", nome: "Michael", foto: "immagini/266.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-224", numero: "338 - VC197", codice: "2024", nome: "Anello fiore blu", foto: "immagini/224.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-225", numero: "339 - VC198", codice: "2024", nome: "Anello fiore giallo", foto: "immagini/225.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-226", numero: "340 - VC202", codice: "2024", nome: "Pesce rosso e pesce giallo", foto: "immagini/226.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-227", numero: "341 - VC203", codice: "2024", nome: "Elefante e uccellino", foto: "immagini/227.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-228", numero: "342 - VC204", codice: "2024", nome: "Ciondolo cuore arancione", foto: "immagini/228.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-229", numero: "343 - VC204A", codice: "2024", nome: "Ciondolo cuore verde", foto: "immagini/229.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-230", numero: "344 - VC206", codice: "2024", nome: "Elefante rosa", foto: "immagini/230.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-198", numero: "345 - VC210", codice: "2024", nome: "Lucchetto rosa", foto: "immagini/198.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-199", numero: "346 - VC211", codice: "2024", nome: "Lucchetto verde", foto: "immagini/199.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-200", numero: "347 - VC212", codice: "2024", nome: "Stencil per dipingere verde", foto: "immagini/200.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-201", numero: "348 - VC213", codice: "2024", nome: "Stencil per dipingere arancione", foto: "immagini/201.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-231", numero: "349 - VC214", codice: "2024", nome: "Lucchetto cagnolino", foto: "immagini/231.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-232", numero: "350 - VC215", codice: "2024", nome: "Lucchetto gattino", foto: "immagini/232.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-233", numero: "351 - VC216", codice: "2024", nome: "Braccialetto viola", foto: "immagini/233.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-234", numero: "352 - VC217", codice: "2024", nome: "Braccialetto verde", foto: "immagini/234.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-235", numero: "353 - VC218", codice: "2024", nome: "Lente d'ingrandimento pesce blu", foto: "immagini/235.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-236", numero: "354 - VC218A", codice: "2024", nome: "Lente d'ingrandimento pesce rosso", foto: "immagini/236.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-357", numero: "355 - VC224", codice: "2024", nome: "Fiore Girevole: azzurro", foto: "immagini/357.webp?v=2026-10-04" },
+  { id: "applaydu-2024-358", numero: "356 - VC224A", codice: "2024", nome: "Fiore Girevole: rosa", foto: "immagini/358.webp?v=2026-10-04" },
+  { id: "applaydu-2024-202", numero: "357 - VC225", codice: "2024", nome: "Jan con ali blu", foto: "immagini/202.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-203", numero: "358 - VC225A", codice: "2024", nome: "Robert con ali rosse", foto: "immagini/203.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-267", numero: "359 - VC248", codice: "2024", nome: "Mostro blu", foto: "immagini/267.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-268", numero: "360 - VC249", codice: "2024", nome: "Distruttore verde", foto: "immagini/268.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-204", numero: "361 - VC255", codice: "2024", nome: "James con cucciolo di drago blu", foto: "immagini/204.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-205", numero: "362 - VC255A", codice: "2024", nome: "Henry con cucciolo di drago rosso", foto: "immagini/205.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-237", numero: "363 - VC256", codice: "2024", nome: "Timothy il polpo", foto: "immagini/237.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-238", numero: "364 - VC257", codice: "2024", nome: "Gustave il coccodrillo", foto: "immagini/238.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-269", numero: "365 - VC258", codice: "2024", nome: "Mare", foto: "immagini/269.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-270", numero: "366 - VC258A", codice: "2024", nome: "Giungla", foto: "immagini/270.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-279", numero: "367 - VS010", codice: "2024", nome: "Trenino colorato", foto: "immagini/279.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-280", numero: "368 - VS012", codice: "2024", nome: "Barca con pinguino", foto: "immagini/280.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-281", numero: "369 - VS015", codice: "2024", nome: "Pinza con slime", foto: "immagini/281.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-282", numero: "370 - VS150", codice: "2024", nome: "Libro segreto", foto: "immagini/282.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-283", numero: "371 - VS152", codice: "2024", nome: "Polpo traballante", foto: "immagini/283.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-289", numero: "372 - VS426", codice: "2024", nome: "Fata farfalla: ali blu e rosse", foto: "immagini/289.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-290", numero: "373 - VS426A", codice: "2024", nome: "Fata farfalla: ali rosse", foto: "immagini/290.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-291", numero: "374 - VS438", codice: "2024", nome: "Fata farfalla: ali gialle", foto: "immagini/291.webp?v=2026-10-03f" },
+  { id: "applaydu-2024-292", numero: "375 - VS438A", codice: "2024", nome: "Fata farfalla: ali viola", foto: "immagini/292.webp?v=2026-10-03f" },
+];
+</script>
+
+<!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
+<script src="../../../../script.js?v=2026-10-05a"></script>
+<!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
+<script src="../../../../comune/bagliore.js?v=2026-09-26"></script>
+<!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
+<script src="../../../../comune/app.js?v=2026-10-05a"></script>
+</body>
+</html>

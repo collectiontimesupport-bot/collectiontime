@@ -18,6 +18,7 @@
   13) il carosello delle Novità nella Home (frecce quando le Novità sono più di quelle visibili)
   14) il paese di chi visita (per le "Varianti estere" dei pezzi e per le serie solo estere, sotto il titolo "Estero")
   15) la lingua: italiano di base, inglese a scelta (link "English" nella banda in basso e voce "Lingua" in Impostazioni)
+  16) protezione delle foto: niente tasto destro / trascinamento / salva-immagine sulle foto
    Da richiamare in ogni pagina con una sola riga:
    <script src="script.js?v=2026-09-28d"></script>
    (dentro una sottocartella: <script src="../script.js?v=2026-09-28d"></script>,
@@ -882,3 +883,12 @@ document.querySelectorAll('a[data-proponi]').forEach(a => {
     + '?subject=' + encodeURIComponent('Il mio gruppo su ' + cat + ' · Collection Time')
     + '&body=' + encodeURIComponent('Ciao! Ho un gruppo dedicato a ' + cat + ' e vorrei proporlo.\n\nNome del gruppo:\nSocial (Facebook, WhatsApp, Telegram…):\nLink per entrare:\nDi cosa si parla:\n');
 });
+
+
+/* ---------- Protezione delle foto (voce 16) ----------
+   Rende più difficile salvare le foto con il tasto destro o trascinandole sul desktop.
+   (Il resto, come la pressione lunga su telefono, è in sito.css, voce "PROTEZIONE FOTO".)
+   Non è una protezione totale (uno screenshot resta possibile), ma ferma i copioni meno esperti.
+   Le foto dentro i file portano anche una firma invisibile (vedi _strumenti/filigrana.py). */
+document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+document.addEventListener('dragstart', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });

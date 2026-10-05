@@ -1,0 +1,381 @@
+<!doctype html>
+<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
+<!-- =====================================================================
+     APPLAYDU 2022 — pagina della collezione (Kinder Ferrero)
+     ---------------------------------------------------------------------
+     Pagina creata dall'area amministratore. Com'è fatta questa cartella:
+
+       index.html           ← questa pagina: struttura, IMPOSTAZIONI (CONFIG)
+                              ed ELENCO DELLE SORPRESINE (in fondo)
+       immagini/            ← le foto in WebP trasparente (01.webp, 02.webp…)
+                              e copertina.webp (la foto della card, se c'è)
+       (l'aspetto grafico è in comune/collezione.css, uguale per tutte le
+        collezioni, e nel file css/stile.css della categoria;
+        il funzionamento, app.js, sta nella cartella "comune" del sito)
+
+     ▸ PER CAMBIARE NOMI, FOTO, ORDINE, QUANTI PER FILA E GRANDEZZA:
+       area amministratore (_admin/index.html) → "Modifica una serie".
+       A mano: blocco "ELENCO DELLE SORPRESINE" in fondo a questa pagina.
+     ===================================================================== -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in og:title, description, og:description e indirizzo in og:url (righe qui sotto). Il <title> lo rifà da solo "Pubblica" (og:title + la pagina di sopra, es. "Adventure Time · Charms · Collection Time") -->
+<title>Applaydu 2022 · Kinder Sorpresa · Collection Time</title>
+<meta name="description" content="Applaydu 2022: 135 sorpresine. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/".
+     favicon-96.png = icona della scheda (PNG: Safari non mostra le icone SVG).
+     Se sostituisci un'icona con un file con lo STESSO nome, metti la data di oggi in "?v=…"
+     (es. apple-touch-icon.png?v=2026-09-27) in tutte le pagine: così il browser scarica quella nuova. -->
+<link rel="icon" href="../../../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../../../favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="../../../../apple-touch-icon.png?v=2026-09-27">
+<link rel="manifest" href="../../../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Applaydu 2022 · Collection Time">
+<meta property="og:description" content="Applaydu 2022: 135 sorpresine. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.">
+<meta property="og:url" content="https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2022/">
+<meta property="og:image" content="https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2022/immagini/anteprima.jpg?v=2026-10-05">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../../../sito.css?v=2026-10-05a">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+
+<!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
+<!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
+     in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
+<link rel="stylesheet" href="../../../../comune/collezione.css?v=2026-10-05a">
+<link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
+<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
+     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
+<link rel="canonical" href="https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2022/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Kinder Ferrero","item":"https://collectiontime.com/catalogo/kinder/"},{"@type":"ListItem","position":3,"name":"Kinder Sorpresa","item":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/"},{"@type":"ListItem","position":4,"name":"Applaydu 2022","item":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2022/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Applaydu 2022","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2022/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Applaydu 2022: 135 sorpresine. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2022/immagini/anteprima.jpg?v=2026-10-05","mainEntity":{"@type":"ItemList","numberOfItems":135,"itemListElement":[{"@type":"ListItem","position":1,"name":"01 - VD001 · Animali da abbronzatura: volpe"},{"@type":"ListItem","position":2,"name":"02 - VD002 · Animali da abbronzatura: lepre"},{"@type":"ListItem","position":3,"name":"03 - VD003 · Animali ruota immagini: castoro"},{"@type":"ListItem","position":4,"name":"04 - VD004 · Animali ruota immagini: orso bianco"},{"@type":"ListItem","position":5,"name":"05 - VD007 · Animali giramondo: volpe pilota"},{"@type":"ListItem","position":6,"name":"06 - VD009 · Animali giramondo: scimmia volante"},{"@type":"ListItem","position":7,"name":"07 - VD015 · Bilancieri dello spazio: astronauta volante"},{"@type":"ListItem","position":8,"name":"08 - VD016 · Bilancieri dello spazio: alieno volante"},{"@type":"ListItem","position":9,"name":"09 - VD025 · Raccogli pianeti: afferra e lancia"},{"@type":"ListItem","position":10,"name":"10 - VD026 · Raccogli pianeti: raccogli e lancia"},{"@type":"ListItem","position":11,"name":"11 - VD035 · Droni spaziali: drone NASA"},{"@type":"ListItem","position":12,"name":"12 - VD036 · Droni spaziali: drone UFO"},{"@type":"ListItem","position":13,"name":"13 - VD043 · Jetpack spaziali: astronauta con jetpack"},{"@type":"ListItem","position":14,"name":"14 - VD044 · Jetpack spaziali: astronauta bianco"},{"@type":"ListItem","position":15,"name":"15 - VD049 · Stencil spaziali: motivi dei pianeti"},{"@type":"ListItem","position":16,"name":"16 - VD050 · Stencil spaziali: motivi dello spazio"},{"@type":"ListItem","position":17,"name":"17 - VD057 · Polaroid ad acqua: fotocamera 1"},{"@type":"ListItem","position":18,"name":"18 - VD058 · Polaroid ad acqua: fotocamera 2"},{"@type":"ListItem","position":19,"name":"19 - VD059 · Animali da dito: camaleonte"},{"@type":"ListItem","position":20,"name":"20 - VD060 · Animali da dito: coccodrillo"},{"@type":"ListItem","position":21,"name":"21 - VD067 · Ruspe: Robert"},{"@type":"ListItem","position":22,"name":"22 - VD068 · Ruspe: Scoop"},{"@type":"ListItem","position":23,"name":"23 - VD071 · Animali spaziali: pianeta bufalo"},{"@type":"ListItem","position":24,"name":"24 - VD072 · Animali spaziali: pianeta riccio"},{"@type":"ListItem","position":25,"name":"25 - VD077 · Veicoli spaziali transformers: Marsokhod"},{"@type":"ListItem","position":26,"name":"26 - VD077A · Veicoli spaziali transformers: Sojourner"},{"@type":"ListItem","position":27,"name":"27 - VD080 · Dragster telescopici: bandiera vincente"},{"@type":"ListItem","position":28,"name":"28 - VD080A · Dragster telescopici: fiamma acida"},{"@type":"ListItem","position":29,"name":"29 - VD093 · Astronauti transformers: Armstrong"},{"@type":"ListItem","position":30,"name":"30 - VD093A · Astronauti transformers: Aldrin"},{"@type":"ListItem","position":31,"name":"31 - VD094 · Mezzi dei pompieri: barca dei pompieri"},{"@type":"ListItem","position":32,"name":"32 - VD095 · Mezzi dei pompieri: camion dei pompieri"},{"@type":"ListItem","position":33,"name":"33 - VD096 · Robot spaziali: Cater"},{"@type":"ListItem","position":34,"name":"34 - VD097 · Robot spaziali: Spidy"},{"@type":"ListItem","position":35,"name":"35 - VD106 · Truck modulari: camion"},{"@type":"ListItem","position":36,"name":"36 - VD107 · Truck modulari: truck"},{"@type":"ListItem","position":37,"name":"37 - VD108 · Animali del circo: elefante"},{"@type":"ListItem","position":38,"name":"38 - VD109 · Animali del circo: lama"},{"@type":"ListItem","position":39,"name":"39 - VD110 · Alieni colorati: Mono"},{"@type":"ListItem","position":40,"name":"40 - VD111 · Alieni colorati: Tris"},{"@type":"ListItem","position":41,"name":"41 - VD112 · Bambole da vestire: Veronica"},{"@type":"ListItem","position":42,"name":"42 - VD113 · Bambole da vestire: Angelica"},{"@type":"ListItem","position":43,"name":"43 - VD116 · Trova l'alieno: alieno curioso"},{"@type":"ListItem","position":44,"name":"44 - VD117 · Trova l'alieno: astronauta curioso"},{"@type":"ListItem","position":45,"name":"45 - VD118 · Razzi trottole: Cerbero"},{"@type":"ListItem","position":46,"name":"46 - VD119 · Razzi trottole: Caronte"},{"@type":"ListItem","position":47,"name":"47 - VD122 · Timbri spaziali: razzo"},{"@type":"ListItem","position":48,"name":"48 - VD122A · Timbri spaziali: navicella"},{"@type":"ListItem","position":49,"name":"49 - VD124 · Memory animali: Memory Africa"},{"@type":"ListItem","position":50,"name":"50 - VD125 · Memory animali: Memory Polo"},{"@type":"ListItem","position":51,"name":"51 - VD126 · Trottole spaziali: trottola UFO"},{"@type":"ListItem","position":52,"name":"52 - VD127 · Trottole spaziali: trottola astro"},{"@type":"ListItem","position":53,"name":"53 - VD128 · Moto a carica: Jumpy"},{"@type":"ListItem","position":54,"name":"54 - VD129 · Moto a carica: Wheele"},{"@type":"ListItem","position":55,"name":"55 - VD134 · Alieni spruzzini: Ely"},{"@type":"ListItem","position":56,"name":"56 - VD135 · Alieni spruzzini: Dragy"},{"@type":"ListItem","position":57,"name":"57 - VD138 · Caccia all'invasore: alieno invasore"},{"@type":"ListItem","position":58,"name":"58 - VD139 · Caccia all'invasore: astronauta invasore"},{"@type":"ListItem","position":59,"name":"59 - VD140 · Rover spaziali: rover di Marte"},{"@type":"ListItem","position":60,"name":"60 - VD141 · Rover spaziali: rover esploratore"},{"@type":"ListItem","position":61,"name":"61 - VD144 · Anelli rotanti: spirale di fiori 1"},{"@type":"ListItem","position":62,"name":"62 - VD145 · Anelli rotanti: spirale di fiori 2"},{"@type":"ListItem","position":63,"name":"63 - VD150 · Simbionti: creatura pinnata"},{"@type":"ListItem","position":64,"name":"64 - VD151 · Simbionti: creatura alata"},{"@type":"ListItem","position":65,"name":"65 - VD152 · Anelli gemelli: gattini"},{"@type":"ListItem","position":66,"name":"66 - VD153 · Anelli gemelli: coniglietti"},{"@type":"ListItem","position":67,"name":"67 - VD157 · Bracciali dal mondo: India"},{"@type":"ListItem","position":68,"name":"68 - VD157A · Bracciali dal mondo: Africa"},{"@type":"ListItem","position":69,"name":"69 - VD158 · Buggy spaziali: buggy lunare"},{"@type":"ListItem","position":70,"name":"70 - VD159 · Buggy spaziali: buggy dei pianeti"},{"@type":"ListItem","position":71,"name":"71 - VD160 · Animali ballerini: scimmia saltellante"},{"@type":"ListItem","position":72,"name":"72 - VD161 · Animali ballerini: lemure saltellante"},{"@type":"ListItem","position":73,"name":"73 - VD163 · Astronauti a gravità zero: astronauta bianco"},{"@type":"ListItem","position":74,"name":"74 - VD164 · Shuttle: lancio spaziale 1"},{"@type":"ListItem","position":75,"name":"75 - VD165 · Astronauti a gravità zero: astronauta rosso"},{"@type":"ListItem","position":76,"name":"76 - VD166 · Ballerine rotanti: Carmen"},{"@type":"ListItem","position":77,"name":"77 - VD167 · Shuttle: lancio spaziale 2"},{"@type":"ListItem","position":78,"name":"78 - VD168 · Zaini da esploratore: avventure nel mondo"},{"@type":"ListItem","position":79,"name":"79 - VD169 · Zaini da esploratore: avventure in mare"},{"@type":"ListItem","position":80,"name":"80 - VD175 · Pettini da taschino: pettine magico"},{"@type":"ListItem","position":81,"name":"81 - VD175A · Pettini da taschino: pettine fantastico"},{"@type":"ListItem","position":82,"name":"82 - VD176 · Due in uno: motoslitta argento"},{"@type":"ListItem","position":83,"name":"83 - VD177 · Due in uno: motoslitta bianca"},{"@type":"ListItem","position":84,"name":"84 - VD178 · Saltatori nelle scarpe: topo nella scarpa"},{"@type":"ListItem","position":85,"name":"85 - VD179 · Saltatori nelle scarpe: coniglio sportivo"},{"@type":"ListItem","position":86,"name":"86 - VD180 · Segreti da ragazze: scrigno a cuore"},{"@type":"ListItem","position":87,"name":"87 - VD181 · Segreti da ragazze: scrigno a stella"},{"@type":"ListItem","position":88,"name":"88 - VD184 · Ballerine rotanti: Keya"},{"@type":"ListItem","position":89,"name":"89 - VD187 · Vestiti reversibili: vestito blu e rosa"},{"@type":"ListItem","position":90,"name":"90 - VD188 · Vestiti reversibili: vestito blu e giallo"},{"@type":"ListItem","position":91,"name":"91 - VD197 · Avventure porta segreti: mongolfiera segreta"},{"@type":"ListItem","position":92,"name":"92 - VD198 · Avventure porta segreti: sottomarino segreto"},{"@type":"ListItem","position":93,"name":"93 - VD199 · Soccorritrici degli animali: Kate"},{"@type":"ListItem","position":94,"name":"94 - VD200 · Soccorritrici degli animali: Cara"},{"@type":"ListItem","position":95,"name":"95 - VD204 · Scuoti la testa: Mammut"},{"@type":"ListItem","position":96,"name":"96 - VD205 · Scuoti la testa: tigre bianca"},{"@type":"ListItem","position":97,"name":"97 - VD207 · Bambole giramondo: Cassie in campeggio"},{"@type":"ListItem","position":98,"name":"98 - VD208 · Bambole giramondo: Penny fotografa"},{"@type":"ListItem","position":99,"name":"99 - VD209 · Esploratori artici: esploratore con la parte alta gialla"},{"@type":"ListItem","position":100,"name":"100 - VD210 · Esploratori artici: esploratore con la parte alta rossa"},{"@type":"ListItem","position":101,"name":"101 - VD213 · Spirografi: Spirografo giallo e verde"},{"@type":"ListItem","position":102,"name":"102 - VD214 · Spirografi: Spirografo blu e arancione"},{"@type":"ListItem","position":103,"name":"103 - VD215 · Pastelli farfalla: farfalla gialla"},{"@type":"ListItem","position":104,"name":"104 - VD216 · Pastelli farfalla: farfalla rosa"},{"@type":"ListItem","position":105,"name":"105 - VD217 · Animali viaggiatori: coniglio bianco in corsa"},{"@type":"ListItem","position":106,"name":"106 - VD218 · Animali viaggiatori: tartaruga viaggiatrice"},{"@type":"ListItem","position":107,"name":"107 - VD219 · Animali marinai: gattino in crociera"},{"@type":"ListItem","position":108,"name":"108 - VD219A · Animali marinai: Capitan Sushi"},{"@type":"ListItem","position":109,"name":"109 - VD222 · Bracciali da principessa: bracciale con smeraldo"},{"@type":"ListItem","position":110,"name":"110 - VD223 · Bracciali da principessa: bracciale con rubino"},{"@type":"ListItem","position":111,"name":"111 - VD224 · Geko appiccicosi: geko blu"},{"@type":"ListItem","position":112,"name":"112 - VD224A · Geko appiccicosi: geko verde"},{"@type":"ListItem","position":113,"name":"113 - VD226 · Anelli appiccicosi: anello 1"},{"@type":"ListItem","position":114,"name":"114 - VD226A · Anelli appiccicosi: anello 2"},{"@type":"ListItem","position":115,"name":"115 - VD227 · Personaggi cambia costume: vestito appiccicoso 1"},{"@type":"ListItem","position":116,"name":"116 - VD227A · Personaggi cambia costume: vestito appiccicoso 2"},{"@type":"ListItem","position":117,"name":"117 - VD229 · Gioielli reali: anello della regina"},{"@type":"ListItem","position":118,"name":"118 - VD230 · Gioielli reali: anello della lady"},{"@type":"ListItem","position":119,"name":"119 - VD233 · Alieni pastello: Cralien"},{"@type":"ListItem","position":120,"name":"120 - VD234 · Alieni pastello: Drawalien"},{"@type":"ListItem","position":121,"name":"121 - VD238 · Ragazze sportive: Sophie con lo snorkeling"},{"@type":"ListItem","position":122,"name":"122 - VD239 · Ragazze sportive: Sabrina con il surf"},{"@type":"ListItem","position":123,"name":"123 - VD240 · Animali mistici: drago"},{"@type":"ListItem","position":124,"name":"124 - VD241 · Animali mistici: uccello di fuoco"},{"@type":"ListItem","position":125,"name":"125 - VD242 · Auto del ghiaccio: auto rossa"},{"@type":"ListItem","position":126,"name":"126 - VD243 · Arte sulla neve: pinguino"},{"@type":"ListItem","position":127,"name":"127 - VD244 · Arte sulla neve: renna"},{"@type":"ListItem","position":128,"name":"128 - VD245 · Ciondoli dolci: Poppins"},{"@type":"ListItem","position":129,"name":"129 - VD246 · Ciondoli dolci: Mary"},{"@type":"ListItem","position":130,"name":"130 - VD247 · Fate: fata azzurra"},{"@type":"ListItem","position":131,"name":"131 - VD248 · Fate: fata verde"},{"@type":"ListItem","position":132,"name":"132 - VD249 · Auto del ghiaccio: auto verde"},{"@type":"ListItem","position":133,"name":"133 - VD251 · Animali rotanti: orso"},{"@type":"ListItem","position":134,"name":"134 - VD252 · Animali rotanti: cavallo"},{"@type":"ListItem","position":135,"name":"135 - VV083 · Vicini di corallo: Octy"}]}}]}</script>
+</head>
+<body>
+
+<!-- Header del sito: viene riempito con header.html da ../../../../script.js -->
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <!-- Link per tornare alla pagina Kinder Sorpresa -->
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../index.html">&larr; Kinder Sorpresa</a>
+
+  <!-- ============ TITOLO E STRUMENTI ============ -->
+  <header>
+    <!-- titolo scritto (questa serie non ha un logo): va anche nel PDF -->
+    <!-- ! MODIFICA: titolo della pagina -->
+    <h1 id="pageTitle"><span class="titolo-testo">APPLAYDU 2022</span></h1>
+    <div class="bar">
+      <!-- "5 possedute su 9": il testo lo scrive app.js -->
+      <div class="conta-stampa">  <!-- conteggio e, sotto, il pulsante Stampa -->
+        <p class="sub" id="count"></p>
+        <div class="riga-bottoni">  <!-- Stampa e Condividi, fianco a fianco -->
+          <button class="btn" id="btnPrint" type="button">Stampa</button>
+          <button class="btn" id="btnShare" type="button">Condividi</button>
+        </div>
+      </div>
+      <div class="tools">
+        <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
+        <div class="st-cerca" id="stCerca">
+          <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <!-- Filtro: tutte / possedute / mancanti -->
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutte</option>
+          <option value="owned" id="optOwned">In possesso</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <!-- Ordine: dalla n° 1 o al contrario -->
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dalla prima</option>
+          <option value="desc">Dall'ultima</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ GRIGLIA DELLE SORPRESINE ============
+       Resta vuota qui: app.js crea una scheda <li> per ogni riga
+       dell'ELENCO (in fondo a questa pagina). -->
+  <ul class="grid" id="grid"></ul>
+
+  <!-- Messaggi quando non c'è nulla da mostrare -->
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p>Non ci sono ancora elementi in questa collezione.</p>
+  </section>
+
+  <!-- ============ PIÈ DI PAGINA: STAMPA ============
+       La copia di sicurezza (Scarica / Carica un file) è nel menu Accedi / profilo e vale per tutto il sito. -->
+  <footer>
+    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
+    <p class="hint">Premi su una sorpresina per segnare che ce l'hai. Con info vedi i dettagli, le info e gli hashtag.</p>
+  </footer>
+</div>
+
+<!-- Footer del sito: viene riempito con footer.html da ../../../../script.js -->
+<div id="footer-placeholder"></div>
+
+
+<!-- ============ FINESTRA "STAMPA" ============ -->
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Crea un'immagine da condividere.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le sorpresine, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="scambi">
+      <span><strong>Cerco e scambio</strong> (<span id="cnt-scambi"></span>)<small>Da condividere: in alto quelli che cerco (mi mancano), sotto quelli che scambio (i doppioni).</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong>Checklist vuota</strong><small>Tutte le sorpresine con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn primary" id="printImg">Crea immagine</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ FINESTRA "DETTAGLI" (si apre con "info") ============ -->
+<dialog id="dlg">
+  <form id="editForm">
+    <!-- foto grande -->
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
+    <div class="dlg-body">
+      <!-- Anno e Numero (fissi, non si modificano) -->
+      <div class="trio">
+        <div class="field"><span id="lblCodice">Anno</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
+      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+/* =====================================================================
+   IMPOSTAZIONI DELLA COLLEZIONE
+   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra serie basta
+   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
+   ===================================================================== */
+// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
+const CONFIG = {
+  id: "kinder-sorpresa-applaydu-2022",            // nome usato nei PDF
+  dbName: "catalogo-kinder-kinder-sorpresa-applaydu-2022", // archivio nel browser (NON cambiarlo dopo la pubblicazione: si perderebbero le spunte salvate)
+  titolo: "Applaydu 2022",           // titolo della scheda del browser e del PDF
+  nome: "sorpresina",              // come si chiama un elemento
+  possedute: "possedute",          // "5 possedute su 18"
+  colonne: 8,                     // quanti per fila sugli schermi larghi (sui telefoni diminuiscono da soli)
+  proporzione: 1,                  // altezza ÷ larghezza dell'oggetto più largo (calcolata dalle foto)
+  suggerimenti: [],                // hashtag proposti nei dettagli (es. ["Natale"]); vuoto = nessuno
+  mostraNomi: true                 // true = nome scritto sotto ogni foto; false = solo nei dettagli
+};
+
+/* =====================================================================
+   ELENCO DELLE SORPRESINE  ★ QUI SI AGGIUNGONO O CAMBIANO ★
+   ---------------------------------------------------------------------
+   Ogni riga { … } è una sorpresina, nello stesso ordine della pagina.
+
+   PIÙ FACILE: area amministratore → "Modifica una serie" (aggiunge le
+   righe, prepara le foto e aggiorna "Mi mancano", "Doppioni" e "Cerca").
+
+   A MANO: copia una riga, incollala dove vuoi che compaia, cambia i valori,
+   poi nell'area amministratore premi "Aggiorna catalogo".
+
+   I CAMPI
+     id        codice unico (es. l'ultimo + 1): serve al browser per ricordare
+               se ce l'hai. Non usarlo due volte e non cambiarlo dopo la pubblicazione.
+     numero    il numero mostrato sotto la foto
+     codice    codice o anno
+     nome      nome
+     foto      "immagini/NN.webp?v=DATA" (sfondo trasparente, WebP: le prepara
+               l'area amministratore). Se sostituisci una foto con una con lo
+               STESSO nome, metti la data di oggi in "?v=" (es. ?v=2026-10-05):
+               così i browser scaricano quella nuova e non quella vecchia salvata.
+     info      facoltativo: testo fisso nei dettagli
+     hashtag   facoltativo, es. ["Natale"]
+     (altri campi, se ci sono: come nelle righe già scritte)
+
+   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
+   virgolette "…".
+   ===================================================================== */
+// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
+const ELENCO = [
+  { id: "applaydu-2022-01", numero: "01 - VD001", codice: "2022", nome: "Animali da abbronzatura: volpe", foto: "immagini/01.webp?v=2026-10-05", fotoInfo: ["cartine/VD001.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-02", numero: "02 - VD002", codice: "2022", nome: "Animali da abbronzatura: lepre", foto: "immagini/02.webp?v=2026-10-05", fotoInfo: ["cartine/VD002.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-03", numero: "03 - VD003", codice: "2022", nome: "Animali ruota immagini: castoro", foto: "immagini/03.webp?v=2026-10-05", fotoInfo: ["cartine/VD003.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-04", numero: "04 - VD004", codice: "2022", nome: "Animali ruota immagini: orso bianco", foto: "immagini/04.webp?v=2026-10-05", fotoInfo: ["cartine/VD004.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-05", numero: "05 - VD007", codice: "2022", nome: "Animali giramondo: volpe pilota", foto: "immagini/05.webp?v=2026-10-05", fotoInfo: ["cartine/VD007.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-06", numero: "06 - VD009", codice: "2022", nome: "Animali giramondo: scimmia volante", foto: "immagini/06.webp?v=2026-10-05", fotoInfo: ["cartine/VD009.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-07", numero: "07 - VD015", codice: "2022", nome: "Bilancieri dello spazio: astronauta volante", fotoInfo: ["cartine/VD015.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-08", numero: "08 - VD016", codice: "2022", nome: "Bilancieri dello spazio: alieno volante", fotoInfo: ["cartine/VD016.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-09", numero: "09 - VD025", codice: "2022", nome: "Raccogli pianeti: afferra e lancia", foto: "immagini/09.webp?v=2026-10-05", fotoInfo: ["cartine/VD025.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-10", numero: "10 - VD026", codice: "2022", nome: "Raccogli pianeti: raccogli e lancia", foto: "immagini/10.webp?v=2026-10-05", fotoInfo: ["cartine/VD026.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-11", numero: "11 - VD035", codice: "2022", nome: "Droni spaziali: drone NASA", foto: "immagini/11.webp?v=2026-10-05", fotoInfo: ["cartine/VD035.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-12", numero: "12 - VD036", codice: "2022", nome: "Droni spaziali: drone UFO", foto: "immagini/12.webp?v=2026-10-05", fotoInfo: ["cartine/VD036.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-132", numero: "13 - VD043", codice: "2022", nome: "Jetpack spaziali: astronauta con jetpack", foto: "immagini/132.webp?v=2026-10-05c", fotoInfo: ["cartine/VD043.webp?v=2026-10-05b"] },
+  { id: "applaydu-2022-135", numero: "14 - VD044", codice: "2022", nome: "Jetpack spaziali: astronauta bianco", foto: "immagini/135.webp?v=2026-10-05c" },
+  { id: "applaydu-2022-13", numero: "15 - VD049", codice: "2022", nome: "Stencil spaziali: motivi dei pianeti", foto: "immagini/13.webp?v=2026-10-05", fotoInfo: ["cartine/VD049.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-14", numero: "16 - VD050", codice: "2022", nome: "Stencil spaziali: motivi dello spazio", foto: "immagini/14.webp?v=2026-10-05", fotoInfo: ["cartine/VD050.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-15", numero: "17 - VD057", codice: "2022", nome: "Polaroid ad acqua: fotocamera 1", foto: "immagini/15.webp?v=2026-10-05b", fotoInfo: ["cartine/VD057.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-16", numero: "18 - VD058", codice: "2022", nome: "Polaroid ad acqua: fotocamera 2", foto: "immagini/16.webp?v=2026-10-05b", fotoInfo: ["cartine/VD058.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-17", numero: "19 - VD059", codice: "2022", nome: "Animali da dito: camaleonte", foto: "immagini/17.webp?v=2026-10-05", fotoInfo: ["cartine/VD059.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-18", numero: "20 - VD060", codice: "2022", nome: "Animali da dito: coccodrillo", foto: "immagini/18.webp?v=2026-10-05", fotoInfo: ["cartine/VD060.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-19", numero: "21 - VD067", codice: "2022", nome: "Ruspe: Robert", foto: "immagini/19.webp?v=2026-10-05", fotoInfo: ["cartine/VD067.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-20", numero: "22 - VD068", codice: "2022", nome: "Ruspe: Scoop", foto: "immagini/20.webp?v=2026-10-05", fotoInfo: ["cartine/VD068.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-21", numero: "23 - VD071", codice: "2022", nome: "Animali spaziali: pianeta bufalo", foto: "immagini/21.webp?v=2026-10-05", fotoInfo: ["cartine/VD071.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-22", numero: "24 - VD072", codice: "2022", nome: "Animali spaziali: pianeta riccio", foto: "immagini/22.webp?v=2026-10-05", fotoInfo: ["cartine/VD072.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-23", numero: "25 - VD077", codice: "2022", nome: "Veicoli spaziali transformers: Marsokhod", fotoInfo: ["cartine/VD077.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-24", numero: "26 - VD077A", codice: "2022", nome: "Veicoli spaziali transformers: Sojourner", fotoInfo: ["cartine/VD077A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-25", numero: "27 - VD080", codice: "2022", nome: "Dragster telescopici: bandiera vincente", foto: "immagini/25.webp?v=2026-10-05", fotoInfo: ["cartine/VD080.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-26", numero: "28 - VD080A", codice: "2022", nome: "Dragster telescopici: fiamma acida", foto: "immagini/26.webp?v=2026-10-05", fotoInfo: ["cartine/VD080A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-27", numero: "29 - VD093", codice: "2022", nome: "Astronauti transformers: Armstrong", foto: "immagini/27.webp?v=2026-10-05", fotoInfo: ["cartine/VD093.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-28", numero: "30 - VD093A", codice: "2022", nome: "Astronauti transformers: Aldrin", foto: "immagini/28.webp?v=2026-10-05", fotoInfo: ["cartine/VD093A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-29", numero: "31 - VD094", codice: "2022", nome: "Mezzi dei pompieri: barca dei pompieri", foto: "immagini/29.webp?v=2026-10-05", fotoInfo: ["cartine/VD094.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-30", numero: "32 - VD095", codice: "2022", nome: "Mezzi dei pompieri: camion dei pompieri", foto: "immagini/30.webp?v=2026-10-05", fotoInfo: ["cartine/VD095.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-31", numero: "33 - VD096", codice: "2022", nome: "Robot spaziali: Cater", foto: "immagini/31.webp?v=2026-10-05", fotoInfo: ["cartine/VD096.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-32", numero: "34 - VD097", codice: "2022", nome: "Robot spaziali: Spidy", foto: "immagini/32.webp?v=2026-10-05", fotoInfo: ["cartine/VD097.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-33", numero: "35 - VD106", codice: "2022", nome: "Truck modulari: camion", foto: "immagini/33.webp?v=2026-10-05", fotoInfo: ["cartine/VD106.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-34", numero: "36 - VD107", codice: "2022", nome: "Truck modulari: truck", foto: "immagini/34.webp?v=2026-10-05", fotoInfo: ["cartine/VD107.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-35", numero: "37 - VD108", codice: "2022", nome: "Animali del circo: elefante", foto: "immagini/35.webp?v=2026-10-05", fotoInfo: ["cartine/VD108.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-36", numero: "38 - VD109", codice: "2022", nome: "Animali del circo: lama", foto: "immagini/36.webp?v=2026-10-05b", fotoInfo: ["cartine/VD109.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-37", numero: "39 - VD110", codice: "2022", nome: "Alieni colorati: Mono", foto: "immagini/37.webp?v=2026-10-05", fotoInfo: ["cartine/VD110.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-38", numero: "40 - VD111", codice: "2022", nome: "Alieni colorati: Tris", foto: "immagini/38.webp?v=2026-10-05", fotoInfo: ["cartine/VD111.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-39", numero: "41 - VD112", codice: "2022", nome: "Bambole da vestire: Veronica", foto: "immagini/39.webp?v=2026-10-05", fotoInfo: ["cartine/VD112.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-40", numero: "42 - VD113", codice: "2022", nome: "Bambole da vestire: Angelica", foto: "immagini/40.webp?v=2026-10-05", fotoInfo: ["cartine/VD113.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-41", numero: "43 - VD116", codice: "2022", nome: "Trova l'alieno: alieno curioso", foto: "immagini/41.webp?v=2026-10-05", fotoInfo: ["cartine/VD116.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-42", numero: "44 - VD117", codice: "2022", nome: "Trova l'alieno: astronauta curioso", foto: "immagini/42.webp?v=2026-10-05", fotoInfo: ["cartine/VD117.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-43", numero: "45 - VD118", codice: "2022", nome: "Razzi trottole: Cerbero", foto: "immagini/43.webp?v=2026-10-05", fotoInfo: ["cartine/VD118.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-44", numero: "46 - VD119", codice: "2022", nome: "Razzi trottole: Caronte", foto: "immagini/44.webp?v=2026-10-05", fotoInfo: ["cartine/VD119.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-45", numero: "47 - VD122", codice: "2022", nome: "Timbri spaziali: razzo", foto: "immagini/45.webp?v=2026-10-05", fotoInfo: ["cartine/VD122.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-46", numero: "48 - VD122A", codice: "2022", nome: "Timbri spaziali: navicella", foto: "immagini/46.webp?v=2026-10-05", fotoInfo: ["cartine/VD122A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-47", numero: "49 - VD124", codice: "2022", nome: "Memory animali: Memory Africa", fotoInfo: ["cartine/VD124.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-48", numero: "50 - VD125", codice: "2022", nome: "Memory animali: Memory Polo", fotoInfo: ["cartine/VD125.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-49", numero: "51 - VD126", codice: "2022", nome: "Trottole spaziali: trottola UFO", foto: "immagini/49.webp?v=2026-10-05", fotoInfo: ["cartine/VD126.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-50", numero: "52 - VD127", codice: "2022", nome: "Trottole spaziali: trottola astro", foto: "immagini/50.webp?v=2026-10-05", fotoInfo: ["cartine/VD127.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-51", numero: "53 - VD128", codice: "2022", nome: "Moto a carica: Jumpy", foto: "immagini/51.webp?v=2026-10-05", fotoInfo: ["cartine/VD128.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-52", numero: "54 - VD129", codice: "2022", nome: "Moto a carica: Wheele", foto: "immagini/52.webp?v=2026-10-05b", fotoInfo: ["cartine/VD129.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-53", numero: "55 - VD134", codice: "2022", nome: "Alieni spruzzini: Ely", foto: "immagini/53.webp?v=2026-10-05", fotoInfo: ["cartine/VD134.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-54", numero: "56 - VD135", codice: "2022", nome: "Alieni spruzzini: Dragy", foto: "immagini/54.webp?v=2026-10-05", fotoInfo: ["cartine/VD135.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-55", numero: "57 - VD138", codice: "2022", nome: "Caccia all'invasore: alieno invasore", foto: "immagini/55.webp?v=2026-10-05", fotoInfo: ["cartine/VD138.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-56", numero: "58 - VD139", codice: "2022", nome: "Caccia all'invasore: astronauta invasore", foto: "immagini/56.webp?v=2026-10-05", fotoInfo: ["cartine/VD139.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-57", numero: "59 - VD140", codice: "2022", nome: "Rover spaziali: rover di Marte", foto: "immagini/57.webp?v=2026-10-05", fotoInfo: ["cartine/VD140.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-58", numero: "60 - VD141", codice: "2022", nome: "Rover spaziali: rover esploratore", foto: "immagini/58.webp?v=2026-10-05", fotoInfo: ["cartine/VD141.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-59", numero: "61 - VD144", codice: "2022", nome: "Anelli rotanti: spirale di fiori 1", foto: "immagini/59.webp?v=2026-10-05", fotoInfo: ["cartine/VD144.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-60", numero: "62 - VD145", codice: "2022", nome: "Anelli rotanti: spirale di fiori 2", foto: "immagini/60.webp?v=2026-10-05", fotoInfo: ["cartine/VD145.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-61", numero: "63 - VD150", codice: "2022", nome: "Simbionti: creatura pinnata", foto: "immagini/61.webp?v=2026-10-05", fotoInfo: ["cartine/VD150.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-62", numero: "64 - VD151", codice: "2022", nome: "Simbionti: creatura alata", foto: "immagini/62.webp?v=2026-10-05", fotoInfo: ["cartine/VD151.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-63", numero: "65 - VD152", codice: "2022", nome: "Anelli gemelli: gattini", foto: "immagini/63.webp?v=2026-10-05", fotoInfo: ["cartine/VD152.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-64", numero: "66 - VD153", codice: "2022", nome: "Anelli gemelli: coniglietti", foto: "immagini/64.webp?v=2026-10-05", fotoInfo: ["cartine/VD153.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-65", numero: "67 - VD157", codice: "2022", nome: "Bracciali dal mondo: India", foto: "immagini/65.webp?v=2026-10-05", fotoInfo: ["cartine/VD157.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-66", numero: "68 - VD157A", codice: "2022", nome: "Bracciali dal mondo: Africa", foto: "immagini/66.webp?v=2026-10-05", fotoInfo: ["cartine/VD157A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-67", numero: "69 - VD158", codice: "2022", nome: "Buggy spaziali: buggy lunare", foto: "immagini/67.webp?v=2026-10-05", fotoInfo: ["cartine/VD158.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-68", numero: "70 - VD159", codice: "2022", nome: "Buggy spaziali: buggy dei pianeti", foto: "immagini/68.webp?v=2026-10-05", fotoInfo: ["cartine/VD159.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-69", numero: "71 - VD160", codice: "2022", nome: "Animali ballerini: scimmia saltellante", foto: "immagini/69.webp?v=2026-10-05", fotoInfo: ["cartine/VD160.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-70", numero: "72 - VD161", codice: "2022", nome: "Animali ballerini: lemure saltellante", foto: "immagini/70.webp?v=2026-10-05", fotoInfo: ["cartine/VD161.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-133", numero: "73 - VD163", codice: "2022", nome: "Astronauti a gravità zero: astronauta bianco", foto: "immagini/133.webp?v=2026-10-05b", fotoInfo: ["cartine/VD163.webp?v=2026-10-05b"] },
+  { id: "applaydu-2022-71", numero: "74 - VD164", codice: "2022", nome: "Shuttle: lancio spaziale 1", foto: "immagini/71.webp?v=2026-10-05", fotoInfo: ["cartine/VD164.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-134", numero: "75 - VD165", codice: "2022", nome: "Astronauti a gravità zero: astronauta rosso", foto: "", fotoInfo: ["cartine/VD165.webp?v=2026-10-05b"] },
+  { id: "applaydu-2022-72", numero: "76 - VD166", codice: "2022", nome: "Ballerine rotanti: Carmen", foto: "immagini/72.webp?v=2026-10-05", fotoInfo: ["cartine/VD166.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-73", numero: "77 - VD167", codice: "2022", nome: "Shuttle: lancio spaziale 2", foto: "immagini/73.webp?v=2026-10-05", fotoInfo: ["cartine/VD167.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-74", numero: "78 - VD168", codice: "2022", nome: "Zaini da esploratore: avventure nel mondo", foto: "immagini/74.webp?v=2026-10-05", fotoInfo: ["cartine/VD168.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-75", numero: "79 - VD169", codice: "2022", nome: "Zaini da esploratore: avventure in mare", foto: "immagini/75.webp?v=2026-10-05", fotoInfo: ["cartine/VD169.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-76", numero: "80 - VD175", codice: "2022", nome: "Pettini da taschino: pettine magico", foto: "immagini/76.webp?v=2026-10-05", fotoInfo: ["cartine/VD175.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-77", numero: "81 - VD175A", codice: "2022", nome: "Pettini da taschino: pettine fantastico", foto: "immagini/77.webp?v=2026-10-05", fotoInfo: ["cartine/VD175A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-78", numero: "82 - VD176", codice: "2022", nome: "Due in uno: motoslitta argento" },
+  { id: "applaydu-2022-79", numero: "83 - VD177", codice: "2022", nome: "Due in uno: motoslitta bianca" },
+  { id: "applaydu-2022-80", numero: "84 - VD178", codice: "2022", nome: "Saltatori nelle scarpe: topo nella scarpa", foto: "immagini/80.webp?v=2026-10-05", fotoInfo: ["cartine/VD178.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-81", numero: "85 - VD179", codice: "2022", nome: "Saltatori nelle scarpe: coniglio sportivo", foto: "immagini/81.webp?v=2026-10-05", fotoInfo: ["cartine/VD179.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-82", numero: "86 - VD180", codice: "2022", nome: "Segreti da ragazze: scrigno a cuore" },
+  { id: "applaydu-2022-83", numero: "87 - VD181", codice: "2022", nome: "Segreti da ragazze: scrigno a stella" },
+  { id: "applaydu-2022-84", numero: "88 - VD184", codice: "2022", nome: "Ballerine rotanti: Keya", foto: "immagini/84.webp?v=2026-10-05", fotoInfo: ["cartine/VD184.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-85", numero: "89 - VD187", codice: "2022", nome: "Vestiti reversibili: vestito blu e rosa" },
+  { id: "applaydu-2022-86", numero: "90 - VD188", codice: "2022", nome: "Vestiti reversibili: vestito blu e giallo" },
+  { id: "applaydu-2022-87", numero: "91 - VD197", codice: "2022", nome: "Avventure porta segreti: mongolfiera segreta", foto: "immagini/87.webp?v=2026-10-05", fotoInfo: ["cartine/VD197.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-88", numero: "92 - VD198", codice: "2022", nome: "Avventure porta segreti: sottomarino segreto", foto: "immagini/88.webp?v=2026-10-05", fotoInfo: ["cartine/VD198.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-89", numero: "93 - VD199", codice: "2022", nome: "Soccorritrici degli animali: Kate", fotoInfo: ["cartine/VD199.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-90", numero: "94 - VD200", codice: "2022", nome: "Soccorritrici degli animali: Cara", fotoInfo: ["cartine/VD200.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-91", numero: "95 - VD204", codice: "2022", nome: "Scuoti la testa: Mammut" },
+  { id: "applaydu-2022-92", numero: "96 - VD205", codice: "2022", nome: "Scuoti la testa: tigre bianca" },
+  { id: "applaydu-2022-93", numero: "97 - VD207", codice: "2022", nome: "Bambole giramondo: Cassie in campeggio", foto: "immagini/93.webp?v=2026-10-05", fotoInfo: ["cartine/VD207.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-94", numero: "98 - VD208", codice: "2022", nome: "Bambole giramondo: Penny fotografa", foto: "immagini/94.webp?v=2026-10-05", fotoInfo: ["cartine/VD208.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-95", numero: "99 - VD209", codice: "2022", nome: "Esploratori artici: esploratore con la parte alta gialla" },
+  { id: "applaydu-2022-96", numero: "100 - VD210", codice: "2022", nome: "Esploratori artici: esploratore con la parte alta rossa" },
+  { id: "applaydu-2022-97", numero: "101 - VD213", codice: "2022", nome: "Spirografi: Spirografo giallo e verde" },
+  { id: "applaydu-2022-98", numero: "102 - VD214", codice: "2022", nome: "Spirografi: Spirografo blu e arancione" },
+  { id: "applaydu-2022-99", numero: "103 - VD215", codice: "2022", nome: "Pastelli farfalla: farfalla gialla" },
+  { id: "applaydu-2022-100", numero: "104 - VD216", codice: "2022", nome: "Pastelli farfalla: farfalla rosa" },
+  { id: "applaydu-2022-101", numero: "105 - VD217", codice: "2022", nome: "Animali viaggiatori: coniglio bianco in corsa", foto: "immagini/101.webp?v=2026-10-05b" },
+  { id: "applaydu-2022-102", numero: "106 - VD218", codice: "2022", nome: "Animali viaggiatori: tartaruga viaggiatrice", foto: "immagini/102.webp?v=2026-10-05b" },
+  { id: "applaydu-2022-103", numero: "107 - VD219", codice: "2022", nome: "Animali marinai: gattino in crociera", foto: "immagini/103.webp?v=2026-10-05", fotoInfo: ["cartine/VD219.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-104", numero: "108 - VD219A", codice: "2022", nome: "Animali marinai: Capitan Sushi", foto: "immagini/104.webp?v=2026-10-05", fotoInfo: ["cartine/VD219A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-105", numero: "109 - VD222", codice: "2022", nome: "Bracciali da principessa: bracciale con smeraldo" },
+  { id: "applaydu-2022-106", numero: "110 - VD223", codice: "2022", nome: "Bracciali da principessa: bracciale con rubino" },
+  { id: "applaydu-2022-107", numero: "111 - VD224", codice: "2022", nome: "Geko appiccicosi: geko blu", foto: "immagini/107.webp?v=2026-10-05", fotoInfo: ["cartine/VD224.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-108", numero: "112 - VD224A", codice: "2022", nome: "Geko appiccicosi: geko verde", foto: "immagini/108.webp?v=2026-10-05", fotoInfo: ["cartine/VD224A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-109", numero: "113 - VD226", codice: "2022", nome: "Anelli appiccicosi: anello 1", foto: "immagini/109.webp?v=2026-10-05", fotoInfo: ["cartine/VD226.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-110", numero: "114 - VD226A", codice: "2022", nome: "Anelli appiccicosi: anello 2", foto: "immagini/110.webp?v=2026-10-05", fotoInfo: ["cartine/VD226A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-111", numero: "115 - VD227", codice: "2022", nome: "Personaggi cambia costume: vestito appiccicoso 1", foto: "immagini/111.webp?v=2026-10-05", fotoInfo: ["cartine/VD227.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-112", numero: "116 - VD227A", codice: "2022", nome: "Personaggi cambia costume: vestito appiccicoso 2", foto: "immagini/112.webp?v=2026-10-05", fotoInfo: ["cartine/VD227A.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-113", numero: "117 - VD229", codice: "2022", nome: "Gioielli reali: anello della regina" },
+  { id: "applaydu-2022-114", numero: "118 - VD230", codice: "2022", nome: "Gioielli reali: anello della lady" },
+  { id: "applaydu-2022-115", numero: "119 - VD233", codice: "2022", nome: "Alieni pastello: Cralien", foto: "immagini/115.webp?v=2026-10-05", fotoInfo: ["cartine/VD233.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-116", numero: "120 - VD234", codice: "2022", nome: "Alieni pastello: Drawalien", foto: "immagini/116.webp?v=2026-10-05", fotoInfo: ["cartine/VD234.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-117", numero: "121 - VD238", codice: "2022", nome: "Ragazze sportive: Sophie con lo snorkeling", foto: "immagini/117.webp?v=2026-10-05", fotoInfo: ["cartine/VD238.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-118", numero: "122 - VD239", codice: "2022", nome: "Ragazze sportive: Sabrina con il surf", foto: "immagini/118.webp?v=2026-10-05", fotoInfo: ["cartine/VD239.webp?v=2026-10-05"] },
+  { id: "applaydu-2022-119", numero: "123 - VD240", codice: "2022", nome: "Animali mistici: drago" },
+  { id: "applaydu-2022-120", numero: "124 - VD241", codice: "2022", nome: "Animali mistici: uccello di fuoco" },
+  { id: "applaydu-2022-121", numero: "125 - VD242", codice: "2022", nome: "Auto del ghiaccio: auto rossa" },
+  { id: "applaydu-2022-122", numero: "126 - VD243", codice: "2022", nome: "Arte sulla neve: pinguino" },
+  { id: "applaydu-2022-123", numero: "127 - VD244", codice: "2022", nome: "Arte sulla neve: renna" },
+  { id: "applaydu-2022-124", numero: "128 - VD245", codice: "2022", nome: "Ciondoli dolci: Poppins" },
+  { id: "applaydu-2022-125", numero: "129 - VD246", codice: "2022", nome: "Ciondoli dolci: Mary" },
+  { id: "applaydu-2022-126", numero: "130 - VD247", codice: "2022", nome: "Fate: fata azzurra" },
+  { id: "applaydu-2022-127", numero: "131 - VD248", codice: "2022", nome: "Fate: fata verde" },
+  { id: "applaydu-2022-128", numero: "132 - VD249", codice: "2022", nome: "Auto del ghiaccio: auto verde" },
+  { id: "applaydu-2022-129", numero: "133 - VD251", codice: "2022", nome: "Animali rotanti: orso" },
+  { id: "applaydu-2022-130", numero: "134 - VD252", codice: "2022", nome: "Animali rotanti: cavallo" },
+  { id: "applaydu-2022-131", numero: "135 - VV083", codice: "2022", nome: "Vicini di corallo: Octy", foto: "immagini/131.webp?v=2026-10-05" }
+];
+</script>
+
+<!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
+<script src="../../../../script.js?v=2026-10-05a"></script>
+<!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
+<script src="../../../../comune/bagliore.js?v=2026-09-26"></script>
+<!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
+<script src="../../../../comune/app.js?v=2026-10-05a"></script>
+</body>
+</html>

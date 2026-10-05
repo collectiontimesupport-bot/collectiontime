@@ -551,3 +551,14 @@ button.st-btn { border: 0; font-family: inherit; cursor: pointer; }
 .st-seguici a:hover { background: var(--bianco); }
 .st-seguici .ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--blu); }
 .st-seguici .ic svg { width: 18px; height: 18px; fill: var(--amber); }
+
+
+/* =====================================================================
+   PROTEZIONE FOTO
+   Le foto non si possono trascinare, selezionare né salvare con la pressione lunga
+   (iPhone e Android). Il tasto destro è bloccato da script.js (voce 16).
+   Le copertine delle card (.thumb) non reagiscono nemmeno al clic destro:
+   il clic passa alla card sotto, quindi non compare "Salva immagine".
+   ===================================================================== */
+img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.thumb img { pointer-events: none; }
