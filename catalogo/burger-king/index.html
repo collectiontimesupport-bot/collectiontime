@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ! MODIFICA: nome di questa pagina in og:title, description, og:description e indirizzo in og:url (righe qui sotto). Il <title> lo rifà da solo "Pubblica" (og:title + la pagina di sopra, es. "Adventure Time · Charms · Collection Time") -->
+<title>Burger King · Collection Time</title>
+<meta name="description" content="Burger King: i giochi dei menu King Jr. Meal da collezionare. Checklist complete: segna quelli che hai e scopri quelli che ti mancano.">
+<meta name="theme-color" content="#1A2140">
+<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
+     I file stanno nella cartella principale e in "icone/".
+     favicon-96.png = icona della scheda (PNG: Safari non mostra le icone SVG).
+     Se sostituisci un'icona con un file con lo STESSO nome, metti la data di oggi in "?v=…"
+     (es. apple-touch-icon.png?v=2026-09-27) in tutte le pagine: così il browser scarica quella nuova. -->
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=2026-09-27">
+<link rel="manifest" href="../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Burger King · Collection Time">
+<meta property="og:description" content="Burger King: i giochi dei menu King Jr. Meal da collezionare.">
+<meta property="og:url" content="https://collectiontime.com/catalogo/burger-king/">
+<meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Stile comune del sito (colori, bande in alto e in basso) -->
+<link rel="stylesheet" href="../../sito.css?v=2026-10-05a">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+<style>
+  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
+     qui solo ciò che è diverso in questa pagina. */
+  :root {
+    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
+    --titolo: var(--ink); }   /* colore del testo del sito: blu scuro (chiaro nel tema scuro), quasi nero (il rosso è solo per Legami) */
+  /* Titolo in carattere di sistema molto grosso (nessun file da scaricare: pagina leggera) */
+  .st-titolo { font: 900 clamp(2rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
+  /* telefoni: titolo grande come nelle altre sezioni */
+  @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
+  /* Card con la foto IN ALTO, come nella sezione LEGO.
+     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
+  .st-card { --foto-h: 170px; }
+  .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
+  .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
+</style>
+<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
+     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
+<link rel="canonical" href="https://collectiontime.com/catalogo/burger-king/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Burger King","item":"https://collectiontime.com/catalogo/burger-king/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Burger King","url":"https://collectiontime.com/catalogo/burger-king/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Burger King: i giochi dei menu King Jr. Meal da collezionare. Checklist complete: segna quelli che hai e scopri quelli che ti mancano.","image":"https://collectiontime.com/icone/anteprima.jpg","mainEntity":{"@type":"ItemList","numberOfItems":1,"itemListElement":[{"@type":"ListItem","position":1,"name":"King Jr. Meal","url":"https://collectiontime.com/catalogo/burger-king/king-jr-meal/"}]}}]}</script>
+</head>
+<body>
+<!-- Banda in alto (logo, Accedi): la riempie script.js con header.html. Lasciare vuoto. -->
+<div id="header-placeholder"></div>
+
+<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
+<main class="st-wrap">
+  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
+  <a class="st-back" href="../../index.html">&larr; Tutte le collezioni</a>
+  <!-- ! MODIFICA: titolo della pagina -->
+  <h1 class="st-titolo">BURGER KING</h1>
+  <!-- Frase + lente: la lente apre il campo per cercare tra le collezioni (funziona con script.js) -->
+  <div class="st-sub">
+    <p class="sub">Cerca una collezione</p>
+    <div class="st-cerca" id="stCerca">
+      <button type="button" aria-label="Cerca una collezione" aria-expanded="false" title="Cerca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <input type="search" placeholder="Cerca una collezione" aria-label="Cerca una collezione" tabindex="-1" autocomplete="off">
+    </div>
+  </div>
+  <p class="st-nessuna" hidden>Nessuna collezione trovata.</p>
+  <!-- Una card per ogni gruppo: per aggiungerne uno, copia un <li> ... </li> e cambia cartella e testi.
+       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi delle serie). -->
+  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
+       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
+         es. nome-cartella/immagini/copertina.webp
+       • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
+         metti la data di oggi in "?v=…" in fondo al nome del file (es. copertina.webp?v=2026-09-26, oppure aggiungilo
+         se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
+       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
+         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
+       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
+         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
+         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
+  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
+  <ul class="st-cards">
+    <li data-cerca="King Jr. Meal King Junior menu bambini giochi giocattoli figure Dragon Ball Super Goku Vegeta Piccolo Beerus Super Saiyan Blue corona Paw Patrol Dino Movie Rhubarb Marshall Rubble Skye Rex Chase Looney Tunes Taz Daffy Duck Bugs Bunny Titti Beep Beep Lola Bunny Star Wars Mandalorian Grogu Din Djarin Razor Crest Zeb Orrelios Stormtrooper AT-RT Driver Imperial Remnant Tartarughe Ninja TMNT Teenage Mutant Ninja Turtles Splinter Raffaello Michelangelo Leonardo Donatello Top Launcher trottola Puffi Smurfs Moxy Vanity Vanitoso Gargamel Gargamella No Name Brainy Quattrocchi Jaunty Ken Hefty Forzuto Mama Poot Papa Smurf Grande Puffo Smurfette Puffetta Razamel Sonic Hedgehog SEGA Amy Rose Rouge Bat Knuckles Tails Shadow Scooby-Doo Haunted Headless Horseman Shaggy Fred Daphne Velma Pumpkin Horseman Halloween maschere SpongeBob Movie Search for SquarePants Gary Mr. Krab Mr. Krabs Squiddi Squidward Patrick Olandese Volante Flying Dutchman pirati Naruto Uzumaki Sasuke Uchiha Sakura Haruno Kakashi Hatake Neji Hyuuga Hinata Hyuuga Rock Lee Gaara anime Dragon Trainer How to Train Your Dragon draghi Toothless Barf Belch Meatlug Hookfang Terrible Terror Stormfly Peppa Pig George Daddy Mummy Granny Grandpa Suzy Sheep Danny Dog Pedro Pony Freddy Fox Emily Elephant Miss Rabbit DreamWorks Keyclips portachiavi Kung Fu Panda Po Trolls Poppy Branch Shrek Puss in Boots Gatto con gli Stivali Donkey Ciuchino peluche"><a class="st-card" href="king-jr-meal/index.html"><div class="thumb"><img src="king-jr-meal/copertina.webp?v=2026-10-06" alt="" loading="lazy"></div><h2>King Jr. Meal</h2><p>I giochi dei menu per bambini.</p><span class="st-apri">Apri</span></a></li>
+  </ul>
+  <!-- ============ FAI PARTE DELLA COMMUNITY (gruppi di questa categoria) ============
+       Gruppi (Facebook, WhatsApp…) per chi vuole collaborare: NON sono i social di Collection Time.
+       Si gestiscono dall'area amministratore → Impostazioni del sito → "Community": per ogni gruppo
+       c'è la spunta, il nome e il link. Non modificare a mano le righe tra SOCIAL-INIZIO
+       e SOCIAL-FINE (un social con "hidden" è spento, il suo link resta salvato).
+       Se nessun social è acceso, la sezione sparisce da sola ("hidden" sul <section>).
+       Quando copi una categoria per farne una nuova, tieni questo blocco: l'area amministratore lo riempie. -->
+  <section class="st-collabora" hidden>
+    <h2>Fai parte della community di Burger King</h2>
+    <p>Entra in un gruppo: segnalazioni, scambi e idee.</p>
+    <!-- SOCIAL-INIZIO -->
+    <ul class="st-social">
+    </ul>
+    <!-- SOCIAL-FINE -->
+  </section>
+
+  <!-- ============ HAI UN GRUPPO? PROPONILO (banda uguale a quella dei gruppi) ============
+       Chi ha un gruppo su questa categoria può proporlo con una mail: il pulsante apre la posta con
+       oggetto e testo già scritti (l'indirizzo lo mette script.js, voce "Proponi il tuo gruppo": non compare in chiaro).
+       Si accende e si spegne dall'area amministratore → Impostazioni del sito → "Community" ("hidden" = spenta).
+       Il nome dopo "su" va anche in data-proponi="…". -->
+  <section class="st-collabora st-proponi">
+    <a href="../../contatti.html" data-proponi="Burger King">
+      <span class="st-soc-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg></span>
+      <span class="st-soc-t"><b>Hai un gruppo su Burger King?</b><small>Scrivici e lo aggiungiamo qui</small></span>
+      <span class="st-soc-ar" aria-hidden="true">›</span>
+    </a>
+  </section>
+</main>
+
+<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
+<div id="footer-placeholder"></div>
+
+<!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
+<!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
+     in tutte le pagine, così i browser scaricano per forza i file nuovi e non quelli vecchi salvati. -->
+<script src="../../script.js?v=2026-10-05a"></script>
+</body>
+</html>

@@ -522,7 +522,7 @@ function aggiornaAnni(cercando) {
    ! MODIFICA: quando crei una categoria nuova aggiungi qui il suo nome
      (cartella: "Nome"); se manca, uso il nome della cartella. */
 const NOMI_CATEGORIE = {
-  'coolthings': 'Cool Things', 'eurospin': 'Eurospin', 'kinder': 'Kinder Ferrero', 'legami': 'Legami',
+  'burger-king': 'Burger King', 'coolthings': 'Cool Things', 'eurospin': 'Eurospin', 'granterre': 'GranTerre', 'kinder': 'Kinder Ferrero', 'legami': 'Legami',
   'lego': 'LEGO Minifigures', 'lidl': 'Lidl', 'mcdonalds': "McDonald's", 'mulino-bianco': 'Mulino Bianco'
 };
 function percorso() {

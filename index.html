@@ -60,13 +60,15 @@
   .logo-coll.cool span { font-size: 1.8rem; white-space: nowrap; word-spacing: -.15em; }
   /* card McDonald's: "McDonald's" su una riga, più piccolo (se no esce dalla card) */
   .logo-coll.mcd span { font-size: 2.1rem; white-space: nowrap; }
+  /* card Burger King: "Burger King" su una riga, un po' più piccolo (se no esce dalla card) */
+  .logo-coll.bk span { font-size: 1.85rem; white-space: nowrap; }
   /* card Eurospin: "Eurospin" su una riga, un po' più piccolo di "Lidl" (se no esce dalla card) */
   .logo-coll.euro span { font-size: 2.6rem; white-space: nowrap; }
 </style>
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
      Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
 <link rel="canonical" href="https://collectiontime.com/">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"Organization","name":"Collection Time","url":"https://collectiontime.com/","logo":"https://collectiontime.com/icone/icona-512.png","email":"collectiontime.support@gmail.com","sameAs":["https://ko-fi.com/collectiontime"]},{"@type":"CollectionPage","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Collection Time: checklist gratuite di sorpresine e collezionabili — Kinder, LEGO Minifigures, Happy Meal McDonald's, Legami, Stikeez Lidl e altro. Segna quelli che hai, i doppioni e scopri cosa ti manca.","image":"https://collectiontime.com/icone/anteprima.jpg","mainEntity":{"@type":"ItemList","numberOfItems":8,"itemListElement":[{"@type":"ListItem","position":1,"name":"Legami Milano","url":"https://collectiontime.com/catalogo/legami/"},{"@type":"ListItem","position":2,"name":"LEGO Minifigures","url":"https://collectiontime.com/catalogo/lego/"},{"@type":"ListItem","position":3,"name":"Kinder Ferrero","url":"https://collectiontime.com/catalogo/kinder/"},{"@type":"ListItem","position":4,"name":"Cool Things","url":"https://collectiontime.com/catalogo/coolthings/"},{"@type":"ListItem","position":5,"name":"Lidl","url":"https://collectiontime.com/catalogo/lidl/"},{"@type":"ListItem","position":6,"name":"Eurospin","url":"https://collectiontime.com/catalogo/eurospin/"},{"@type":"ListItem","position":7,"name":"Mulino Bianco","url":"https://collectiontime.com/catalogo/mulino-bianco/"},{"@type":"ListItem","position":8,"name":"McDonald's","url":"https://collectiontime.com/catalogo/mcdonalds/"}]}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"Organization","name":"Collection Time","url":"https://collectiontime.com/","logo":"https://collectiontime.com/icone/icona-512.png","email":"collectiontime.support@gmail.com","sameAs":["https://ko-fi.com/collectiontime"]},{"@type":"CollectionPage","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Collection Time: checklist gratuite di sorpresine e collezionabili — Kinder, LEGO Minifigures, Happy Meal McDonald's, Legami, Stikeez Lidl e altro. Segna quelli che hai, i doppioni e scopri cosa ti manca.","image":"https://collectiontime.com/icone/anteprima.jpg","mainEntity":{"@type":"ItemList","numberOfItems":10,"itemListElement":[{"@type":"ListItem","position":1,"name":"Legami Milano","url":"https://collectiontime.com/catalogo/legami/"},{"@type":"ListItem","position":2,"name":"LEGO Minifigures","url":"https://collectiontime.com/catalogo/lego/"},{"@type":"ListItem","position":3,"name":"Kinder Ferrero","url":"https://collectiontime.com/catalogo/kinder/"},{"@type":"ListItem","position":4,"name":"Cool Things","url":"https://collectiontime.com/catalogo/coolthings/"},{"@type":"ListItem","position":5,"name":"Lidl","url":"https://collectiontime.com/catalogo/lidl/"},{"@type":"ListItem","position":6,"name":"Eurospin","url":"https://collectiontime.com/catalogo/eurospin/"},{"@type":"ListItem","position":7,"name":"GranTerre","url":"https://collectiontime.com/catalogo/granterre/"},{"@type":"ListItem","position":8,"name":"Mulino Bianco","url":"https://collectiontime.com/catalogo/mulino-bianco/"},{"@type":"ListItem","position":9,"name":"McDonald's","url":"https://collectiontime.com/catalogo/mcdonalds/"},{"@type":"ListItem","position":10,"name":"Burger King","url":"https://collectiontime.com/catalogo/burger-king/"}]}}]}</script>
 </head>
 <body>
 <!-- Banda in alto (logo, Accedi): la riempie script.js con header.html. Lasciare vuoto. -->
@@ -88,7 +90,7 @@
   </div>
   <!-- NUMERI E NOVITÀ: li riscrive da sola l'area amministratore ("Nuova serie", "Pubblica", "Statistiche").
        NON modificare a mano fino a "FINE NUMERI E NOVITÀ": si perderebbe. Come cambiarli: _admin/admin.js, voce "Numeri e Novità della Home". -->
-  <div class="st-numeri"><div><b>4.726</b><span>pezzi catalogati</span></div><div><b>324</b><span>serie</span></div><div><b>8</b><span>categorie</span></div></div>
+  <div class="st-numeri"><div><b>5.021</b><span>pezzi catalogati</span></div><div><b>348</b><span>serie</span></div><div><b>10</b><span>categorie</span></div></div>
   <section class="st-sezione" id="novita">
     <h2 class="st-sez-titolo">Novità</h2>
     <ul class="st-novita">
@@ -155,6 +157,14 @@
         <span class="st-apri">Apri</span>
       </a>
     </li>
+    <li data-cerca="GranTerre merende Parmareggio Teneroni L'ABC della Merenda Minions Gomme 3D gomme Minions Kevin Stuart Phil Dave Pietra Zodiacale ZooMogi 3D Pencil Top matita animaletti Ippopotamo Volpe Cinghiale Procione Leone Cerbiatto Capibara Ariete Maiale Scimmia Cane Axolotl Mucca Pantera Elefante Panda Rana Pinguino Amore Furbizia Party Amicizia Coraggio Timidezza Calma Rabbia Paura Sorpresa Caos Delusione Gentilezza Mistero Chill Tenerezza Allegria Tristezza">
+      <a class="st-card" href="catalogo/granterre/index.html" aria-label="GranTerre">
+        <!-- logo scritto: --titolo = colore di "GranTerre" (blu scuro del sito) -->
+        <div class="logo-coll kinder euro" style="--titolo: #1A2140" aria-hidden="true"><span>GranTerre</span></div>
+        <p>Le collezioni delle merende GranTerre.</p>
+        <span class="st-apri">Apri</span>
+      </a>
+    </li>
     <li data-cerca="Mulino Bianco Raccolta punti premi colazione Momenti più buoni tazze piattini Felicitazza Frullotto Coccini Cappuccine Schiumalatte Coccio delle Origini Biscotazza Mattutina Sorpresine Gommine 2023 gomme Tarallucci Baiocchi Macine Abbracci Tegolino Gli Animabili Serie 1 Serie 2 animaletti cancelleria Shelly Birba Bee Polly Pepe Pinky Nella Sofi lumachina volpina apina paperella asinello maialino coccinella pecorella gufetto mucchina gallinella coniglietto Stampy Otto Mu">
       <a class="st-card" href="catalogo/mulino-bianco/index.html" aria-label="Mulino Bianco">
         <!-- logo scritto: --titolo = colore di "Mulino" (rosso mattone); "Bianco" piccolo sotto, come "Milano" nella card Legami -->
@@ -168,6 +178,14 @@
         <!-- logo scritto: --titolo = colore di "McDonald's" (rosso McDonald's) -->
         <div class="logo-coll kinder mcd" style="--titolo: #DA291C" aria-hidden="true"><span>McDonald's</span></div>
         <p>Happy Meal e gadget da collezione.</p>
+        <span class="st-apri">Apri</span>
+      </a>
+    </li>
+    <li data-cerca="Burger King BK fast food King Jr. Meal King Junior menu bambini giochi giocattoli figure Dragon Ball Super Goku Vegeta Piccolo Beerus Super Saiyan Blue corona Paw Patrol Dino Movie Rhubarb Marshall Rubble Skye Rex Chase Looney Tunes Taz Daffy Duck Bugs Bunny Titti Beep Beep Lola Bunny Star Wars Mandalorian Grogu Din Djarin Razor Crest Zeb Orrelios Stormtrooper AT-RT Driver Imperial Remnant Tartarughe Ninja TMNT Teenage Mutant Ninja Turtles Splinter Raffaello Michelangelo Leonardo Donatello Top Launcher trottola Puffi Smurfs Moxy Vanity Vanitoso Gargamel Gargamella No Name Brainy Quattrocchi Jaunty Ken Hefty Forzuto Mama Poot Papa Smurf Grande Puffo Smurfette Puffetta Razamel Sonic Hedgehog SEGA Amy Rose Rouge Bat Knuckles Tails Shadow Scooby-Doo Haunted Headless Horseman Shaggy Fred Daphne Velma Pumpkin Horseman Halloween maschere SpongeBob Movie Search for SquarePants Gary Mr. Krab Mr. Krabs Squiddi Squidward Patrick Olandese Volante Flying Dutchman pirati Naruto Uzumaki Sasuke Uchiha Sakura Haruno Kakashi Hatake Neji Hyuuga Hinata Hyuuga Rock Lee Gaara anime Dragon Trainer How to Train Your Dragon draghi Toothless Barf Belch Meatlug Hookfang Terrible Terror Stormfly Peppa Pig George Daddy Mummy Granny Grandpa Suzy Sheep Danny Dog Pedro Pony Freddy Fox Emily Elephant Miss Rabbit DreamWorks Keyclips portachiavi Kung Fu Panda Po Trolls Poppy Branch Shrek Puss in Boots Gatto con gli Stivali Donkey Ciuchino peluche">
+      <a class="st-card" href="catalogo/burger-king/index.html" aria-label="Burger King">
+        <!-- logo scritto: --titolo = colore di "Burger King" (rosso Burger King) -->
+        <div class="logo-coll kinder bk" style="--titolo: #D62300" aria-hidden="true"><span>Burger King</span></div>
+        <p>I giochi dei King Jr. Meal.</p>
         <span class="st-apri">Apri</span>
       </a>
     </li>

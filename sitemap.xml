@@ -2,6 +2,25 @@
 <!-- sitemap.xml — elenco delle pagine di Collection Time per i motori di ricerca.
      Lo rifà da solo l'area amministratore (scheda Pubblica): NON modificarlo a mano. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://collectiontime.com/catalogo/burger-king/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/dc-justice-league-statues/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/dragon-ball-super/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/dreamworks-keyclips/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/how-to-train-your-dragon/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/looney-tunes/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/naruto/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/paw-patrol-the-dino-movie/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/peppa-pig/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/scooby-doo-and-the-haunted-headless-horseman/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/sonic-the-hedgehog/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/spider-man-across-the-spider-verse/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/star-wars-the-mandalorian-and-grogu/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/tales-of-the-teenage-mutant-ninja-turtles/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/the-addams-family/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/the-smurfs/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/the-spongebob-movie-search-for-squarepants/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/transformers-one/</loc><lastmod>2026-10-06</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/adventure-time/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/barbie/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/coolthings/charm-portachiavi/ben-10-omniverse/</loc><lastmod>2026-10-05</lastmod></url>
@@ -87,6 +106,14 @@
   <url><loc>https://collectiontime.com/catalogo/eurospin/sonic/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/eurospin/star-wars-flash-heroes/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/eurospin/the-simpsons/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/granterre/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/granterre/minions-3d-pencil-top/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/granterre/minions-gomme-3d/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/granterre/minions-pencil-top/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/granterre/minions-spin-top/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/granterre/zippy-looney-tunes-dc/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/granterre/zippy-looney-tunes-sporty/</loc><lastmod>2026-10-06</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/granterre/zoomogi-3d-pencil-top/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/avengers/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/kinder/kinder-joy/batwheels/</loc><lastmod>2026-10-05</lastmod></url>
@@ -326,7 +353,7 @@
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/space-jam-new-legends/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/spider-man-brand-new-day/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/spongebob-one-piece/</loc><lastmod>2026-10-05</lastmod></url>
-  <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/spongebob-squarepants/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/spongebob-squarepants/</loc><lastmod>2026-10-06</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/squishmallows-2023/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/squishmallows-2025/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/mcdonalds/happy-meal/squishmallows-fifa-2026/</loc><lastmod>2026-10-05</lastmod></url>
@@ -352,7 +379,7 @@
   <url><loc>https://collectiontime.com/catalogo/mulino-bianco/sorpresine/sorpresine-gommine-2023/</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/contatti.html</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/faq.html</loc><lastmod>2026-10-05</lastmod></url>
-  <url><loc>https://collectiontime.com/</loc><lastmod>2026-10-05</lastmod></url>
+  <url><loc>https://collectiontime.com/</loc><lastmod>2026-10-06</lastmod></url>
   <url><loc>https://collectiontime.com/note-legali.html</loc><lastmod>2026-10-05</lastmod></url>
   <url><loc>https://collectiontime.com/privacy.html</loc><lastmod>2026-10-05</lastmod></url>
 </urlset>
