@@ -258,6 +258,15 @@
       + (tra ? ' (' + tra + ')' : '') + ', con foto, nome e ' + (codici.length ? 'codice' : 'numero') + ' di ognuna'
       + (codici.length > 1 ? ' (da ' + codici[0] + ' a ' + codici[codici.length - 1] + ').' : '.');
     sec.append(p);
+    /* Ringraziamento (facoltativo): «Grazie a Giovanni per le foto.» sotto la descrizione.
+       Si accende dall'area amministratore (Modifica una serie → Ringraziamento) e di base è SPENTO:
+       CONFIG.grazieAcceso (true/false; se manca = spento) e CONFIG.grazieNome (chi ringraziare, anche più nomi: "Giovanni e Marco"). */
+    if (CONFIG.grazieAcceso && String(CONFIG.grazieNome || '').trim()) {
+      const g = document.createElement('p');
+      g.className = 'descr-grazie';
+      g.textContent = 'Grazie a ' + String(CONFIG.grazieNome).trim() + ' per le foto.';
+      sec.append(g);
+    }
     /* Tasto "Segnala un problema" (solo contorno ambra, discreto): apre un'email già scritta con il nome della serie, così chi trova un errore
        (foto, nome, numero…) te lo dice subito. L'indirizzo è composto qui per non stare in chiaro nella pagina (meno spam).
        Il testo del tasto si traduce in comune/lingua-en.js; l'email arriva sempre in italiano. */

@@ -50,7 +50,7 @@
 <!-- Aspetto grafico: comune a tutte le collezioni + quello di tutte le serie Kinder -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../../comune/collezione.css?v=2026-10-09b">
+<link rel="stylesheet" href="../../../../comune/collezione.css?v=2026-10-09d">
 <link rel="stylesheet" href="../../css/stile.css?v=2026-09-27">
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
      Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
@@ -200,7 +200,9 @@ const CONFIG = {
   colonne: 8,                     // quanti per fila sugli schermi larghi (sui telefoni diminuiscono da soli)
   proporzione: 1,                  // altezza ÷ larghezza di una foto (le foto sono quadrate)
   suggerimenti: [],                // hashtag proposti nei dettagli (es. ["Natale"]); vuoto = nessuno
-  mostraNomi: true                 // true = nome scritto sotto ogni foto; false = solo nei dettagli
+  mostraNomi: true,                // true = nome scritto sotto ogni foto; false = solo nei dettagli
+  grazieAcceso: false,             // true = sotto la descrizione compare «Grazie a … per le foto»; false = non compare (di base). Si cambia da Modifica una serie → Ringraziamento
+  grazieNome: "Giovanni"           // chi ringraziare per le foto (anche più nomi: "Giovanni e Marco")
 };
 
 /* =====================================================================
@@ -267,6 +269,6 @@ const ELENCO = [
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG e l'elenco qui sopra) -->
-<script src="../../../../comune/app.js?v=2026-10-09g"></script>
+<script src="../../../../comune/app.js?v=2026-10-09h"></script>
 </body>
 </html>

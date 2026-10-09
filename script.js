@@ -35,6 +35,14 @@ const BASE = new URL('.', document.currentScript.src);
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
 
+/* Anteprima nell'area amministratore: se la pagina è aperta dentro il suo pannello, dice all'amministratore
+   quale pagina sta mostrando e con che titolo (nome della scheda), così la rotella ⟳ "Ricarica" ricarica QUESTA pagina e non torna alla Home.
+   Per chi visita il sito (pagina non in una cornice) non succede niente. */
+if (window.parent !== window) {
+  const dillo = () => parent.postMessage({ anteprimaUrl: location.href, titolo: document.title }, '*');
+  dillo(); addEventListener('load', dillo);       // anche a pagina finita, quando il titolo è quello definitivo
+}
+
 /* ---------- La lingua (voce 15) ----------
    Le pagine sono scritte in italiano. Se il visitatore sceglie English (ricordato nel browser come ct-lingua)
    si carica comune/lingua-en.js: un dizionario italiano → inglese che traduce la pagina e anche i testi che

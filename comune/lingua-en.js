@@ -424,6 +424,7 @@
     [/^Puoi fissare al massimo (\d+) categorie: togline una tenendola premuta$/, "You can pin up to $1 categories: unpin one by pressing and holding it"],
     [/^Salvata nel cloud · (.+)$/, function (m) { return 'Saved in the cloud · ' + m[1].replace(/[a-zì]+/g, function (w) { return MESI[w] || w; }); }],
     [/^(\d+) collezionisti la stanno completando su Collection Time: inizia anche tu!$/, "$1 collectors are completing it on Collection Time: start yours too!"],
+    [/^Grazie a (.+) per le foto\.$/, "Thanks to $1 for the photos."],
     [/^Uscito solo (?:in (.+)|all'estero)$/, function (m) { return 'Released only ' + (m[1] ? 'in ' + m[1].replace(/ e /g, ' and ') : 'abroad'); }],
     [/^(.*?)\. Uscito solo (?:in (.+)|all'estero)$/, function (m) { return m[1] + '. Released only ' + (m[2] ? 'in ' + m[2].replace(/ e /g, ' and ') : 'abroad'); }],
     /* descrizione in fondo alla serie */
