@@ -226,13 +226,24 @@ const ERRORI = {
   'auth/configuration-not-found': 'L\'accesso non è ancora attivo. Riprova più tardi.'
 };
 const messaggioErrore = e => ERRORI[e.code] || 'Qualcosa non ha funzionato. Riprova tra poco.';
-async function conEmail(modo, email, password) {
+async function conEmail(modo, email, password, nick, paese) {
+  let paesePrima = null, paeseCambiato = false;
   try {
-    if (modo === 'nuovo') await createUserWithEmailAndPassword(auth, email, password);
+    if (modo === 'nuovo') {
+      /* il paese scelto nel modulo si salva PRIMA di creare l'account: al primo salvataggio nel cloud (comune/cloud.js, paesePerCloud)
+         viene scritto come "scelto da lui". Se l'iscrizione non riesce (es. email già usata) torna com'era. */
+      if (PAESI.includes(paese)) { try { paesePrima = localStorage.getItem('ct-paese'); localStorage.setItem('ct-paese', paese); paeseCambiato = true; } catch (e) {} }
+      await createUserWithEmailAndPassword(auth, email, password);
+      /* nickname scelto al momento dell'iscrizione (facoltativo): diventa il nome mostrato nel profilo; se è vuoto resta quello di prima */
+      if (nick) { try { await updateProfile(auth.currentUser, { displayName: Array.from(nick).slice(0, 40).join('') }); aggiornaPulsante(auth.currentUser); } catch (e) {} }
+    }
     else await signInWithEmailAndPassword(auth, email, password);
     finestra.close();
     avviso(modo === 'nuovo' ? 'Account creato: la tua collezione si salva anche nel cloud.' : 'Accesso fatto: la tua collezione si salva anche nel cloud.');
-  } catch (e) { mostraErrore(messaggioErrore(e)); }
+  } catch (e) {
+    if (paeseCambiato) { try { paesePrima === null ? localStorage.removeItem('ct-paese') : localStorage.setItem('ct-paese', paesePrima); } catch (x) {} }
+    mostraErrore(messaggioErrore(e));
+  }
 }
 async function passwordDimenticata(email) {
   if (!email) return mostraErrore('Scrivi la tua email qui sopra, poi premi di nuovo "Password dimenticata?".');
@@ -317,7 +328,7 @@ function aggiornaPulsante(utente) {
   const b = document.getElementById('stAccedi');
   if (!b) return;
   if (utente) {
-    b.innerHTML = '<span class="st-avatar" aria-hidden="true">' + esc(nomeDi(utente).charAt(0).toUpperCase()) + '</span>';
+    b.innerHTML = '<span class="st-avatar" aria-hidden="true">' + esc(Array.from(nomeDi(utente))[0].toUpperCase()) + '</span>';
     b.setAttribute('aria-label', 'Il mio profilo: ' + nomeDi(utente));
     b.title = nomeDi(utente);
   } else {
@@ -349,6 +360,14 @@ async function azioneAccount(m) {
 }
 
 /* ===== FINESTRA "Accedi" (solo per chi non ha fatto l'accesso) ===== */
+/* le voci del menu "Il tuo paese" del modulo "Crea account": tutti i paesi (nella lingua del sito), con già scelto quello indovinato o scelto in precedenza */
+function opzioniPaese() {
+  let nomi = null;
+  try { nomi = new Intl.DisplayNames([LINGUA], { type: 'region' }); } catch (e) {}
+  const mio = paeseVisitatore();
+  return nomiPaesi().map(([c, n]) => [c, nomi ? nomi.of(c) : n]).sort((a, b) => a[1].localeCompare(b[1], LINGUA))
+    .map(([c, n]) => '<option value="' + c + '"' + (c === mio ? ' selected' : '') + '>' + esc(n) + '</option>').join('');
+}
 let finestra = null, nuovo = false;   // nuovo = modulo "Crea account" invece di "Accedi"
 function disegnaFinestra() {
   finestra.querySelector('.st-account-testo').innerHTML =
@@ -361,6 +380,8 @@ function disegnaFinestra() {
       ? '<form class="st-email" data-modo="nuovo" novalidate>'
         +   '<input type="email" name="email" placeholder="Email" autocomplete="username" required>'
         +   '<input type="password" name="password" placeholder="Nuova password (min. 6 caratteri)" autocomplete="new-password" minlength="6" required>'
+        +   '<input type="text" name="nome" maxlength="40" placeholder="Nickname (facoltativo)" autocomplete="nickname">'
+        +   '<label class="st-campo-paese"><small>Il tuo paese</small><select name="paese" autocomplete="off">' + opzioniPaese() + '</select></label>'
         +   '<p class="st-account-errore" role="alert" hidden></p>'
         +   '<div class="st-email-azioni"><button type="submit">Crea account</button></div>'
         +   '<button type="button" data-azione="cambia-modo" class="st-link">Hai già un account? Accedi</button>'
@@ -405,7 +426,7 @@ function apriFinestra() {
     finestra.addEventListener('submit', e => {
       e.preventDefault();
       const f = e.target;
-      conEmail(f.dataset.modo, f.email.value.trim(), f.password.value);
+      conEmail(f.dataset.modo, f.email.value.trim(), f.password.value, f.nome ? f.nome.value.trim() : '', f.paese ? f.paese.value : '');
     });
     finestra.addEventListener('close', () => { nuovo = false; });
     document.body.append(finestra);
@@ -432,7 +453,7 @@ function disegnaMenu() {
   if (!u) return chiudiMenu();
   const n = numeri || { ce: '…', doppi: '…', collezioni: '…' };
   menu.innerHTML =
-    '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(nomeDi(u).charAt(0).toUpperCase()) + '</span>'
+    '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(Array.from(nomeDi(u))[0].toUpperCase()) + '</span>'
     + '<div><b>' + esc(nomeDi(u)) + '</b><small>' + esc(u.email || '') + '</small></div></div>'
     /* i numeri sono un link alle statistiche (pagina Impostazioni) */
     + '<a class="st-ma-stat" href="' + new URL('impostazioni.html#statistiche', BASE).href + '">'
@@ -497,7 +518,7 @@ function disegnaImpostazioni() {
     });
   }
   box.innerHTML =
-    '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(nomeDi(u).charAt(0).toUpperCase()) + '</span>'
+    '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(Array.from(nomeDi(u))[0].toUpperCase()) + '</span>'
     + '<div><b>' + esc(nomeDi(u)) + '</b><small>' + esc(u.email || '') + '</small></div></div>'
     + '<p class="st-imp-nota">' + notaCloud() + '</p>'
     + (cambioNome

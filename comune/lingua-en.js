@@ -87,6 +87,7 @@
     "Email": "Email",
     "Password": "Password",
     "Nuova password (min. 6 caratteri)": "New password (min. 6 characters)",
+    "Nickname (facoltativo)": "Nickname (optional)",
     "Crea account": "Create account",
     "Hai già un account? Accedi": "Already have an account? Sign in",
     "Password dimenticata?": "Forgot your password?",

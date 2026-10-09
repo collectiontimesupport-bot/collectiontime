@@ -291,6 +291,8 @@ a.st-ticker-riga:hover { text-decoration: underline; }
 .st-oppure { display: flex; align-items: center; gap: 10px; margin: 14px 0 10px !important; color: var(--muted); font-size: .8125rem; }
 .st-oppure::before, .st-oppure::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .st-email { display: grid; gap: 8px; margin: 0 0 12px; text-align: left; }
+.st-email select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; background: var(--white); color: var(--ink); }
+.st-campo-paese { display: grid; gap: 3px; text-align: left; justify-items: start; } .st-campo-paese small { color: var(--muted); }
 .st-email input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 1rem; color: var(--ink); background: var(--white); }
 .st-email input:focus { outline: none; border-color: var(--amber); }
 .st-email-azioni { display: flex; gap: 8px; }
