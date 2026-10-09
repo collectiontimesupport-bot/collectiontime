@@ -575,3 +575,10 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
 .thumb img { pointer-events: none; }
 .st-privacy-riga { margin: 2px 0 6px; text-align: left; color: var(--muted); }
 .st-privacy-riga a { color: inherit; text-decoration: underline; }
+.st-account .st-google-grande { padding: 14px 16px; font-size: 1.0625rem; font-weight: 700; }
+.st-google-nota { margin: 6px 0 0; color: var(--muted); text-align: center; }
+/* vista iniziale: tutto centrato, con aria tra le tre parti (Google, "registrati con l'email", "hai già un account") */
+.st-account-testo > .st-privacy-riga { margin: 8px 0 0; text-align: center; }
+.st-account-testo > .st-apri-email { display: block; margin: 22px auto 0; font-size: 1rem; }
+.st-account-testo > .st-link { display: block; margin: 16px auto 14px; text-align: center; }
+.st-account-testo > .st-apri-email + .st-link { margin: 18px auto 16px; font-size: .9375rem; }

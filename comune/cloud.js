@@ -235,8 +235,8 @@ const ERRORI = {
   'auth/invalid-email': 'L\'indirizzo email non è scritto bene.',
   'auth/missing-password': 'Scrivi la password.',
   'auth/weak-password': 'La password deve avere almeno 6 caratteri.',
-  'auth/email-already-in-use': 'Esiste già un account con questa email: premi "Accedi" (se l\'hai creato con Google, usa "Accedi con Google").',
-  'auth/invalid-credential': 'Email o password sbagliate. Se non hai ancora un account premi "Crea account"; se ti sei iscritto con Google usa "Accedi con Google".',
+  'auth/email-already-in-use': 'Esiste già un account con questa email: premi "Accedi" (se l\'hai creato con Google, usa "Continua con Google").',
+  'auth/invalid-credential': 'Email o password sbagliate. Se non hai ancora un account premi "Crea account"; se ti sei iscritto con Google usa "Continua con Google".',
   'auth/user-not-found': 'Non c\'è nessun account con questa email: premi "Crea account".',
   'auth/wrong-password': 'Password sbagliata.',
   'auth/too-many-requests': 'Troppi tentativi: aspetta qualche minuto e riprova.',
@@ -461,22 +461,27 @@ function opzioniPaese() {
   return vuota + nomiPaesi().map(([c, n]) => [c, nomi ? nomi.of(c) : n]).sort((a, b) => a[1].localeCompare(b[1], LINGUA))
     .map(([c, n]) => '<option value="' + c + '"' + (!vuota && c === mio ? ' selected' : '') + '>' + esc(n) + '</option>').join('');
 }
-let finestra = null, nuovo = false;   // nuovo = modulo "Crea account" invece di "Accedi"
+let finestra = null, nuovo = true;    // nuovo = vista "Crea account" (di partenza); false = vista "Accedi"
+let emailAperta = false;              // nella vista "Crea account": false = solo Google grande + link "registrati con l'email"; true = anche il modulo email
 function disegnaFinestra() {
   finestra.querySelector('.st-account-testo').innerHTML =
     '<p>Accedi per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>'
-    + '<button type="button" data-azione="accedi" class="st-google">Accedi con Google</button>'
-    + '<p class="st-oppure">oppure con la tua email</p>'
+    + '<button type="button" data-azione="accedi" class="st-google st-google-grande">Continua con Google</button>'
+    + '<p class="st-google-nota"><small>Il modo più rapido: senza password e senza email da confermare.</small></p>'
+    + (nuovo && !emailAperta ? '<p class="st-privacy-riga"><small>Iscrivendoti accetti la </small><a href="' + new URL('privacy.html', BASE).href + '" target="_blank" rel="noopener"><small>Privacy</small></a><small>.</small></p>' : '')
+    + (nuovo && !emailAperta ? '' : '<p class="st-oppure">oppure con la tua email</p>')
     /* un modo alla volta ("entra" o "nuovo"), così il Portachiavi / gestore password
        capisce se compilare una password salvata o proporne e salvarne una nuova */
-    + (nuovo
+    + (nuovo && !emailAperta
+      ? '<button type="button" data-azione="apri-email" class="st-link st-apri-email">Oppure registrati con l\'email →</button>'
+        + '<button type="button" data-azione="cambia-modo" class="st-link">Hai già un account? Accedi</button>'
+      : nuovo
       ? '<form class="st-email" data-modo="nuovo" novalidate>'
         +   '<input type="email" name="email" placeholder="Email" autocomplete="username" required>'
         +   '<input type="password" name="password" placeholder="Nuova password (min. 6 caratteri)" autocomplete="new-password" minlength="6" required>'
         +   '<input type="text" name="nome" maxlength="40" placeholder="Nickname (facoltativo)" autocomplete="nickname">'
         +   '<label class="st-campo-paese"><small>Il tuo paese</small><select name="paese" autocomplete="off">' + opzioniPaese() + '</select></label>'
         +   '<p class="st-account-errore" role="alert" hidden></p>'
-        +   '<p class="st-privacy-riga"><small>Creando l\'account accetti la </small><a href="' + new URL('privacy.html', BASE).href + '" target="_blank" rel="noopener"><small>Privacy</small></a><small>.</small></p>'
         +   '<div class="st-email-azioni"><button type="submit">Crea account</button></div>'
         +   '<button type="button" data-azione="cambia-modo" class="st-link">Hai già un account? Accedi</button>'
         + '</form>'
@@ -488,7 +493,8 @@ function disegnaFinestra() {
         +   '<button type="button" data-azione="dimenticata" class="st-link">Password dimenticata?</button>'
         +   '<button type="button" data-azione="cambia-modo" class="st-link">Non hai un account? Crea account</button>'
         + '</form>')
-    + '<p><small>Salviamo solo il tuo nome, la tua email, il tuo paese e quello che segni sul sito (spunte, doppioni, hashtag). Dettagli nella pagina Privacy.</small></p>'
+    /* iscrivendosi si accetta la Privacy: nella vista iniziale sta subito sotto Google, nel modulo email sta in fondo */
+    + (nuovo && emailAperta ? '<p class="st-privacy-riga"><small>Iscrivendoti accetti la </small><a href="' + new URL('privacy.html', BASE).href + '" target="_blank" rel="noopener"><small>Privacy</small></a><small>.</small></p>' : '')
     + '<div class="st-account-copia"><small>Non vuoi un account?</small> ' + COPIA + '</div>';
 }
 function apriFinestra() {
@@ -509,9 +515,14 @@ function apriFinestra() {
       const azione = b.dataset.azione;
       if (azione === 'accedi') { finestra.close(); accedi(); }  // il clic apre subito la finestra di Google (se no il browser la blocca)
       else if (azione === 'cambia-modo') {                     // Accedi ⇄ Crea account (l'email scritta resta)
-        const email = finestra.querySelector('.st-email [name=email]').value;
-        nuovo = !nuovo; disegnaFinestra();
-        finestra.querySelector('.st-email [name=email]').value = email;
+        const campo = finestra.querySelector('.st-email [name=email]'), email = campo ? campo.value : '';
+        nuovo = !nuovo; if (nuovo && email) emailAperta = true; disegnaFinestra();
+        const nuovoCampo = finestra.querySelector('.st-email [name=email]');
+        if (nuovoCampo) nuovoCampo.value = email;
+      }
+      else if (azione === 'apri-email') {                      // mostro il modulo email della vista "Crea account"
+        emailAperta = true; disegnaFinestra();
+        finestra.querySelector('.st-email [name=email]').focus();
       }
       else if (azione === 'dimenticata') passwordDimenticata(finestra.querySelector('.st-email [name=email]').value.trim());
       else finestra.close();
@@ -522,7 +533,7 @@ function apriFinestra() {
       const f = e.target;
       conEmail(f.dataset.modo, f.email.value.trim(), f.password.value, f.nome ? f.nome.value.trim() : '', f.paese ? f.paese.value : '');
     });
-    finestra.addEventListener('close', () => { nuovo = false; });
+    finestra.addEventListener('close', () => { nuovo = true; emailAperta = false; });
     document.body.append(finestra);
   }
   disegnaFinestra();
