@@ -52,6 +52,7 @@
   /* Sagoma grigia mostrata al posto degli oggetti senza foto (solo Legami ce l'ha). */
   const SLOT_IMG = 'immagini/slot-vuoto.webp';
 
+  const escHtml = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const idVisti = new Set();
   const SEED = ELENCO.map((r, i) => {
     /* se manca l'id lo ricavo dal nome del file della foto (es. "penna-96-riccio") */
@@ -63,6 +64,7 @@
        Il paese compare accanto al numero ("01 - USA") e nelle Info ("Uscito solo in USA"). */
     const paese = r.paese || '';
     const numero = r.numero || '';
+    const infoPaese = paese && !/uscit[oa] solo/i.test(r.info || '') ? (r.info ? '. ' : '') + 'Uscito solo ' + (/^estero$/i.test(paese) ? 'all\'estero' : 'in ' + paese) : '';   /* frase "Uscito solo in …" delle varianti estere */
     return {
       id,
       pos: i,                                  /* posizione = ordine nell'elenco */
@@ -70,16 +72,31 @@
       paese,
       estero: paeseEstero(paese),              /* true = variante estera per chi guarda (paeseEstero è in script.js) */
       codice: r.codice || '',
+      senzaCodice: !!r.senzaCodice,              /* true = nei Dettagli di questo pezzo il campo Codice non si vede (si toglie la spunta da Modifica una serie → ✎ Editor) */
       name: r.nome || '',
       colorName: r.colore || '',
       colorHex: r.hex || '',
+      /* testo con formato (colori, carattere, grandezza) scritto dall'Editor dell'area amministratore: richNumero / richNome / richInfo.
+         Se manca si usa il testo semplice (numero / nome / info). L'HTML lo prepara l'Editor (solo span, b, i, u): non scriverlo a mano. */
+      richNumero: r.richNumero || '', richNome: r.richNome || '',
+      richInfo: r.richInfo ? r.richInfo + (infoPaese ? escHtml(infoPaese) : '') : '',
       limited: !!r.limitata,
       tags: Array.isArray(r.hashtag) ? r.hashtag.slice() : [],
-      info: (r.info || '') + (paese && !/uscit[oa] solo/i.test(r.info || '') ? (r.info ? '. ' : '') + 'Uscito solo ' + (/^estero$/i.test(paese) ? 'all\'estero' : 'in ' + paese) : ''),   /* testo fisso "Info": si cambia solo nell'HTML */
+      info: (r.info || '') + infoPaese,   /* testo fisso "Info": si cambia solo nell'HTML */
       image: r.foto || '',                     /* percorso della foto, es. "immagini/01.webp" */
       fotoInfo: Array.isArray(r.fotoInfo) ? r.fotoInfo.filter(Boolean) : []   /* foto extra nelle Info (si scorrono): fotoInfo: ["immagini/01-b.webp", ...] */
     };
   });
+
+  /* campo "Colore" (pallino + nome) nei Dettagli: lo mostro SOLO per i pezzi che hanno un colore (colore: "Blu", hex: "#2c357e" nell'ELENCO),
+     così in una serie di 10 oggetti con una sola penna il colore compare solo nella penna. Si assegna da Modifica una serie → ✎ Editor.
+     La pagina non ha bisogno di nessun codice in più: il campo lo creo io (se la pagina ce l'ha già scritto, lo riuso). */
+  const campoColore = (() => {
+    const c = document.createElement('div'); c.className = 'field';
+    c.innerHTML = 'Colore<div class="colorbox"><span class="dot" id="colorDot"></span><input type="text" id="fColorName" readonly tabindex="-1" aria-label="Colore"></div>';
+    const vecchio = document.getElementById('colorDot'); if (vecchio) vecchio.closest('.field').remove();   /* campo scritto a mano in pagine più vecchie */
+    return c;
+  })();
 
   /* ---------- stato della pagina ---------- */
   let db = null;           /* archivio del browser (IndexedDB) */
@@ -129,7 +146,7 @@
     'pasqua': ['pasqua', 'easter']
   };
   const foldText = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  /* tutto il testo in cui cercare per un oggetto (numero, EP, nome, info, colore, hashtag) */
+  /* tutto il testo in cui cercare per un oggetto (numero, codice, nome, info, colore, hashtag) */
   function searchText(p) {
     const parts = [p.code, p.codice, p.name, p.info, p.colorName];
     p.tags.forEach(t => {
@@ -373,7 +390,7 @@
 
     const code = document.createElement('div');
     code.className = 'code' + (p.limited ? ' limited' : '') + (p.code ? '' : ' none');
-    code.textContent = p.code || 'N°';
+    if (p.richNumero && !p.paese) code.innerHTML = p.richNumero; else code.textContent = p.code || 'N°';   /* testo con formato dell'Editor, se c'è */
     code.setAttribute('aria-label', 'Numero ' + (p.code || 'non indicato'));
 
     const edit = document.createElement('button');
@@ -390,7 +407,7 @@
       const nome = document.createElement('div');
       nome.className = 'nome';
       nome.append(document.createElement('span'));
-      nome.firstChild.textContent = p.name;
+      if (p.richNome) nome.firstChild.innerHTML = p.richNome; else nome.firstChild.textContent = p.name;
       li.append(btn, nome, edit, code, ...doppi);   /* foto, nome, pulsante "info", numero */
     } else {
       li.append(btn, edit, code, ...doppi);
@@ -553,16 +570,20 @@
     img.hidden = !p.image;
     $('dlgNoPhoto').hidden = !!p.image;
     $('fCodice').value = p.codice;
+    /* campo Codice: di solito c'è sempre; sparisce solo nei pezzi a cui hai tolto la spunta nell'Editor */
+    const campoCodice = $('fCodice').closest('.field'), trioCodice = document.querySelector('#editForm .trio');
+    if (p.senzaCodice) campoCodice.remove(); else if (!campoCodice.isConnected && trioCodice) trioCodice.prepend(campoCodice);
     $('fCode').value = p.code;
     $('fName').value = p.name;
-    /* colore (solo nelle pagine che hanno il campo Colore, es. Legami Erasable) */
-    const dot = $('colorDot');
-    if (dot) {
-      dot.style.background = p.colorHex || 'transparent';
-      dot.classList.toggle('empty', !p.colorHex);
+    /* colore: il campo sta nei Dettagli solo se questo pezzo ha un colore (in mezzo: Codice · Colore · Numero) */
+    const trio = document.querySelector('#editForm .trio'), haCol = !!(p.colorName || p.colorHex);
+    if (haCol && trio) {
+      if (!campoColore.isConnected) trio.insertBefore(campoColore, trio.children[1] || null);
+      $('colorDot').style.background = p.colorHex || 'transparent';
+      $('colorDot').classList.toggle('empty', !p.colorHex);
       $('fColorName').value = p.colorName;
-    }
-    $('fInfo').textContent = p.info;
+    } else campoColore.remove();
+    if (p.richInfo) $('fInfo').innerHTML = p.richInfo; else $('fInfo').textContent = p.info;   /* Info con il formato dell'Editor, se c'è */
     $('fInfoBox').hidden = !p.info;          /* "Info": nascosta se l'oggetto non ne ha */
     mostraFotoInfo(p);                       /* foto extra da scorrere (se ci sono) */
     editTags = p.tags.slice();

@@ -15,7 +15,7 @@
   10) l'aspetto del sito: Automatico · Chiaro · Scuro (nella pagina Impostazioni)
   11) la barra "6 su 9" sulle card delle serie in cui hai segnato qualcosa
   12) le categorie fissate in alto nella Home (tenendo premuto, solo con l'account)
-  13) il carosello delle Novità nella Home (frecce quando le Novità sono più di quelle visibili)
+  13) il carosello delle Novità nella Home (a blocchi: swipe, frecce solo da computer al passaggio del mouse, pallini, ricomincia da capo)
   14) il paese di chi visita (per le "Varianti estere" dei pezzi e per le serie solo estere, sotto il titolo "Estero")
   15) la lingua: italiano di base, inglese a scelta (link "English" nella banda in basso e voce "Lingua" in Impostazioni)
   16) protezione delle foto: niente tasto destro / trascinamento / salva-immagine sulle foto
@@ -663,52 +663,92 @@ function pinCategorie() {
 }
 
 /* ---------- Carosello delle Novità (Home) ----------
-   Le Novità scorrono di lato (l'aspetto è in sito.css, voce "Novità"): si vedono 4 card per volta
-   (4 in fila sul computer, 2 × 2 sul telefono) e le altre arrivano scorrendo, senza cambiare grandezza.
-   Qui le frecce (compaiono quando le Novità sono più di quelle visibili) e lo scorrimento automatico. */
+   Le Novità scorrono A BLOCCHI di PER_BLOCCO card (4: una fila da 4 sul computer, 2 × 2 sul telefono; l'aspetto è in
+   sito.css, voce "Novità"). Come si sfoglia:
+     · TELEFONO: si trascina col dito, e si ferma sempre all'inizio di un blocco (lo "snap" è in sito.css);
+     · COMPUTER: frecce ‹ › ai lati, che compaiono solo quando il mouse è sopra le Novità (sul telefono non ci sono);
+     · sotto le card, i pallini: uno per blocco, quello pieno è il blocco che stai guardando; si possono premere;
+     · giro continuo: le card vengono copiate in coda, così dall'ultimo blocco si continua SEMPRE verso destra e si
+       rientra nel primo senza tornare indietro (finito il giro, lo scorrimento rientra di nascosto sull'originale);
+       ‹ dal primo blocco porta all'ultimo andando verso sinistra;
+     · scorrimento automatico ogni SECONDI_AUTO secondi (si ferma se tocchi o passi col mouse).
+   ! MODIFICA: PER_BLOCCO deve essere uguale al numero di card visibili (i "4" e i "2 × 2" in sito.css);
+               SECONDI_AUTO = ogni quanti secondi cambia blocco (0 = niente scorrimento automatico). */
 function carosello() {
+  const PER_BLOCCO = 4, SECONDI_AUTO = 8, PAUSA_TOCCO = 10;
   const ul = document.querySelector('ul.st-novita');
   if (!ul) return;
-  ul.parentElement.classList.add('st-car');
+  const riquadro = ul.parentElement;
+  riquadro.classList.add('st-car');
+  const originali = [...ul.children];
+  const blocchi = Math.ceil(originali.length / PER_BLOCCO);
+  if (blocchi < 2) return;                              // tutte le Novità stanno in un blocco: niente frecce né pallini
+  /* giro continuo: l'ultimo blocco si completa con le prime card, poi tutto il giro si ripete in coda (copie nascoste ai lettori di schermo) */
+  const giro = Array.from({ length: blocchi * PER_BLOCCO }, (_, i) => i < originali.length ? originali[i] : originali[i % originali.length].cloneNode(true));
+  const copie = giro.map(li => li.cloneNode(true));
+  [...giro.slice(originali.length), ...copie].forEach(li => {
+    if (!originali.includes(li)) { li.setAttribute('aria-hidden', 'true'); li.querySelectorAll('a').forEach(a => a.tabIndex = -1); }
+  });
+  ul.append(...giro.slice(originali.length), ...copie);
+  const card = [...ul.children];
+
+  /* frecce (solo computer: sul telefono le nasconde sito.css) */
   const freccia = (verso, testo) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'st-car-freccia ' + (verso < 0 ? 'prima' : 'dopo'); b.textContent = verso < 0 ? '\u2039' : '\u203A'; b.setAttribute('aria-label', testo);
-    b.addEventListener('click', () => ul.scrollBy({ left: verso * ul.clientWidth, behavior: 'smooth' }));
+    b.type = 'button'; b.className = 'st-car-freccia ' + (verso < 0 ? 'prima' : 'dopo');
+    b.textContent = verso < 0 ? '‹' : '›'; b.setAttribute('aria-label', testo);
+    b.addEventListener('click', () => vai(attuale() + verso));
     return b;
   };
-  const prima = freccia(-1, 'Novità precedenti'), dopo = freccia(1, 'Novità successive');
-  ul.after(prima, dopo);
-  const aggiorna = () => {
-    const piu = ul.scrollWidth > ul.clientWidth + 2;
-    prima.hidden = dopo.hidden = !piu;
-    prima.disabled = ul.scrollLeft < 2;
-    dopo.disabled = ul.scrollLeft + ul.clientWidth >= ul.scrollWidth - 2;
+  /* pallini */
+  const pallini = document.createElement('div');
+  pallini.className = 'st-car-pallini';
+  const punti = Array.from({ length: blocchi }, (_, k) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('aria-label', 'Novità, blocco ' + (k + 1) + ' di ' + blocchi);
+    b.addEventListener('click', () => vai(k));
+    pallini.append(b);
+    return b;
+  });
+  ul.after(freccia(-1, 'Novità precedenti'), freccia(1, 'Novità successive'), pallini);
+
+  /* posizione di inizio di ogni blocco = dove sta la sua prima card (rispetto alla prima) */
+  const inizio = k => card[k * PER_BLOCCO].offsetLeft - card[0].offsetLeft;
+  const massimo = () => ul.scrollWidth - ul.clientWidth;
+  const periodo = () => inizio(blocchi);                // lunghezza di un giro intero
+  const salta = px => { ul.style.scrollSnapType = 'none'; ul.scrollLeft += px; ul.style.scrollSnapType = ''; };   // spostamento istantaneo, invisibile (le copie sono identiche)
+  const attuale = () => {                               // blocco più vicino a dove siamo (0 … blocchi-1)
+    let meglio = 0, dist = Infinity;
+    for (let k = 0; k <= blocchi; k++) { const d = Math.abs(Math.min(inizio(k), massimo()) - ul.scrollLeft); if (d < dist) { dist = d; meglio = k; } }
+    return meglio % blocchi;
   };
+  const vai = k => {                                    // k = blocchi → si prosegue verso destra nelle copie; k < 0 → si va all'ultimo verso sinistra
+    if (k < 0) { salta(periodo()); k = blocchi - 1; }
+    k = Math.min(k, blocchi);
+    ul.scrollTo({ left: Math.min(inizio(k), massimo()), behavior: 'smooth' });
+  };
+  let tocco = false, rientro;
+  const riavvolgi = () => { if (!tocco && ul.scrollLeft >= periodo() - 2) salta(-periodo()); };   // arrivati alle copie, si rientra sull'originale
+  const aggiorna = () => { const a = attuale(); punti.forEach((b, k) => b.classList.toggle('attivo', k === a)); clearTimeout(rientro); rientro = setTimeout(riavvolgi, 150); };
   ul.addEventListener('scroll', aggiorna, { passive: true });
+  ul.addEventListener('touchstart', () => { tocco = true; }, { passive: true });
+  ul.addEventListener('touchend', () => { tocco = false; clearTimeout(rientro); rientro = setTimeout(riavvolgi, 150); }, { passive: true });
   window.addEventListener('resize', aggiorna);
   aggiorna();
 
-  /* Scorrimento automatico: ogni SECONDI_AUTO secondi passa alle card successive e, in fondo, torna all'inizio.
-     Si ferma finché il mouse è sopra, un dito tocca il carosello (riparte dopo PAUSA_TOCCO secondi) o si usa la tastiera;
-     non gira se la scheda del browser è in secondo piano o se le Novità stanno tutte in vista.
-     ! MODIFICA: SECONDI_AUTO = ogni quanti secondi cambia (0 = niente scorrimento automatico). */
-  const SECONDI_AUTO = 8, PAUSA_TOCCO = 10;
+  /* scorrimento automatico: si ferma finché il mouse è sopra, un dito tocca o si usa la tastiera;
+     non gira se la scheda del browser è in secondo piano */
   if (!SECONDI_AUTO) return;
   let fermo = false, ripresa;
   const ferma = () => { clearTimeout(ripresa); fermo = true; };
   const riparti = (dopo = 0) => { clearTimeout(ripresa); ripresa = setTimeout(() => { fermo = false; }, dopo * 1000); };
-  const riquadro = ul.parentElement;
   riquadro.addEventListener('mouseenter', ferma);
   riquadro.addEventListener('mouseleave', () => riparti());
   riquadro.addEventListener('focusin', ferma);
   riquadro.addEventListener('focusout', () => riparti());
   riquadro.addEventListener('touchstart', ferma, { passive: true });
   riquadro.addEventListener('touchend', () => riparti(PAUSA_TOCCO), { passive: true });
-  setInterval(() => {
-    if (fermo || document.hidden || dopo.hidden) return;
-    if (ul.scrollLeft + ul.clientWidth >= ul.scrollWidth - 2) ul.scrollTo({ left: 0, behavior: 'smooth' });
-    else ul.scrollBy({ left: ul.clientWidth, behavior: 'smooth' });
-  }, SECONDI_AUTO * 1000);
+  setInterval(() => { if (!fermo && !document.hidden) vai(attuale() + 1); }, SECONDI_AUTO * 1000);
 }
 
 /* ---------- Il paese di chi visita (14) ----------

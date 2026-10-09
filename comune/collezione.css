@@ -182,7 +182,12 @@ select, .field input[type=text] {
 }
 .pic img {
   position: absolute; left: 50%; top: 6px;
-  height: calc(100% - 12px); width: auto; max-width: none;
+  height: calc(100% - 12px); width: auto;
+  /* ALLINEAMENTO SEMPRE UGUALE, QUALUNQUE SIA LA PROPORZIONE DELLA FOTO:
+     il riquadro .pic ha altezza fissa; la foto lo riempie in altezza. Se è più larga della colonna
+     (max-width) NON esce e non sposta nulla: si rimpicciolisce (object-fit) restando appoggiata in basso,
+     così i numeri sotto le foto stanno sempre sulla stessa riga. */
+  max-width: 100%; object-fit: contain; object-position: center bottom;
   transform: translateX(-50%);
   display: block;
 }
@@ -204,7 +209,7 @@ select, .field input[type=text] {
    Niente filtri CSS (drop-shadow ecc.): su iPhone vengono tagliati. */
 .pic img.halo {
   top: 50%; transform: translate(-50%, -50%);
-  height: calc((100% - 12px) * var(--k, 1.3));
+  height: calc((100% - 12px) * var(--k, 1.3)); max-width: none; object-fit: fill;   /* il bagliore resta com'era */
   opacity: 0; transition: opacity .3s ease; pointer-events: none;
 }
 .pen.owned .pic img.halo { opacity: 1; }
@@ -220,7 +225,7 @@ select, .field input[type=text] {
   text-align: center;
   font-size: clamp(.72rem, .5rem + .35vw, .875rem);
   line-height: 1.25;
-  color: var(--ink);
+  color: var(--c-nome, var(--ink));   /* --c-nome: come sopra */
 }
 .nome span {   /* nomi lunghissimi: al massimo 2 righe */
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
@@ -239,7 +244,7 @@ select, .field input[type=text] {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 4px 2px;
-  color: var(--ink);
+  color: var(--c-numero, var(--ink));   /* --c-numero: si cambia da Modifica una serie → Colori dei testi */
   white-space: nowrap; overflow: hidden;
   user-select: none;
 }
@@ -321,7 +326,7 @@ dialog::backdrop { background: rgba(10, 14, 30, .55); }   /* sfondo scuro dietro
 .field { display: grid; gap: 4px; font-size: .875rem; color: var(--muted); }
 .field input[type=text] { color: var(--ink); font-size: 1rem; width: 100%; }
 /* testo "Info" (fisso, non modificabile) */
-.info { margin: 0; color: var(--ink); font-size: 1rem; white-space: pre-line; }
+.info { margin: 0; color: var(--c-info, var(--ink)); font-size: 1rem; white-space: pre-line; }
 /* foto extra nelle Info: si scorrono col dito, con le frecce o con la tastiera */
 .info-foto { position: relative; }
 .info-foto[hidden] { display: none; }

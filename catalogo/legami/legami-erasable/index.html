@@ -43,7 +43,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-05a">
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-09">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
 <!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
 <link rel="preload" href="../../../comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
@@ -51,7 +51,7 @@
 <!-- Aspetto grafico: comune a tutte le collezioni + quello delle collezioni Legami -->
 <!-- "?v=…" è la versione del file = la DATA dell'ultima modifica (anno-mese-giorno): quando cambi un file .js o .css metti la data di oggi (es. v=2026-09-26)
      in tutte le pagine che lo usano, così i browser scaricano per forza il file nuovo e non quello vecchio salvato. -->
-<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-10-05a">
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-10-09b">
 <link rel="stylesheet" href="../css/stile.css?v=2026-09-27">
 <!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
      Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
@@ -162,7 +162,7 @@
     <div class="dlg-body">
       <!-- Codice · Colore · Numero (fissi, non si modificano) -->
       <div class="trio">
-        <div class="field"><span id="lblCodice">Codice EP</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field"><span id="lblCodice">Codice</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
         <div class="field">Colore
           <div class="colorbox"><span class="dot" id="colorDot"></span><input type="text" id="fColorName" readonly tabindex="-1" aria-label="Colore"></div>
         </div>
@@ -336,14 +336,14 @@ const ELENCO = [
   { id: "seed-075", numero: "57", codice: "EP0057", nome: "SCHIACCIANOCI", colore: "Blu", hex: "#2c357e", foto: "immagini/57.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
   { id: "seed-076", numero: "58", codice: "EP0058", nome: "BALLERINA", colore: "Rosso", hex: "#c43329", foto: "immagini/58.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
   { id: "seed-077", numero: "59", codice: "EP0059", nome: "TOPO", colore: "Verde", hex: "#3c8765", foto: "immagini/59.webp", limitata: true, hashtag: ["Natale", "Limited Edition"] },
-  { id: "seed-078", numero: "60", codice: "EP0060", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-A.webp", info: "Con bambù, Riedizione con nuovo codice EP" },
+  { id: "seed-078", numero: "60", codice: "EP0060", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-A.webp", info: "Con bambù, Riedizione con nuovo codice EP EP" },
   { id: "seed-079", numero: "61", codice: "EP0061", nome: "UNICORNO", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/13.webp", info: "Riedizione con nuovo codice EP" },
   { id: "seed-080", numero: "62", codice: "EP0062", nome: "GATTO", colore: "Nero", hex: "#000000", foto: "immagini/62.webp", info: "Riedizione con nuovo codice EP" },
   { id: "seed-081", numero: "63", codice: "EP0063", nome: "SQUALO", colore: "Blu", hex: "#2c357e", foto: "immagini/63.webp", info: "Riedizione con nuovo codice EP" },
   { id: "seed-082", numero: "64", codice: "EP0064", nome: "LAMA", colore: "Blu", hex: "#2c357e", foto: "immagini/64.webp", info: "Riedizione con nuovo codice EP" },
   { id: "seed-083", numero: "65", codice: "EP0065", nome: "DINOSAURO", colore: "Verde", hex: "#3c8765", foto: "immagini/65.webp", info: "Riedizione con nuovo codice EP" },
-  { id: "seed-084", numero: "66", codice: "EP0066", nome: "CONIGLIO", colore: "Viola", hex: "#834687", foto: "immagini/66.webp", info: "Con coda, Riedizione con nuovo codice EP" },
-  { id: "seed-085", numero: "67", codice: "EP0067", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/67.webp", info: "Con miele, Riedizione con nuovo codice EP" },
+  { id: "seed-084", numero: "66", codice: "EP0066", nome: "CONIGLIO", colore: "Viola", hex: "#834687", foto: "immagini/66.webp", info: "Con coda, Riedizione con nuovo codice EP EP" },
+  { id: "seed-085", numero: "67", codice: "EP0067", nome: "ORSO", colore: "Rosso", hex: "#c43329", foto: "immagini/67.webp", info: "Con miele, Riedizione con nuovo codice EP EP" },
   { id: "seed-086", numero: "68", codice: "EP0068", nome: "IPPOPOTAMO", colore: "Blu", hex: "#2c357e", foto: "immagini/68.webp", info: "Riedizione con nuovo codice EP" },
   { id: "seed-087", numero: "69", codice: "EP0069", nome: "APE", colore: "Nero", hex: "#000000", foto: "immagini/69.webp", info: "Riedizione con nuovo codice EP" },
   { id: "seed-088", numero: "70", codice: "EP0070", nome: "PINGUINO", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/70.webp", info: "Riedizione con nuovo codice EP" },
@@ -354,7 +354,7 @@ const ELENCO = [
   { id: "seed-093", numero: "75", codice: "EP0075", nome: "PAPPAGALLO", colore: "Turchese", hex: "#4aa3a8", foto: "immagini/75.webp", limitata: true, hashtag: ["San Valentino", "Limited Edition"] },
   { id: "seed-094", numero: "76", codice: "EP0076", nome: "PAPPAGALLO", colore: "Arancione", hex: "#d95a44", foto: "immagini/76.webp", limitata: true, hashtag: ["San Valentino", "Limited Edition"] },
   { id: "seed-095", numero: "77", codice: "EP0077", nome: "MUCCA", colore: "Nero", hex: "#000000", foto: "immagini/48.webp", info: "Riedizione con nuovo codice EP" },
-  { id: "seed-096", numero: "78", codice: "EP0078", nome: "MAIALE", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/78.webp", info: "Con microfono, Riedizione con nuovo codice EP" },
+  { id: "seed-096", numero: "78", codice: "EP0078", nome: "MAIALE", colore: "Rosa", hex: "#f2cbd3", foto: "immagini/78.webp", info: "Con microfono, Riedizione con nuovo codice EP EP" },
   { id: "seed-097", numero: "79", codice: "EP0079", nome: "ASINO", colore: "Verde", hex: "#3c8765", foto: "immagini/79.webp", info: "Riedizione con nuovo codice EP" },
   { id: "seed-098", numero: "80", codice: "EP0080", nome: "GALLO", colore: "Rosso", hex: "#c43329", foto: "immagini/80.webp", info: "Riedizione con nuovo codice EP" },
   { id: "seed-099", numero: "81", codice: "EP0081", nome: "GIRAFFA", colore: "Nero", hex: "#000000", foto: "immagini/81.webp", info: "Riedizione con nuovo codice EP" },
@@ -378,10 +378,10 @@ const ELENCO = [
 </script>
 
 <!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
-<script src="../../../script.js?v=2026-10-05a"></script>
+<script src="../../../script.js?v=2026-10-09"></script>
 <!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
 <script src="../../../comune/bagliore.js?v=2026-09-26"></script>
 <!-- Funzionamento della pagina (legge CONFIG ed ELENCO qui sopra) -->
-<script src="../../../comune/app.js?v=2026-10-05a"></script>
+<script src="../../../comune/app.js?v=2026-10-09g"></script>
 </body>
 </html>
