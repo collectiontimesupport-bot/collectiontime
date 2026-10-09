@@ -420,6 +420,8 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 #stAccedi:has(.st-avatar) { padding: 0; border: 0; }
 .st-avatar { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
   background: var(--ink); color: var(--white); font: 700 1rem/1 system-ui, -apple-system, "Segoe UI", sans-serif; }
+#stAccedi.st-da-confermare { position: relative; }   /* puntino ambra: email da confermare (comune/cloud.js, daConfermare) */
+#stAccedi.st-da-confermare::after { content: ""; position: absolute; top: 0; right: 0; width: 11px; height: 11px; border-radius: 50%; background: var(--amber); border: 2px solid var(--white); }
 #stAccedi:hover .st-avatar { background: var(--amber); color: var(--blu); }
 .st-avatar.grande { width: 46px; height: 46px; font-size: 1.25rem; flex: none; }
 .st-profilo { position: fixed; right: 12px; z-index: 40; width: min(300px, calc(100vw - 24px)); padding: 16px;
@@ -571,3 +573,5 @@ button.st-btn { border: 0; font-family: inherit; cursor: pointer; }
    ===================================================================== */
 img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .thumb img { pointer-events: none; }
+.st-privacy-riga { margin: 2px 0 6px; text-align: left; color: var(--muted); }
+.st-privacy-riga a { color: inherit; text-decoration: underline; }

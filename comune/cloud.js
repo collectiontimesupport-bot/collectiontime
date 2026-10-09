@@ -35,7 +35,7 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, deleteUser,
-  signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+  signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, updateProfile } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-lite.js';
 
 /* Dati del progetto Firebase "Collection-Time" (console di Firebase →
@@ -64,7 +64,7 @@ const FIREBASE = {
 
 const app = initializeApp(FIREBASE);
 const auth = getAuth(app);
-auth.languageCode = 'it';                                    // email di Firebase (es. reimposta password) in italiano
+auth.languageCode = LINGUA;                                  // email di Firebase (conferma email, reimposta password) nella lingua del sito: 'it' o 'en' (LINGUA è di script.js)
 const db = getFirestore(app);
 const documento = uid => doc(db, 'collezioni', uid);
 
@@ -119,6 +119,9 @@ function paesePerCloud(nube) {
 
 /* ---------- sincronizzazione ---------- */
 let inCorso = null, timer = null;
+/* daConfermare = account NUOVO con email e password che non ha ancora confermato l'email: finché non lo fa, la collezione NON va nel cloud
+   (resta sul dispositivo). Chi si è iscritto prima (ha già il suo documento nel cloud) e chi entra con Google non è toccato. */
+let daConfermare = false, avvisatoConferma = false;
 function sincronizza() {
   if (inCorso) return inCorso.then(() => sincronizza());
   inCorso = (async () => {
@@ -126,6 +129,13 @@ function sincronizza() {
     if (!utente) return;
     const stato = leggiStato();
     const nube = (await getDoc(documento(utente.uid))).data();
+    daConfermare = !nube && conPassword(utente) && !utente.emailVerified;
+    if (daConfermare) {
+      aggiornaVista();
+      /* chi entra (anche da un altro dispositivo) con un account non ancora confermato: gli dico perché non vede la sua collezione */
+      if (!avvisatoConferma) { avvisatoConferma = true; avviso('Il tuo account non ha ancora la conferma dell\'email: apri il link che ti abbiamo mandato (o rimandalo dal menu del profilo) e la collezione si salverà nel cloud.'); }
+      return;
+    }
     const locale = await leggiTutto();
     let finale = locale, daScrivereQui = false;
     if (!nube) finale = locale;                                              // primo salvataggio in assoluto
@@ -149,10 +159,18 @@ function sincronizza() {
       /* Le regole di Firestore ammettono SOLO i campi elencati in hasOnly([...]) (console di Firebase → Firestore → Regole).
          Se "paese" e "paeseAuto" non ci sono ancora, Google rifiuta il salvataggio: in quel caso riprovo SENZA il paese,
          così la collezione si salva comunque. Per salvare anche il paese aggiungi 'paese' e 'paeseAuto' a quella lista. */
-      try { await setDoc(documento(utente.uid), Object.assign({ versione: 1, aggiornato, collezioni: finale }, paeseDoc)); }
+      /* "accettato" (Privacy accettata all'iscrizione) si scrive solo nel PRIMO documento. Se le regole di Firestore non lo ammettono
+         (hasOnly), riprovo senza di lui, poi anche senza paese: la collezione si salva comunque. */
+      let accettato = null;
+      if (!nube) { try { accettato = JSON.parse(localStorage.getItem('ct-accettato')); } catch (e) {} }
+      const base = { versione: 1, aggiornato, collezioni: finale };
+      try { await setDoc(documento(utente.uid), Object.assign({}, base, paeseDoc, accettato ? { accettato } : {})); }
       catch (e) {
-        if (!paeseDoc.paese) throw e;
-        await setDoc(documento(utente.uid), { versione: 1, aggiornato, collezioni: finale });
+        try { await setDoc(documento(utente.uid), Object.assign({}, base, paeseDoc)); }
+        catch (e2) {
+          if (!paeseDoc.paese) throw e2;
+          await setDoc(documento(utente.uid), base);
+        }
       }
     }
     scriviStato({ uid: utente.uid, ultimo: aggiornato, sporco: false });
@@ -173,6 +191,7 @@ const SECONDI_CALMA = 20;
 window.addEventListener('ct-modifica', () => {
   const s = leggiStato();
   if (!auth.currentUser) return;
+  if (daConfermare && !avvisatoConferma) { avvisatoConferma = true; avviso('Per salvare nel cloud conferma la tua email (menu del profilo).'); }
   scriviStato(Object.assign(s, { sporco: true }));
   clearTimeout(timer);
   timer = setTimeout(sincronizza, SECONDI_CALMA * 1000);
@@ -226,7 +245,39 @@ const ERRORI = {
   'auth/configuration-not-found': 'L\'accesso non è ancora attivo. Riprova più tardi.'
 };
 const messaggioErrore = e => ERRORI[e.code] || 'Qualcosa non ha funzionato. Riprova tra poco.';
+/* ---------- controllo dell'email prima di creare l'account ----------
+   1) errori di battitura comuni nel dominio (gnail.com, gmial.com…): metto io quello giusto e chiedo di riprovare;
+   2) email "usa e getta" (mailinator, 10minutemail…) e indirizzi di prova (example.com): non accettate.
+   Non è una protezione assoluta (si aggira): la vera conferma è l'email di verifica qui sotto.
+   ! MODIFICA: per bloccare un altro servizio usa e getta aggiungi il suo dominio a USA_E_GETTA; per un altro errore comune aggiungilo a REFUSI. */
+const USA_E_GETTA = new Set(('mailinator.com guerrillamail.com guerrillamail.net guerrillamail.org guerrillamail.biz guerrillamail.de sharklasers.com grr.la 10minutemail.com 10minutemail.net '
+  + '10minemail.com temp-mail.org temp-mail.io tempmail.com tempmail.net tempmailo.com tempail.com throwawaymail.com yopmail.com yopmail.fr yopmail.net getnada.com nada.email dispostable.com '
+  + 'trashmail.com trashmail.net trashmail.de mailnesia.com maildrop.cc mohmal.com fakeinbox.com fakemail.net mintemail.com mytemp.email emailondeck.com spamgourmet.com moakt.com mailcatch.com '
+  + 'tmpmail.org tmpmail.net tmail.ws burnermail.io discard.email discardmail.com spambox.us spam4.me harakirimail.com inboxkitten.com mailforspam.com jetable.org emailfake.com fake-mail.net '
+  + 'generator.email email-fake.com gmailnator.com tempinbox.com owlymail.com 1secmail.com 1secmail.org 1secmail.net kzccv.com qiott.com wuuvo.com icznn.com vjuum.com laafd.com txcct.com '
+  + 'rteet.com cevipsa.com example.com example.org example.net').split(' '));
+const REFUSI = { 'gnail.com': 'gmail.com', 'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gamil.com': 'gmail.com', 'gmaill.com': 'gmail.com', 'gmail.co': 'gmail.com',
+  'gmail.con': 'gmail.com', 'gmail.cm': 'gmail.com', 'gmail.it': 'gmail.com', 'hotmal.com': 'hotmail.com', 'hotmai.com': 'hotmail.com', 'hotmial.com': 'hotmail.com', 'hotmail.con': 'hotmail.com',
+  'hotmail.co': 'hotmail.com', 'hotmail.cm': 'hotmail.com', 'yaho.com': 'yahoo.com', 'yahooo.com': 'yahoo.com', 'yahoo.con': 'yahoo.com', 'outlok.com': 'outlook.com', 'outlook.con': 'outlook.com',
+  'iclod.com': 'icloud.com', 'icloud.con': 'icloud.com', 'libero.i': 'libero.it', 'virgilio.i': 'virgilio.it', 'tiscali.i': 'tiscali.it' };
+function controllaEmail(email) {
+  const m = /^[^\s@]+@([^\s@]+\.[^\s@.]{2,})$/.exec(email);
+  if (!m) return { errore: 'Controlla l\'email: sembra incompleta.' };
+  const dominio = m[1].toLowerCase();
+  if (REFUSI[dominio]) return { corretta: email.slice(0, email.lastIndexOf('@') + 1) + REFUSI[dominio], da: dominio, a: REFUSI[dominio] };
+  if ([...USA_E_GETTA].some(d => dominio === d || dominio.endsWith('.' + d))) return { errore: 'Questo indirizzo email non è accettato: usa la tua email vera.' };
+  return {};
+}
 async function conEmail(modo, email, password, nick, paese) {
+  if (modo === 'nuovo') {
+    const c = controllaEmail(email);
+    if (c.errore) return mostraErrore(c.errore);
+    if (c.corretta) {                                          // errore di battitura: correggo il campo e aspetto che la persona riprovi
+      const campo = finestra && finestra.querySelector('form[data-modo="nuovo"] [name=email]');
+      if (campo) campo.value = c.corretta;
+      return mostraErrore('Ho corretto «' + c.da + '» in «' + c.a + '»: controlla e premi di nuovo "Crea account".');
+    }
+  }
   let paesePrima = null, paeseCambiato = false;
   try {
     if (modo === 'nuovo') {
@@ -234,12 +285,21 @@ async function conEmail(modo, email, password, nick, paese) {
          viene scritto come "scelto da lui". Se l'iscrizione non riesce (es. email già usata) torna com'era. */
       if (PAESI.includes(paese)) { try { paesePrima = localStorage.getItem('ct-paese'); localStorage.setItem('ct-paese', paese); paeseCambiato = true; } catch (e) {} }
       await createUserWithEmailAndPassword(auth, email, password);
+      /* ricordo che ha accettato la Privacy (versione 1): finisce nel documento al primo salvataggio nel cloud */
+      try { localStorage.setItem('ct-accettato', JSON.stringify({ versione: 1, data: Date.now() })); } catch (e) {}
       /* nickname scelto al momento dell'iscrizione (facoltativo): diventa il nome mostrato nel profilo; se è vuoto resta quello di prima */
       if (nick) { try { await updateProfile(auth.currentUser, { displayName: Array.from(nick).slice(0, 40).join('') }); aggiornaPulsante(auth.currentUser); } catch (e) {} }
     }
     else await signInWithEmailAndPassword(auth, email, password);
     finestra.close();
-    avviso(modo === 'nuovo' ? 'Account creato: la tua collezione si salva anche nel cloud.' : 'Accesso fatto: la tua collezione si salva anche nel cloud.');
+    if (modo === 'nuovo') {
+      /* conferma dell'email: arriva un'email con un link; finché non lo apre la collezione resta sul dispositivo (vedi daConfermare) */
+      let inviata = true;
+      try { await sendEmailVerification(auth.currentUser); } catch (e) { inviata = false; }
+      avvisatoConferma = true;
+      avviso(inviata ? 'Account creato. Ti ho mandato un\'email: apri il link per confermarla e salvare la collezione nel cloud (guarda anche nello spam).'
+                     : 'Account creato. Apri il menu del profilo per confermare l\'email e salvare la collezione nel cloud.');
+    } else avviso('Accesso fatto: la tua collezione si salva anche nel cloud.');
   } catch (e) {
     if (paeseCambiato) { try { paesePrima === null ? localStorage.removeItem('ct-paese') : localStorage.setItem('ct-paese', paesePrima); } catch (x) {} }
     mostraErrore(messaggioErrore(e));
@@ -274,7 +334,14 @@ async function svuotaQui() {
 }
 async function esci() {
   await sincronizza();                                         // prima mando le ultime modifiche
+  const nonNelCloud = daConfermare;                            // email non confermata: la collezione NON è nel cloud, quindi non si toglie da questo dispositivo
   await signOut(auth);
+  if (nonNelCloud) {
+    try { localStorage.removeItem('ct-cloud'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
+    daConfermare = false; aggiornaVista();
+    avviso('Sei uscito. La collezione è rimasta su questo dispositivo perché l\'email non era ancora confermata.');
+    return;
+  }
   await svuotaQui();
   avviso('Sei uscito: la collezione è al sicuro nel tuo account e non è più su questo dispositivo.');
 }
@@ -331,7 +398,9 @@ function aggiornaPulsante(utente) {
     b.innerHTML = '<span class="st-avatar" aria-hidden="true">' + esc(Array.from(nomeDi(utente))[0].toUpperCase()) + '</span>';
     b.setAttribute('aria-label', 'Il mio profilo: ' + nomeDi(utente));
     b.title = nomeDi(utente);
+    b.classList.toggle('st-da-confermare', daConfermare);        // puntino ambra: email da confermare
   } else {
+    b.classList.remove('st-da-confermare');
     b.textContent = 'Accedi';
     b.removeAttribute('aria-label');
     b.title = 'Accedi e salva la collezione nel cloud';
@@ -340,6 +409,7 @@ function aggiornaPulsante(utente) {
 /* chiamata quando cambia qualcosa (accesso, uscita, salvataggio): aggiorna ciò che è aperto */
 function aggiornaVista() {
   if (auth.currentUser && finestra && finestra.open) finestra.close();   // accesso appena fatto: chiudo la finestra
+  aggiornaPulsante(auth.currentUser);
   if (menu && !menu.hidden) disegnaMenu();
   disegnaImpostazioni();
 }
@@ -347,11 +417,32 @@ function aggiornaVista() {
 function notaCloud() {
   const s = leggiStato();
   const quando = s.ultimo ? new Date(s.ultimo).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
+  if (daConfermare) return 'Conferma la tua email per salvare nel cloud';
   return s.sporco ? 'Salvataggio nel cloud in corso…' : quando ? 'Salvata nel cloud · ' + quando : 'Salvata nel cloud';
 }
+/* i due pulsanti sotto la nota "Conferma la tua email…" (menu del profilo e Impostazioni); vuoto se non serve */
+const pulsantiConferma = () => daConfermare
+  ? '<p class="st-ma-nota"><button type="button" data-m="conferma-invia" class="st-link">Invia di nuovo l\'email</button> · <button type="button" data-m="conferma-fatto" class="st-link">Ho confermato</button></p>' : '';
+async function inviaConferma() {
+  try { await sendEmailVerification(auth.currentUser); avviso('Email inviata di nuovo (guarda anche nello spam).'); }
+  catch (e) { avviso('Non riesco a inviare l\'email adesso: riprova tra qualche minuto.'); }
+}
+/* controlla se la persona ha aperto il link: ricarico l'utente da Firebase; se ha confermato, parte il primo salvataggio nel cloud */
+async function controllaConferma(avvisa) {
+  const u = auth.currentUser;
+  if (!u || !daConfermare) return;
+  try {
+    await u.reload();
+    if (u.emailVerified) { await u.getIdToken(true); avviso('Email confermata: la tua collezione ora si salva nel cloud.'); await sincronizza(); }
+    else if (avvisa) avviso('Non vedo ancora la conferma: apri il link nell\'email e riprova.');
+  } catch (e) { if (avvisa) avviso('Non riesco a controllare adesso: riprova tra poco.'); }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') controllaConferma(false); });   // tornando sulla pagina dopo aver aperto il link
 /* le azioni sull'account, usate dal menu del profilo e dalla pagina Impostazioni */
 async function azioneAccount(m) {
-  if (m === 'esci') esci();
+  if (m === 'conferma-invia') inviaConferma();
+  else if (m === 'conferma-fatto') controllaConferma(true);
+  else if (m === 'esci') esci();
   else if (m === 'elimina') confermaElimina();
   else if (m === 'password') {                                 // il modo più sicuro: un'email per sceglierne una nuova
     try { await sendPasswordResetEmail(auth, auth.currentUser.email); avviso('Ti ho mandato un\'email per scegliere la nuova password (guarda anche nello spam).'); }
@@ -365,8 +456,10 @@ function opzioniPaese() {
   let nomi = null;
   try { nomi = new Intl.DisplayNames([LINGUA], { type: 'region' }); } catch (e) {}
   const mio = paeseVisitatore();
-  return nomiPaesi().map(([c, n]) => [c, nomi ? nomi.of(c) : n]).sort((a, b) => a[1].localeCompare(b[1], LINGUA))
-    .map(([c, n]) => '<option value="' + c + '"' + (c === mio ? ' selected' : '') + '>' + esc(n) + '</option>').join('');
+  /* se il sito non capisce dove sei (paeseIncerto) non preseleziono l'Italia: voce vuota "Scegli il tuo paese", e se la lasci così il paese non si salva come scelto */
+  const vuota = paeseIncerto() && !paeseScelto() ? '<option value="" selected>Scegli il tuo paese</option>' : '';
+  return vuota + nomiPaesi().map(([c, n]) => [c, nomi ? nomi.of(c) : n]).sort((a, b) => a[1].localeCompare(b[1], LINGUA))
+    .map(([c, n]) => '<option value="' + c + '"' + (!vuota && c === mio ? ' selected' : '') + '>' + esc(n) + '</option>').join('');
 }
 let finestra = null, nuovo = false;   // nuovo = modulo "Crea account" invece di "Accedi"
 function disegnaFinestra() {
@@ -383,6 +476,7 @@ function disegnaFinestra() {
         +   '<input type="text" name="nome" maxlength="40" placeholder="Nickname (facoltativo)" autocomplete="nickname">'
         +   '<label class="st-campo-paese"><small>Il tuo paese</small><select name="paese" autocomplete="off">' + opzioniPaese() + '</select></label>'
         +   '<p class="st-account-errore" role="alert" hidden></p>'
+        +   '<p class="st-privacy-riga"><small>Creando l\'account accetti la </small><a href="' + new URL('privacy.html', BASE).href + '" target="_blank" rel="noopener"><small>Privacy</small></a><small>.</small></p>'
         +   '<div class="st-email-azioni"><button type="submit">Crea account</button></div>'
         +   '<button type="button" data-azione="cambia-modo" class="st-link">Hai già un account? Accedi</button>'
         + '</form>'
@@ -394,7 +488,7 @@ function disegnaFinestra() {
         +   '<button type="button" data-azione="dimenticata" class="st-link">Password dimenticata?</button>'
         +   '<button type="button" data-azione="cambia-modo" class="st-link">Non hai un account? Crea account</button>'
         + '</form>')
-    + '<p><small>Salviamo solo il tuo nome, la tua email e quello che segni sul sito (spunte, doppioni, hashtag). Dettagli nella pagina Privacy.</small></p>'
+    + '<p><small>Salviamo solo il tuo nome, la tua email, il tuo paese e quello che segni sul sito (spunte, doppioni, hashtag). Dettagli nella pagina Privacy.</small></p>'
     + '<div class="st-account-copia"><small>Non vuoi un account?</small> ' + COPIA + '</div>';
 }
 function apriFinestra() {
@@ -459,7 +553,7 @@ function disegnaMenu() {
     + '<a class="st-ma-stat" href="' + new URL('impostazioni.html#statistiche', BASE).href + '">'
     +   '<span class="st-ma-numeri"><span><b>' + n.ce + '</b><small>Ce l\'ho</small></span><span><b>' + n.doppi + '</b><small>Doppioni</small></span><span><b>' + n.collezioni + '</b><small>Collezioni</small></span></span>'
     +   '<small>Le mie statistiche ›</small></a>'
-    + '<p class="st-ma-nota">' + notaCloud() + '</p>'
+    + '<p class="st-ma-nota">' + notaCloud() + '</p>' + pulsantiConferma()
     /* "Impostazioni": pagina impostazioni.html nella cartella principale (BASE è di script.js) */
     + '<a class="st-link st-ma-imp" href="' + new URL('impostazioni.html', BASE).href + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>Impostazioni</a>'
     + COPIA
@@ -520,7 +614,7 @@ function disegnaImpostazioni() {
   box.innerHTML =
     '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(Array.from(nomeDi(u))[0].toUpperCase()) + '</span>'
     + '<div><b>' + esc(nomeDi(u)) + '</b><small>' + esc(u.email || '') + '</small></div></div>'
-    + '<p class="st-imp-nota">' + notaCloud() + '</p>'
+    + '<p class="st-imp-nota">' + notaCloud() + '</p>' + pulsantiConferma()
     + (cambioNome
       ? '<form class="st-imp-nome"><input name="nome" maxlength="40" value="' + esc(u.displayName || '') + '" placeholder="Il tuo nome" autocomplete="nickname" required>'
         + '<button type="button" data-m="annulla" class="st-link">Annulla</button><button type="submit" class="st-btn">Salva</button></form>'

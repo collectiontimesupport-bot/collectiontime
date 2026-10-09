@@ -780,7 +780,13 @@ const TZ_PAESE = {
   'America/Sao_Paulo': 'BR', 'America/Argentina/Buenos_Aires': 'AR', 'America/Santiago': 'CL', 'America/Bogota': 'CO', 'America/Lima': 'PE',
   'Asia/Tokyo': 'JP', 'Asia/Seoul': 'KR', 'Asia/Shanghai': 'CN', 'Asia/Hong_Kong': 'HK', 'Asia/Singapore': 'SG', 'Asia/Kolkata': 'IN',
   'Asia/Calcutta': 'IN', 'Asia/Dubai': 'AE', 'Asia/Jerusalem': 'IL', 'Australia/Sydney': 'AU', 'Australia/Melbourne': 'AU',
-  'Pacific/Auckland': 'NZ', 'Africa/Johannesburg': 'ZA', 'Africa/Casablanca': 'MA', 'Africa/Cairo': 'EG'
+  'Pacific/Auckland': 'NZ', 'Africa/Johannesburg': 'ZA', 'Africa/Casablanca': 'MA', 'Africa/Cairo': 'EG',
+  /* aggiunti: Balcani, Baltici e altri fusi comuni (senza questi il sito non sapeva dove fosse la persona e mostrava l'Italia) */
+  'Europe/Tirane': 'AL', 'Europe/Sarajevo': 'BA', 'Europe/Skopje': 'MK', 'Europe/Podgorica': 'ME', 'Europe/Riga': 'LV', 'Europe/Vilnius': 'LT', 'Europe/Tallinn': 'EE',
+  'Europe/Minsk': 'BY', 'Asia/Nicosia': 'CY', 'Europe/Nicosia': 'CY', 'Atlantic/Reykjavik': 'IS', 'Atlantic/Madeira': 'PT', 'Atlantic/Azores': 'PT', 'Europe/Busingen': 'CH',
+  'Asia/Bangkok': 'TH', 'Asia/Manila': 'PH', 'Asia/Jakarta': 'ID', 'Asia/Kuala_Lumpur': 'MY', 'Asia/Ho_Chi_Minh': 'VN', 'Asia/Saigon': 'VN', 'Asia/Taipei': 'TW', 'Asia/Riyadh': 'SA',
+  'America/Montevideo': 'UY', 'America/Halifax': 'CA', 'America/Edmonton': 'CA', 'America/Winnipeg': 'CA', 'America/Detroit': 'US', 'America/Boise': 'US',
+  'America/Argentina/Cordoba': 'AR', 'America/Monterrey': 'MX', 'America/Tijuana': 'MX', 'Australia/Perth': 'AU', 'Australia/Brisbane': 'AU', 'Australia/Adelaide': 'AU', 'Australia/Hobart': 'AU'
 };
 /* nomi con cui si può scrivere un paese nell'ELENCO oltre al suo nome italiano (es. paese: "USA") */
 const ALIAS_PAESI = { 'usa': 'US', 'u.s.a.': 'US', 'stati uniti': 'US', 'stati uniti d\'america': 'US', 'uk': 'GB', 'inghilterra': 'GB', 'gran bretagna': 'GB',
@@ -797,6 +803,18 @@ function paeseRilevato() {
     if (r && PAESI.includes(r[1].toUpperCase())) return r[1].toUpperCase();
   }
   return 'IT';
+}
+/* true se il sito NON riesce a capire il paese (fuso orario sconosciuto e lingua senza paese): in quel caso paeseRilevato() dice Italia solo per mancanza di meglio.
+   La usa il modulo "Crea account" (comune/cloud.js) per non presentare l'Italia come se fosse una scelta. */
+function paeseIncerto() {
+  let fuso = '';
+  try { fuso = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+  if (TZ_PAESE[fuso]) return false;
+  for (const l of (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language])) {
+    const r = /-([A-Za-z]{2})$/.exec(l || '');
+    if (r && PAESI.includes(r[1].toUpperCase())) return false;
+  }
+  return true;
 }
 /* il paese scelto in Impostazioni (sigla) o, se non l'ha scelto, quello indovinato */
 function paeseScelto() { try { const c = localStorage.getItem('ct-paese'); return PAESI.includes(c) ? c : ''; } catch (e) { return ''; } }
