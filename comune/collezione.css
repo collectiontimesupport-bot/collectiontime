@@ -210,8 +210,12 @@ select, .field input[type=text] {
    È più grande dell'oggetto del fattore --k (circa 1.3).
    Niente filtri CSS (drop-shadow ecc.): su iPhone vengono tagliati. */
 .pic img.halo {
-  top: 50%; transform: translate(-50%, -50%);
-  height: calc((100% - 12px) * var(--k, 1.3)); max-width: none; object-fit: fill;   /* il bagliore resta com'era */
+  /* --hp = altezza con cui la foto è davvero disegnata: se è più larga della colonna si rimpicciolisce
+     (vedi .pic img), quindi il bagliore segue la stessa misura (--ar = larghezza ÷ altezza, la scrive bagliore.js)
+     e sta centrato sulla foto, che è appoggiata in basso. */
+  --hp: min(calc(100% - 12px), calc(100cqw / var(--ar, .001)));
+  top: calc(100% - 6px - var(--hp) / 2); transform: translate(-50%, -50%);
+  height: calc(var(--hp) * var(--k, 1.3)); max-width: none; object-fit: fill;   /* il bagliore resta com'era */
   opacity: 0; transition: opacity .3s ease; pointer-events: none;
 }
 .pen.owned .pic img.halo { opacity: 1; }

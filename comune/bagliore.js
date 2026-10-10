@@ -114,7 +114,7 @@
     ctx.clearRect(0, 0, W, H);
     ctx.putImageData(outData, 0, 0);
     const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-    return { url: URL.createObjectURL(blob), k: H / h };
+    return { url: URL.createObjectURL(blob), k: H / h, ar: img.naturalWidth / img.naturalHeight };
   }
   /* aggiunge il bagliore dietro la foto (se non c'è già) */
   window.accendiBagliore = function (pic, src) {
@@ -127,6 +127,7 @@
     pic.insertBefore(halo, pic.firstChild);
     makeHalo(src).then(hh => {
       halo.style.setProperty('--k', String(hh.k));
+      halo.style.setProperty('--ar', String(hh.ar));   /* proporzione della foto: serve al CSS per allineare il bagliore anche quando la foto è più larga della colonna */
       halo.src = hh.url;
     }).catch(() => {
       /* il browser non permette di leggere i pixel (es. file aperto con doppio clic):
