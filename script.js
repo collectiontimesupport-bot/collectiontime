@@ -20,8 +20,8 @@
   15) la lingua: italiano di base, inglese a scelta (link "English" nella banda in basso e voce "Lingua" in Impostazioni)
   16) protezione delle foto: niente tasto destro / trascinamento / salva-immagine sulle foto
    Da richiamare in ogni pagina con una sola riga:
-   <script src="script.js?v=2026-09-28d"></script>
-   (dentro una sottocartella: <script src="../script.js?v=2026-09-28d"></script>,
+   <script src="script.js?v=2026-10-09-1"></script>
+   (dentro una sottocartella: <script src="../script.js?v=2026-10-09-1"></script>,
     in una pagina di una serie: <script src="../../../script.js?v=…"></script>)
    Nelle pagine delle collezioni va PRIMA di comune/app.js.
    ========================================================== */
@@ -30,7 +30,7 @@
    e i link vengono cercati da qui, quindi funzionano anche dalle
    pagine dentro le sottocartelle. */
 const BASE = new URL('.', document.currentScript.src);
-/* Versione (data) scritta nella pagina (script.js?v=2026-09-26): lo aggiungo anche
+/* Versione (data) scritta nella pagina (script.js?v=2026-10-09-1): lo aggiungo anche
    a header.html e footer.html, così anche loro si aggiornano subito. */
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };

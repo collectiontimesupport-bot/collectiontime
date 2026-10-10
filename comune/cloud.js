@@ -119,6 +119,13 @@ function paesePerCloud(nube) {
 
 /* ---------- sincronizzazione ---------- */
 let inCorso = null, timer = null;
+/* Quando ricontrollare il cloud (per vedere le spunte fatte su un altro dispositivo):
+     • aprendo il sito per la prima volta in una sessione (o se ci sono modifiche da salvare);
+     • tornando sul sito, o aprendo un'altra pagina, se l'ultimo controllo è più vecchio di ORE_RICONTROLLO ore.
+   Poche volte apposta: ogni controllo è una lettura del piano gratuito di Firebase.
+   ! MODIFICA: ORE_RICONTROLLO (numero di ore) */
+const ORE_RICONTROLLO = 12;
+const controlloVecchio = () => { try { return Date.now() - (+sessionStorage.getItem('ct-cloud-controllo') || 0) > ORE_RICONTROLLO * 3600000; } catch (e) { return false; } };
 /* daConfermare = account NUOVO con email e password che non ha ancora confermato l'email: finché non lo fa, la collezione NON va nel cloud
    (resta sul dispositivo). Chi si è iscritto prima (ha già il suo documento nel cloud) e chi entra con Google non è toccato. */
 let daConfermare = false, avvisatoConferma = false;
@@ -127,6 +134,7 @@ function sincronizza() {
   inCorso = (async () => {
     const utente = auth.currentUser;
     if (!utente) return;
+    try { sessionStorage.setItem('ct-cloud-controllo', Date.now()); } catch (e) {}      // ora dell'ultimo controllo (vedi ORE_RICONTROLLO)
     const stato = leggiStato();
     const nube = (await getDoc(documento(utente.uid))).data();
     daConfermare = !nube && conPassword(utente) && !utente.emailVerified;
@@ -199,6 +207,7 @@ window.addEventListener('ct-modifica', () => {
 /* chiudendo o nascondendo la pagina mando subito quello che manca */
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden' && leggiStato().sporco) { clearTimeout(timer); sincronizza(); }
+  else if (document.visibilityState === 'visible' && auth.currentUser && controlloVecchio()) sincronizza();   // tornato sul sito dopo ORE_RICONTROLLO ore
 });
 
 /* ---------- accesso ---------- */
@@ -209,7 +218,7 @@ onAuthStateChanged(auth, utente => {
   if (utente) {
     let fatta = false;
     try { fatta = sessionStorage.getItem('ct-cloud-visita') === utente.uid; sessionStorage.setItem('ct-cloud-visita', utente.uid); } catch (e) {}
-    if (!fatta || leggiStato().sporco) sincronizza();
+    if (!fatta || leggiStato().sporco || controlloVecchio()) sincronizza();
   }
 });
 
