@@ -87,8 +87,11 @@ h1 .titolo-testo {
 .bar { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; }
 .sub { margin: 0; color: var(--muted); }
 /* barra di avanzamento sotto il conteggio (la crea app.js): si riempie d'ambra */
-.avanz-barra { width: min(240px, 60vw); height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.avanz-riga { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.avanz-barra { width: min(300px, 55vw); height: 12px; border-radius: 99px; background: var(--line); overflow: hidden; flex: none; }
 .avanz-barra span { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--amber); transition: width .4s ease; }
+.avanz-barra.completa span { box-shadow: 0 0 10px var(--amber); }
+.avanz-perc { font-size: .875rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
 /* riga sotto il titolo: "2026 · 25 sorpresine" (la crea app.js) */
 header h1:has(+ .info-serie) { min-height: 0; margin-bottom: 6px; }   /* la riga sta attaccata al titolo */
 .info-serie { margin: 0 0 26px; text-align: center; color: var(--muted); font-size: .9375rem; }
@@ -162,6 +165,7 @@ select, .field input[type=text] {
      - la riga dei doppioni "Doppi − 0 +" (.doppi)
    ===================================================================== */
 .pen {
+  position: relative;   /* serve al pulsante "i" (info) messo sopra la foto */
   container-type: inline-size; container-name: pen;   /* permette di adattare l'oggetto alla sua larghezza (vedi sezione 10) */
   min-width: 0;
   display: grid; gap: 6px; justify-items: stretch;
@@ -219,6 +223,8 @@ select, .field input[type=text] {
   opacity: 0; transition: opacity .3s ease; pointer-events: none;
 }
 .pen.owned .pic img.halo { opacity: 1; }
+/* browser vecchi senza le unità cqw: bagliore come prima (misurato sull'altezza) */
+@supports not (width: 1cqw) { .pic img.halo { top: 50%; height: calc((100% - 12px) * var(--k, 1.3)); } }
 /* Alone di riserva, usato SOLO se il bagliore non si può calcolare
    (pagina aperta con doppio clic dal computer, senza server). */
 .pen.owned .pic.no-halo img.pen-img { filter: drop-shadow(0 0 5px rgba(255, 196, 40, .95)) drop-shadow(0 0 12px rgba(255, 150, 20, .55)); }
@@ -263,10 +269,12 @@ select, .field input[type=text] {
    Grandezza: 22% della larghezza dell'oggetto, tra 16 e 26 px. */
 .spunta {
   position: absolute; top: 2px; right: 2px; z-index: 1;
-  width: clamp(16px, 22cqw, 26px); aspect-ratio: 1;
-  box-sizing: border-box; border: 2px solid var(--line); border-radius: 26%;
-  background: var(--white);
+  width: clamp(16px, 22cqw, 26px); aspect-ratio: 1;   /* grandezza originale: più grande copriva il personaggio */
+  box-sizing: border-box; border: 2px solid var(--muted); border-radius: 26%;
+  background: color-mix(in srgb, var(--white) 85%, transparent);
 }
+.pen.owned .spunta { animation: spunta-pop .28s ease-out; }
+@keyframes spunta-pop { 0% { transform: scale(.6); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
 .pen.owned .spunta {
   border-color: var(--amber);
   background: var(--amber) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8.2 16.6l5.2 5 11.1-10.4' fill='none' stroke='%231A2140' stroke-width='4.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 88% no-repeat;
@@ -292,6 +300,11 @@ select, .field input[type=text] {
 .doppi button:hover { color: var(--amber); }
 .doppi button:disabled { color: var(--line); cursor: default; }
 .doppi .n { min-width: 14px; text-align: center; font-weight: 700; color: var(--ink); }
+/* a zero doppioni la riga è discreta (si attenuano solo i tasti − + e il numero, NON la scritta "Doppi":
+   attenuata anche lei il contrasto scendeva sotto 4,5:1); si accende al passaggio/tocco o quando ne hai */
+.doppi:not(.si) .conta { opacity: .55; transition: opacity .2s ease; }
+.doppi:not(.si):hover .conta, .doppi:not(.si):focus-within .conta { opacity: 1; }
+.doppi:not(.si) .conta { border-color: transparent; background: none; }
 /* con almeno un doppione: scritta blu scuro e cornice ambra */
 .doppi.si { color: var(--ink); font-weight: 600; }
 .doppi.si .conta { border-color: var(--amber); }
@@ -460,6 +473,7 @@ input[readonly] { pointer-events: none; }
 /* chi ha chiesto meno animazioni nel sistema non le vede */
 @media (prefers-reduced-motion: reduce) {
   .pic img { transition: none !important; }
+  .pen.owned .spunta { animation: none; }
 }
 
 /* =====================================================================

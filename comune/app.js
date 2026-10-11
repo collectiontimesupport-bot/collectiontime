@@ -172,7 +172,7 @@
   /* ---------- disegno della pagina ---------- */
   /* scrive "12 possedute su 103 · 3 doppioni" (gli oggetti senza foto non contano),
      riempie la barra ambra sotto e mette i numeri nella tendina: "Tutte (103)", "In possesso (12)"… */
-  let barra = null;
+  let barra = null, percTesto = null;
   function updateCount(shown) {
     /* il conteggio e la barra contano solo i pezzi della serie: le varianti estere (p.estero) restano fuori */
     const base = pens.filter(p => !p.estero);
@@ -192,11 +192,20 @@
       barra.setAttribute('role', 'progressbar');
       barra.setAttribute('aria-label', 'Quanto hai completato');
       barra.append(document.createElement('span'));
-      $('count').after(barra);
+      /* barra + scritta "48% · mancano 13" affiancate */
+      const riga = document.createElement('div');
+      riga.className = 'avanz-riga';
+      percTesto = document.createElement('span');
+      percTesto.className = 'avanz-perc';
+      riga.append(barra, percTesto);
+      $('count').after(riga);
     }
     const perc = total ? Math.round(owned / total * 100) : 0;
     barra.firstChild.style.width = perc + '%';
     barra.setAttribute('aria-valuenow', String(perc));
+    barra.classList.toggle('completa', total > 0 && owned >= total);
+    const mancano = Math.max(0, total - owned);
+    percTesto.textContent = total && owned >= total ? 'Completa!' : perc + '% · mancano ' + mancano;
     /* numeri tra parentesi nelle voci della tendina (il testo di base resta quello scritto nella pagina) */
     const quanti = { all: pens.length, owned, missing: pens.filter(p => !p.owned && p.image && !p.estero).length, doppi: pens.filter(p => p.doppi > 0).length };
     [...$('filter').options].forEach(o => {

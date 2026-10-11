@@ -554,12 +554,34 @@ function apriFinestra() {
 let menu = null, numeri = null;
 async function contaNumeri() {
   const tutte = await leggiTutto();
-  const v = Object.values(tutte);
-  numeri = {
-    ce: v.reduce((t, c) => t + (c.possedute || []).length, 0),
-    doppi: v.reduce((t, c) => t + Object.values(c.doppi || {}).reduce((a, n) => a + n, 0), 0),
-    collezioni: v.filter(c => (c.possedute || []).length).length
-  };
+  /* Stessa regola della pagina Impostazioni → Le mie statistiche (comune/impostazioni.js):
+     contano solo le serie che esistono ancora nel catalogo (catalogo/riepilogo.json).
+     Così "Collezioni" nel menu = "Serie iniziate" nelle statistiche, e i numeri non si contraddicono. */
+  let R = null;
+  try { R = (await (await fetch(new URL('riepilogo.json?v=' + VERSIONE, CATALOGO))).json()).serie; } catch (e) { R = null; }
+  if (R) {
+    numeri = { ce: 0, doppi: 0, collezioni: 0 };
+    for (const [nome, c] of Object.entries(tutte)) {
+      const s = R[nome];
+      if (!s) continue;                                          // serie che non c'è più nel catalogo
+      const esteri = s[4] || {}, fuori = id => !!esteri[id] && paeseEstero(esteri[id]);
+      const doppi = c.doppi || {};
+      const ids = new Set([...(c.possedute || []), ...Object.keys(doppi).filter(id => doppi[id] > 0)]);
+      const tot = s[2] - Object.keys(esteri).filter(fuori).length;
+      const ce = Math.min([...ids].filter(id => !fuori(id)).length, tot);
+      if (!ce) continue;
+      numeri.ce += ce;
+      numeri.doppi += Object.values(doppi).reduce((a, n) => a + (n > 0 ? n : 0), 0);
+      numeri.collezioni++;
+    }
+  } else {   /* catalogo non raggiungibile: conteggio semplice di prima */
+    const v = Object.values(tutte);
+    numeri = {
+      ce: v.reduce((t, c) => t + (c.possedute || []).length, 0),
+      doppi: v.reduce((t, c) => t + Object.values(c.doppi || {}).reduce((a, n) => a + n, 0), 0),
+      collezioni: v.filter(c => (c.possedute || []).length).length
+    };
+  }
   if (menu && !menu.hidden) disegnaMenu();
 }
 function disegnaMenu() {
