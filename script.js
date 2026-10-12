@@ -34,6 +34,24 @@ const BASE = new URL('.', document.currentScript.src);
    a header.html e footer.html, così anche loro si aggiornano subito. */
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
+/* I DATI (header.html, footer.html, catalogo/riepilogo.json) NON hanno più il "?v=": si scaricano con cache:'no-cache',
+   cioè il browser chiede al sito "è cambiato?" e, se no, riusa la copia (risposta 304, leggerissima). Così aggiungere una serie
+   non obbliga a riscrivere il numero di versione in tutte le pagine. */
+const scaricaDati = file => fetch(new URL(file, BASE), { cache: 'no-cache' });
+/* Numero di versione degli indici (la-mia-collezione/indice.js), che si caricano come <script> e quindi hanno bisogno di un "?v=":
+   ogni indice ha il suo (un'impronta del file, cambia solo se QUELL'indice cambia), elencato in versione-dati.json, un file piccolo
+   letto ogni volta dal sito. Se non si riesce (offline, apertura dal Mac) uso l'ultimo elenco buono ricordato nel browser, e in
+   mancanza il numero di script.js. */
+let _versioneDati;
+const versioneDati = () => _versioneDati || (_versioneDati = (async () => {
+  try {
+    const r = await fetch(new URL('versione-dati.json', BASE), { cache: 'no-store' });
+    if (r.ok) { const v = (await r.json()).indici || {}; try { localStorage.setItem('ct-vdati', JSON.stringify(v)); } catch (e) {} return v; }
+  } catch (e) {}
+  console.warn('Collection Time: non riesco a leggere versione-dati.json, uso gli ultimi numeri di versione conosciuti: i dati potrebbero non essere aggiornati.');
+  try { return JSON.parse(localStorage.getItem('ct-vdati')) || {}; } catch (e) {}
+  return {};
+})());
 
 /* Anteprima nell'area amministratore: se la pagina è aperta dentro il suo pannello, dice all'amministratore
    quale pagina sta mostrando e con che titolo (nome della scheda), così la rotella ⟳ "Ricarica" ricarica QUESTA pagina e non torna alla Home.
@@ -56,7 +74,7 @@ async function caricaParte(idSegnaposto, file) {
   const box = document.getElementById(idSegnaposto);
   if (!box) return;                         // la pagina non ha questo segnaposto
   try {
-    const res = await fetch(conVersione(file));
+    const res = await scaricaDati(file);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const html = await res.text();
     box.innerHTML = html;
@@ -592,9 +610,10 @@ async function barreSerie() {
     const miei = new Set(await archivi());                   // le serie in cui hai segnato qualcosa
     if (!miei.size) return;
     /* l'indice si carica come <script> (non con fetch), così funziona anche aprendo il sito dalla cartella del Mac */
+    const vd = (await versioneDati())[cat] || VERSIONE;
     await new Promise((ok, ko) => {
       const js = document.createElement('script');
-      js.src = new URL(cat + '/la-mia-collezione/indice.js?v=' + VERSIONE, CATALOGO).href;
+      js.src = new URL(cat + '/la-mia-collezione/indice.js?v=' + vd, CATALOGO).href;
       js.onload = ok; js.onerror = ko;
       document.head.append(js);
     });

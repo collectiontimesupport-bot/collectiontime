@@ -41,7 +41,7 @@ async function mostraStatistiche() {
 
   let mie = [];
   try {
-    const R = (await (await fetch(new URL('riepilogo.json?v=' + VERSIONE, CATALOGO))).json()).serie;
+    const R = (await (await fetch(new URL('riepilogo.json', CATALOGO), { cache: 'no-cache' })).json()).serie;
     /* per ogni archivio del browser che è una serie del sito: quanti ne hai e quanti doppioni */
     for (const nome of await archivi()) {
       const s = R[nome];

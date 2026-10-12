@@ -873,7 +873,7 @@
     let H = orizzontale ? 595.28 : 841.89;                  // l'immagine poi diventa alta quanto serve
     const COLS = orizzontale ? CONFIG.pdfColonne : PDF_COLONNE;
     const ROWS = CONFIG.pdfFile || 2;                       // file per pagina (solo Legami)
-    const BAND = 30;                                        // banda blu in alto
+    const BAND = 42;                                        // banda blu in alto
     /* titolo scritto su un cartellino bianco, come le schede; TITOLO_H = altezza delle lettere */
     let TITOLO_H = 32;
     const TITOLO_MAXW = W - 2 * MX - 40;
@@ -976,10 +976,10 @@
       /* banda blu in alto con il marchio e la scelta di stampa */
       page.drawRectangle({ x: 0, y: H - BAND, width: W, height: BAND, color: ink });
       page.drawRectangle({ x: 0, y: H - BAND - 2.5, width: W, height: 2.5, color: ambra });
-      marchio(page, MX, H - 7, 16, ink);
-      page.drawText('Collection Time', { x: MX + 22, y: H - 20, size: 12, font: bold, color: bianco });
-      const cw = font.widthOfTextAtSize(cosa, 10);
-      page.drawText(cosa, { x: W - MX - cw, y: H - 19.5, size: 10, font, color: bianco });
+      marchio(page, MX, H - 8, 26, ink);
+      page.drawText('Collection Time', { x: MX + 34, y: H - 28, size: 20, font: bold, color: bianco });
+      const cw = font.widthOfTextAtSize(cosa, 16);
+      page.drawText(cosa, { x: W - MX - cw, y: H - 26.5, size: 16, font, color: bianco });
 
       /* titolo della collezione sul suo cartellino (bordo ambra sotto) */
       const title = pdfText(CONFIG.titolo);
@@ -1003,12 +1003,23 @@
           /* scheda: bordo ambra se ce l'hai, grigio se no */
           page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, color: bianco,
             borderColor: spuntata ? ambra : gray, borderWidth: spuntata ? 1.4 : 0.6 });
+          /* penna che ho: sfondo ambra chiaro, tutto dello stesso colore,
+             DIETRO la penna (la foto è trasparente, quindi i colori della penna restano veri);
+             poi rifaccio il bordo ambra sopra lo sfondo. Cambia i due colori per più o meno ambra. */
+          if (spuntata) {
+            const K = 4, g = document.createElement('canvas');
+            g.width = Math.round(cardW * K); g.height = Math.round(cardH * K);
+            const gx = g.getContext('2d'); gx.scale(K, K);
+            gx.fillStyle = '#FFF2CC'; gx.fill(new Path2D(schedaPath));   // un solo colore, uguale su tutta la scheda
+            page.drawImage(g, { x: cx - cardW / 2, y: top - cardH, width: cardW, height: cardH });
+            page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, borderColor: ambra, borderWidth: 1.4 });
+          }
 
           /* foto appoggiata in basso nella sua zona, come su uno scaffale */
           const fotoTop = top - PAD, f = foto.get(p);
           if (f) {
             const [dw, dh] = misura(f), x = cx - dw / 2, y = fotoTop - fotoH;
-            if (p.image) page.drawImage(fotoTela(f, dw, dh, false, true), { x, y, width: dw, height: dh });
+            if (p.image) page.drawImage(fotoTela(f, dw, dh, spuntata), { x, y, width: dw, height: dh });
             else {
               if (!ghost) ghost = fotoTela(f, dw, dh);
               page.drawImage(ghost, { x, y, width: dw, height: dh });
@@ -1065,6 +1076,19 @@
     const fctx = fc.getContext('2d');
     fctx.scale(16, 16);
     tesseraCanvas(fctx, 'rgba(26, 33, 64, .5)', '#1A2140');   // tessera a metà, spunta piena: nessuna macchia
+    /* il nome del sito dentro il marchio, sotto la spunta (la spunta è stata già disegnata sopra:
+       la riscrivo più piccola e alzata, così c'è posto per la scritta) */
+    fctx.clearRect(0, 0, 32, 32);
+    fctx.fillStyle = 'rgba(26, 33, 64, .5)'; fctx.fill(new Path2D(TESSERA));
+    fctx.save(); fctx.translate(4.8, -0.8); fctx.scale(0.7, 0.7);
+    fctx.strokeStyle = '#1A2140'; fctx.lineCap = 'round';
+    for (let i = 0; i < 2; i++) { fctx.lineWidth = SPESSORI[i]; fctx.beginPath(); fctx.moveTo(...SPUNTA[i]); fctx.lineTo(...SPUNTA[i + 1]); fctx.stroke(); }
+    fctx.restore();
+    fctx.fillStyle = '#1A2140'; fctx.textAlign = 'center';
+    fctx.font = '800 10px Helvetica, Arial, sans-serif';
+    fctx.font = '800 ' + Math.min(10 * 23 / fctx.measureText('Collection Time').width, 5) + 'px Helvetica, Arial, sans-serif';   // la scritta entra sempre nella tessera
+    fctx.fillText('Collection Time', 16, 26.6);
+    fctx.fillRect(9, 28.6, 14, 0.6);
     const filigrana = fc;
 
     /* "collectiontime.com" del piè di pagina: disegnato come IMMAGINE, non come testo,

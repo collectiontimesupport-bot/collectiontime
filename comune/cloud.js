@@ -558,7 +558,7 @@ async function contaNumeri() {
      contano solo le serie che esistono ancora nel catalogo (catalogo/riepilogo.json).
      Così "Collezioni" nel menu = "Serie iniziate" nelle statistiche, e i numeri non si contraddicono. */
   let R = null;
-  try { R = (await (await fetch(new URL('riepilogo.json?v=' + VERSIONE, CATALOGO))).json()).serie; } catch (e) { R = null; }
+  try { R = (await (await fetch(new URL('riepilogo.json', CATALOGO), { cache: 'no-cache' })).json()).serie; } catch (e) { R = null; }
   if (R) {
     numeri = { ce: 0, doppi: 0, collezioni: 0 };
     for (const [nome, c] of Object.entries(tutte)) {
