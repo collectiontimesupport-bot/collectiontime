@@ -544,9 +544,9 @@ input[readonly] { pointer-events: none; }
 .festa-coriandoli { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 80; }
 .festa-msg { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 60; width: min(92vw, 440px);
   display: flex; gap: 12px; align-items: center; padding: 14px 18px; border-radius: 20px; background: #1A2140 !important; color: #fff !important; border: 1px solid #3A4570;
-  box-shadow: 0 10px 30px rgba(26, 33, 64, .35); transform: translate(-50%, 160%); transition: transform .45s cubic-bezier(.2, 1.3, .4, 1); }
+  box-shadow: 0 10px 30px rgba(26, 33, 64, .35); transform: translate(-50%, calc(100% + 140px)); transition: transform .35s ease-in; }   /* uscita: scende liscio, senza rimbalzo */
 body.con-barra .festa-msg { bottom: calc(76px + env(safe-area-inset-bottom)); }   /* sopra la barra in basso delle categorie */
-.festa-msg.su { transform: translate(-50%, 0); }
+.festa-msg.su { transform: translate(-50%, 0); transition: transform .45s cubic-bezier(.2, 1.3, .4, 1); }   /* entrata con piccolo rimbalzo */
 .festa-msg .em { font-size: 2rem; line-height: 1; }
 .festa-msg .tt b { display: block; font-size: 1.05rem; }
 .festa-msg .tt b { color: #fff; }
