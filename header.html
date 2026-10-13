@@ -25,14 +25,19 @@
     <button type="button" id="stAccedi" title="Accedi con Google e salva la collezione nel cloud">Accedi</button>
   </nav>
 </header>
-<!-- TICKER (striscione scorrevole sotto la banda in alto): lo gestisce l'area amministratore, voce "Impostazioni sito".
+<!-- STRISCIONI (sotto la banda in alto): li gestisce l'area amministratore, voce "Impostazioni sito" → Striscioni. Fino a 6, ognuno tra BANNER e /BANNER.
      Spento = c'è l'attributo "hidden". NON modificare a mano tra TICKER-INIZIO e TICKER-FINE: si perderebbe. -->
 <!-- TICKER-INIZIO -->
-<div class="st-ticker" hidden><div class="st-ticker-riga" style="--durata: 20s"><span class="st-ticker-pista"><span>Scrivi qui il messaggio</span><span aria-hidden="true">Scrivi qui il messaggio</span></span></div></div>
+<!-- BANNER -->
+<div class="st-ticker" hidden data-modo="scorre" data-vel="5" data-dim="normale"><div class="st-ticker-riga" style="--durata: 20s"><span class="st-ticker-pista"><span>Scrivi qui il messaggio</span><span aria-hidden="true">Scrivi qui il messaggio</span></span></div></div>
+<!-- /BANNER -->
+<!-- BANNER -->
+<div class="st-ticker st-ticker-fisso" hidden data-modo="fisso" data-vel="5" data-dim="normale"><div class="st-ticker-riga">Scrivi qui il messaggio</div></div>
+<!-- /BANNER -->
 <!-- TICKER-FINE -->
 <!-- ISCRIZIONE: content = "libera" (sito aperto a tutti) · "uso" (prova a uso: libero finché non fai data-spunte spunte o passano data-giorni giorni, poi l'iscrizione)
      · "obbligatoria" (blocco totale, subito; vince sulla prova). data-prova / data-blocco ricordano i due interruttori dell'admin. Chi non ha un account vede una finestra che non si chiude finché non si iscrive o accede (vedi script.js, controllaIscrizione).
      Lo accende/spegne l'area amministratore, voce "Impostazioni sito". NON modificare a mano tra ISCRIZIONE-INIZIO e ISCRIZIONE-FINE: si perderebbe. -->
 <!-- ISCRIZIONE-INIZIO -->
-<meta name="ct-iscrizione" content="libera" data-prova="off" data-blocco="off" data-spunte="30" data-giorni="7">
+<meta name="ct-iscrizione" content="uso" data-prova="on" data-blocco="off" data-spunte="45" data-giorni="15">
 <!-- ISCRIZIONE-FINE -->

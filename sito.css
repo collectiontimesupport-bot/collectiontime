@@ -198,12 +198,16 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
 .st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
 
-/* ---------- striscione scorrevole (ticker) sotto la banda in alto ----------
-   Il testo, il link e l'interruttore (acceso/spento) si cambiano dall'area amministratore → Impostazioni sito.
+/* ---------- striscioni (ticker) sotto la banda in alto ----------
+   Fino a 6, uno sotto l'altro: ognuno scorre (.st-ticker) o sta fermo (.st-ticker-fisso). Testo, link, colori, velocità, grandezza
+   e acceso/spento si cambiano dall'area amministratore → Impostazioni sito → Striscioni.
+   Variabili per striscione (le scrive l'admin nello style; se mancano valgono quelle di base):
+   --tk-sfondo (colore di sfondo, di base ambra) · --tk-testo (colore del testo, di base blu) · --tk-dim (grandezza del testo, di base .9rem)
    Il testo è scritto due volte di seguito: la pista scorre di metà (50%) e riparte senza salti.
    --durata = secondi per un giro (la mette l'area amministratore secondo la lunghezza del testo).
    Si ferma con il mouse sopra. Chi ha scelto "meno animazioni" vede il testo fermo. */
-.st-ticker { overflow: hidden; background: var(--amber); color: var(--blu); font-size: .9rem; font-weight: 600; }
+.st-ticker { overflow: hidden; background: var(--tk-sfondo, var(--amber)); color: var(--tk-testo, var(--blu)); font-size: var(--tk-dim, .9rem); font-weight: 600; }
+.st-ticker-fisso .st-ticker-riga { padding: 7px 16px; text-align: center; line-height: 1.35; }   /* striscione fisso: testo centrato che va a capo */
 .st-ticker-riga { display: block; padding: 7px 0; color: inherit; text-decoration: none; }
 .st-ticker-pista { display: inline-flex; white-space: nowrap; animation: st-scorri var(--durata, 30s) linear infinite; }
 .st-ticker-pista > span { min-width: 100vw; padding-right: 3rem; box-sizing: border-box; }
