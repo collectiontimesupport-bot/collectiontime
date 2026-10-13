@@ -30,3 +30,9 @@
 <!-- TICKER-INIZIO -->
 <div class="st-ticker" hidden><div class="st-ticker-riga" style="--durata: 20s"><span class="st-ticker-pista"><span>Scrivi qui il messaggio</span><span aria-hidden="true">Scrivi qui il messaggio</span></span></div></div>
 <!-- TICKER-FINE -->
+<!-- ISCRIZIONE: content = "libera" (sito aperto a tutti) · "uso" (prova a uso: libero finché non fai data-spunte spunte o passano data-giorni giorni, poi l'iscrizione)
+     · "obbligatoria" (blocco totale, subito; vince sulla prova). data-prova / data-blocco ricordano i due interruttori dell'admin. Chi non ha un account vede una finestra che non si chiude finché non si iscrive o accede (vedi script.js, controllaIscrizione).
+     Lo accende/spegne l'area amministratore, voce "Impostazioni sito". NON modificare a mano tra ISCRIZIONE-INIZIO e ISCRIZIONE-FINE: si perderebbe. -->
+<!-- ISCRIZIONE-INIZIO -->
+<meta name="ct-iscrizione" content="uso" data-prova="on" data-blocco="off" data-spunte="30" data-giorni="7">
+<!-- ISCRIZIONE-FINE -->

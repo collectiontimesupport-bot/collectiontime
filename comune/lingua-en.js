@@ -78,6 +78,14 @@
 
     /* — finestra Accedi — */
     "La tua collezione nel cloud": "Your collection in the cloud",
+    "Entra in Collection Time": "Enter Collection Time",
+    "La tua collezione sta crescendo": "Your collection is growing",
+    "Crea il tuo account gratuito": "Create your free account",
+    "Hai già segnato tanti pezzi: per continuare crea il tuo account gratuito (o accedi se ce l'hai già). Le tue spunte si salvano nel cloud e le ritrovi su telefono, computer e ogni nuovo dispositivo.": "You've already marked a lot of pieces: to continue, create your free account (or sign in if you already have one). Your checkmarks are saved in the cloud and you'll find them on your phone, computer and any new device.",
+    "Per continuare a usare Collection Time crea il tuo account gratuito (o accedi se ce l'hai già). La tua collezione si salva nel cloud e la ritrovi su ogni dispositivo.": "To keep using Collection Time, create your free account (or sign in if you already have one). Your collection is saved in the cloud and you'll find it on any device.",
+    "Collection Time è": "Collection Time is",
+    "gratuito": "free",
+    ": per usarlo crea il tuo account (o accedi se ce l'hai già). La tua collezione si salva nel cloud e la ritrovi su telefono, computer e ogni nuovo dispositivo.": ": to use it, create your account (or sign in if you already have one). Your collection is saved in the cloud and you'll find it on your phone, computer and any new device.",
     "Accedi per": "Sign in to",
     "salvare la collezione nel cloud": "save your collection in the cloud",
     "e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.": "and find it again on your phone, your computer and any new device.",

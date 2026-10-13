@@ -80,6 +80,7 @@ async function caricaParte(idSegnaposto, file) {
     box.innerHTML = html;
     sistemaLink(box);
     nascondiHomeSeInstallato();
+    if (file === 'header.html') controllaIscrizione();
   } catch (e) {
     console.warn('Impossibile caricare ' + file + ':', e);
   }
@@ -275,6 +276,66 @@ function segnaAccesso(si) {
 }
 function segnalaModifica() { window.dispatchEvent(new Event('ct-modifica')); }
 try { if (localStorage.getItem('ct-accesso') === '1') caricaCloud(); } catch (e) {}
+
+/* ---------- Iscrizione obbligatoria / prova a uso ----------
+   In header.html c'è l'interruttore  <meta name="ct-iscrizione" content="…" data-spunte="30" data-giorni="7">  (lo gestisce l'admin,
+   "Impostazioni sito"). Chi NON ha un account vede la finestra "Accedi / Crea account" senza poterla chiudere
+   (la disegna comune/cloud.js, richiediIscrizione). Tre modi:
+     · libera       → niente, il sito è aperto a tutti
+     · uso          → PROVA A USO: libero finché questo dispositivo non ha data-spunte pezzi segnati "Ce l'ho" (somma di tutte le serie)
+                      OPPURE finché non passano data-giorni giorni dalla prima visita con la prova accesa; poi scatta la finestra
+     · obbligatoria → la finestra subito
+   · la soglia dei pezzi scatta alla PROSSIMA spunta (non all'apertura della pagina): chi ha già più pezzi della soglia quando la prova parte può ancora guardare il sito
+   · la prova si ricorda nel browser (ct-prova-inizio = quando è iniziata, ct-prova-spunte = quante spunte, ct-prova-scattata = soglia dei pezzi già scattata): cancellando i dati del browser
+     la prova ricomincia (non è una protezione da server: il sito è statico)
+   · si applica solo sul sito vero (collectiontime.com); per provarla sul Mac apri una pagina con  ?iscrizione=prova
+   · restano libere le pagine che servono PRIMA di iscriversi: Privacy, Note legali, FAQ e Contatti
+   · non nasconde le pagine ai motori di ricerca (la finestra sta sopra il contenuto)
+   · se cloud.js non si riesce a caricare (offline, blocco di un'estensione) la finestra non compare: meglio non chiudere fuori nessuno per un guasto
+   ! MODIFICA: PAGINE_LIBERE = le pagine sempre aperte a tutti */
+const PAGINE_LIBERE = /(^|\/)(privacy|note-legali|faq|contatti)(\.html)?\/?$/;
+const chiediIscrizione = motivo => caricaCloud().then(c => c.richiediIscrizione(motivo), e => console.warn('Iscrizione: cloud.js non caricato', e));
+/* quanti pezzi "Ce l'ho" ci sono su questo dispositivo (tutte le serie); si ricorda in ct-prova-spunte */
+async function contaSpunte() {
+  const tutte = await leggiTutto();
+  const n = Object.values(tutte).reduce((t, c) => t + (c.possedute || []).length, 0);
+  try { localStorage.setItem('ct-prova-spunte', String(n)); } catch (e) {}
+  return n;
+}
+function controllaIscrizione() {
+  const m = document.querySelector('meta[name="ct-iscrizione"]');
+  const modo = m && m.content;
+  if (modo !== 'obbligatoria' && modo !== 'uso') return;
+  if (PAGINE_LIBERE.test(location.pathname)) return;
+  let prova = false;
+  try {
+    if (/[?&]iscrizione=prova\b/.test(location.search)) sessionStorage.setItem('ct-iscrizione-prova', '1');
+    prova = sessionStorage.getItem('ct-iscrizione-prova') === '1';
+  } catch (e) {}
+  if (!prova && !/(^|\.)collectiontime\.com$/.test(location.hostname)) return;
+  if (modo === 'obbligatoria') return chiediIscrizione('');
+  /* prova a uso: chi ha già l'account (e il cloud già in caricamento) non c'entra */
+  try { if (localStorage.getItem('ct-accesso') === '1') return; } catch (e) { return; }
+  const maxSpunte = Math.max(1, +m.dataset.spunte || 30), maxGiorni = Math.max(1, +m.dataset.giorni || 7);
+  let inizio = 0, spunte = null, scattata = false;
+  try {                                                                                      // senza memoria nel browser non si può misurare la prova: sito aperto
+    inizio = +localStorage.getItem('ct-prova-inizio') || 0;
+    if (!inizio) { inizio = Date.now(); localStorage.setItem('ct-prova-inizio', String(inizio)); }
+    const c = localStorage.getItem('ct-prova-spunte'); spunte = c === null ? null : +c;
+    scattata = localStorage.getItem('ct-prova-scattata') === '1';                           // la soglia dei pezzi è già scattata su questo dispositivo
+  } catch (e) { return; }
+  if (Date.now() - inizio > maxGiorni * 86400000) return chiediIscrizione('giorni');
+  /* soglia dei pezzi: scatta alla PROSSIMA spunta, non appena si apre la pagina (chi ha già più pezzi della soglia quando la prova parte
+     può guardare il sito; alla prima spunta nuova vede la finestra). Una volta scattata resta (ct-prova-scattata), anche ricaricando */
+  if (scattata && spunte !== null && spunte >= maxSpunte) return chiediIscrizione('spunte');
+  const verifica = () => contaSpunte().then(n => { if (n >= maxSpunte) { try { localStorage.setItem('ct-prova-scattata', '1'); } catch (e) {} chiediIscrizione('spunte'); } }, e => console.warn(e));
+  if (spunte === null) contaSpunte().catch(e => console.warn(e));                           // prima volta su questo dispositivo: conto e basta, senza finestra
+  let t = null;
+  window.addEventListener('ct-modifica', () => {                                            // dopo ogni spunta ricontrollo (con 1 secondo di calma)
+    try { if (localStorage.getItem('ct-accesso') === '1') return; } catch (e) { return; }
+    clearTimeout(t); t = setTimeout(verifica, 1000);
+  });
+}
 
 /* Promemoria "Tieni al sicuro la tua collezione": compare in basso alla prima
    spunta di chi NON ha fatto l'accesso (non blocca niente). "Più tardi" lo

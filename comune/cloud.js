@@ -212,9 +212,11 @@ document.addEventListener('visibilitychange', () => {
 
 /* ---------- accesso ---------- */
 onAuthStateChanged(auth, utente => {
+  authPronto = true;
   segnaAccesso(!!utente);                                     // funzione di script.js: ricorda l'accesso e cambia il pulsante
   aggiornaPulsante(utente);
   aggiornaVista();
+  controllaObbligo();                                         // iscrizione obbligatoria: chi non ha l'account vede la finestra
   if (utente) {
     let fatta = false;
     try { fatta = sessionStorage.getItem('ct-cloud-visita') === utente.uid; sessionStorage.setItem('ct-cloud-visita', utente.uid); } catch (e) {}
@@ -235,7 +237,8 @@ async function accedi() {
   } catch (e) {
     if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
     console.warn(e);
-    avviso(e.code === 'auth/popup-blocked' ? 'Il browser ha bloccato la finestra di Google: permetti i pop-up per questo sito e riprova.' : 'Accesso non riuscito. Riprova tra poco.');
+    /* con la finestra obbligatoria aperta l'avviso (in basso) resterebbe nascosto: l'errore va scritto dentro la finestra */
+    mostraErrore(e.code === 'auth/popup-blocked' ? 'Il browser ha bloccato la finestra di Google: permetti i pop-up per questo sito e riprova.' : e.code === 'auth/network-request-failed' ? ERRORI[e.code] : 'Accesso non riuscito. Riprova tra poco.');
   }
 }
 /* ---------- accesso con email e password ----------
@@ -322,7 +325,7 @@ async function passwordDimenticata(email) {
   } catch (e) { mostraErrore(messaggioErrore(e)); }
 }
 function mostraErrore(testo, ok) {
-  const el = finestra && finestra.querySelector('.st-account-errore');
+  const el = finestra && finestra.open && (finestra.querySelector('.st-email .st-account-errore') || finestra.querySelector('.st-account-errore'));
   if (!el) return avviso(testo);
   el.textContent = testo;
   el.classList.toggle('ok', !!ok);
@@ -470,13 +473,32 @@ function opzioniPaese() {
   return vuota + nomiPaesi().map(([c, n]) => [c, nomi ? nomi.of(c) : n]).sort((a, b) => a[1].localeCompare(b[1], LINGUA))
     .map(([c, n]) => '<option value="' + c + '"' + (!vuota && c === mio ? ' selected' : '') + '>' + esc(n) + '</option>').join('');
 }
+/* ISCRIZIONE OBBLIGATORIA: la accende script.js (controllaIscrizione) quando l'interruttore in header.html è su "obbligatoria".
+   Finché Firebase non ha risposto (authPronto) non si sa se la persona è già iscritta, quindi non si mostra niente (niente lampo a chi ha già l'account).
+   Con l'obbligo la finestra "Accedi" non si chiude: né con Esc, né cliccando fuori, né col pulsante Chiudi; se si riesce a chiuderla si riapre. */
+let obbligo = false, authPronto = false, motivoObbligo = '';   // motivoObbligo: '' (obbligo subito), 'spunte' o 'giorni' (fine della prova a uso)
+function controllaObbligo() {
+  if (!obbligo || !authPronto || auth.currentUser) return;
+  if (finestra && finestra.open) return;
+  apriFinestra();
+}
+export function richiediIscrizione(motivo) {
+  obbligo = true; motivoObbligo = motivo || '';
+  if (finestra && finestra.open) disegnaFinestra(); else controllaObbligo();
+}
 let finestra = null, nuovo = true;    // nuovo = vista "Crea account" (di partenza); false = vista "Accedi"
 let emailAperta = false;              // nella vista "Crea account": false = solo Google grande + link "registrati con l'email"; true = anche il modulo email
 function disegnaFinestra() {
+  finestra.classList.toggle('st-obbligo', obbligo);
+  finestra.querySelector('h2').textContent = !obbligo ? 'La tua collezione nel cloud' : motivoObbligo === 'spunte' ? 'La tua collezione sta crescendo' : motivoObbligo === 'giorni' ? 'Crea il tuo account gratuito' : 'Entra in Collection Time';
   finestra.querySelector('.st-account-testo').innerHTML =
-    '<p>Accedi per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>'
+    (obbligo && motivoObbligo === 'spunte' ? '<p>Hai già segnato tanti pezzi: per continuare crea il tuo account gratuito (o accedi se ce l\'hai già). Le tue spunte si salvano nel cloud e le ritrovi su telefono, computer e ogni nuovo dispositivo.</p>'
+     : obbligo && motivoObbligo === 'giorni' ? '<p>Per continuare a usare Collection Time crea il tuo account gratuito (o accedi se ce l\'hai già). La tua collezione si salva nel cloud e la ritrovi su ogni dispositivo.</p>'
+     : obbligo ? '<p>Collection Time è <b>gratuito</b>: per usarlo crea il tuo account (o accedi se ce l\'hai già). La tua collezione si salva nel cloud e la ritrovi su telefono, computer e ogni nuovo dispositivo.</p>'
+     : '<p>Accedi per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>')
     + '<button type="button" data-azione="accedi" class="st-google st-google-grande">Continua con Google</button>'
     + '<p class="st-google-nota"><small>Il modo più rapido: senza password e senza email da confermare.</small></p>'
+    + (obbligo && nuovo && !emailAperta ? '<p class="st-account-errore st-errore-google" role="alert" hidden></p>' : '')
     + (nuovo && !emailAperta ? '<p class="st-privacy-riga"><small>Iscrivendoti accetti la </small><a href="' + new URL('privacy.html', BASE).href + '" target="_blank" rel="noopener"><small>Privacy</small></a><small>.</small></p>' : '')
     + (nuovo && !emailAperta ? '' : '<p class="st-oppure">oppure con la tua email</p>')
     /* un modo alla volta ("entra" o "nuovo"), così il Portachiavi / gestore password
@@ -504,7 +526,7 @@ function disegnaFinestra() {
         + '</form>')
     /* iscrivendosi si accetta la Privacy: nella vista iniziale sta subito sotto Google, nel modulo email sta in fondo */
     + (nuovo && emailAperta ? '<p class="st-privacy-riga"><small>Iscrivendoti accetti la </small><a href="' + new URL('privacy.html', BASE).href + '" target="_blank" rel="noopener"><small>Privacy</small></a><small>.</small></p>' : '')
-    + '<div class="st-account-copia"><small>Non vuoi un account?</small> ' + COPIA + '</div>';
+    + (obbligo ? '' : '<div class="st-account-copia"><small>Non vuoi un account?</small> ' + COPIA + '</div>');
 }
 function apriFinestra() {
   if (!finestra) {
@@ -515,14 +537,15 @@ function apriFinestra() {
       + '<div class="st-account-azioni"><button type="button" data-azione="chiudi" class="st-secondario">Chiudi</button></div>';
     finestra.addEventListener('click', e => {
       const b = e.target.closest('button[data-azione], button[data-backup]');
-      if (!b) {                                                // clic fuori dalla finestra: chiude
+      if (!b) {                                                // clic fuori dalla finestra: chiude (non con l'iscrizione obbligatoria)
+        if (obbligo) return;
         const r = finestra.getBoundingClientRect();
         if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) finestra.close();
         return;
       }
       if (b.dataset.backup) return finestra.close();           // Scarica / Carica un file: li gestisce script.js
       const azione = b.dataset.azione;
-      if (azione === 'accedi') { finestra.close(); accedi(); }  // il clic apre subito la finestra di Google (se no il browser la blocca)
+      if (azione === 'accedi') { if (!obbligo) finestra.close(); accedi(); }   // con l'iscrizione obbligatoria la finestra resta aperta finché l'accesso non riesce  // il clic apre subito la finestra di Google (se no il browser la blocca)
       else if (azione === 'cambia-modo') {                     // Accedi ⇄ Crea account (l'email scritta resta)
         const campo = finestra.querySelector('.st-email [name=email]'), email = campo ? campo.value : '';
         nuovo = !nuovo; if (nuovo && email) emailAperta = true; disegnaFinestra();
@@ -542,7 +565,8 @@ function apriFinestra() {
       const f = e.target;
       conEmail(f.dataset.modo, f.email.value.trim(), f.password.value, f.nome ? f.nome.value.trim() : '', f.paese ? f.paese.value : '');
     });
-    finestra.addEventListener('close', () => { nuovo = true; emailAperta = false; });
+    finestra.addEventListener('cancel', e => { if (obbligo && !auth.currentUser) e.preventDefault(); });   // tasto Esc
+    finestra.addEventListener('close', () => { nuovo = true; emailAperta = false; if (obbligo) setTimeout(controllaObbligo, 0); });
     document.body.append(finestra);
   }
   disegnaFinestra();

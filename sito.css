@@ -283,6 +283,9 @@ a.st-ticker-riga:hover { text-decoration: underline; }
 .st-account { max-width: min(400px, 92vw); }
 .st-account p { margin: 0 0 10px; line-height: 1.5; }
 .st-account small { color: var(--muted); }
+/* iscrizione obbligatoria (comune/cloud.js): finestra senza "Chiudi", sfondo più coprente e sfocato */
+.st-account.st-obbligo::backdrop { background: rgba(14, 18, 38, .88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.st-account.st-obbligo .st-account-azioni { display: none; }
 .st-account-azioni { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .st-account .st-secondario { background: none; color: var(--ink); border: 1px solid var(--line); }
 .st-account .st-secondario:hover { background: none; border-color: var(--amber); color: var(--ink); }
