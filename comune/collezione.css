@@ -537,3 +537,25 @@ input[readonly] { pointer-events: none; }
 .if-zoom::backdrop { background: rgba(0, 0, 0, .85); }
 .if-zoom img { max-width: 96vw; max-height: 92vh; object-fit: contain; border-radius: 6px; background: #fff; }
 .if-zoom-x { position: fixed; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: #fff; color: #111; font-size: 1.1rem; cursor: pointer; }
+
+/* =====================================================================
+   FESTA: serie completata (coriandoli + messaggio). Il codice è in app.js, voce "SERIE COMPLETATA".
+   ===================================================================== */
+.festa-coriandoli { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 80; }
+.festa-msg { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 60; width: min(92vw, 440px);
+  display: flex; gap: 12px; align-items: center; padding: 14px 18px; border-radius: 20px; background: #1A2140 !important; color: #fff !important; border: 1px solid #3A4570;
+  box-shadow: 0 10px 30px rgba(26, 33, 64, .35); transform: translate(-50%, 160%); transition: transform .45s cubic-bezier(.2, 1.3, .4, 1); }
+body.con-barra .festa-msg { bottom: calc(76px + env(safe-area-inset-bottom)); }   /* sopra la barra in basso delle categorie */
+.festa-msg.su { transform: translate(-50%, 0); }
+.festa-msg .em { font-size: 2rem; line-height: 1; }
+.festa-msg .tt b { display: block; font-size: 1.05rem; }
+.festa-msg .tt b { color: #fff; }
+.festa-msg .tt span { font-size: .82rem; color: #C9CEDD; }
+
+.festa-msg button { font: inherit; border: 0; border-radius: 99px; cursor: pointer; white-space: nowrap; }
+.festa-msg .condividi { padding: 7px 14px; font-weight: 700; background: #F2A900; color: #1A2140; }
+.festa-msg .condividi:disabled { opacity: .6; cursor: progress; }
+
+@media (prefers-reduced-motion: reduce) { .festa-msg { transition: none; } }
+
+/* colori fissi: il messaggio resta blu scuro anche nel tema scuro del sito (dove --ink diventa chiaro) */

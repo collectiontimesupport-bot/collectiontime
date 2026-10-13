@@ -167,6 +167,8 @@
     "Categoria tolta dalle fissate": "Category unpinned",
     "Categoria fissata in alto": "Category pinned to the top",
     "Tolto anche il doppione.": "The duplicate was removed too.",
+    "Serie completata!": "Series complete!",
+    "Non sono riuscito a creare l'immagine. Riprova dalla finestra Stampa.": "I couldn't create the image. Try again from the Print window.",
     "Segnato anche «Ce l'ho»: se hai un doppione, ce l'hai.": "Also marked “Owned”: if you have a duplicate, you own it.",
     "Link copiato: incollalo dove vuoi.": "Link copied: paste it wherever you like.",
     "Accedi per creare questa immagine.": "Sign in to create this image.",

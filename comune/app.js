@@ -305,6 +305,7 @@
 
   /* segna / toglie "Ce l'ho" e aggiorna solo la scheda interessata */
   function setOwned(p, value) {
+    const eraCompleta = serieCompleta();      /* per i coriandoli: parte solo se QUESTO tocco completa la serie */
     p.owned = value;
     const aveviDoppi = !value && p.doppi > 0;
     if (aveviDoppi) say(p.doppi === 1 ? 'Tolto anche il doppione.' : 'Tolti anche i ' + p.doppi + ' doppioni.');
@@ -321,6 +322,86 @@
       }
       updateCount();
     }
+    if (value && !eraCompleta && serieCompleta()) festeggia();
+  }
+
+  /* ---------- SERIE COMPLETATA: coriandoli + messaggio  ----------
+     Parte SOLO quando l'utente tocca l'ultimo pezzo (setOwned, qui sopra): non quando apre una serie già
+     completa, non quando i dati arrivano dal cloud o da un altro telefono. Una volta sola per serie e per
+     visita (sessionStorage). Le varianti estere non contano (come per la barra). Chi ha "riduci animazioni"
+     attivo non vede i coriandoli, solo il messaggio. Il messaggio sparisce appena sparisce l'ultimo
+     coriandolo (senza animazioni resta FESTA_MS). (Il pulsante "Condividi" è stato provato e tolto: si può rimettere con makeImmagine.)
+     ! MODIFICA: FESTA_MIN = pezzi minimi perché valga la pena festeggiare; FESTA_MS = quanto resta il messaggio;
+     FESTA_N = quanti coriandoli; i colori sono in FESTA_COLORI. L'aspetto sta in collezione.css (voce "festa"). */
+  const FESTA_MIN = 2, FESTA_MS = 5000, FESTA_N = 360   /* sul telefono ne uso il 45%, sul computer il 70% (vedi festaCoriandoli) */, FESTA_COLORI = ['#F2A900', '#FFD166', '#1A2140', '#5D6580', '#FFF2CC', '#F2A900', '#E8590C', '#2F9E44'];
+  /* PROVA: aggiungendo  ?festa=prova  all'indirizzo di una serie (es. …/index.html?festa=prova) l'effetto riparte
+     ogni volta che completi la serie (togli un pezzo e rimettilo) 
+     Serve solo per provare: gli utenti normali non lo usano. */
+  const FESTA_PROVA = /[?&]festa=prova(&|$)/.test(location.search);
+  function serieCompleta() {
+    const base = pens.filter(p => !p.estero);
+    const total = base.filter(p => p.image || p.owned).length;
+    return total >= FESTA_MIN && base.filter(p => p.owned).length >= total;
+  }
+  function festeggia() {
+    const chiave = 'ct-festa-' + (CONFIG.id || CONFIG.titolo);
+    if (!FESTA_PROVA) try { if (sessionStorage.getItem(chiave)) return; sessionStorage.setItem(chiave, '1'); } catch (e) {}
+    /* aspetto un attimo: nello stesso momento la pagina calcola il bagliore dell'ultimo pezzo (bagliore.js) e
+       la spunta fa il suo "pop": se partissero insieme ai coriandoli il telefono scatterebbe */
+    setTimeout(() => {
+      festaMessaggio();
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) festaCoriandoli(festaNascondi);   /* sparisce l'ultimo coriandolo → sparisce anche il messaggio */
+      else { clearTimeout(festaT); festaT = setTimeout(festaNascondi, FESTA_MS); }                    /* senza animazioni: resta qualche secondo */
+    }, 450);
+  }
+  let festaT = 0;
+  function festaMessaggio() {
+    document.querySelectorAll('.festa-msg').forEach(e => e.remove());
+    const m = document.createElement('div');
+    m.className = 'festa-msg'; m.setAttribute('role', 'status');
+    m.innerHTML = '<span class="em" aria-hidden="true">🎉</span><div class="tt"><b>Serie completata!</b><span></span></div>';
+    m.querySelector('.tt span').textContent = 'Hai tutti i pezzi di «' + CONFIG.titolo + '».';
+    document.body.append(m);
+    requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('su')));
+  }
+  function festaNascondi() {              /* il messaggio esce quando finiscono i coriandoli */
+    clearTimeout(festaT);
+    document.querySelectorAll('.festa-msg').forEach(m => { m.classList.remove('su'); setTimeout(() => m.remove(), 500); });
+  }
+  function festaCoriandoli(alFine) {            /* un solo sparo per lato, a metà schermo, con tanta spinta verso il centro: si incrociano. Sopra a tutto */
+    const d = 1, W = innerWidth, H = innerHeight;       /* risoluzione normale (non Retina): i coriandoli non hanno bisogno di nitidezza e così il telefono non fa fatica */
+    const c = document.createElement('canvas'), x = c.getContext('2d');
+    c.className = 'festa-coriandoli'; c.setAttribute('aria-hidden', 'true');
+    c.width = Math.round(W * d); c.height = Math.round(H * d); document.body.append(c);
+    const N = matchMedia('(pointer: coarse)').matches ? Math.round(FESTA_N * .45) : Math.round(FESTA_N * .7);   /* meno sul telefono, per non rallentare */
+    const P = [], G = .17, VMAX = 6;           /* G = gravità, VMAX = velocità massima di caduta: più alti = cadono più in fretta */
+    for (let i = 0; i < N; i++) {
+      const l = i % 2, forza = 3.5 + Math.random() * 5.5;
+      P.push({ x: l ? W - 8 : 8, y: H * (.45 + Math.random() * .2), vx: (l ? -1 : 1) * forza * Math.min(3.2, W / 430), vy: -Math.sqrt(2 * G * H * (.2 + Math.random() * .4)),
+        w: 6 + Math.random() * 8, h: 10 + Math.random() * 10, r: Math.random() * 6, vr: (Math.random() - .5) * .4,
+        c: FESTA_COLORI[i % FESTA_COLORI.length] });
+    }
+    P.sort((a, b) => (a.c < b.c ? -1 : a.c > b.c ? 1 : 0));   /* stesso colore vicino: si cambia colore meno volte per ogni giro */
+    let colore = '';
+    const t0 = performance.now(), DUR = 6000;
+    let ult = t0;
+    (function giro(t) {
+      const k = t - t0, f = Math.min(3, Math.max(.2, (t - ult) / 16.67)); ult = t;   /* f = quanti "giri a 60 al secondo" sono passati: stessa velocità anche sugli schermi a 120 Hz */
+      x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, c.width, c.height);
+      x.globalAlpha = Math.max(0, Math.min(1, (DUR - k) / 1500));
+      let visibili = 0;
+      for (const p of P) {
+        p.vy = Math.min(p.vy + G * f, VMAX); p.vx *= Math.pow(.985, f); if (p.vy > 0) p.vx += Math.sin(p.r * 2) * .06 * f;
+        p.x += p.vx * f; p.y += p.vy * f; p.r += p.vr * f;
+        if (p.y > H + 20) continue;                              /* già uscito dallo schermo: non lo disegno */
+        visibili++;
+        const co = Math.cos(p.r), si = Math.sin(p.r), sy = Math.abs(Math.cos(p.r * 1.7)) * .8 + .2;
+        x.setTransform(co * d, si * d, -si * sy * d, co * sy * d, p.x * d, p.y * d);        /* rotazione + "ribaltamento" in una sola operazione (più veloce di save/restore) */
+        if (p.c !== colore) x.fillStyle = colore = p.c;
+        x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      }
+      if (k < DUR && (visibili || k < 800)) requestAnimationFrame(giro); else { c.remove(); if (alFine) alFine(); }   /* finisce quando non ne resta nessuno (o dopo DUR) */
+    })(t0);
   }
 
   /* Contatore dei doppioni sotto "Ce l'ho":  Doppi  − 2 +
