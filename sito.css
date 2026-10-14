@@ -23,14 +23,14 @@
   :root[data-tema="auto"] {
     --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
     --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126; --crema: #232A4D; --crema-line: #6E5A22;
-    --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg);
+    --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg); --pin: #F2A900;
     color-scheme: dark;
   }
 }
 :root[data-tema="scuro"] {
   --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
   --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126; --crema: #232A4D; --crema-line: #6E5A22;
-  --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg);
+  --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg); --pin: #F2A900;
   color-scheme: dark;
 }
 
@@ -109,10 +109,52 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
   .st-numeri b { font-size: 1.3rem; }
 }
 
+:root { --pin: #141A33; }
 .st-pin-hint { margin: -8px 0 14px; color: var(--muted); font-size: .85rem; }
-.st-cards > li { -webkit-touch-callout: none; }
+.st-cards > li { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 .st-cards > li.st-fissata > .st-card { border-color: var(--amber); position: relative; }
-.st-cards > li.st-fissata > .st-card::after { content: "\1F4CC"; position: absolute; top: 10px; right: 12px; font-size: 1rem; }
+.st-pin-ico, .st-cards > li.st-fissata > .st-card::after {
+  background-color: var(--pin);
+  -webkit-mask: var(--pin-svg) center / contain no-repeat; mask: var(--pin-svg) center / contain no-repeat;
+}
+:root { --pin-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16 3a1 1 0 0 1 .7 1.7L16 5.4V10l2.6 3.3a1 1 0 0 1-.8 1.7H13v5.3a1 1 0 0 1-2 0V15H6.2a1 1 0 0 1-.8-1.7L8 10V5.4l-.7-.7A1 1 0 0 1 8 3z'/%3E%3C/svg%3E"); }
+.st-cards > li.st-fissata > .st-card::after { content: ""; position: absolute; top: 4px; right: 5px; width: 15px; height: 15px; transform: rotate(35deg); }
+@keyframes st-schiaccia { from { transform: scale(1); } to { transform: scale(.965); } }
+.st-cards > li.st-premendo > .st-card { animation: st-schiaccia .55s ease-out forwards; }
+.st-cards > li.st-menu-aperto > .st-card { transform: scale(.965); border-color: var(--amber); }
+.st-cards > li { position: relative; }
+.st-pin-dots { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .st-pin-dots:not([hidden]) {
+    display: grid; place-items: center; position: absolute; bottom: 14px; right: 14px; z-index: 2;
+    width: 32px; height: 32px; padding: 0; cursor: pointer; color: var(--ink);
+    background: var(--white); border: 1px solid var(--line); border-radius: 50%;
+    opacity: .6; transition: opacity .12s, border-color .12s;
+  }
+  .st-cards > li:hover > .st-pin-dots, .st-cards > li:focus-within > .st-pin-dots, .st-cards > li.st-menu-aperto > .st-pin-dots { opacity: 1; }
+  .st-pin-dots:hover, .st-pin-dots:focus-visible { border-color: var(--amber); outline: none; }
+  .st-pin-dots:focus-visible { box-shadow: 0 0 0 2px var(--ink); }
+  .st-cards > li:has(> .st-pin-dots:not([hidden])) .st-riga-apri { padding-right: 42px; }
+}
+.st-pin-menu {
+  position: fixed; z-index: 40; min-width: 200px; max-width: min(280px, 92vw); padding: 6px;
+  background: var(--white); color: var(--ink); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(10, 14, 30, .28); animation: st-menu-entra .12s ease-out;
+}
+@keyframes st-menu-entra { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+.st-pin-menu button {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 8px 12px;
+  font: inherit; font-size: 1rem; color: var(--ink); text-align: left; cursor: pointer;
+  background: none; border: 0; border-radius: 9px;
+}
+.st-pin-menu button:hover:not(:disabled), .st-pin-menu button:focus-visible { background: var(--riquadro, rgba(0, 0, 0, .06)); outline: none; }
+.st-pin-menu button:disabled { opacity: .45; cursor: default; }
+.st-pin-ico { flex: none; width: 20px; height: 20px; }
+.st-pin-menu .toglie .st-pin-ico { opacity: .75; }
+.st-pin-nota { margin: 2px 12px 8px; color: var(--muted); font-size: .8rem; line-height: 1.35; }
+@media (prefers-reduced-motion: reduce) {
+  .st-cards > li.st-premendo > .st-card, .st-pin-menu { animation: none; }
+}
 
 .st-riga-apri { display: flex; align-items: center; gap: 12px; }
 .st-progresso { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
