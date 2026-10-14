@@ -532,7 +532,7 @@ function pinCategorie() {
   const loggato = () => { if (inLocale) return true; try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; } };
   const suggerimento = document.createElement('p');
   suggerimento.className = 'st-pin-hint';
-  suggerimento.textContent = 'Tieni premuta una categoria per fissarla in alto (al massimo ' + max + ').';
+  suggerimento.textContent = 'Tieni premuta una categoria per fissarla in alto (Max ' + max + ').';
   lista.before(suggerimento);
   const disegna = () => {
     const si = loggato() && max > 0;

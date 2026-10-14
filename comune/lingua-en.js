@@ -399,7 +399,7 @@
     [/^Il mio gruppo su (.+) · Collection Time$/, "My $1 group · Collection Time"],
     [/^Segnato anche «Ce l'ho»(.*)$/, "Also marked “Owned”$1"],
     [/^Importato: (\d+) oggett[oi] segnat[oi] "Ce l'ho"\.$/, "Imported: $1 items marked “Owned”."],
-    [/^Tieni premuta una categoria per fissarla in alto \(al massimo (\d+)\)\.$/, "Press and hold a category to pin it to the top (up to $1)."],
+    [/^Tieni premuta una categoria per fissarla in alto \(Max (\d+)\)\.$/, "Press and hold a category to pin it to the top (Max $1)."],
     [/^Hai già fissato il massimo \((\d+)\): togline una prima$/, "You have already pinned the maximum ($1): unpin one first"],
     [/^Puoi fissare al massimo (\d+) categorie: togline una tenendola premuta$/, "You can pin up to $1 categories: unpin one by pressing and holding it"],
     [/^Ho corretto «(.+)» in «(.+)»: controlla e premi di nuovo "Crea account"\.$/, function (m) { return 'I corrected “' + m[1] + '” to “' + m[2] + '”: check it and press “Create account” again.'; }],
