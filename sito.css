@@ -477,3 +477,10 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
 .st-ma-trofei .st-progresso { display: block; }
 .st-ma-badge-riga { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .st-ma-badge { padding: 2px 9px; border-radius: 999px; background: var(--col); color: #fff; font-size: .72rem; font-weight: 700; }
+
+:root[data-tema="scuro"] .badge .cuore, :root[data-tema="scuro"] .st-ma-badge { box-shadow: 0 0 0 2px rgba(238, 240, 247, .8); }
+:root[data-tema="scuro"] .badge.on { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink) inset; }
+@media (prefers-color-scheme: dark) {
+  :root[data-tema="auto"] .badge .cuore, :root[data-tema="auto"] .st-ma-badge { box-shadow: 0 0 0 2px rgba(238, 240, 247, .8); }
+  :root[data-tema="auto"] .badge.on { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink) inset; }
+}

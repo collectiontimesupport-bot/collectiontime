@@ -227,16 +227,21 @@ export async function disegnaProfilo(box) {
   };
   const mistero = '<li class="trofeo mistero"><div class="trofeo-med">??</div><div class="tt"><b>??</b></div></li>';
   const scelti = leggiJ(CH_BADGE, []);
+  let conAccount = false; try { conAccount = localStorage.getItem('ct-accesso') === '1'; } catch (e) {}
+  if (!box.dataset.accesso) { box.dataset.accesso = '1'; window.addEventListener('ct-accesso', () => disegnaProfilo(box)); }
   box.innerHTML =
     '<div class="trofei-testa"><b>' + (en() ? 'Trophies unlocked: ' + sbloccati.length + ' of ' + tot : 'Trofei sbloccati: ' + sbloccati.length + ' su ' + tot) + '</b>'
     + '<span class="st-progresso"><i style="width:' + Math.round(sbloccati.length * 100 / tot) + '%"></i></span></div>'
     + '<ul class="trofei-griglia">' + visibili.map(carta).join('') + misteri.map(() => mistero).join('') + '</ul>'
     + '<h3 class="st-imp-sotto">' + (en() ? 'My badges' : 'I miei badge') + '</h3>'
-    + '<p class="st-imp-nota">' + (en() ? 'Pick up to ' + MAX_BADGE + ' badges to show on your profile.' : 'Scegli fino a ' + MAX_BADGE + ' badge da mostrare sul tuo profilo.') + '</p>'
-    + '<div class="badge-lista">' + BADGE.map(([id, nome, col]) => badgeHtml(id, nome, col, scelti.includes(id))).join('') + '</div>';
+    + (conAccount
+      ? '<p class="st-imp-nota">' + (en() ? 'Pick up to ' + MAX_BADGE + ' badges to show on your profile.' : 'Scegli fino a ' + MAX_BADGE + ' badge da mostrare sul tuo profilo.') + '</p>'
+        + '<div class="badge-lista">' + BADGE.map(([id, nome, col]) => badgeHtml(id, nome, col, scelti.includes(id))).join('') + '</div>'
+      : '<p class="st-imp-nota">' + (en() ? 'Badges are for people with an account: sign in to pick the ones that represent you.' : 'I badge sono per chi ha un account: accedi per scegliere quelli che ti rappresentano.') + '</p>'
+        + '<p><button type="button" class="st-btn" data-accedi>' + (en() ? 'Sign in' : 'Accedi') + '</button></p>');
   box.onclick = async e => {
     const b = e.target.closest('[data-badge]');
-    if (!b) return;
+    if (!b || !conAccount) return;
     let s = leggiJ(CH_BADGE, []);
     const id = b.dataset.badge;
     if (s.includes(id)) s = s.filter(x => x !== id);
