@@ -37,6 +37,38 @@ function unisci(a, b) {
   }
   return tutto;
 }
+const leggiBase = () => { try { return JSON.parse(localStorage.getItem('ct-cloud-base')); } catch (e) { return null; } };
+const scriviBase = c => { try { localStorage.setItem('ct-cloud-base', JSON.stringify(c || {})); } catch (e) {} };
+function unisci3(base, a, b) {
+  if (!base || typeof base !== 'object') return unisci(a, b);
+  const tutto = {};
+  const same = (x, y) => JSON.stringify(x === undefined ? null : x) === JSON.stringify(y === undefined ? null : y);
+  for (const nome of new Set([...Object.keys(base), ...Object.keys(a || {}), ...Object.keys(b || {})])) {
+    const z = base[nome] || {}, x = (a || {})[nome] || {}, y = (b || {})[nome] || {}, c = {};
+    const sZ = new Set(z.possedute || []), sX = new Set(x.possedute || []), sY = new Set(y.possedute || []);
+    const possedute = [...new Set([...sZ, ...sX, ...sY])].filter(id => {
+      const l = sX.has(id), n = sY.has(id), b0 = sZ.has(id);
+      return (l && n) || ((l || n) && !b0);
+    });
+    const doppi = {};
+    for (const id of new Set([...Object.keys(z.doppi || {}), ...Object.keys(x.doppi || {}), ...Object.keys(y.doppi || {})])) {
+      const vz = (z.doppi || {})[id] || 0, vl = (x.doppi || {})[id] || 0, vn = (y.doppi || {})[id] || 0;
+      const v = vl === vz ? vn : vn === vz ? vl : Math.max(vl, vn);
+      if (v > 0) doppi[id] = v;
+    }
+    const hashtag = {};
+    for (const id of new Set([...Object.keys(z.hashtag || {}), ...Object.keys(x.hashtag || {}), ...Object.keys(y.hashtag || {})])) {
+      const vz = (z.hashtag || {})[id], vl = (x.hashtag || {})[id], vn = (y.hashtag || {})[id];
+      const v = same(vl, vz) ? vn : same(vn, vz) ? vl : vl;
+      if (v !== undefined) hashtag[id] = v;
+    }
+    if (possedute.length) c.possedute = possedute;
+    if (Object.keys(doppi).length) c.doppi = doppi;
+    if (Object.keys(hashtag).length) c.hashtag = hashtag;
+    if (Object.keys(c).length) tutto[nome] = c;
+  }
+  return tutto;
+}
 function impronta(collezioni) {
   const ordina = v => Array.isArray(v) ? v.map(ordina).sort() : v && typeof v === 'object'
     ? Object.keys(v).sort().reduce((o, k) => (o[k] = ordina(v[k]), o), {}) : v;
@@ -72,8 +104,8 @@ const ordina = v => Array.isArray(v) ? v.map(ordina) : v && typeof v === 'object
   ? Object.keys(v).sort().reduce((o, k) => (o[k] = ordina(v[k]), o), {}) : v;
 
 let inCorso = null, timer = null;
-const ORE_RICONTROLLO = 12;
-const controlloVecchio = () => { try { return Date.now() - (+sessionStorage.getItem('ct-cloud-controllo') || 0) > ORE_RICONTROLLO * 3600000; } catch (e) { return false; } };
+const MINUTI_RICONTROLLO = 10;
+const controlloVecchio = () => { try { return Date.now() - (+sessionStorage.getItem('ct-cloud-controllo') || 0) > MINUTI_RICONTROLLO * 60000; } catch (e) { return false; } };
 let daConfermare = false, avvisatoConferma = false;
 function sincronizza() {
   if (inCorso) return inCorso.then(() => sincronizza());
@@ -104,7 +136,7 @@ function sincronizza() {
         if (!r || !r.cambia) return;
       }
     }
-    else if (stato.sporco) { finale = unisci(locale, nube.collezioni); daScrivereQui = true; }
+    else if (stato.sporco) { finale = unisci3(leggiBase(), locale, nube.collezioni); daScrivereQui = true; }
     else { finale = nube.collezioni || {}; daScrivereQui = true; }
     const cambiaQui = daScrivereQui && impronta(finale) !== impronta(locale);
     if (cambiaQui) await scriviTutto(finale, true);
@@ -128,6 +160,7 @@ function sincronizza() {
       if (!fatto) throw errore;
     }
     scriviStato({ uid: utente.uid, ultimo: aggiornato, sporco: false });
+    scriviBase(finale);
     aggiornaVista();
     if (cambiaQui && (typeof CONFIG !== 'undefined' || document.getElementById('raccolta'))) location.reload();
   })().catch(e => { console.warn('Cloud:', e); }).finally(() => { inCorso = null; });
@@ -266,7 +299,7 @@ async function svuotaQui() {
     await scrivi(a, righe.map(r => Object.assign(r, { owned: false, doppi: 0, tags: [], tagsTouched: false })));
     a.close();
   }
-  try { localStorage.removeItem('ct-cloud'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
+  try { localStorage.removeItem('ct-cloud'); localStorage.removeItem('ct-cloud-base'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
   setTimeout(() => location.reload(), 1500);
 }
 async function esci() {
@@ -274,7 +307,7 @@ async function esci() {
   const nonNelCloud = daConfermare;
   await signOut(auth);
   if (nonNelCloud) {
-    try { localStorage.removeItem('ct-cloud'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
+    try { localStorage.removeItem('ct-cloud'); localStorage.removeItem('ct-cloud-base'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
     daConfermare = false; aggiornaVista();
     avviso('Sei uscito. La collezione è rimasta su questo dispositivo perché l\'email non era ancora confermata.');
     return;
