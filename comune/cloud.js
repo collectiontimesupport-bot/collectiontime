@@ -98,7 +98,12 @@ function sincronizza() {
         : haAccount ? (nube.collezioni || {}) : locale;
       daScrivereQui = true;
     }
-    else if (nube.aggiornato === stato.ultimo) { if (!stato.sporco) { try { trofeiPerCloud(nube); } catch (e) { console.warn(e); } return; } }
+    else if (nube.aggiornato === stato.ultimo) {
+      if (!stato.sporco) {
+        let r = null; try { r = trofeiPerCloud(nube); } catch (e) { console.warn('Trofei:', e); }
+        if (!r || !r.cambia) return;
+      }
+    }
     else if (stato.sporco) { finale = unisci(locale, nube.collezioni); daScrivereQui = true; }
     else { finale = nube.collezioni || {}; daScrivereQui = true; }
     const cambiaQui = daScrivereQui && impronta(finale) !== impronta(locale);

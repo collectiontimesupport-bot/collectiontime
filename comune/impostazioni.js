@@ -6,8 +6,8 @@ const box = document.getElementById('stStatistiche');
 if (box) { mostraStatistiche(); window.addEventListener('ct-accesso', mostraStatistiche); }
 
 async function mostraStatistiche() {
-  const PER_VOLTA = 10;
-  const PIU_DI = 8;
+  const PER_VOLTA = 5;
+  const PIU_DI = 5;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const semplice = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   const SENZA_ACCOUNT = '<p class="st-imp-nota">Le statistiche sono per chi ha un account: accedi per vedere la tua collezione in numeri e l\'elenco di tutte le serie che hai iniziato.</p>'
