@@ -3,15 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- ! MODIFICA: nome di questa pagina in og:title, description, og:description e indirizzo in og:url (righe qui sotto). Il <title> lo rifà da solo "Pubblica" (og:title + la pagina di sopra, es. "Adventure Time · Charms · Collection Time") -->
 <title>Happy Meal · McDonald's · Collection Time</title>
 <meta name="description" content="Happy Meal McDonald's: le serie di sorprese. Le checklist complete: segna quelle che hai e scopri quelle che ti mancano.">
 <meta name="theme-color" content="#1A2140">
-<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
-     I file stanno nella cartella principale e in "icone/".
-     favicon-96.png = icona della scheda (PNG: Safari non mostra le icone SVG).
-     Se sostituisci un'icona con un file con lo STESSO nome, metti la data di oggi in "?v=…"
-     (es. apple-touch-icon.png?v=2026-09-27) in tutte le pagine: così il browser scarica quella nuova. -->
 <link rel="icon" href="../../../favicon.ico" sizes="32x32">
 <link rel="icon" href="../../../favicon-96.png" type="image/png" sizes="96x96">
 <link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2026-09-27">
@@ -25,41 +19,26 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-13-4">
-<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-14-1">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
-  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
-     qui solo ciò che è diverso in questa pagina. */
   :root {
-    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
-    --titolo: var(--ink); }   /* colore del testo del sito: blu scuro (chiaro nel tema scuro), quasi nero (il rosso è solo per Legami) */
-  /* Titolo in carattere di sistema molto grosso (nessun file da scaricare: pagina leggera) */
+    --titolo: var(--ink); }
   .st-titolo { font: 900 clamp(2rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
-  /* telefoni: titolo grande come nelle altre sezioni */
   @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
-  /* Card con la foto IN ALTO, come nella sezione LEGO.
-     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
   .st-card { --foto-h: 170px; }
   .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
   .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
 </style>
-<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
-     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
 <link rel="canonical" href="https://collectiontime.com/catalogo/mcdonalds/happy-meal/">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"McDonald's","item":"https://collectiontime.com/catalogo/mcdonalds/"},{"@type":"ListItem","position":3,"name":"Happy Meal","item":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Happy Meal","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Happy Meal McDonald's: le serie di sorprese. Le checklist complete: segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/icone/anteprima.jpg","mainEntity":{"@type":"ItemList","numberOfItems":44,"itemListElement":[{"@type":"ListItem","position":1,"name":"Build-A-Bear Halloween","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/build-a-bear-halloween/"},{"@type":"ListItem","position":2,"name":"SpongeBob x One Piece","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/spongebob-one-piece/"},{"@type":"ListItem","position":3,"name":"Spider-Man: Brand New Day","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/spider-man-brand-new-day/"},{"@type":"ListItem","position":4,"name":"Stranger Things: Tales From '85","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/stranger-things/"},{"@type":"ListItem","position":5,"name":"UNO x Anime","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/uno-x-anime/"},{"@type":"ListItem","position":6,"name":"The Super Mario Galaxy Movie","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/the-super-mario-galaxy-movie/"},{"@type":"ListItem","position":7,"name":"Crayola - Pianeta McDonald's","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/crayola-pianeta-mcdonalds/"},{"@type":"ListItem","position":8,"name":"PLAYMOBIL - Animali","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/playmobil-animali/"},{"@type":"ListItem","position":9,"name":"Squishmallows - FIFA World Cup 2026","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/squishmallows-fifa-2026/"},{"@type":"ListItem","position":10,"name":"Adopt Me! - Volanti","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/adopt-me-volanti/"},{"@type":"ListItem","position":11,"name":"Il Grinch","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/il-grinch/"},{"@type":"ListItem","position":12,"name":"TinyTAN","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/tinytan/"},{"@type":"ListItem","position":13,"name":"Care Bears - Halloween","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/care-bears-halloween/"},{"@type":"ListItem","position":14,"name":"Lil McDonald's","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/lil-mcdonalds/"},{"@type":"ListItem","position":15,"name":"Hello Kitty x Ninja Turtles","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/hello-kitty-ninja-turtles/"},{"@type":"ListItem","position":16,"name":"Disneyland 70","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/disneyland-70/"},{"@type":"ListItem","position":17,"name":"The Minecraft Movie","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/the-minecraft-movie/"},{"@type":"ListItem","position":18,"name":"Jurassic World: Teoria del Caos","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/jurassic-world-teoria-del-caos/"},{"@type":"ListItem","position":19,"name":"Squishmallows - 2025","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/squishmallows-2025/"},{"@type":"ListItem","position":20,"name":"Sonic 3","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/sonic-3/"},{"@type":"ListItem","position":21,"name":"Mario Kart 8 Deluxe","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/mario-kart-8-deluxe/"},{"@type":"ListItem","position":22,"name":"Cattivissimo Me 4","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/cattivissimo-me-4/"},{"@type":"ListItem","position":23,"name":"Panini Family - 2024","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/panini-family/"},{"@type":"ListItem","position":24,"name":"Pet Simulator","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/pet-simulator/"},{"@type":"ListItem","position":25,"name":"PLAYMOBIL - Wiltopia","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/playmobil-wiltopia/"},{"@type":"ListItem","position":26,"name":"Hello Kitty x Yu-Gi-Oh!","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/hello-kitty-yu-gi-oh/"},{"@type":"ListItem","position":27,"name":"Dobble","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/dobble/"},{"@type":"ListItem","position":28,"name":"MultiVersus","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/multiversus/"},{"@type":"ListItem","position":29,"name":"Sonic the Hedgehog","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/sonic-the-hedgehog/"},{"@type":"ListItem","position":30,"name":"Elf on the Shelf","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/elf-on-the-shelf/"},{"@type":"ListItem","position":31,"name":"Adopt Me!","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/adopt-me/"},{"@type":"ListItem","position":32,"name":"Hot Wheels - Nitro Junior Games","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/hot-wheels-nitro-junior-games/"},{"@type":"ListItem","position":33,"name":"Panini Family - 2023","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/panini-family-2023/"},{"@type":"ListItem","position":34,"name":"Il mondo di Karma","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/il-mondo-di-karma/"},{"@type":"ListItem","position":35,"name":"Squishmallows - Halloween 2023","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/squishmallows-halloween-2023/"},{"@type":"ListItem","position":36,"name":"Squishmallows - 2023","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/squishmallows-2023/"},{"@type":"ListItem","position":37,"name":"Teen Titans Go!","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/teen-titans-go/"},{"@type":"ListItem","position":38,"name":"DC League of Super-Pets","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/dc-league-of-super-pets/"},{"@type":"ListItem","position":39,"name":"Miraculous","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/miraculous/"},{"@type":"ListItem","position":40,"name":"Minions 2","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/minions-2/"},{"@type":"ListItem","position":41,"name":"Tom & Jerry","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/tom-e-jerry/"},{"@type":"ListItem","position":42,"name":"SpongeBob SquarePants","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/spongebob-squarepants/"},{"@type":"ListItem","position":43,"name":"Space Jam: New Legends","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/space-jam-new-legends/"},{"@type":"ListItem","position":44,"name":"Minions","url":"https://collectiontime.com/catalogo/mcdonalds/happy-meal/minions/"}]}}]}</script>
 </head>
 <body>
-<!-- Banda in alto (logo, Accedi): la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
-<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
-  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; McDonald's</a>
-  <!-- ! MODIFICA: titolo della pagina -->
   <h1 class="st-titolo">HAPPY MEAL</h1>
-  <!-- Frase + lente: la lente apre il campo per cercare tra le serie (funziona con script.js) -->
   <div class="st-sub">
     <p class="sub">Cerca una serie</p>
     <div class="st-cerca" id="stCerca">
@@ -70,30 +49,7 @@
     </div>
   </div>
   <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
-  <!-- TUTTE LE SERIE in ordine di uscita, DALLA PIÙ RECENTE: una serie nuova va aggiunta IN CIMA.
-       Una card per ogni serie: per aggiungerne una, copia l'esempio qui sotto,
-       togli i segni di commento e cambia cartella, foto e testi.
-       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi dei giochi).
-       Esempio:
-       <li data-cerca="nomi delle sorpresine"><a class="st-card" href="nome-cartella/index.html"><div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Nome della serie</h2><p>Anno · numero di sorpresine</p><span class="st-apri">Apri</span></a></li>
-  -->
-  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
-       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
-         es. nome-cartella/immagini/copertina.webp
-       • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
-         metti la data di oggi in "?v=…" in fondo al nome del file (es. copertina.webp?v=2026-09-26, oppure aggiungilo
-         se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
-       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
-         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
-       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
-         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
-         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
-  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
-  <!-- data-per-anno = le card vengono raccolte in tendine, una per anno (lo fa script.js leggendo l'anno scritto nel <p> della card;
-       le card senza anno restano normali, sopra). Per tornare a tutte le card aperte, cancella data-per-anno. -->
   <ul class="st-cards" data-per-anno>
-    <!-- REGOLA: un marchio uscito PIÙ VOLTE (es. Squishmallows) ha la sua cartella con dentro le sue serie,
-         e la sua card sta qui in cima; un marchio uscito UNA volta sola (es. Minecraft) va direttamente qui sotto. -->
     <li data-cerca="Axolotl Bat Cookies &amp; Cream Pup Friendly Fox Midnight Sparkle Cat Pastel Swirl Kitty Pawlette Polar Bear Pumpkin Bear Spring Green Frog Tan Teddy Bear Zombie Axolotl 2026"><a class="st-card" href="build-a-bear-halloween/index.html"><div class="thumb"><img src="build-a-bear-halloween/immagini/copertina.webp?v=2026-10-02" alt="" loading="lazy"></div><h2>Build-A-Bear Halloween</h2><p>12 peluche<br>2026</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="SpongeBob One Piece pirati 2026 SpongeBob x Rufy Plankton x Usop Signora Puff x Big Mom Patrick x Zoro Squiddi x Sanji Sandy x Nami Smitty x Brook Smittywerbenjagermanjensen Mr. Krab x Jinbe Gary x Chopper Larry x Franky Pearl x Nico Robin Olandese Volante x Barbanera Barnacle Boy Koby Gear 5 Mermaid Man Garp Luffy Usopp Squidward Mrs. Puff LinLin Teach"><a class="st-card" href="spongebob-one-piece/index.html"><div class="thumb"><img src="spongebob-one-piece/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>SpongeBob x One Piece</h2><p>15 giochi<br>2026</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Spider-Man Brand New Day zainetti zaino Marvel 2026 Zainetto McDonald&#39;s Zainetto giallo e rosso Zainetto nero e rosa Zainetto rosso e blu Zainetto verde e viola Zainetto rosso con il fondo giallo Zainetto nero con la maschera Zainetto rosa con la ragnatela Zainetto azzurro e rosso Zainetto viola e verde Zainetto azzurro con le teste di Spider-Man Zainetto rosso con la ragnatela bianca"><a class="st-card" href="spider-man-brand-new-day/index.html"><div class="thumb"><img src="spider-man-brand-new-day/immagini/copertina.webp?v=1" alt="" loading="lazy"></div><h2>Spider-Man: Brand New Day</h2><p>12 zainetti<br>2026</p><span class="st-apri">Apri</span></a></li>
@@ -141,12 +97,8 @@
   </ul>
 </main>
 
-<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
-<!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
-<!-- "?v=…" è la versione del file: la mette da solo l'area amministratore (Pubblica → Controlla cosa cambia), uguale in tutte le pagine
-     (es. v=2026-10-09-1). NON va cambiata a mano: i browser così scaricano i file nuovi e non quelli vecchi salvati. -->
-<script src="../../../script.js?v=2026-10-13-4"></script>
+<script src="../../../script.js?v=2026-10-14-1"></script>
 </body>
 </html>

@@ -1,33 +1,5 @@
-/* =====================================================================
-   bagliore.js — BAGLIORE delle cose che hai (Collection Time)
-   ---------------------------------------------------------------------
-   UN SOLO FILE per tutte le pagine che mostrano gli oggetti:
-   le pagine delle serie (comune/app.js) e "Mi mancano / Doppioni / Cerca"
-   (comune/raccolta.js). Va richiamato PRIMA di quei file:
-     <script src="../../../comune/bagliore.js?v=…"></script>
-   Mette a disposizione una sola funzione:
-     accendiBagliore(riquadro, foto)
-       riquadro = il <div class="pic"> della foto, foto = indirizzo della foto
-   ---------------------------------------------------------------------
-     Quando una penna è posseduta, dietro la foto compare un alone arancio-giallo
-     che segue la sagoma della penna. Prima c'era un'immagine di bagliore già pronta
-     per ogni penna (100 immagini in più): ora lo stesso effetto è calcolato qui,
-     una volta per foto, per TUTTE le penne (anche quelle che aggiungerai).
-     Come funziona:
-       1. prendo la sagoma della penna (i pixel non trasparenti) in piccolo (30%)
-       2. la sfumo tre volte con raggi diversi e sommo i risultati
-       3. tolgo la parte coperta dalla penna e coloro tutto di arancio-giallo
-       4. ne faccio un'immagine PNG trasparente e la metto dietro la foto
-     I bagliori già calcolati restano in memoria (haloCache) e vengono creati
-     uno alla volta (haloChain) per non bloccare la pagina.
-     Nota: il calcolo legge i pixel della foto, quindi funziona con la pagina
-     aperta dal sito o da un piccolo server locale; aprendo il file con un
-     doppio clic (file://) il browser lo vieta: in quel caso si usa un alone
-     di riserva più semplice fatto con il CSS (vedi .no-halo in comune/collezione.css).
-   ===================================================================== */
 
 (() => {
-  /* carica una foto e aspetta che sia pronta */
   const caricaFoto = src => new Promise((ok, ko) => {
     const i = new Image();
     i.onload = () => ok(i);
@@ -44,7 +16,6 @@
     haloChain = job.catch(() => {});
     return job;
   }
-  /* sfocatura gaussiana (3 passaggi di media) su una matrice di valori 0..1 */
   function gaussBlur(a, w, h, sigma) {
     const r = Math.max(1, Math.floor(Math.round(Math.sqrt(12 * sigma * sigma / 3 + 1)) / 2));
     const div = 2 * r + 1;
@@ -76,8 +47,6 @@
     }
     return out;
   }
-  /* crea il bagliore di una foto: restituisce l'indirizzo dell'immagine e
-     il fattore k (quanto è più alto della penna, circa 1.3) */
   async function buildHalo(src) {
     const img = await caricaFoto(src);
     const S = 0.3;
@@ -102,7 +71,6 @@
     const outData = ctx.createImageData(W, H);
     const d = outData.data;
     for (let i = 0; i < A.length; i++) {
-      /* il buco per la penna c'è solo dove è davvero opaca: sotto il bordo morbido il bagliore continua (niente bordo bianco) */
       const ah = Math.min(1, Math.max(0, (A[i] - 0.9) / 0.09));
       const g = (1 - inv[i]) * (1 - ah * ah * (3 - 2 * ah));
       const t = Math.min(1, B6[i] * 1.4);
@@ -116,7 +84,6 @@
     const blob = await new Promise(r => c.toBlob(r, 'image/png'));
     return { url: URL.createObjectURL(blob), k: H / h, ar: img.naturalWidth / img.naturalHeight };
   }
-  /* aggiunge il bagliore dietro la foto (se non c'è già) */
   window.accendiBagliore = function (pic, src) {
     if (!src || pic.querySelector('.halo') || pic.classList.contains('no-halo')) return;
     const halo = document.createElement('img');
@@ -127,11 +94,9 @@
     pic.insertBefore(halo, pic.firstChild);
     makeHalo(src).then(hh => {
       halo.style.setProperty('--k', String(hh.k));
-      halo.style.setProperty('--ar', String(hh.ar));   /* proporzione della foto: serve al CSS per allineare il bagliore anche quando la foto è più larga della colonna */
+      halo.style.setProperty('--ar', String(hh.ar));
       halo.src = hh.url;
     }).catch(() => {
-      /* il browser non permette di leggere i pixel (es. file aperto con doppio clic):
-         tolgo l'immagine e uso il bagliore di riserva fatto con il CSS (classe no-halo) */
       halo.remove();
       pic.classList.add('no-halo');
     });

@@ -1,23 +1,8 @@
 <!doctype html>
-<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
-<!-- =====================================================================
-     LEGO MINIFIGURES · TUTTE — tutte le minifigure di tutte le serie in una
-     sola pagina, in ordine, per vedere al volo quali ho e quali mi mancano.
-     ---------------------------------------------------------------------
-     Questa pagina NON ha un elenco suo: legge le collezioni dalla home LEGO
-     (../index.html, nell'ordine delle card) e le minifigure dall'ELENCO di
-     ogni pagina di serie. Quindi, quando aggiungi una serie o cambi un nome,
-     qui si aggiorna da solo: non c'è niente da copiare.
-     Le spunte "Ce l'ho" sono le stesse delle pagine delle serie (stesso
-     archivio nel browser): toccando una minifigura qui, cambia anche là.
-     Le foto piccole stanno in "immagini/mini/" di ogni serie (160 × 160 px,
-     leggere per il telefono); se ne manca una usa la foto grande.
-     ===================================================================== -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- ! MODIFICA: nome di questa pagina in og:title, description, og:description e indirizzo in og:url (righe qui sotto). Il <title> lo rifà da solo "Pubblica" (og:title + la pagina di sopra, es. "Adventure Time · Charms · Collection Time") -->
 <title>Tutte le LEGO Minifigures · Collection Time</title>
 <meta name="description" content="Tutte le LEGO Minifigures in una pagina: segna quelle che hai e scopri quelle che ti mancano.">
 <meta name="theme-color" content="#1A2140">
@@ -31,20 +16,15 @@
 <meta property="og:url" content="https://collectiontime.com/catalogo/lego/tutte/">
 <meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-13-4">
-<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-14-1">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
-  /* Base della pagina, link "indietro" e avviso in basso sono in sito.css:
-     qui solo ciò che è diverso in questa pagina. */
   :root {
-    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
-    --titolo: var(--ink); }   /* colore del testo del sito: blu scuro (chiaro nel tema scuro), quasi nero */
+    --titolo: var(--ink); }
   .st-wrap { max-width: 1400px; padding: 12px 16px 60px; }
   h1 { margin: 0; text-align: center; font: 900 clamp(1.8rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
   @media (max-width: 520px) { h1 { font-size: 8.5vw; } }
 
-  /* riga sotto il titolo: conteggio a sinistra, filtro a destra */
   .bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin: 22px 0 16px; }
   .conta { margin: 0; color: var(--muted); }
   .conta strong { color: var(--ink); }
@@ -53,33 +33,25 @@
   .filtro button + button { border-left: 1px solid var(--line); }
   .filtro button[aria-pressed="true"] { background: var(--ink); color: var(--white); }
 
-  /* GRIGLIA: tutte le minifigure di fila, senza titoli.
-     Ogni casella è larga almeno 76px sul telefono e 96px sul PC. */
   .tutte { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; }
   @media (min-width: 768px) { .tutte { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; } }
   .tutte button { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 1; border-radius: 10px; cursor: pointer; }
   .tutte button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .tutte img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  /* minifigura che NON ho: grigia e sbiadita; quella che ho: a colori */
-  .tutte li:not(.ce) img { filter: var(--spento, grayscale(1)); opacity: var(--spento-op, .3); }   /* grigio: più chiaro nel tema scuro (sito.css) */
+  .tutte li:not(.ce) img { filter: var(--spento, grayscale(1)); opacity: var(--spento-op, .3); }
   .tutte li.ce button { background: color-mix(in srgb, var(--amber) 14%, var(--white)); }
   @media (hover: hover) { .tutte li:not(.ce) button:hover img { opacity: .6; } }
   .attesa { text-align: center; color: var(--muted); padding: 40px 0; }
   .hint { color: var(--muted); font-size: .875rem; margin: 20px 0 0; }
 </style>
-<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
-     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
 <link rel="canonical" href="https://collectiontime.com/catalogo/lego/tutte/">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"LEGO Minifigures","item":"https://collectiontime.com/catalogo/lego/"},{"@type":"ListItem","position":3,"name":"Tutte le LEGO Minifigures","item":"https://collectiontime.com/catalogo/lego/tutte/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Tutte le LEGO Minifigures","url":"https://collectiontime.com/catalogo/lego/tutte/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Tutte le LEGO Minifigures in una pagina: segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/icone/anteprima.jpg"}]}</script>
 </head>
 <body>
-<!-- Banda in alto: la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
 <main class="st-wrap">
-  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; LEGO Minifigures</a>
-  <!-- ! MODIFICA: titolo della pagina -->
   <h1>TUTTE LE MINIFIGURES</h1>
   <div class="bar">
     <p class="conta" id="conta"></p>
@@ -90,13 +62,10 @@
     </div>
   </div>
   <p class="attesa" id="attesa">Carico le minifigure…</p>
-  <!-- la riempie lo script qui sotto: un <li> per minifigura -->
   <ul class="tutte" id="tutte"></ul>
-  <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
   <p class="hint">Tocca una minifigura per segnare che ce l'hai (o toglierlo). Tieni il dito sopra (o passa col mouse) per vedere il nome e la serie.</p>
 </main>
 
-<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
 <script>
@@ -104,8 +73,8 @@
   const $ = id => document.getElementById(id);
   const lista = $('tutte');
   const STORE = 'penne';
-  const archivi = new Map();   /* nome dell'archivio → archivio aperto */
-  let tutte = [];              /* { id, nome, serie, foto, db, ce } */
+  const archivi = new Map();
+  let tutte = [];
   let filtro = 'tutte';
 
   const richiesta = r => new Promise((ok, ko) => { r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
@@ -118,7 +87,6 @@
     return archivi.get(nome);
   }
 
-  /* 1) le collezioni, nell'ordine delle card della home LEGO */
   async function collezioni() {
     const html = await (await fetch('../index.html')).text();
     const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -127,10 +95,9 @@
       titolo: (a.querySelector('h2') || a).textContent.trim()
     }));
   }
-  /* 2) le minifigure di una collezione, lette dall'ELENCO della sua pagina */
   async function minifigure(c) {
     const html = await (await fetch('../' + c.cartella + '/index.html')).text();
-    const db = (html.match(/dbName:\s*"([^"]+)"/) || [])[1] || ('catalogo-' + c.cartella);   /* archivio della serie (CONFIG.dbName) */
+    const db = (html.match(/dbName:\s*"([^"]+)"/) || [])[1] || ('catalogo-' + c.cartella);
     const righe = [...html.matchAll(/\{\s*id:\s*"([^"]+)"[^}]*?numero:\s*"([^"]*)"[^}]*?nome:\s*"((?:[^"\\]|\\.)*)"[^}]*?foto:\s*"([^"]+)"/g)];
     return righe.map(m => ({
       id: m[1], nome: m[3].replace(/\\(.)/g, '$1'), serie: c.titolo + ' · ' + m[2],
@@ -160,8 +127,8 @@
       const img = document.createElement('img');
       img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
       img.width = 160; img.height = 160;
-      img.src = p.foto.replace('/immagini/', '/immagini/mini/');     /* foto piccola */
-      img.onerror = () => { img.onerror = null; img.src = p.foto; };  /* se manca, la grande */
+      img.src = p.foto.replace('/immagini/', '/immagini/mini/');
+      img.onerror = () => { img.onerror = null; img.src = p.foto; };
       b.append(img);
       b.addEventListener('click', () => segna(p, li, b));
       li.append(b);
@@ -169,7 +136,6 @@
     });
     lista.append(frag);
   }
-  /* segna / toglie "Ce l'ho" nello stesso archivio della pagina della serie */
   async function segna(p, li, b) {
     p.ce = !p.ce;
     li.classList.toggle('ce', p.ce);
@@ -178,19 +144,16 @@
     try {
       const db = await apri(p.db);
       const vecchia = await richiesta(db.transaction(STORE).objectStore(STORE).get(p.id));
-      /* tengo gli hashtag già salvati e cambio solo la spunta (come la pagina della serie) */
       await richiesta(db.transaction(STORE, 'readwrite').objectStore(STORE).put(Object.assign(vecchia || { id: p.id }, { owned: p.ce })));
-      if (typeof segnalaModifica === 'function') segnalaModifica();   /* avvisa il sito: con l'account aggiorna il cloud (script.js) */
+      if (typeof segnalaModifica === 'function') segnalaModifica();
     } catch (e) { avviso('Questo browser non permette di salvare le spunte.'); }
   }
 
   (async () => {
     try {
       const cols = await collezioni();
-      /* scarico gli elenchi insieme (sono piccoli) e li rimetto nell'ordine giusto */
       const gruppi = await Promise.all(cols.map(c => minifigure(c).catch(() => [])));
       tutte = gruppi.flat();
-      /* spunte già salvate nel browser */
       const perDb = new Map();
       tutte.forEach(p => { if (!perDb.has(p.db)) perDb.set(p.db, []); perDb.get(p.db).push(p); });
       await Promise.all([...perDb].map(async ([nome, ps]) => {
@@ -199,7 +162,7 @@
           const salvate = await richiesta(db.transaction(STORE).objectStore(STORE).getAll());
           const ce = new Set(salvate.filter(x => x.owned === true).map(x => x.id));
           ps.forEach(p => { p.ce = ce.has(p.id); });
-        } catch (e) { /* archivio non leggibile: restano da spuntare */ }
+        } catch (e) {  }
       }));
       $('attesa').hidden = true;
       crea();
@@ -216,7 +179,6 @@
   }));
 })();
 </script>
-<!-- Banda in alto e in basso, Accedi: questa riga serve in ogni pagina -->
-<script src="../../../script.js?v=2026-10-13-4"></script>
+<script src="../../../script.js?v=2026-10-14-1"></script>
 </body>
 </html>

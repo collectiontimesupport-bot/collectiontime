@@ -1,34 +1,11 @@
 <!doctype html>
-<!-- ! MODIFICA: nome e marca della serie nel riquadro qui sotto -->
-<!-- =====================================================================
-     LEGAMI ERASABLE PENS — pagina della collezione (Collection Time)
-     ---------------------------------------------------------------------
-     Com'è fatta questa cartella:
-
-       index.html           ← questa pagina: struttura, IMPOSTAZIONI ed
-                              ELENCO DELLE PENNE (le uniche parti da toccare
-                              per aggiungere o cambiare penne)
-       (l'aspetto grafico è in comune/collezione.css e ../css/stile.css;
-        il funzionamento, app.js, e la libreria dei PDF stanno nella
-        cartella "comune" del sito: sono gli stessi per tutte le collezioni)
-       immagini/            ← le foto delle penne in WebP trasparente (leggere)
-
-     ▸ PER AGGIUNGERE UNA PENNA: vai in fondo alla pagina, al blocco
-       "ELENCO DELLE PENNE", e segui le istruzioni scritte lì.
-     ===================================================================== -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- ! MODIFICA: nome di questa pagina in og:title, description, og:description e indirizzo in og:url (righe qui sotto). Il <title> lo rifà da solo "Pubblica" (og:title + la pagina di sopra, es. "Adventure Time · Charms · Collection Time") -->
 <title>Legami Erasable Pens · Collection Time</title>
 <meta name="description" content="Legami Erasable Pens: la checklist completa. Segna quelle che hai e scopri quelle che ti mancano.">
 <meta name="theme-color" content="#1A2140">
-<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
-     I file stanno nella cartella principale e in "icone/".
-     favicon-96.png = icona della scheda (PNG: Safari non mostra le icone SVG).
-     Se sostituisci un'icona con un file con lo STESSO nome, metti la data di oggi in "?v=…"
-     (es. apple-touch-icon.png?v=2026-09-27) in tutte le pagine: così il browser scarica quella nuova. -->
 <link rel="icon" href="../../../favicon.ico" sizes="32x32">
 <link rel="icon" href="../../../favicon-96.png" type="image/png" sizes="96x96">
 <link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2026-09-27">
@@ -42,60 +19,44 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-13-4">
-<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
-<!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-14-1">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <link rel="preload" href="../../../comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
 
-<!-- Aspetto grafico: comune a tutte le collezioni + quello delle collezioni Legami -->
-<!-- "?v=…" è la versione del file: la mette da solo l'area amministratore (Pubblica → Controlla cosa cambia), uguale in tutte le pagine
-     (es. v=2026-10-09-1). NON va cambiata a mano: i browser così scaricano i file nuovi e non quelli vecchi salvati. -->
-<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-10-13-4">
-<link rel="stylesheet" href="../css/stile.css?v=2026-10-13-4">
-<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
-     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-10-14-1">
+<link rel="stylesheet" href="../css/stile.css?v=2026-10-14-1">
 <link rel="canonical" href="https://collectiontime.com/catalogo/legami/legami-erasable/">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Legami","item":"https://collectiontime.com/catalogo/legami/"},{"@type":"ListItem","position":3,"name":"Legami Erasable Pens","item":"https://collectiontime.com/catalogo/legami/legami-erasable/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Legami Erasable Pens","url":"https://collectiontime.com/catalogo/legami/legami-erasable/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Legami Erasable Pens: la checklist completa. Segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/catalogo/legami/legami-erasable/immagini/anteprima.jpg?v=2026-10-05","mainEntity":{"@type":"ItemList","numberOfItems":118,"itemListElement":[{"@type":"ListItem","position":1,"name":"01 · PANDA"},{"@type":"ListItem","position":2,"name":"01-A · PANDA"},{"@type":"ListItem","position":3,"name":"01-B · PANDA"},{"@type":"ListItem","position":4,"name":"01★ · PANDA"},{"@type":"ListItem","position":5,"name":"02 · ORSO"},{"@type":"ListItem","position":6,"name":"02★ · ORSO"},{"@type":"ListItem","position":7,"name":"03 · KOALA"},{"@type":"ListItem","position":8,"name":"03★ · KOALA"},{"@type":"ListItem","position":9,"name":"04 · UNICORNO"},{"@type":"ListItem","position":10,"name":"05 · GATTO"},{"@type":"ListItem","position":11,"name":"05★ · GATTO"},{"@type":"ListItem","position":12,"name":"06 · SQUALO"},{"@type":"ListItem","position":13,"name":"06-A · SQUALO"},{"@type":"ListItem","position":14,"name":"06★ · SQUALO"},{"@type":"ListItem","position":15,"name":"07 · DINOSAURO"},{"@type":"ListItem","position":16,"name":"07★ · DINOSAURO"},{"@type":"ListItem","position":17,"name":"08 · MAIALE"},{"@type":"ListItem","position":18,"name":"08★ · MAIALE"},{"@type":"ListItem","position":19,"name":"09 · ASTRONAUTA"},{"@type":"ListItem","position":20,"name":"09★-A · ASTRONAUTA"},{"@type":"ListItem","position":21,"name":"09★-B · ASTRONAUTA"},{"@type":"ListItem","position":22,"name":"10 · LAMA"},{"@type":"ListItem","position":23,"name":"10★-A · LAMA"},{"@type":"ListItem","position":24,"name":"10★-B · LAMA"},{"@type":"ListItem","position":25,"name":"11 · CONIGLIO"},{"@type":"ListItem","position":26,"name":"11★ · CONIGLIO"},{"@type":"ListItem","position":27,"name":"12 · FLORA"},{"@type":"ListItem","position":28,"name":"12★ · FLORA"},{"@type":"ListItem","position":29,"name":"13 · UNICORNO"},{"@type":"ListItem","position":30,"name":"14 · KOALA"},{"@type":"ListItem","position":31,"name":"15 · PANDA"},{"@type":"ListItem","position":32,"name":"16 · ORSO"},{"@type":"ListItem","position":33,"name":"17 · LEONE"},{"@type":"ListItem","position":34,"name":"18 · ELEFANTE"},{"@type":"ListItem","position":35,"name":"19 · GIRAFFA"},{"@type":"ListItem","position":36,"name":"20 · CORGI"},{"@type":"ListItem","position":37,"name":"21 · VOLPE"},{"@type":"ListItem","position":38,"name":"22 · ORSO"},{"@type":"ListItem","position":39,"name":"23 · PINGUINO"},{"@type":"ListItem","position":40,"name":"24 · ORSO"},{"@type":"ListItem","position":41,"name":"25 · FRANKENSTEIN"},{"@type":"ListItem","position":42,"name":"26 · MUMMIA"},{"@type":"ListItem","position":43,"name":"27 · ZUCCA"},{"@type":"ListItem","position":44,"name":"LE · GATTO"},{"@type":"ListItem","position":45,"name":"LE · DALMATA"},{"@type":"ListItem","position":46,"name":"28 · IPPOPOTAMO"},{"@type":"ListItem","position":47,"name":"29 · APE"},{"@type":"ListItem","position":48,"name":"30 · TARTARUGA"},{"@type":"ListItem","position":49,"name":"31 · PESCE PAGLIACCIO"},{"@type":"ListItem","position":50,"name":"32 · CAVALLUCCIO MARINO"},{"@type":"ListItem","position":51,"name":"LE · TARTARUGA"},{"@type":"ListItem","position":52,"name":"LE · PESCE PAGLIACCIO"},{"@type":"ListItem","position":53,"name":"LE · CAVALLUCCIO MARINO"},{"@type":"ListItem","position":54,"name":"33 · PINGUINO"},{"@type":"ListItem","position":55,"name":"34 · PIPISTRELLO"},{"@type":"ListItem","position":56,"name":"35 · STREGA"},{"@type":"ListItem","position":57,"name":"36 · VAMPIRO"},{"@type":"ListItem","position":58,"name":"37 · BABBO NATALE"},{"@type":"ListItem","position":59,"name":"38 · RENNA"},{"@type":"ListItem","position":60,"name":"39 · ELFO"},{"@type":"ListItem","position":61,"name":"40 · PIPISTRELLO"},{"@type":"ListItem","position":62,"name":"41 · BABBO NATALE"},{"@type":"ListItem","position":63,"name":"42 · YETI"},{"@type":"ListItem","position":64,"name":"43 · KOALA"},{"@type":"ListItem","position":65,"name":"44 · TIGRE"},{"@type":"ListItem","position":66,"name":"45 · FARFALLA"},{"@type":"ListItem","position":67,"name":"46 · CONIGLIO"},{"@type":"ListItem","position":68,"name":"47 · PULCINO"},{"@type":"ListItem","position":69,"name":"48 · MUCCA"},{"@type":"ListItem","position":70,"name":"49 · MAIALE"},{"@type":"ListItem","position":71,"name":"50 · ASINO"},{"@type":"ListItem","position":72,"name":"51 · GALLO"},{"@type":"ListItem","position":73,"name":"52 · ORSO"},{"@type":"ListItem","position":74,"name":"53 · ZOMBIE"},{"@type":"ListItem","position":75,"name":"54 · GATTO"},{"@type":"ListItem","position":76,"name":"55 · SCHELETRO"},{"@type":"ListItem","position":77,"name":"56 · MOSTRO"},{"@type":"ListItem","position":78,"name":"57 · SCHIACCIANOCI"},{"@type":"ListItem","position":79,"name":"58 · BALLERINA"},{"@type":"ListItem","position":80,"name":"59 · TOPO"},{"@type":"ListItem","position":81,"name":"60 · PANDA"},{"@type":"ListItem","position":82,"name":"61 · UNICORNO"},{"@type":"ListItem","position":83,"name":"62 · GATTO"},{"@type":"ListItem","position":84,"name":"63 · SQUALO"},{"@type":"ListItem","position":85,"name":"64 · LAMA"},{"@type":"ListItem","position":86,"name":"65 · DINOSAURO"},{"@type":"ListItem","position":87,"name":"66 · CONIGLIO"},{"@type":"ListItem","position":88,"name":"67 · ORSO"},{"@type":"ListItem","position":89,"name":"68 · IPPOPOTAMO"},{"@type":"ListItem","position":90,"name":"69 · APE"},{"@type":"ListItem","position":91,"name":"70 · PINGUINO"},{"@type":"ListItem","position":92,"name":"71 · TIGRE"},{"@type":"ListItem","position":93,"name":"72 · FARFALLA"},{"@type":"ListItem","position":94,"name":"73 · MOSTRO"},{"@type":"ListItem","position":95,"name":"74 · COCCINELLA"},{"@type":"ListItem","position":96,"name":"75 · PAPPAGALLO"},{"@type":"ListItem","position":97,"name":"76 · PAPPAGALLO"},{"@type":"ListItem","position":98,"name":"77 · MUCCA"},{"@type":"ListItem","position":99,"name":"78 · MAIALE"},{"@type":"ListItem","position":100,"name":"79 · ASINO"},{"@type":"ListItem","position":101,"name":"80 · GALLO"},{"@type":"ListItem","position":102,"name":"81 · GIRAFFA"},{"@type":"ListItem","position":103,"name":"82 · LABRADOR"},{"@type":"ListItem","position":104,"name":"83 · BULLDOG"},{"@type":"ListItem","position":105,"name":"84 · BARBONCINO"},{"@type":"ListItem","position":106,"name":"85 · GORILLA"},{"@type":"ListItem","position":107,"name":"86 · GALLINA"},{"@type":"ListItem","position":108,"name":"95-A · PANDA VAMPIRO"},{"@type":"ListItem","position":109,"name":"95-B · PANDA VAMPIRO"},{"@type":"ListItem","position":110,"name":"95-C · PANDA VAMPIRO"}]}}]}</script>
 </head>
 <body>
 
-<!-- Header del sito: viene riempito con header.html da ../../../script.js -->
 <div id="header-placeholder"></div>
 
 <div class="wrap">
-  <!-- Link per tornare alla pagina Legami -->
-  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Legami</a>
 
-  <!-- ============ TITOLO E STRUMENTI ============ -->
   <header>
-    <!-- ! MODIFICA: titolo della pagina -->
     <h1 id="pageTitle"><span class="titolo-testo">LEGAMI ERASABLE PENS</span></h1>
     <div class="bar">
-      <!-- "12 possedute su 103": il testo lo scrive app.js -->
-      <div class="conta-stampa">  <!-- conteggio e, sotto, il pulsante Stampa -->
+      <div class="conta-stampa">  
         <p class="sub" id="count"></p>
-        <div class="riga-bottoni">  <!-- Stampa e Condividi, fianco a fianco -->
+        <div class="riga-bottoni">  
           <button class="btn" id="btnPrint" type="button">Stampa</button>
           <button class="btn" id="btnShare" type="button">Condividi</button>
         </div>
       </div>
       <div class="tools">
-        <!-- Ricerca: la lente apre il campo (lo fa script.js; il filtro lo fa app.js) -->
         <div class="st-cerca" id="stCerca">
           <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
           </button>
           <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
         </div>
-        <!-- Filtro: tutte / possedute / mancanti -->
         <select id="filter" aria-label="Mostra">
           <option value="all" id="optAll">Tutte</option>
           <option value="owned" id="optOwned">In possesso</option>
           <option value="missing">Mi mancano</option>
         </select>
-        <!-- Ordine: come il poster (dalla prima) o al contrario (dalla più recente) -->
         <select id="sort" aria-label="Ordine">
           <option value="asc">Dalla prima</option>
           <option value="desc">Dall'ultima</option>
@@ -104,12 +65,8 @@
     </div>
   </header>
 
-  <!-- ============ GRIGLIA DELLE PENNE ============
-       Resta vuota qui: app.js crea una scheda <li> per ogni penna
-       dell'ELENCO DELLE PENNE (in fondo a questa pagina). -->
   <ul class="grid" id="grid"></ul>
 
-  <!-- Messaggi quando non c'è nulla da mostrare -->
   <section class="empty" id="noResults" hidden>
     <p>Nessun risultato per questi filtri.</p>
   </section>
@@ -117,19 +74,14 @@
     <p>Non ci sono ancora elementi in questa collezione.</p>
   </section>
 
-  <!-- ============ PIÈ DI PAGINA: STAMPA ============
-       La copia di sicurezza (Scarica / Carica un file) è nel menu Accedi / profilo e vale per tutto il sito. -->
   <footer>
-    <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina, minifigura, charm…) qui e nelle finestre STAMPA e DETTAGLI più sotto -->
     <p class="hint">Premi su una penna per segnare che ce l'hai. Con info vedi i dettagli, le info e gli hashtag.</p>
   </footer>
 </div>
 
-<!-- Footer del sito: viene riempito con footer.html da ../../../script.js -->
 <div id="footer-placeholder"></div>
 
 
-<!-- ============ FINESTRA "STAMPA" ============ -->
 <dialog id="printDlg">
   <div class="dlg-body" tabindex="-1" autofocus>
     <h2 class="dlg-title">Cosa vuoi stampare?</h2>
@@ -154,13 +106,10 @@
   </div>
 </dialog>
 
-<!-- ============ FINESTRA "DETTAGLI" (si apre con "info") ============ -->
 <dialog id="dlg">
   <form id="editForm">
-    <!-- foto grande -->
     <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
     <div class="dlg-body">
-      <!-- Codice · Colore · Numero (fissi, non si modificano) -->
       <div class="trio">
         <div class="field"><span id="lblCodice">Codice</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
         <div class="field">Colore
@@ -169,11 +118,9 @@
         <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
       </div>
       <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
-      <!-- Info: testo fisso della voce "info" dell'elenco (si nasconde se è vuoto) -->
       <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
       <div class="field">Metadati
         <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
-        <!-- hashtag suggeriti: li crea app.js da CONFIG.suggerimenti -->
         <div class="tagsug" id="tagSug"></div>
       </div>
       <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
@@ -188,73 +135,20 @@
 
 
 <script>
-/* =====================================================================
-   IMPOSTAZIONI DELLA COLLEZIONE
-   Testi e misure usati da comune/app.js (nella cartella principale del sito). Per un'altra collezione basta
-   copiare la cartella e cambiare questo blocco e l'elenco qui sotto.
-   ===================================================================== */
-// ! MODIFICA: tutte le impostazioni qui sotto (id e dbName diversi per ogni serie)
 const CONFIG = {
-  id: "legami-erasable",           // nome usato nei PDF
-  dbName: "catalogo-penne",        // archivio nel browser (NON cambiarlo: perderesti le spunte salvate)
-  titolo: "Legami Erasable Pens",  // titolo della scheda del browser e del PDF
-  nome: "penna",                   // come si chiama un elemento
-  possedute: "possedute",          // "5 possedute su 18"
-  colonne: 25,                     // penne per fila sugli schermi larghi
-  proporzione: 7,                  // altezza ÷ larghezza di una penna
-  altezza: 400,                    // altezza delle foto sugli schermi larghi, in pixel (più alto = più grandi)
-  pdfColonne: 20,                  // penne per fila nel PDF orizzontale (20: anche le penne con le ali larghe restano alte come le altre)
-  pdfFile: 2,                      // file di penne per pagina del PDF (solo Legami: le altre pagine hanno il PDF verticale)
-  suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua"]   // hashtag proposti nei dettagli
+  id: "legami-erasable",
+  dbName: "catalogo-penne",
+  titolo: "Legami Erasable Pens",
+  nome: "penna",
+  possedute: "possedute",
+  colonne: 25,
+  proporzione: 7,
+  altezza: 400,
+  pdfColonne: 20,
+  pdfFile: 2,
+  suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua"]
 };
 
-/* =====================================================================
-   ELENCO DELLE PENNE  ★ QUI SI AGGIUNGONO LE PENNE ★
-   ---------------------------------------------------------------------
-   Ogni riga { … } è UNA penna. Le penne compaiono sulla pagina
-   nello stesso ordine di questo elenco.
-
-   COME AGGIUNGERE UNA PENNA
-     1. Salva la foto con lo sfondo trasparente nella cartella
-        "immagini" in formato WebP, che pesa circa la metà del PNG
-        (es. immagini/96.webp). Da PNG a WebP: apri squoosh.app,
-        trascina la foto, a destra scegli "WebP" qualità 88 e scarica.
-        Va bene anche un PNG, ma il sito diventa più lento. Consiglio: penna in
-        verticale, alta circa 800–1000 pixel, senza margini vuoti.
-     2. Copia una riga qui sotto, incollala nel punto dove vuoi che
-        compaia e cambia i valori.
-     3. Salva questo file e ricarica la pagina: la penna c'è già.
-
-   I CAMPI
-     id        codice unico della penna, in ordine: "seed-001", "seed-002"…
-               Serve al browser per ricordare se ce l'hai: non usare lo
-               stesso id due volte. Per una penna nuova usa il numero
-               successivo all'ultimo (es. se l'ultimo è "seed-115" → "seed-116").
-     numero    numero stampato sul poster (es. "96", "95-A", "08-S", "LE")
-               "-S" = nuova versione con la stellina sotto la scritta
-     codice    codice EP scritto sul retro (es. "EP0096")
-               (se non c'è un codice, metti l'anno)
-     nome      nome della penna (es. "RICCIO")
-     colore    nome del colore (es. "Blu")          — facoltativo
-     hex       codice del colore (es. "#2c357e")    — facoltativo
-     foto      percorso della foto: "immagini/NOMEFILE.webp"
-               Se sostituisci la foto con un file nuovo con lo STESSO nome,
-               aggiungi o cambia "?v=…" in fondo mettendo la data di oggi (es. "immagini/01.webp?v=2026-09-26"; i numeri già scritti, tipo ?v=2, vanno bene così):
-               obbliga il browser a scaricare la foto nuova invece di quella vecchia salvata.
-               (se manca, al posto della penna compare una sagoma vuota)
-     limitata  true = edizione limitata (numero in rosso)   — facoltativo
-     hashtag   es. ["Natale", "Limited Edition"]            — facoltativo
-     info      informazioni fisse (es. "Prima versione con stellina")  — facoltativo
-
-   ESEMPIO
-     { id: "seed-116", numero: "96", codice: "EP0096", nome: "RICCIO", colore: "Marrone", hex: "#7a4b2a", foto: "immagini/96.webp" },
-
-   Attenzione: ogni riga finisce con una virgola, e i testi vanno tra
-   virgolette "…". Le penne 60, 61, 77 e LE Cavalluccio usano la stessa
-   foto di 01-A, 13, 48 e 32; le penne 87–94 usano la foto "in arrivo":
-   quando avrai la foto vera basta cambiare "foto".
-   ===================================================================== */
-// ! MODIFICA: l'elenco qui sotto (id, numero, codice, nome, foto)
 const ELENCO = [
   { id: "seed-001", numero: "01", codice: "EP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01.webp" },
   { id: "seed-002", numero: "01-A", codice: "EP0001", nome: "PANDA", colore: "Nero", hex: "#000000", foto: "immagini/01-A.webp", info: "Riedizione senza coda" },
@@ -377,11 +271,8 @@ const ELENCO = [
 ];
 </script>
 
-<!-- Banda in alto e in basso, ricerca, avvisi, Accedi e copia di sicurezza: comuni a tutto il sito -->
-<script src="../../../script.js?v=2026-10-13-4"></script>
-<!-- Bagliore delle cose che hai (comune a tutte le pagine): va prima di app.js -->
-<script src="../../../comune/bagliore.js?v=2026-10-13-4"></script>
-<!-- Funzionamento della pagina (legge CONFIG ed ELENCO qui sopra) -->
-<script src="../../../comune/app.js?v=2026-10-13-4"></script>
+<script src="../../../script.js?v=2026-10-14-1"></script>
+<script src="../../../comune/bagliore.js?v=2026-10-14-1"></script>
+<script src="../../../comune/app.js?v=2026-10-14-1"></script>
 </body>
 </html>

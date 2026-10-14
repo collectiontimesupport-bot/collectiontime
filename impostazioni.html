@@ -4,74 +4,54 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Impostazioni · Collection Time</title>
-<!-- Pagina personale (cambia per ognuno): Google non la deve mostrare, e non è nella sitemap -->
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#1A2140">
-<!-- Icone: come nelle altre pagine (se sostituisci un'icona, metti la data di oggi in "?v=…") -->
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon-96.png" type="image/png" sizes="96x96">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2026-09-27">
 <link rel="manifest" href="site.webmanifest">
-<!-- Stile comune del sito (sezioni "pagine di solo testo" e "pagina Impostazioni") -->
-<link rel="stylesheet" href="sito.css?v=2026-10-13-4">
-<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+<link rel="stylesheet" href="sito.css?v=2026-10-14-1">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 </head>
 <body class="st-semplice">
-<!-- Banda in alto (logo, Accedi): la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
-<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============
-     Si arriva qui dal menu del profilo (voce "Impostazioni") e dal link nella banda in basso.
-     Tre parti:
-       1) Le mie statistiche → la riempie comune/impostazioni.js (NON scrivere dentro #stStatistiche)
-       2) Aspetto           → i pulsanti li fa funzionare script.js (voce "Aspetto"): i data-tema NON vanno cambiati
-       3) Lingua e Il tuo paese → i menu li fa funzionare script.js (voci 15 e 14)
-       4) Account e dati    → quello scritto qui lo vede chi NON ha fatto l'accesso;
-                              dopo l'accesso comune/cloud.js lo sostituisce (voce "Impostazioni: Account e dati") -->
 <main class="st-testo st-impostazioni">
   <h1>Impostazioni</h1>
   <p class="lead">La tua collezione in numeri, l'aspetto del sito, il tuo paese e il tuo account.</p>
 
-  <!-- id="statistiche": i numeri del menu del profilo portano qui (impostazioni.html#statistiche) -->
   <h2 id="statistiche">Le mie statistiche</h2>
   <div id="stStatistiche"><p class="st-imp-nota">Conto la tua collezione…</p></div>
 
+  <h2 id="trofei">I miei trofei</h2>
+  <div id="stTrofei"><p class="st-imp-nota">Carico i trofei…</p></div>
+
   <h2>Aspetto</h2>
-  <!-- Automatico = segue il telefono/computer (chiaro di giorno, scuro se è impostato così) -->
   <div class="st-aspetto" role="group" aria-label="Aspetto del sito">
     <button type="button" data-tema="auto">Automatico</button>
     <button type="button" data-tema="chiaro">Chiaro</button>
     <button type="button" data-tema="scuro">Scuro</button>
   </div>
 
-  <!-- Lingua: il menu lo fa funzionare script.js (voce 15). L'inglese è in comune/lingua-en.js -->
   <h2>Lingua</h2>
   <div class="st-imp-comandi"><select id="stLinguaMenu" aria-label="Lingua" translate="no"><option value="it">Italiano</option><option value="en">English</option></select></div>
 
-  <!-- Il tuo paese: il menu lo riempie e lo fa funzionare script.js (voce 14, funzione attivaPaese) -->
   <h2>Il tuo paese</h2>
   <div class="st-imp-comandi"><select id="stPaese" aria-label="Il tuo paese"></select></div>
   <p class="st-imp-nota">Serve per mostrarti come normali i pezzi del tuo paese: gli altri stanno sotto «Varianti estere».</p>
 
   <h2>Account e dati</h2>
   <div id="stImpAccount">
-    <!-- il pulsante "Accedi" è già in "Le mie statistiche" (comune/impostazioni.js): qui non si ripete -->
     <p>Non hai fatto l'accesso: la collezione è salvata solo in questo browser. Con l'account la salvi nel cloud e la ritrovi su tutti i tuoi dispositivi.</p>
-    <!-- data-backup: Scarica / Carica un file, li fa funzionare script.js -->
     <p class="st-imp-voce"><b>Copia di sicurezza</b> <span>
       <button type="button" data-backup="esporta" class="st-link">Scarica un file</button>
       <button type="button" data-backup="importa" class="st-link">Carica un file</button></span></p>
   </div>
 </main>
 
-<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
-<!-- script.js: bande, Accedi, Aspetto (questa riga serve in ogni pagina).
-     comune/impostazioni.js: le statistiche (solo in questa pagina).
-     "?v=…" è la versione del file: la mette da solo l'area amministratore (Pubblica → Controlla cosa cambia), uguale in tutte le pagine
-     (es. v=2026-10-09-1). NON va cambiata a mano: i browser così scaricano i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=2026-10-13-4"></script>
-<script src="comune/impostazioni.js?v=2026-10-13-4"></script>
+<script src="script.js?v=2026-10-14-1"></script>
+<script src="comune/impostazioni.js?v=2026-10-14-1"></script>
 </body>
 </html>

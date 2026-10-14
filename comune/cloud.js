@@ -1,58 +1,9 @@
-/* =====================================================================
-   cloud.js — "Accedi" (con Google o con email e password)
-   e collezione salvata nel cloud
-   (Collection Time)
-   ---------------------------------------------------------------------
-   È l'UNICO file del sito che parla con Firebase (Google).
-   Se un giorno si cambia servizio (Supabase, un proprio server…) basta
-   riscrivere questo file: il resto del sito non sa che Firebase esiste.
-
-   Quando si carica? Solo quando serve, così il sito resta leggero:
-     • chi preme "Accedi" nella banda in alto
-     • chi ha già fatto l'accesso su questo browser (per tenere il cloud aggiornato)
-   Lo carica script.js (funzione caricaCloud); pesa circa 100 KB.
-
-   Come funziona il salvataggio:
-     • le spunte, i doppioni e gli hashtag restano SEMPRE anche nel browser
-       (il sito funziona come prima, anche senza rete)
-     • nel cloud c'è UN documento per persona: collezioni/<codice utente>
-       { versione: 1, aggiornato: <ora>, collezioni: { … } }
-       "collezioni" ha lo stesso formato del file di Esporta
-     • quando cambi qualcosa, 20 secondi dopo (o subito se chiudi la pagina) il cloud si aggiorna
-     • aprendo il sito (una volta per visita) si scarica quello che hai
-       cambiato su un altro dispositivo
-     • al primo accesso su un dispositivo che ha GIÀ delle spunte (e anche
-       l'account ne ha), si chiede se unirle all'account o usare solo quelle
-       dell'account (funzione chiedi)
-     • uscendo (Esci) o eliminando i dati, la collezione sparisce da questo
-       dispositivo (funzione svuotaQui): resta solo nell'account
-   Leggere, unire e scrivere i dati del browser lo fanno le funzioni di
-   script.js leggiTutto() e scriviTutto(), le stesse di Esporta / Importa.
-
-   Le regole di sicurezza (nella console di Firebase, Firestore → Regole)
-   permettono a ognuno di leggere e scrivere solo il proprio documento.
-   ===================================================================== */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, deleteUser,
   signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, updateProfile } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-lite.js';
 
-/* Dati del progetto Firebase "Collection-Time" (console di Firebase →
-   Impostazioni progetto → Le tue app → Sito C.T.). Sono dati PUBBLICI:
-   stanno nel sito apposta, la protezione la fanno le regole di sicurezza.
-   (measurementId non c'è apposta: Google Analytics non si usa)
-   authDomain = collectiontime.com (e non ...firebaseapp.com): l'accesso con
-   Google passa dal NOSTRO dominio, se no Safari su iPhone lo blocca
-   ("Unable to process request due to missing initial state").
-   Per questo nel sito c'è la cartella __/auth con i file di accesso di Firebase
-   (copiati da https://collection-time-dd8fe.firebaseapp.com/__/auth/handler,
-   handler.js, experiments.js, iframe, iframe.js) e _config.yml la rende visibile.
-   Nella console di Google Cloud (API e servizi → Credenziali → client web)
-   sono autorizzati DUE indirizzi: https://collectiontime.com/__/auth/handler
-   e https://collectiontime.com/__/auth/handler/ (con la barra finale: GitHub
-   aggiunge la barra perché "handler" è una cartella; senza questo indirizzo
-   Google risponde "Errore 400: redirect_uri_mismatch"). */
 const FIREBASE = {
   apiKey: 'AIzaSyCgch5N04Z8YBprYCyJiMj_cYoXfz32b7c',
   authDomain: 'collectiontime.com',
@@ -64,22 +15,13 @@ const FIREBASE = {
 
 const app = initializeApp(FIREBASE);
 const auth = getAuth(app);
-auth.languageCode = LINGUA;                                  // email di Firebase (conferma email, reimposta password) nella lingua del sito: 'it' o 'en' (LINGUA è di script.js)
+auth.languageCode = LINGUA;
 const db = getFirestore(app);
 const documento = uid => doc(db, 'collezioni', uid);
 
-/* ---------- memoria di questo browser ----------
-   ct-cloud (localStorage): { uid, ultimo, sporco }
-     uid    = chi ha fatto l'accesso qui
-     ultimo = "aggiornato" del cloud all'ultima sincronizzazione
-     sporco = ci sono modifiche fatte qui e non ancora mandate al cloud
-   ct-cloud-visita (sessionStorage): la sincronizzazione di inizio visita è già fatta */
 const leggiStato = () => { try { return JSON.parse(localStorage.getItem('ct-cloud')) || {}; } catch (e) { return {}; } };
 const scriviStato = s => { try { localStorage.setItem('ct-cloud', JSON.stringify(s)); } catch (e) {} };
 
-/* ---------- unire due collezioni (browser + cloud) ----------
-   "Ce l'ho": vale se è segnato in almeno uno dei due
-   doppioni: il numero più alto · hashtag: quelli di questo browser, se ci sono */
 function unisci(a, b) {
   const tutto = {};
   for (const nome of new Set([...Object.keys(a || {}), ...Object.keys(b || {})])) {
@@ -95,21 +37,12 @@ function unisci(a, b) {
   }
   return tutto;
 }
-/* "impronta" di una collezione, per capire se è cambiata (l'ordine non conta) */
 function impronta(collezioni) {
   const ordina = v => Array.isArray(v) ? v.map(ordina).sort() : v && typeof v === 'object'
     ? Object.keys(v).sort().reduce((o, k) => (o[k] = ordina(v[k]), o), {}) : v;
   return JSON.stringify(ordina(collezioni || {}));
 }
 
-/* ---------- paese dell'utente (nel documento del cloud) ----------
-   Il documento ha anche  paese: "IT"  (e paeseAuto: true se l'ha indovinato il sito e non l'ha scelto lui).
-   Serve alle statistiche dell'area amministratore (mappa degli iscritti) e a far seguire lo stesso paese
-   su ogni dispositivo. Si scrive al PROSSIMO salvataggio:
-     • se l'utente l'ha scelto in Impostazioni (paeseScelto) → si salva quello;
-     • se non l'ha scelto e il cloud ha già un paese scelto da lui → lo adotto anche su questo dispositivo;
-     • se non c'è niente → si salva quello indovinato (paeseRilevato), con paeseAuto.
-   Restituisce i campi da scrivere, oppure null se il cloud è già a posto. paeseScelto e paeseRilevato sono in script.js. */
 function paesePerCloud(nube) {
   const scelto = paeseScelto();
   if (scelto) return nube && nube.paese === scelto && !nube.paeseAuto ? null : { paese: scelto };
@@ -117,84 +50,85 @@ function paesePerCloud(nube) {
   return nube && nube.paese ? null : { paese: paeseRilevato(), paeseAuto: true };
 }
 
-/* ---------- sincronizzazione ---------- */
+function trofeiPerCloud(nube) {
+  const leggi = (k, v) => { try { return JSON.parse(localStorage.getItem(k)) ?? v; } catch (e) { return v; } };
+  const dataOk = d => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+  const pulisci = o => Object.fromEntries(Object.entries(o && typeof o === 'object' ? o : {}).filter(([k, d]) => /^[a-z0-9]{1,12}$/.test(k) && dataOk(d)).slice(0, 100));
+  const nt = pulisci(nube && nube.trofei), loc = pulisci(leggi('ct-trofei', {}));
+  const t = Object.assign({}, nt);
+  for (const [k, d] of Object.entries(loc)) if (!t[k] || d < t[k]) t[k] = d;
+  const nb = nube && nube.badge && Array.isArray(nube.badge.s) ? { s: nube.badge.s.filter(x => typeof x === 'string').slice(0, 3), t: +nube.badge.t || 0 } : null;
+  const bl = leggi('ct-badge', []), bt = +localStorage.getItem('ct-badge-t') || 0;
+  const mio = bt ? { s: Array.isArray(bl) ? bl.slice(0, 3) : [], t: bt } : null;
+  const badge = mio && (!nb || mio.t > nb.t) ? mio : nb;
+  try {
+    if (JSON.stringify(ordina(t)) !== JSON.stringify(ordina(loc))) localStorage.setItem('ct-trofei', JSON.stringify(t));
+    if (badge && badge !== mio) { localStorage.setItem('ct-badge', JSON.stringify(badge.s)); localStorage.setItem('ct-badge-t', String(badge.t)); }
+  } catch (e) {}
+  const cambia = JSON.stringify(ordina(t)) !== JSON.stringify(ordina(nt)) || JSON.stringify(badge || null) !== JSON.stringify(nb);
+  return { extra: Object.assign({}, Object.keys(t).length ? { trofei: t } : {}, badge ? { badge } : {}), cambia };
+}
+const ordina = v => Array.isArray(v) ? v.map(ordina) : v && typeof v === 'object'
+  ? Object.keys(v).sort().reduce((o, k) => (o[k] = ordina(v[k]), o), {}) : v;
+
 let inCorso = null, timer = null;
-/* Quando ricontrollare il cloud (per vedere le spunte fatte su un altro dispositivo):
-     • aprendo il sito per la prima volta in una sessione (o se ci sono modifiche da salvare);
-     • tornando sul sito, o aprendo un'altra pagina, se l'ultimo controllo è più vecchio di ORE_RICONTROLLO ore.
-   Poche volte apposta: ogni controllo è una lettura del piano gratuito di Firebase.
-   ! MODIFICA: ORE_RICONTROLLO (numero di ore) */
 const ORE_RICONTROLLO = 12;
 const controlloVecchio = () => { try { return Date.now() - (+sessionStorage.getItem('ct-cloud-controllo') || 0) > ORE_RICONTROLLO * 3600000; } catch (e) { return false; } };
-/* daConfermare = account NUOVO con email e password che non ha ancora confermato l'email: finché non lo fa, la collezione NON va nel cloud
-   (resta sul dispositivo). Chi si è iscritto prima (ha già il suo documento nel cloud) e chi entra con Google non è toccato. */
 let daConfermare = false, avvisatoConferma = false;
 function sincronizza() {
   if (inCorso) return inCorso.then(() => sincronizza());
   inCorso = (async () => {
     const utente = auth.currentUser;
     if (!utente) return;
-    try { sessionStorage.setItem('ct-cloud-controllo', Date.now()); } catch (e) {}      // ora dell'ultimo controllo (vedi ORE_RICONTROLLO)
+    try { sessionStorage.setItem('ct-cloud-controllo', Date.now()); } catch (e) {}
     const stato = leggiStato();
     const nube = (await getDoc(documento(utente.uid))).data();
     daConfermare = !nube && conPassword(utente) && !utente.emailVerified;
     if (daConfermare) {
       aggiornaVista();
-      /* chi entra (anche da un altro dispositivo) con un account non ancora confermato: gli dico perché non vede la sua collezione */
       if (!avvisatoConferma) { avvisatoConferma = true; avviso('Il tuo account non ha ancora la conferma dell\'email: apri il link che ti abbiamo mandato (o rimandalo dal menu del profilo) e la collezione si salverà nel cloud.'); }
       return;
     }
     const locale = await leggiTutto();
     let finale = locale, daScrivereQui = false;
-    if (!nube) finale = locale;                                              // primo salvataggio in assoluto
-    else if (stato.uid !== utente.uid) {                                     // primo accesso su questo browser
+    if (!nube) finale = locale;
+    else if (stato.uid !== utente.uid) {
       const haQui = Object.keys(locale).length > 0, haAccount = Object.keys(nube.collezioni || {}).length > 0;
       finale = haQui && haAccount && (await chiedi()) === 'unisci' ? unisci(locale, nube.collezioni)
         : haAccount ? (nube.collezioni || {}) : locale;
       daScrivereQui = true;
     }
-    else if (nube.aggiornato === stato.ultimo) { if (!stato.sporco) return; }  // il cloud non è cambiato: mando solo le mie modifiche
-    else if (stato.sporco) { finale = unisci(locale, nube.collezioni); daScrivereQui = true; }                // cambiato qui e altrove: unisco
-    else { finale = nube.collezioni || {}; daScrivereQui = true; }            // cambiato solo altrove: prendo il cloud
+    else if (nube.aggiornato === stato.ultimo) { if (!stato.sporco) { try { trofeiPerCloud(nube); } catch (e) { console.warn(e); } return; } }
+    else if (stato.sporco) { finale = unisci(locale, nube.collezioni); daScrivereQui = true; }
+    else { finale = nube.collezioni || {}; daScrivereQui = true; }
     const cambiaQui = daScrivereQui && impronta(finale) !== impronta(locale);
     if (cambiaQui) await scriviTutto(finale, true);
     let aggiornato = nube && nube.aggiornato;
-    const paese = paesePerCloud(nube);                                       // null = il paese nel cloud è già giusto
+    const paese = paesePerCloud(nube);
     const paeseDoc = paese || (nube && nube.paese ? Object.assign({ paese: nube.paese }, nube.paeseAuto ? { paeseAuto: true } : {}) : {});
+    let tro = { extra: {}, cambia: false };
+    try { tro = trofeiPerCloud(nube); } catch (e) { console.warn('Trofei:', e); }
     const cambiaCollezioni = !nube || impronta(finale) !== impronta(nube.collezioni);
-    if (cambiaCollezioni || paese) {
-      if (cambiaCollezioni) aggiornato = Date.now();                         // se cambia solo il paese, "aggiornato" resta com'è (gli altri dispositivi non riscaricano niente)
-      /* Le regole di Firestore ammettono SOLO i campi elencati in hasOnly([...]) (console di Firebase → Firestore → Regole).
-         Se "paese" e "paeseAuto" non ci sono ancora, Google rifiuta il salvataggio: in quel caso riprovo SENZA il paese,
-         così la collezione si salva comunque. Per salvare anche il paese aggiungi 'paese' e 'paeseAuto' a quella lista. */
-      /* "accettato" (Privacy accettata all'iscrizione) si scrive solo nel PRIMO documento. Se le regole di Firestore non lo ammettono
-         (hasOnly), riprovo senza di lui, poi anche senza paese: la collezione si salva comunque. */
+    if (cambiaCollezioni || paese || tro.cambia) {
+      if (cambiaCollezioni) aggiornato = Date.now();
       let accettato = null;
       if (!nube) { try { accettato = JSON.parse(localStorage.getItem('ct-accettato')); } catch (e) {} }
       const base = { versione: 1, aggiornato, collezioni: finale };
-      try { await setDoc(documento(utente.uid), Object.assign({}, base, paeseDoc, accettato ? { accettato } : {})); }
-      catch (e) {
-        try { await setDoc(documento(utente.uid), Object.assign({}, base, paeseDoc)); }
-        catch (e2) {
-          if (!paeseDoc.paese) throw e2;
-          await setDoc(documento(utente.uid), base);
-        }
+      const prove = [Object.assign({}, base, paeseDoc, tro.extra, accettato ? { accettato } : {}), Object.assign({}, base, paeseDoc, tro.extra),
+                     Object.assign({}, base, paeseDoc), base];
+      let errore = null, fatto = false;
+      for (const dati of prove) {
+        try { await setDoc(documento(utente.uid), dati); fatto = true; break; } catch (e) { errore = e; }
       }
+      if (!fatto) throw errore;
     }
     scriviStato({ uid: utente.uid, ultimo: aggiornato, sporco: false });
     aggiornaVista();
-    /* se sono arrivate spunte da un altro dispositivo, ridisegno la pagina */
     if (cambiaQui && (typeof CONFIG !== 'undefined' || document.getElementById('raccolta'))) location.reload();
   })().catch(e => { console.warn('Cloud:', e); }).finally(() => { inCorso = null; });
   return inCorso;
 }
 
-/* ogni modifica (spunta, doppione, hashtag, Importa) arriva qui da script.js:
-   segno "sporco" e mando al cloud dopo SECONDI_CALMA secondi senza altre modifiche.
-   Più secondi = meno salvataggi (il piano gratuito di Firebase ne permette 20.000 al giorno):
-   chi spunta 50 penne di fila fa UN salvataggio invece di tanti. Non si perde niente:
-   chiudendo o nascondendo la pagina salvo subito (vedi sotto).
-   ! MODIFICA: SECONDI_CALMA (prima erano 4) */
 const SECONDI_CALMA = 20;
 window.addEventListener('ct-modifica', () => {
   const s = leggiStato();
@@ -204,19 +138,23 @@ window.addEventListener('ct-modifica', () => {
   clearTimeout(timer);
   timer = setTimeout(sincronizza, SECONDI_CALMA * 1000);
 });
-/* chiudendo o nascondendo la pagina mando subito quello che manca */
+window.addEventListener('ct-trofei-cambiati', () => {
+  if (!auth.currentUser) return;
+  scriviStato(Object.assign(leggiStato(), { sporco: true }));
+  clearTimeout(timer);
+  timer = setTimeout(sincronizza, SECONDI_CALMA * 1000);
+});
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden' && leggiStato().sporco) { clearTimeout(timer); sincronizza(); }
-  else if (document.visibilityState === 'visible' && auth.currentUser && controlloVecchio()) sincronizza();   // tornato sul sito dopo ORE_RICONTROLLO ore
+  else if (document.visibilityState === 'visible' && auth.currentUser && controlloVecchio()) sincronizza();
 });
 
-/* ---------- accesso ---------- */
 onAuthStateChanged(auth, utente => {
   authPronto = true;
-  segnaAccesso(!!utente);                                     // funzione di script.js: ricorda l'accesso e cambia il pulsante
+  segnaAccesso(!!utente);
   aggiornaPulsante(utente);
   aggiornaVista();
-  controllaObbligo();                                         // iscrizione obbligatoria: chi non ha l'account vede la finestra
+  controllaObbligo();
   if (utente) {
     let fatta = false;
     try { fatta = sessionStorage.getItem('ct-cloud-visita') === utente.uid; sessionStorage.setItem('ct-cloud-visita', utente.uid); } catch (e) {}
@@ -224,9 +162,6 @@ onAuthStateChanged(auth, utente => {
   }
 });
 
-/* Accedi con Google: di solito in una finestrella (popup).
-   Dal sito aperto con l'icona sulla schermata Home (come un'app) le finestrelle
-   non funzionano bene: lì si va sulla pagina di Google e poi si torna qui. */
 const comeApp = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 getRedirectResult(auth).then(r => { if (r) avviso('Accesso fatto: la tua collezione si salva anche nel cloud.'); }).catch(e => console.warn(e));
 async function accedi() {
@@ -237,12 +172,9 @@ async function accedi() {
   } catch (e) {
     if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
     console.warn(e);
-    /* con la finestra obbligatoria aperta l'avviso (in basso) resterebbe nascosto: l'errore va scritto dentro la finestra */
     mostraErrore(e.code === 'auth/popup-blocked' ? 'Il browser ha bloccato la finestra di Google: permetti i pop-up per questo sito e riprova.' : e.code === 'auth/network-request-failed' ? ERRORI[e.code] : 'Accesso non riuscito. Riprova tra poco.');
   }
 }
-/* ---------- accesso con email e password ----------
-   modo: 'entra' (ha già l'account) o 'nuovo' (crea l'account) */
 const ERRORI = {
   'auth/invalid-email': 'L\'indirizzo email non è scritto bene.',
   'auth/missing-password': 'Scrivi la password.',
@@ -257,11 +189,6 @@ const ERRORI = {
   'auth/configuration-not-found': 'L\'accesso non è ancora attivo. Riprova più tardi.'
 };
 const messaggioErrore = e => ERRORI[e.code] || 'Qualcosa non ha funzionato. Riprova tra poco.';
-/* ---------- controllo dell'email prima di creare l'account ----------
-   1) errori di battitura comuni nel dominio (gnail.com, gmial.com…): metto io quello giusto e chiedo di riprovare;
-   2) email "usa e getta" (mailinator, 10minutemail…) e indirizzi di prova (example.com): non accettate.
-   Non è una protezione assoluta (si aggira): la vera conferma è l'email di verifica qui sotto.
-   ! MODIFICA: per bloccare un altro servizio usa e getta aggiungi il suo dominio a USA_E_GETTA; per un altro errore comune aggiungilo a REFUSI. */
 const USA_E_GETTA = new Set(('mailinator.com guerrillamail.com guerrillamail.net guerrillamail.org guerrillamail.biz guerrillamail.de sharklasers.com grr.la 10minutemail.com 10minutemail.net '
   + '10minemail.com temp-mail.org temp-mail.io tempmail.com tempmail.net tempmailo.com tempail.com throwawaymail.com yopmail.com yopmail.fr yopmail.net getnada.com nada.email dispostable.com '
   + 'trashmail.com trashmail.net trashmail.de mailnesia.com maildrop.cc mohmal.com fakeinbox.com fakemail.net mintemail.com mytemp.email emailondeck.com spamgourmet.com moakt.com mailcatch.com '
@@ -284,7 +211,7 @@ async function conEmail(modo, email, password, nick, paese) {
   if (modo === 'nuovo') {
     const c = controllaEmail(email);
     if (c.errore) return mostraErrore(c.errore);
-    if (c.corretta) {                                          // errore di battitura: correggo il campo e aspetto che la persona riprovi
+    if (c.corretta) {
       const campo = finestra && finestra.querySelector('form[data-modo="nuovo"] [name=email]');
       if (campo) campo.value = c.corretta;
       return mostraErrore('Ho corretto «' + c.da + '» in «' + c.a + '»: controlla e premi di nuovo "Crea account".');
@@ -293,19 +220,14 @@ async function conEmail(modo, email, password, nick, paese) {
   let paesePrima = null, paeseCambiato = false;
   try {
     if (modo === 'nuovo') {
-      /* il paese scelto nel modulo si salva PRIMA di creare l'account: al primo salvataggio nel cloud (comune/cloud.js, paesePerCloud)
-         viene scritto come "scelto da lui". Se l'iscrizione non riesce (es. email già usata) torna com'era. */
       if (PAESI.includes(paese)) { try { paesePrima = localStorage.getItem('ct-paese'); localStorage.setItem('ct-paese', paese); paeseCambiato = true; } catch (e) {} }
       await createUserWithEmailAndPassword(auth, email, password);
-      /* ricordo che ha accettato la Privacy (versione 1): finisce nel documento al primo salvataggio nel cloud */
       try { localStorage.setItem('ct-accettato', JSON.stringify({ versione: 1, data: Date.now() })); } catch (e) {}
-      /* nickname scelto al momento dell'iscrizione (facoltativo): diventa il nome mostrato nel profilo; se è vuoto resta quello di prima */
       if (nick) { try { await updateProfile(auth.currentUser, { displayName: Array.from(nick).slice(0, 40).join('') }); aggiornaPulsante(auth.currentUser); } catch (e) {} }
     }
     else await signInWithEmailAndPassword(auth, email, password);
     finestra.close();
     if (modo === 'nuovo') {
-      /* conferma dell'email: arriva un'email con un link; finché non lo apre la collezione resta sul dispositivo (vedi daConfermare) */
       let inviata = true;
       try { await sendEmailVerification(auth.currentUser); } catch (e) { inviata = false; }
       avvisatoConferma = true;
@@ -332,8 +254,6 @@ function mostraErrore(testo, ok) {
   el.hidden = false;
 }
 
-/* toglie da QUESTO dispositivo spunte, doppioni e hashtag di tutte le collezioni
-   (usando le funzioni di script.js); poi ridisegna la pagina */
 async function svuotaQui() {
   for (const n of await archivi()) {
     const a = await apriArchivio(n);
@@ -345,8 +265,8 @@ async function svuotaQui() {
   setTimeout(() => location.reload(), 1500);
 }
 async function esci() {
-  await sincronizza();                                         // prima mando le ultime modifiche
-  const nonNelCloud = daConfermare;                            // email non confermata: la collezione NON è nel cloud, quindi non si toglie da questo dispositivo
+  await sincronizza();
+  const nonNelCloud = daConfermare;
   await signOut(auth);
   if (nonNelCloud) {
     try { localStorage.removeItem('ct-cloud'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
@@ -357,8 +277,6 @@ async function esci() {
   await svuotaQui();
   avviso('Sei uscito: la collezione è al sicuro nel tuo account e non è più su questo dispositivo.');
 }
-/* primo accesso su un dispositivo che ha già delle spunte: cosa farne?
-   Risponde 'unisci' o 'account' (anche chiudendo la finestra: è la scelta più sicura) */
 function chiedi() {
   return new Promise(risposta => {
     const d = document.createElement('dialog');
@@ -385,23 +303,13 @@ async function eliminaDati() {
   await svuotaQui();
 }
 
-/* ---------- pulsante nella banda in alto, finestra "Accedi", menu del profilo e Impostazioni ----------
-   Il pulsante (id stAccedi) è in header.html:
-     • senza accesso dice "Accedi" e apre la FINESTRA di accesso (Google o email)
-     • dopo l'accesso diventa un cerchietto con l'iniziale e apre il MENU DEL PROFILO
-       (nome, email, numeri della collezione, Impostazioni, copia di sicurezza, esci), come nelle app.
-   Cambia nome, cambia password ed Elimina account sono nella pagina Impostazioni
-   (impostazioni.html, parte "Account e dati"), che si riempie qui sotto.
-   "Copia di sicurezza" (Scarica / Carica un file) sono i vecchi Esporta / Importa:
-   i pulsanti hanno data-backup="esporta" / "importa" e li fa funzionare script.js.
-   Aspetto: sito.css, voci "finestra Account" e "menu del profilo". */
 const nomeDi = u => u.displayName || (u.email || 'Profilo').split('@')[0];
 const conPassword = u => u.providerData.some(p => p.providerId === 'password');
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const COPIA = '<p class="st-ma-sezione">Copia di sicurezza</p>'
   + '<button type="button" data-backup="esporta" class="st-link">Scarica un file</button>'
   + '<button type="button" data-backup="importa" class="st-link">Carica un file</button>';
-const PORTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></svg>';   // icona di "Esci"
+const PORTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></svg>';
 
 function aggiornaPulsante(utente) {
   const b = document.getElementById('stAccedi');
@@ -410,7 +318,7 @@ function aggiornaPulsante(utente) {
     b.innerHTML = '<span class="st-avatar" aria-hidden="true">' + esc(Array.from(nomeDi(utente))[0].toUpperCase()) + '</span>';
     b.setAttribute('aria-label', 'Il mio profilo: ' + nomeDi(utente));
     b.title = nomeDi(utente);
-    b.classList.toggle('st-da-confermare', daConfermare);        // puntino ambra: email da confermare
+    b.classList.toggle('st-da-confermare', daConfermare);
   } else {
     b.classList.remove('st-da-confermare');
     b.textContent = 'Accedi';
@@ -418,28 +326,24 @@ function aggiornaPulsante(utente) {
     b.title = 'Accedi e salva la collezione nel cloud';
   }
 }
-/* chiamata quando cambia qualcosa (accesso, uscita, salvataggio): aggiorna ciò che è aperto */
 function aggiornaVista() {
-  if (auth.currentUser && finestra && finestra.open) finestra.close();   // accesso appena fatto: chiudo la finestra
+  if (auth.currentUser && finestra && finestra.open) finestra.close();
   aggiornaPulsante(auth.currentUser);
   if (menu && !menu.hidden) disegnaMenu();
   disegnaImpostazioni();
 }
-/* "Salvata nel cloud · 28 settembre, 10:40" (menu del profilo e Impostazioni) */
 function notaCloud() {
   const s = leggiStato();
   const quando = s.ultimo ? new Date(s.ultimo).toLocaleString('it-IT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
   if (daConfermare) return 'Conferma la tua email per salvare nel cloud';
   return s.sporco ? 'Salvataggio nel cloud in corso…' : quando ? 'Salvata nel cloud · ' + quando : 'Salvata nel cloud';
 }
-/* i due pulsanti sotto la nota "Conferma la tua email…" (menu del profilo e Impostazioni); vuoto se non serve */
 const pulsantiConferma = () => daConfermare
   ? '<p class="st-ma-nota"><button type="button" data-m="conferma-invia" class="st-link">Invia di nuovo l\'email</button> · <button type="button" data-m="conferma-fatto" class="st-link">Ho confermato</button></p>' : '';
 async function inviaConferma() {
   try { await sendEmailVerification(auth.currentUser); avviso('Email inviata di nuovo (guarda anche nello spam).'); }
   catch (e) { avviso('Non riesco a inviare l\'email adesso: riprova tra qualche minuto.'); }
 }
-/* controlla se la persona ha aperto il link: ricarico l'utente da Firebase; se ha confermato, parte il primo salvataggio nel cloud */
 async function controllaConferma(avvisa) {
   const u = auth.currentUser;
   if (!u || !daConfermare) return;
@@ -449,34 +353,27 @@ async function controllaConferma(avvisa) {
     else if (avvisa) avviso('Non vedo ancora la conferma: apri il link nell\'email e riprova.');
   } catch (e) { if (avvisa) avviso('Non riesco a controllare adesso: riprova tra poco.'); }
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') controllaConferma(false); });   // tornando sulla pagina dopo aver aperto il link
-/* le azioni sull'account, usate dal menu del profilo e dalla pagina Impostazioni */
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') controllaConferma(false); });
 async function azioneAccount(m) {
   if (m === 'conferma-invia') inviaConferma();
   else if (m === 'conferma-fatto') controllaConferma(true);
   else if (m === 'esci') esci();
   else if (m === 'elimina') confermaElimina();
-  else if (m === 'password') {                                 // il modo più sicuro: un'email per sceglierne una nuova
+  else if (m === 'password') {
     try { await sendPasswordResetEmail(auth, auth.currentUser.email); avviso('Ti ho mandato un\'email per scegliere la nuova password (guarda anche nello spam).'); }
     catch (err) { avviso(messaggioErrore(err)); }
   }
 }
 
-/* ===== FINESTRA "Accedi" (solo per chi non ha fatto l'accesso) ===== */
-/* le voci del menu "Il tuo paese" del modulo "Crea account": tutti i paesi (nella lingua del sito), con già scelto quello indovinato o scelto in precedenza */
 function opzioniPaese() {
   let nomi = null;
   try { nomi = new Intl.DisplayNames([LINGUA], { type: 'region' }); } catch (e) {}
   const mio = paeseVisitatore();
-  /* se il sito non capisce dove sei (paeseIncerto) non preseleziono l'Italia: voce vuota "Scegli il tuo paese", e se la lasci così il paese non si salva come scelto */
   const vuota = paeseIncerto() && !paeseScelto() ? '<option value="" selected>Scegli il tuo paese</option>' : '';
   return vuota + nomiPaesi().map(([c, n]) => [c, nomi ? nomi.of(c) : n]).sort((a, b) => a[1].localeCompare(b[1], LINGUA))
     .map(([c, n]) => '<option value="' + c + '"' + (!vuota && c === mio ? ' selected' : '') + '>' + esc(n) + '</option>').join('');
 }
-/* ISCRIZIONE OBBLIGATORIA: la accende script.js (controllaIscrizione) quando l'interruttore in header.html è su "obbligatoria".
-   Finché Firebase non ha risposto (authPronto) non si sa se la persona è già iscritta, quindi non si mostra niente (niente lampo a chi ha già l'account).
-   Con l'obbligo la finestra "Accedi" non si chiude: né con Esc, né cliccando fuori, né col pulsante Chiudi; se si riesce a chiuderla si riapre. */
-let obbligo = false, authPronto = false, motivoObbligo = '';   // motivoObbligo: '' (obbligo subito), 'spunte' o 'giorni' (fine della prova a uso)
+let obbligo = false, authPronto = false, motivoObbligo = '';
 function controllaObbligo() {
   if (!obbligo || !authPronto || auth.currentUser) return;
   if (finestra && finestra.open) return;
@@ -486,8 +383,8 @@ export function richiediIscrizione(motivo) {
   obbligo = true; motivoObbligo = motivo || '';
   if (finestra && finestra.open) disegnaFinestra(); else controllaObbligo();
 }
-let finestra = null, nuovo = true;    // nuovo = vista "Crea account" (di partenza); false = vista "Accedi"
-let emailAperta = false;              // nella vista "Crea account": false = solo Google grande + link "registrati con l'email"; true = anche il modulo email
+let finestra = null, nuovo = true;
+let emailAperta = false;
 function disegnaFinestra() {
   finestra.classList.toggle('st-obbligo', obbligo);
   finestra.querySelector('h2').textContent = !obbligo ? 'La tua collezione nel cloud' : motivoObbligo === 'spunte' ? 'La tua collezione sta crescendo' : motivoObbligo === 'giorni' ? 'Crea il tuo account gratuito' : 'Entra in Collection Time';
@@ -501,8 +398,6 @@ function disegnaFinestra() {
     + (obbligo && nuovo && !emailAperta ? '<p class="st-account-errore st-errore-google" role="alert" hidden></p>' : '')
     + (nuovo && !emailAperta ? '<p class="st-privacy-riga"><small>Iscrivendoti accetti la </small><a href="' + new URL('privacy.html', BASE).href + '" target="_blank" rel="noopener"><small>Privacy</small></a><small>.</small></p>' : '')
     + (nuovo && !emailAperta ? '' : '<p class="st-oppure">oppure con la tua email</p>')
-    /* un modo alla volta ("entra" o "nuovo"), così il Portachiavi / gestore password
-       capisce se compilare una password salvata o proporne e salvarne una nuova */
     + (nuovo && !emailAperta
       ? '<button type="button" data-azione="apri-email" class="st-link st-apri-email">Oppure registrati con l\'email →</button>'
         + '<button type="button" data-azione="cambia-modo" class="st-link">Hai già un account? Accedi</button>'
@@ -524,7 +419,6 @@ function disegnaFinestra() {
         +   '<button type="button" data-azione="dimenticata" class="st-link">Password dimenticata?</button>'
         +   '<button type="button" data-azione="cambia-modo" class="st-link">Non hai un account? Crea account</button>'
         + '</form>')
-    /* iscrivendosi si accetta la Privacy: nella vista iniziale sta subito sotto Google, nel modulo email sta in fondo */
     + (nuovo && emailAperta ? '<p class="st-privacy-riga"><small>Iscrivendoti accetti la </small><a href="' + new URL('privacy.html', BASE).href + '" target="_blank" rel="noopener"><small>Privacy</small></a><small>.</small></p>' : '')
     + (obbligo ? '' : '<div class="st-account-copia"><small>Non vuoi un account?</small> ' + COPIA + '</div>');
 }
@@ -537,35 +431,34 @@ function apriFinestra() {
       + '<div class="st-account-azioni"><button type="button" data-azione="chiudi" class="st-secondario">Chiudi</button></div>';
     finestra.addEventListener('click', e => {
       const b = e.target.closest('button[data-azione], button[data-backup]');
-      if (!b) {                                                // clic fuori dalla finestra: chiude (non con l'iscrizione obbligatoria)
+      if (!b) {
         if (obbligo) return;
         const r = finestra.getBoundingClientRect();
         if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) finestra.close();
         return;
       }
-      if (b.dataset.backup) return finestra.close();           // Scarica / Carica un file: li gestisce script.js
+      if (b.dataset.backup) return finestra.close();
       const azione = b.dataset.azione;
-      if (azione === 'accedi') { if (!obbligo) finestra.close(); accedi(); }   // con l'iscrizione obbligatoria la finestra resta aperta finché l'accesso non riesce  // il clic apre subito la finestra di Google (se no il browser la blocca)
-      else if (azione === 'cambia-modo') {                     // Accedi ⇄ Crea account (l'email scritta resta)
+      if (azione === 'accedi') { if (!obbligo) finestra.close(); accedi(); }
+      else if (azione === 'cambia-modo') {
         const campo = finestra.querySelector('.st-email [name=email]'), email = campo ? campo.value : '';
         nuovo = !nuovo; if (nuovo && email) emailAperta = true; disegnaFinestra();
         const nuovoCampo = finestra.querySelector('.st-email [name=email]');
         if (nuovoCampo) nuovoCampo.value = email;
       }
-      else if (azione === 'apri-email') {                      // mostro il modulo email della vista "Crea account"
+      else if (azione === 'apri-email') {
         emailAperta = true; disegnaFinestra();
         finestra.querySelector('.st-email [name=email]').focus();
       }
       else if (azione === 'dimenticata') passwordDimenticata(finestra.querySelector('.st-email [name=email]').value.trim());
       else finestra.close();
     });
-    /* modulo email: "Accedi" o "Crea account" (anche premendo Invio) */
     finestra.addEventListener('submit', e => {
       e.preventDefault();
       const f = e.target;
       conEmail(f.dataset.modo, f.email.value.trim(), f.password.value, f.nome ? f.nome.value.trim() : '', f.paese ? f.paese.value : '');
     });
-    finestra.addEventListener('cancel', e => { if (obbligo && !auth.currentUser) e.preventDefault(); });   // tasto Esc
+    finestra.addEventListener('cancel', e => { if (obbligo && !auth.currentUser) e.preventDefault(); });
     finestra.addEventListener('close', () => { nuovo = true; emailAperta = false; if (obbligo) setTimeout(controllaObbligo, 0); });
     document.body.append(finestra);
   }
@@ -573,21 +466,16 @@ function apriFinestra() {
   finestra.showModal();
 }
 
-/* ===== MENU DEL PROFILO (dopo l'accesso) =====
-   Corto apposta: le altre voci dell'account sono nella pagina Impostazioni. */
 let menu = null, numeri = null;
 async function contaNumeri() {
   const tutte = await leggiTutto();
-  /* Stessa regola della pagina Impostazioni → Le mie statistiche (comune/impostazioni.js):
-     contano solo le serie che esistono ancora nel catalogo (catalogo/riepilogo.json).
-     Così "Collezioni" nel menu = "Serie iniziate" nelle statistiche, e i numeri non si contraddicono. */
   let R = null;
   try { R = (await (await fetch(new URL('riepilogo.json', CATALOGO), { cache: 'no-cache' })).json()).serie; } catch (e) { R = null; }
   if (R) {
     numeri = { ce: 0, doppi: 0, collezioni: 0 };
     for (const [nome, c] of Object.entries(tutte)) {
       const s = R[nome];
-      if (!s) continue;                                          // serie che non c'è più nel catalogo
+      if (!s) continue;
       const esteri = s[4] || {}, fuori = id => !!esteri[id] && paeseEstero(esteri[id]);
       const doppi = c.doppi || {};
       const ids = new Set([...(c.possedute || []), ...Object.keys(doppi).filter(id => doppi[id] > 0)]);
@@ -598,7 +486,7 @@ async function contaNumeri() {
       numeri.doppi += Object.values(doppi).reduce((a, n) => a + (n > 0 ? n : 0), 0);
       numeri.collezioni++;
     }
-  } else {   /* catalogo non raggiungibile: conteggio semplice di prima */
+  } else {
     const v = Object.values(tutte);
     numeri = {
       ce: v.reduce((t, c) => t + (c.possedute || []).length, 0),
@@ -608,6 +496,17 @@ async function contaNumeri() {
   }
   if (menu && !menu.hidden) disegnaMenu();
 }
+let infoTrofei = null;
+function bandaTrofei() {
+  const leggi = (k, v) => { try { return JSON.parse(localStorage.getItem(k)) ?? v; } catch (e) { return v; } };
+  const tot = infoTrofei ? infoTrofei.tot : 30, fatti = Math.min(Object.keys(leggi('ct-trofei', {})).length, tot);
+  const scelti = infoTrofei ? leggi('ct-badge', []).map(id => infoTrofei.badge.find(b => b[0] === id)).filter(Boolean) : [];
+  return '<a class="st-ma-trofei" href="' + new URL('impostazioni.html#trofei', BASE).href + '">'
+    + '<span class="st-ma-trofei-t"><b>Trofei</b><span>' + fatti + ' su ' + tot + '</span></span>'
+    + '<span class="st-progresso"><i style="width:' + Math.round(fatti * 100 / tot) + '%"></i></span>'
+    + (scelti.length ? '<span class="st-ma-badge-riga">' + scelti.map(b => '<span class="st-ma-badge" style="--col:' + b[2] + '">♥ ' + esc(b[1]) + '</span>').join('') + '</span>' : '')
+    + '</a>';
+}
 function disegnaMenu() {
   const u = auth.currentUser;
   if (!u) return chiudiMenu();
@@ -615,15 +514,13 @@ function disegnaMenu() {
   menu.innerHTML =
     '<div class="st-ma-testa"><span class="st-avatar grande" aria-hidden="true">' + esc(Array.from(nomeDi(u))[0].toUpperCase()) + '</span>'
     + '<div><b>' + esc(nomeDi(u)) + '</b><small>' + esc(u.email || '') + '</small></div></div>'
-    /* i numeri sono un link alle statistiche (pagina Impostazioni) */
     + '<a class="st-ma-stat" href="' + new URL('impostazioni.html#statistiche', BASE).href + '">'
     +   '<span class="st-ma-numeri"><span><b>' + n.ce + '</b><small>Ce l\'ho</small></span><span><b>' + n.doppi + '</b><small>Doppioni</small></span><span><b>' + n.collezioni + '</b><small>Collezioni</small></span></span>'
     +   '<small>Le mie statistiche ›</small></a>'
+    + bandaTrofei()
     + '<p class="st-ma-nota">' + notaCloud() + '</p>' + pulsantiConferma()
-    /* "Impostazioni": pagina impostazioni.html nella cartella principale (BASE è di script.js) */
     + '<a class="st-link st-ma-imp" href="' + new URL('impostazioni.html', BASE).href + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>Impostazioni</a>'
     + COPIA
-    /* "Esci": pulsante rosso pieno, largo quanto il menu, con l'icona della porta */
     + '<div class="st-ma-fondo"><button type="button" data-m="esci" class="st-esci">' + PORTA + 'Esci</button></div>';
 }
 function apriMenu() {
@@ -636,39 +533,34 @@ function apriMenu() {
     menu.addEventListener('click', e => {
       const b = e.target.closest('button');
       if (!b) return;
-      chiudiMenu();                                            // Scarica / Carica un file li gestisce script.js
+      chiudiMenu();
       if (b.dataset.m) azioneAccount(b.dataset.m);
     });
-    /* clic fuori dal menu o tasto Esc: si chiude */
     document.addEventListener('click', e => { if (!menu.hidden && !e.composedPath().includes(menu) && !e.target.closest('#stAccedi')) chiudiMenu(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) chiudiMenu(); });
     document.body.append(menu);
   }
   const barra = document.querySelector('.st-top');
-  menu.style.top = (barra ? barra.getBoundingClientRect().bottom + 6 : 70) + 'px';   // subito sotto la banda in alto
+  menu.style.top = (barra ? barra.getBoundingClientRect().bottom + 6 : 70) + 'px';
   menu.hidden = false;
   disegnaMenu();
   contaNumeri();
+  if (!infoTrofei) caricaTrofei().then(m => { infoTrofei = { tot: m._TROFEI.length, badge: m._BADGE }; if (!menu.hidden) disegnaMenu(); }, e => console.warn(e));
 }
 function chiudiMenu() { if (menu) menu.hidden = true; }
 
-/* ===== IMPOSTAZIONI: Account e dati (solo nella pagina impostazioni.html) =====
-   Dopo l'accesso sostituisce il testo per chi non ha l'account (scritto in impostazioni.html) con:
-   nome e email, Cambia nome, Cambia password (solo account con email), copia di sicurezza,
-   Esci ed "Elimina account…" (piccolo e lontano da Esci, con una finestra di conferma).
-   cambioNome = true mentre si scrive il nuovo nome. Aspetto: sito.css, voce "pagina Impostazioni". */
 let cambioNome = false;
 function disegnaImpostazioni() {
   const box = document.getElementById('stImpAccount'), u = auth.currentUser;
   if (!box || !u) return;
-  if (!box.dataset.pronto) {                                   // una volta sola: clic e modulo del nome
+  if (!box.dataset.pronto) {
     box.dataset.pronto = '1';
     box.addEventListener('click', e => {
       const m = (e.target.closest('button[data-m]') || {}).dataset?.m;
       if (m === 'nome' || m === 'annulla') { cambioNome = m === 'nome'; disegnaImpostazioni(); }
       else if (m) azioneAccount(m);
     });
-    box.addEventListener('submit', async e => {                // salva il nuovo nome
+    box.addEventListener('submit', async e => {
       e.preventDefault();
       const nome = e.target.nome.value.trim().slice(0, 40);
       if (!nome) return;
@@ -692,7 +584,6 @@ function disegnaImpostazioni() {
   if (cambioNome) { const i = box.querySelector('input'); i.focus(); i.select(); }
 }
 
-/* finestra di conferma per eliminare l'account: "Annulla" è il pulsante evidenziato */
 function confermaElimina() {
   const d = document.createElement('dialog');
   d.className = 'st-guida st-account';
@@ -706,7 +597,6 @@ function confermaElimina() {
   d.showModal();
 }
 
-/* il pulsante in alto (script.js chiama questa funzione) */
 export function apriAccount() {
   if (!auth.currentUser) return apriFinestra();
   if (menu && !menu.hidden) chiudiMenu(); else apriMenu();

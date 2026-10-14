@@ -1,15 +1,3 @@
-<!-- ==========================================================
-     footer.html — BANDA IN BASSO, uguale in tutte le pagine
-     Viene inserita da script.js nel segnaposto
-     <div id="footer-placeholder"></div>. L'aspetto è in sito.css
-     (sezione "banda in basso").
-     · per aggiungere un link copia una riga <a href="…">…</a>
-       dentro <nav class="st-band-link">
-     · i link si scrivono come se la pagina fosse nella cartella
-       principale (es. "faq.html"): script.js li corregge da solo
-     · class="st-solo-pc" / "st-solo-tel": testo che si vede solo
-       sul PC / solo sul telefono
-     ========================================================== -->
 <footer class="st-band">
   <div class="st-band-in">
     <div class="st-band-top">
@@ -18,14 +6,10 @@
         <div class="st-band-frase">Un catalogo fatto da un collezionista, per i collezionisti.</div>
       </div>
       <div class="st-band-pul">
-        <!-- Aggiungi alla Home: il funzionamento è in script.js; l'id stHome NON va cambiato.
-             Se il sito è già aperto dalla Home, il pulsante sparisce da solo. -->
         <button type="button" class="st-pul" id="stHome">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 9v6M9 12h6"/></svg>
           Aggiungi alla Home
         </button>
-        <!-- ! MODIFICA: Donazioni con Ko-fi, si apre in una nuova scheda.
-             Se cambi il link, metti la data di oggi in "?v=" di script.js in tutte le pagine (vedi sotto). -->
         <a class="st-pul st-pul-dona" href="https://ko-fi.com/collectiontime" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/></svg>
           Sostieni<span class="st-solo-pc"> il progetto</span>
@@ -35,11 +19,9 @@
     <nav class="st-band-link" aria-label="Informazioni">
       <a href="faq.html"><span class="st-solo-pc">Come funziona (FAQ)</span><span class="st-solo-tel">FAQ</span></a>
       <a href="contatti.html">Contatti</a>
-      <!-- Impostazioni: statistiche, aspetto (chiaro/scuro), account -->
       <a href="impostazioni.html">Impostazioni</a>
       <a href="note-legali.html">Note legali</a>
       <a href="privacy.html">Privacy</a>
-      <!-- Lingua: italiano di base, inglese a scelta. Il clic lo gestisce script.js (voce 15); in inglese il testo diventa "Italiano" (comune/lingua-en.js) -->
       <a href="#" id="stLingua">English</a>
     </nav>
     <div class="st-band-legale">

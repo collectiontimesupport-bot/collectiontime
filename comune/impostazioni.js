@@ -1,39 +1,17 @@
-/* =====================================================================
-   impostazioni.js — "Le mie statistiche" della pagina Impostazioni
-   (Collection Time) · lo usa SOLO impostazioni.html, dopo script.js
-   ---------------------------------------------------------------------
-   SOLO PER CHI HA FATTO L'ACCESSO (scelta: le statistiche sono un vantaggio dell'account).
-   Chi non ha l'account vede l'invito ad accedere (testo SENZA_ACCOUNT qui sotto);
-   appena accede le statistiche compaiono da sole (evento "ct-accesso" di script.js).
-   Mostra:
-     • 4 numeri: pezzi che hai, doppioni, serie iniziate, serie complete
-     • "Le mie serie": UN solo elenco di tutte le serie in cui hai segnato
-       qualcosa (titolo che porta alla serie, categoria, barra ambra, "6 su 9").
-       Resta comodo anche con tante categorie:
-         – menu "Tutte (15) / In corso (12) / Complete (3)"
-         – menu delle categorie, con il numero di serie dentro
-         – ricerca per nome (compare solo da PIU_DI serie in su)
-         – si vedono le prime PER_VOLTA serie, poi "Mostra altre"
-       Ordine: prima le serie quasi complete, le complete in fondo.
-   Da dove prende i dati (niente cloud):
-     • spunte e doppioni: dal browser, con le funzioni di script.js
-       archivi(), apriArchivio(), leggi() (le stesse della copia di sicurezza)
-     • titoli e numero di pezzi: da catalogo/riepilogo.json, un file leggero con
-       tutte le serie del sito. Lo rifà da solo l'area amministratore
-       ("Nuova serie" e "Pubblica", funzione aggiornaHome): NON va toccato a mano.
-   Aspetto: sito.css, voce "pagina Impostazioni".
-   ===================================================================== */
+
+const boxTrofei = document.getElementById('stTrofei');
+if (boxTrofei) caricaTrofei().then(m => m.disegnaProfilo(boxTrofei), e => { console.warn(e); boxTrofei.innerHTML = ''; });
 
 const box = document.getElementById('stStatistiche');
 if (box) { mostraStatistiche(); window.addEventListener('ct-accesso', mostraStatistiche); }
 
 async function mostraStatistiche() {
-  const PER_VOLTA = 10;   // ! MODIFICA: quante serie si vedono prima di "Mostra altre"
-  const PIU_DI = 8;       // ! MODIFICA: da quante serie in su compare la ricerca
+  const PER_VOLTA = 10;
+  const PIU_DI = 8;
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const semplice = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');   // senza accenti
+  const semplice = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   const SENZA_ACCOUNT = '<p class="st-imp-nota">Le statistiche sono per chi ha un account: accedi per vedere la tua collezione in numeri e l\'elenco di tutte le serie che hai iniziato.</p>'
-    + '<p><button type="button" class="st-btn" data-accedi>Accedi</button></p>';   // data-accedi: stessa finestra del pulsante "Accedi" in alto (script.js)
+    + '<p><button type="button" class="st-btn" data-accedi>Accedi</button></p>';
   let conAccount = false;
   try { conAccount = localStorage.getItem('ct-accesso') === '1'; } catch (e) {}
   if (!conAccount) { box.innerHTML = SENZA_ACCOUNT; return; }
@@ -42,13 +20,11 @@ async function mostraStatistiche() {
   let mie = [];
   try {
     const R = (await (await fetch(new URL('riepilogo.json', CATALOGO), { cache: 'no-cache' })).json()).serie;
-    /* per ogni archivio del browser che è una serie del sito: quanti ne hai e quanti doppioni */
     for (const nome of await archivi()) {
       const s = R[nome];
-      if (!s) continue;                                        // archivio di una serie che non c'è più
+      if (!s) continue;
       const db = await apriArchivio(nome), righe = await leggi(db);
       db.close();
-      /* s[4] (se c'è) = varianti estere { id: paese }: per chi non è in quel paese non contano per completare la serie */
       const esteri = s[4] || {}, fuori = id => !!esteri[id] && paeseEstero(esteri[id]);
       const tot = s[2] - Object.keys(esteri).filter(fuori).length;
       const ce = Math.min(righe.filter(r => !fuori(r.id) && (r.owned === true || r.doppi > 0)).length, tot);
@@ -63,7 +39,6 @@ async function mostraStatistiche() {
   }
   if (!mie.length) { box.innerHTML = VUOTO; return; }
 
-  /* ordine: quasi complete prima (percentuale più alta), le complete in fondo */
   const finita = s => s.ce >= s.tot;
   mie.sort((a, b) => (finita(a) - finita(b)) || (b.ce / b.tot - a.ce / a.tot) || a.t.localeCompare(b.t));
   const categoriaDi = s => s.cat.split(' · ')[0];
@@ -71,7 +46,6 @@ async function mostraStatistiche() {
   const complete = mie.filter(finita).length;
   const somma = f => mie.reduce((n, s) => n + f(s), 0);
 
-  /* ---------- disegno la parte fissa: numeri e comandi ---------- */
   box.innerHTML =
     '<div class="st-imp-numeri">'
     + '<div><b>' + somma(s => s.ce) + '</b><small>Ce l\'ho</small></div>'
@@ -89,7 +63,6 @@ async function mostraStatistiche() {
     + '<ul class="st-imp-serie" id="impLista"></ul>'
     + '<p class="st-imp-altre"><button type="button" id="impAltre" class="st-link" hidden></button></p>';
 
-  /* ---------- l'elenco: si ridisegna quando cambi menu o ricerca ---------- */
   let quante = PER_VOLTA;
   const valore = id => (document.getElementById(id) || {}).value || '';
   const riga = s => '<li' + (finita(s) ? ' class="finita"' : '') + '>'
@@ -108,7 +81,6 @@ async function mostraStatistiche() {
     altre.hidden = resto <= 0;
     altre.textContent = 'Mostra altre ' + Math.min(resto, PER_VOLTA) + (resto > PER_VOLTA ? ' (ne restano ' + resto + ')' : '');
   }
-  /* onchange / oninput / onclick (e non addEventListener): se l'elenco si ridisegna non si sommano */
   box.onchange = () => { quante = PER_VOLTA; mostra(); };
   box.oninput = e => { if (e.target.id === 'impCerca') { quante = PER_VOLTA; mostra(); } };
   document.getElementById('impAltre').onclick = () => { quante += PER_VOLTA; mostra(); };

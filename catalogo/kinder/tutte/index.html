@@ -1,25 +1,4 @@
 <!doctype html>
-<!-- =====================================================================
-     KINDER · TUTTE LE SORPRESINE PER CODICE — tutte le sorpresine di Kinder
-     Sorpresa, Kinder Joy e Merendine Ferrero in una sola pagina, divise per
-     famiglia di codice (VS, VT, NV, TT…) e in ordine di numero.
-     ---------------------------------------------------------------------
-     Questa pagina NON ha un elenco suo: legge le serie dalle tre pagine
-     dei gruppi (../kinder-sorpresa, ../kinder-joy, ../merendine-ferrero,
-     nell'ordine delle card) e le sorpresine dall'ELENCO di ogni pagina di
-     serie. Quindi, quando aggiungi una serie o cambi un nome/codice, qui si
-     aggiorna da solo: non c'è niente da copiare.
-     IL CODICE è la parte dopo il trattino nel "numero" della sorpresina
-     (es. numero: "01 - VS039" → codice VS039). La FAMIGLIA è la parte di
-     lettere (VS, VT, 2S…). Le famiglie sono messe in ordine di anno secondo
-     la tabella FAMIGLIE nello script (C 2004 … VS 2026), dentro la famiglia per numero.
-     Le sorpresine senza codice (le serie più vecchie) stanno in fondo, in
-     ordine di anno: sotto la foto c'è l'anno al posto del codice.
-     Le spunte "In possesso" sono le stesse delle pagine delle serie (stesso
-     archivio nel browser): toccando una sorpresina qui, cambia anche là.
-     Le foto piccole stanno in "immagini/mini/" di ogni serie (160 × 160 px,
-     leggere per il telefono); se ne manca una usa la foto grande.
-     ===================================================================== -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -38,20 +17,15 @@
 <meta property="og:url" content="https://collectiontime.com/catalogo/kinder/tutte/">
 <meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-13-4">
-<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto") -->
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-14-1">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
-  /* Base della pagina, link "indietro" e avviso in basso sono in sito.css:
-     qui solo ciò che è diverso in questa pagina. */
   :root {
-    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
-    --titolo: var(--ink); }   /* colore del testo del sito: blu scuro (chiaro nel tema scuro), quasi nero */
+    --titolo: var(--ink); }
   .st-wrap { max-width: 1400px; padding: 12px 16px 60px; }
   h1 { margin: 0; text-align: center; font: 900 clamp(1.8rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
   @media (max-width: 520px) { h1 { font-size: 8.5vw; } }
 
-  /* riga sotto il titolo: conteggio a sinistra, filtro a destra */
   .bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin: 22px 0 12px; }
   .conta { margin: 0; color: var(--muted); }
   .conta strong { color: var(--ink); }
@@ -60,49 +34,36 @@
   .filtro button + button { border-left: 1px solid var(--line); }
   .filtro button[aria-pressed="true"] { background: var(--ink); color: var(--white); }
 
-  /* casella per cercare un codice o un nome */
   .cerca { width: 100%; font: inherit; font-size: 1rem; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: var(--ink); }
 
-  /* una TENDINA per famiglia di codice (aspetto e pulsante "Apri tutte" sono in sito.css, come le tendine degli anni):
-     chiuse all'inizio, si aprono al clic. Qui solo la griglia dentro la tendina. */
   .st-anni { margin-top: 4px; }
   .st-anno > .tutte { padding: 4px 0 24px; }
 
-  /* GRIGLIA: sorpresine di fila; sotto ogni foto il codice.
-     Ogni casella è larga almeno 84px sul telefono e 104px sul PC. */
   .tutte { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px 6px; }
   @media (min-width: 768px) { .tutte { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px 8px; } }
   .tutte li { text-align: center; }
   .tutte button { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 1; border-radius: 10px; cursor: pointer; }
   .tutte button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .tutte img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  /* il codice sotto la foto */
   .tutte .cod { display: block; margin-top: 2px; font-size: .75rem; font-weight: 600; color: var(--muted); }
-  /* sorpresina che NON ho: grigia e sbiadita; quella che ho: a colori */
-  .tutte li:not(.ce) img { filter: var(--spento, grayscale(1)); opacity: var(--spento-op, .3); }   /* grigio: più chiaro nel tema scuro (sito.css) */
+  .tutte li:not(.ce) img { filter: var(--spento, grayscale(1)); opacity: var(--spento-op, .3); }
   .tutte li.ce button { background: color-mix(in srgb, var(--amber) 14%, var(--white)); }
   .tutte li.ce .cod { color: var(--ink); }
   @media (hover: hover) { .tutte li:not(.ce) button:hover img { opacity: .6; } }
   .attesa, .nessuna { text-align: center; color: var(--muted); padding: 40px 0; }
   .hint { color: var(--muted); font-size: .875rem; margin: 20px 0 0; }
-  /* riga dei due pulsanti sopra le tendine (ordine + apri/chiudi tutte), allineati a destra */
   .st-ordine-riga { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
   .st-ordine-riga .st-anni-tutte { margin: 0; }
 </style>
 <link rel="canonical" href="https://collectiontime.com/catalogo/kinder/tutte/">
-<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
-     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
 <link rel="canonical" href="https://collectiontime.com/catalogo/kinder/tutte/">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Kinder Ferrero","item":"https://collectiontime.com/catalogo/kinder/"},{"@type":"ListItem","position":3,"name":"Tutte le sorpresine Kinder per codice","item":"https://collectiontime.com/catalogo/kinder/tutte/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Tutte le sorpresine Kinder per codice","url":"https://collectiontime.com/catalogo/kinder/tutte/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Tutte le sorpresine Kinder in ordine di codice (VS, VT, NV, TT…): segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/icone/anteprima.jpg"}]}</script>
 </head>
 <body>
-<!-- Banda in alto: la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
 <main class="st-wrap">
-  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Kinder Ferrero</a>
-  <!-- ! MODIFICA: titolo della pagina -->
   <h1>TUTTE LE SORPRESINE</h1>
   <div class="bar">
     <p class="conta" id="conta"></p>
@@ -115,31 +76,25 @@
   <input class="cerca" id="cerca" type="search" placeholder="Cerca un codice o un nome" aria-label="Cerca un codice o un nome" autocomplete="off">
   <p class="attesa" id="attesa">Carico le sorpresine…</p>
   <p class="nessuna" id="nessuna" hidden>Nessuna sorpresina trovata.</p>
-  <!-- pulsante per aprire / chiudere tutte le tendine (il testo lo cambia lo script) -->
-  <!-- due pulsanti affiancati: ordine delle tendine (dalla più recente / dalla più vecchia) e apri/chiudi tutte -->
   <div class="st-ordine-riga" id="rigaTendine" hidden>
     <button type="button" class="st-anni-tutte" id="ordineFam">Dalla più recente</button>
     <button type="button" class="st-anni-tutte" id="apriTutte" aria-pressed="false">Apri tutte le tendine</button>
   </div>
-  <!-- una tendina per famiglia di codice, con dentro le sorpresine: la riempie lo script qui sotto -->
   <div class="st-anni" id="gruppi"></div>
-  <!-- ! MODIFICA: se serve, la parola per gli oggetti (sorpresina…) qui sotto -->
   <p class="hint">Tocca una sorpresina per segnare che ce l'hai (o toglierlo). Tieni il dito sopra (o passa col mouse) per vedere il nome e la serie. Sotto ogni foto c'è il codice.</p>
 </main>
 
-<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
 <script>
 (() => {
   const $ = id => document.getElementById(id);
   const STORE = 'penne';
-  const archivi = new Map();   /* nome dell'archivio → archivio aperto */
-  let pezzi = [];              /* { id, nome, serie, anno, cod, foto, db, ce, li } */
+  const archivi = new Map();
+  let pezzi = [];
   let filtro = 'tutte';
   let testo = '';
 
-  /* ! MODIFICA: i gruppi Kinder da mettere insieme, nell'ordine in cui compaiono (sono le cartelle accanto a questa pagina) */
   const GRUPPI = ['kinder-sorpresa', 'kinder-joy', 'merendine-ferrero'];
 
   const richiesta = r => new Promise((ok, ko) => { r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
@@ -151,10 +106,8 @@
     }
     return archivi.get(nome);
   }
-  /* confronto per la ricerca: minuscolo, senza spazi e trattini (così "vs 400" trova "VS400") */
   const norma = s => s.toLowerCase().replace(/[\s-]/g, '');
 
-  /* 1) le serie di un gruppo, nell'ordine delle card della sua pagina */
   async function serie(gruppo) {
     const html = await (await fetch('../' + gruppo + '/index.html')).text();
     const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -163,44 +116,33 @@
       titolo: (a.querySelector('h2') || a).textContent.trim()
     }));
   }
-  /* 2) le sorpresine di una serie, lette dall'ELENCO della sua pagina */
   async function sorpresine(s) {
     const html = await (await fetch('../' + s.cartella + '/index.html')).text();
-    const db = (html.match(/dbName:\s*"([^"]+)"/) || [])[1] || ('catalogo-kinder-' + s.cartella);   /* archivio della serie (CONFIG.dbName) */
-    /* ogni sorpresina è una riga { id: "…", numero: "…", codice: "…", nome: "…", foto: "…" }:
-       leggo i campi uno per uno, così l'ordine dei campi nella riga non conta */
+    const db = (html.match(/dbName:\s*"([^"]+)"/) || [])[1] || ('catalogo-kinder-' + s.cartella);
     const campo = (riga, nome) => { const m = riga.match(new RegExp('\\b' + nome + ':\\s*"((?:[^"\\\\]|\\\\.)*)"')); return m ? m[1] : ''; };
     const righe = [...html.matchAll(/\{\s*id:\s*"[^}]*\}/g)].map(m => m[0]).filter(r => campo(r, 'numero'));
     return righe.map((r, i) => {
-      const cod = ((campo(r, 'numero').match(/^\s*\d+\s*-\s*(.+)$/) || [])[1] || '').trim();    /* "01 - VS039" → "VS039" */
-      /* il codice si divide in famiglia (VS), numero (39) e lettera finale (A): "2S-043" → 2S, 43 · "VS294A" → VS, 294, A */
+      const cod = ((campo(r, 'numero').match(/^\s*\d+\s*-\s*(.+)$/) || [])[1] || '').trim();
       const p = cod.match(/^(.*?)-?(\d+)([A-Za-z]?)$/) || [];
-      const foto = campo(r, 'foto');                                                   /* es. immagini/01.webp?v=2026-10-01 */
+      const foto = campo(r, 'foto');
       return {
         id: campo(r, 'id'), nome: campo(r, 'nome').replace(/\\(.)/g, '$1'), serie: s.titolo, anno: Number(campo(r, 'codice')) || 0,
         cod, fam: cod ? (p[1] || cod) : '', num: Number(p[2]) || 0, suf: p[3] || '',
-        pos: s.ordine * 1000 + i,        /* posizione nel sito: per tenere in ordine i pezzi senza codice */
+        pos: s.ordine * 1000 + i,
         foto: '../' + s.cartella + '/' + foto, db, ce: false
       };
     });
   }
 
-  /* LE FAMIGLIE DI CODICE E L'ANNO IN CUI È COMINCIATA OGNUNA (come nei cataloghi dei collezionisti).
-     Le famiglie sono messe in quest'ordine, dalla più vecchia. Una famiglia non scritta qui (es. un nuovo
-     codice del 2027) va comunque al suo posto, secondo l'anno della sua prima serie.
-     ! MODIFICA: quando esce una nuova famiglia di codice aggiungila in fondo (es. VX: 2027). */
   const FAMIGLIE = { C: 2004, S: 2005, '2S': 2006, ST: 2006, TT: 2007, NV: 2008, DE: 2009, UN: 2010, DC: 2011, TR: 2012, FT: 2013,
                      FF: 2014, FS: 2015, SD: 2016, SE: 2017, EN: 2018, DV: 2019, VV: 2020, VU: 2021, VD: 2022, VT: 2023, VQ: 2024, VC: 2025, VS: 2026 };
 
-  /* 3) ordine: famiglie per anno (tabella qui sopra), dentro la famiglia per numero;
-        i pezzi senza codice in fondo, per anno. Un pezzo senza codice a cui metti il codice nell'ELENCO
-        della sua serie entra da solo nella sua famiglia, al posto giusto. */
   function ordina() {
     const fam = new Map();
     const senza = [];
     pezzi.forEach(p => {
       if (!p.cod) { senza.push(p); return; }
-      const base = p.fam.replace(/-.*$/, '');                     /* "S-N" (Folletti di Natale) sta con la famiglia S */
+      const base = p.fam.replace(/-.*$/, '');
       if (!fam.has(base)) fam.set(base, { nome: base, anno: FAMIGLIE[base] || p.anno, lista: [] });
       const f = fam.get(base);
       if (!FAMIGLIE[base]) f.anno = Math.min(f.anno, p.anno);
@@ -212,8 +154,7 @@
     return gruppi;
   }
 
-  /* 4) disegna le tendine (una per famiglia), chiuse */
-  let sezioni = [];            /* { el, conta, f } */
+  let sezioni = [];
   function crea(gruppi) {
     const frag = document.createDocumentFragment();
     gruppi.forEach(f => {
@@ -225,7 +166,7 @@
       sum.append(nome);
       if (f.anno) {
         const an = document.createElement('span');
-        an.className = 'st-anno-quante'; an.textContent = 'dal ' + f.anno;        /* "VS · dal 2026" */
+        an.className = 'st-anno-quante'; an.textContent = 'dal ' + f.anno;
         sum.append(an);
       }
       const conta = document.createElement('span');
@@ -244,12 +185,12 @@
         const img = document.createElement('img');
         img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
         img.width = 160; img.height = 160;
-        img.src = p.foto.replace('/immagini/', '/immagini/mini/');     /* foto piccola */
-        img.onerror = () => { img.onerror = null; img.src = p.foto; };  /* se manca, la grande */
+        img.src = p.foto.replace('/immagini/', '/immagini/mini/');
+        img.onerror = () => { img.onerror = null; img.src = p.foto; };
         b.append(img);
         const cod = document.createElement('span');
         cod.className = 'cod';
-        cod.textContent = p.cod || (p.anno || '');                      /* senza codice: l'anno */
+        cod.textContent = p.cod || (p.anno || '');
         li.append(b, cod);
         p.li = li; p.b = b;
         b.addEventListener('click', () => segna(p));
@@ -262,12 +203,11 @@
     $('gruppi').append(frag);
   }
 
-  /* 5) conteggi, filtro e ricerca */
   function disegna() {
     const n = pezzi.filter(p => p.ce).length;
     $('conta').innerHTML = '<strong>' + n + '</strong> su ' + pezzi.length + ' · me ne mancano ' + (pezzi.length - n);
     const t = norma(testo);
-    const cercando = !!t || filtro !== 'tutte';       /* con ricerca o filtro le tendine con risultati si aprono da sole; a fine ricerca si richiudono */
+    const cercando = !!t || filtro !== 'tutte';
     let visibili = 0;
     sezioni.forEach(s => {
       let qui = 0;
@@ -288,7 +228,6 @@
   }
   let eraCercando = false;
 
-  /* pulsante "Apri tutte / Chiudi tutte le tendine": acceso (ambra) quando sono tutte aperte */
   function aggiornaPulsante() {
     const aperte = sezioni.filter(s => !s.el.hidden).every(s => s.el.open);
     const bt = $('apriTutte');
@@ -301,23 +240,19 @@
     sezioni.forEach(s => { if (!s.el.hidden) s.el.open = apri; });
     aggiornaPulsante();
   });
-  /* ORDINE DELLE TENDINE (solo in questa pagina): "asc" = dalla famiglia più vecchia (C 2004 … VS 2026),
-     "desc" = dalla più recente. "Senza codice" resta sempre in fondo.
-     Ogni volta che si apre la pagina parte dalla più recente: la scelta NON viene memorizzata. */
   let ordineFam = 'desc';
   function applicaOrdine() {
     const fam = sezioni.filter(s => s.f.nome !== 'Senza codice');
     const senza = sezioni.filter(s => s.f.nome === 'Senza codice');
-    (ordineFam === 'desc' ? [...fam].reverse() : fam).concat(senza).forEach(s => $('gruppi').append(s.el));   /* append sposta la tendina nel nuovo posto */
+    (ordineFam === 'desc' ? [...fam].reverse() : fam).concat(senza).forEach(s => $('gruppi').append(s.el));
     $('ordineFam').textContent = ordineFam === 'desc' ? 'Dalla più recente' : 'Dalla più vecchia';
   }
   $('ordineFam').addEventListener('click', () => {
     ordineFam = ordineFam === 'desc' ? 'asc' : 'desc';
     applicaOrdine();
   });
-  $('gruppi').addEventListener('toggle', aggiornaPulsante, true);     /* anche se ne apri o chiudi una a mano */
+  $('gruppi').addEventListener('toggle', aggiornaPulsante, true);
 
-  /* segna / toglie "In possesso" nello stesso archivio della pagina della serie */
   async function segna(p) {
     p.ce = !p.ce;
     p.li.classList.toggle('ce', p.ce);
@@ -326,19 +261,16 @@
     try {
       const db = await apri(p.db);
       const vecchia = await richiesta(db.transaction(STORE).objectStore(STORE).get(p.id));
-      /* tengo gli hashtag già salvati e cambio solo la spunta (come la pagina della serie) */
       await richiesta(db.transaction(STORE, 'readwrite').objectStore(STORE).put(Object.assign(vecchia || { id: p.id }, { owned: p.ce })));
-      if (typeof segnalaModifica === 'function') segnalaModifica();   /* avvisa il sito: con l'account aggiorna il cloud (script.js) */
-    } catch (e) { /* questo browser non permette di salvare le spunte */ }
+      if (typeof segnalaModifica === 'function') segnalaModifica();
+    } catch (e) {  }
   }
 
   (async () => {
     try {
-      /* le serie di tutti i gruppi, poi le sorpresine di ogni serie (gli elenchi sono piccoli) */
       const perGruppo = await Promise.all(GRUPPI.map(g => serie(g).catch(() => [])));
       const tutteSerie = perGruppo.flat().map((s, i) => Object.assign(s, { ordine: i }));
       pezzi = (await Promise.all(tutteSerie.map(s => sorpresine(s).catch(() => [])))).flat();
-      /* spunte già salvate nel browser */
       const perDb = new Map();
       pezzi.forEach(p => { if (!perDb.has(p.db)) perDb.set(p.db, []); perDb.get(p.db).push(p); });
       await Promise.all([...perDb].map(async ([nome, ps]) => {
@@ -347,7 +279,7 @@
           const salvate = await richiesta(db.transaction(STORE).objectStore(STORE).getAll());
           const ce = new Set(salvate.filter(x => x.owned === true).map(x => x.id));
           ps.forEach(p => { p.ce = ce.has(p.id); });
-        } catch (e) { /* archivio non leggibile: restano da spuntare */ }
+        } catch (e) {  }
       }));
       $('attesa').hidden = true;
       crea(ordina());
@@ -366,7 +298,6 @@
   $('cerca').addEventListener('input', e => { testo = e.target.value; disegna(); });
 })();
 </script>
-<!-- Banda in alto e in basso, Accedi: questa riga serve in ogni pagina -->
-<script src="../../../script.js?v=2026-10-13-4"></script>
+<script src="../../../script.js?v=2026-10-14-1"></script>
 </body>
 </html>

@@ -1,20 +1,8 @@
 <!doctype html>
-<!-- ==========================================================
-     404.html — pagina "non trovata"
-     GitHub Pages la mostra quando qualcuno apre un indirizzo che
-     non esiste. Può comparire a qualsiasi profondità (es.
-     /catalogo/legami/xyz), per questo tutti i percorsi iniziano con "/"
-     (= cartella principale del sito). Aperta dal computer con
-     doppio clic non trova stile e bande: sul sito online sì.
-     ========================================================== -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Indirizzi vecchi: fino al 27/09/2026 le categorie stavano nella cartella principale
-     (es. /legami/legami-erasable/). Chi arriva da un link vecchio o da un'icona sulla Home
-     viene portato subito allo stesso indirizzo dentro /catalogo/. Le categorie nuove
-     non vanno aggiunte qui: nascono già dentro catalogo/. -->
 <script>(function(){if(/^\/(burger-king|coolthings|eurospin|kinder|legami|lego|lidl|mcdonalds|mulino-bianco)(\/|$)/.test(location.pathname))location.replace('/catalogo'+location.pathname+location.search+location.hash)})();</script>
 <title>Pagina non trovata · Collection Time</title>
 <meta name="robots" content="noindex">
@@ -22,24 +10,18 @@
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2026-09-27">
-<!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="/sito.css?v=2026-10-13-4">
-<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+<link rel="stylesheet" href="/sito.css?v=2026-10-14-1">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
-  /* Base della pagina (st-wrap), titolo (st-titolo) e pulsante (st-btn) sono in sito.css:
-     qui solo ciò che è diverso in questa pagina. */
   .st-wrap { max-width: 600px; padding: 72px 20px; text-align: center; }
-  /* orologio fermo: la stessa "o" del logo, più grande */
   .clk { width: 88px; height: 88px; display: block; margin: 0 auto 24px; }
   .st-titolo { font-size: clamp(1.8rem, 4vw, 2.4rem); line-height: 1.15; text-wrap: balance; }
   p { margin: 18px 0 28px; color: var(--muted); }
 </style>
 </head>
 <body>
-<!-- Banda in alto: la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
-<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
   <svg class="clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 12V6.5M12 12l4 2.3" fill="none" stroke="#F2A900" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
   <h1 class="st-titolo">Questo pezzo non è ancora in collezione</h1>
@@ -47,9 +29,8 @@
   <a class="st-btn" href="/">Torna alle collezioni</a>
 </main>
 
-<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
-<script src="/script.js?v=2026-10-13-4"></script>
+<script src="/script.js?v=2026-10-14-1"></script>
 </body>
 </html>

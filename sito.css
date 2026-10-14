@@ -1,50 +1,24 @@
-/* ==========================================================
-   sito.css — Collection Time
-   Stile comune a TUTTE le pagine: colori del sito, base della pagina,
-   pagine con le card (Home, Legami, LEGO), banda in alto (header.html),
-   banda in basso (footer.html), ricerca, avviso in basso, finestra
-   "Aggiungi alla Home" e pagine di solo testo (FAQ, Note legali, Privacy).
-   Ogni pagina lo richiama nel <head> con:
-   <link rel="stylesheet" href="sito.css?v=2026-09-26">
-   (dentro una sottocartella: "../sito.css", "../../sito.css"; nelle serie del catalogo "../../../sito.css")
-   Le pagine delle collezioni aggiungono comune/collezione.css.
-   ========================================================== */
 
-/* ---------- COLORI DEL SITO: si cambiano solo qui ----------
-   Tutte le pagine usano questi nomi: var(--ink), var(--amber)…
-   Le collezioni possono aggiungere i propri (es. rosso Legami)
-   nel loro file di stile. */
 :root {
-  --ink: #1A2140;     /* blu scuro: testo, banda in basso */
-  --muted: #5D6580;   /* grigio-blu: testo secondario */
-  --line: #D5D9E2;    /* grigio chiaro: bordi sottili */
-  --amber: #F2A900;   /* ambra: accento, sottolineature, logo */
-  --white: #FFFFFF;   /* sfondo */
-  --soft: #B9BFD3;    /* grigio chiaro: testo piccolo sulla banda in basso */
-  --band-line: #343C5E; /* riga sottile sulla banda in basso */
-  --piastra: transparent; /* dietro le scritte colorate delle card in Home: chiara nel tema scuro */
-  --riquadro: #F5F6F9; /* riquadri grigi chiarissimi (numeri nel menu profilo) */
-  --errore: #B3261E;  /* rosso degli errori */
-  --crema: #FFF6DC;   /* fondo della sezione "Fai parte della community" */
-  --crema-line: #F2D27A; /* bordo della stessa sezione */
-  /* colori che NON cambiano nel tema scuro (banda in basso, spunta sull'ambra) */
+  --ink: #1A2140;
+  --muted: #5D6580;
+  --line: #D5D9E2;
+  --amber: #F2A900;
+  --white: #FFFFFF;
+  --soft: #B9BFD3;
+  --band-line: #343C5E;
+  --piastra: transparent;
+  --riquadro: #F5F6F9;
+  --errore: #B3261E;
+  --crema: #FFF6DC;
+  --crema-line: #F2D27A;
   --blu: #1A2140;
   --bianco: #FFFFFF;
-  --band-bg: #1A2140; /* sfondo della banda in basso */
-  /* carattere dei titoli rossi Legami (vedi sotto "CARATTERE LEGAMI") */
+  --band-bg: #1A2140;
   --font-legami: "Legami Titolo", "Comic Sans MS", cursive;
   color-scheme: light;
 }
 
-/* ---------- TEMA SCURO (blu notte) ----------
-   Chi visita sceglie in fondo alla pagina "Aspetto: Automatico · Chiaro · Scuro"
-   (lo fa script.js e lo ricorda nel browser). La scelta è scritta nella pagina
-   come <html data-tema="auto|chiaro|scuro"> dalla riga <script> nel <head>.
-     auto   = segue il telefono / computer (scuro se è in modalità scura)
-     scuro  = sempre scuro
-     chiaro = sempre chiaro
-   Le pagine senza quella riga (strumenti, area amministratore) restano chiare.
-   I colori scuri sono qui sotto DUE volte, uguali: se li cambi, cambiali in tutti e due. */
 @media (prefers-color-scheme: dark) {
   :root[data-tema="auto"] {
     --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
@@ -60,83 +34,53 @@
   color-scheme: dark;
 }
 
-/* ---------- CARATTERE LEGAMI ----------
-   Il Comic Sans MS c'è solo su Mac e Windows: iPhone e Android
-   lo sostituivano ognuno con un carattere diverso.
-   Per questo il carattere è incluso nel sito (file in comune/caratteri/):
-   "Comic Relief" Bold, gratuito, disegnato identico al Comic Sans MS Bold.
-   Così i titoli Legami sono uguali su ogni dispositivo.
-   Il file pesa 15 KB e si scarica solo nelle pagine che lo usano.
-   Contiene lettere, numeri, punteggiatura e accenti italiani. */
 @font-face {
   font-family: "Legami Titolo";
   src: url("comune/caratteri/legami-titolo.woff2") format("woff2");
   font-weight: 700;
-  font-display: block;   /* aspetta il carattere giusto invece di mostrarne un altro per un attimo */
+  font-display: block;
 }
 
-/* ---------- base di tutte le pagine ----------
-   body a colonna: la banda in basso resta sempre in fondo allo schermo. */
 * { box-sizing: border-box; }
-[hidden] { display: none !important; }   /* "hidden" nasconde sempre, anche se una regola dice altro */
+[hidden] { display: none !important; }
 body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--white); color: var(--ink);
        font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }   /* contorno quando si naviga con la tastiera */
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
-/* i segnaposto non creano un riquadro in più */
 #header-placeholder, #footer-placeholder { display: contents; }
 
-/* ---------- pagine con le card (Home, Legami, LEGO) e pagine semplici ----------
-   Nel file basta: <main class="st-wrap">, <h1 class="st-titolo">,
-   <ul class="st-cards"> con un <li><a class="st-card">…</a></li> per card.
-   Quello che cambia da pagina a pagina (colore e carattere del titolo,
-   immagini delle card) sta nel <style> della pagina. */
 .st-wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 12px 20px 72px; }
-/* link per tornare indietro ("← Legami"): grande e facile da toccare, su telefono e su PC */
 .st-back { display: inline-block; margin: 0 0 22px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: 1.125rem; }
 .st-back:hover { color: var(--ink); }
-/* percorso in alto: "Kinder Ferrero › Kinder Joy › One Piece" (lo crea script.js dal link ← della pagina) */
 .st-percorso { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; margin: 0 0 22px; padding: 6px 0; color: var(--muted); font-size: 1rem; }
 .st-percorso a { color: var(--muted); text-decoration: none; }
 .st-percorso a:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--amber); text-underline-offset: 3px; }
 .st-percorso [aria-current] { color: var(--ink); font-weight: 600; }
 .st-percorso .sep { color: var(--line); }
-/* titolo al centro con la lineetta ambra sotto */
 .st-titolo { margin: 0; text-align: center; font: 600 clamp(2rem, 4vw, 3rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .st-titolo::after { content: ""; display: block; width: 36px; height: 3px; margin: 16px auto 0; background: var(--amber); border-radius: 2px; }
-/* le card */
 .st-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
 .st-card { display: flex; flex-direction: column; gap: 10px; height: 100%; padding: 20px; border: 1px solid var(--line); border-radius: 16px; color: inherit; text-decoration: none; background: var(--white); transition: border-color .15s, box-shadow .15s; }
 .st-card:hover, .st-card:focus-visible { border-color: var(--amber); box-shadow: 0 6px 20px rgba(242, 169, 0, .16); outline: none; }
 .st-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .st-card h2 { margin: 0; font-size: 1.125rem; }
 .st-card p { margin: 0; color: var(--muted); font-size: .9375rem; flex: 1; }
-/* "Apri" in fondo alla card */
 .st-apri { font-weight: 600; font-size: .9375rem; text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 4px; }
-/* pulsante pieno blu scuro (Contatti, pagina 404) */
 .st-btn { display: inline-block; background: var(--ink); color: var(--white); font-weight: 600; font-size: .9375rem; text-decoration: none; padding: 10px 22px; border-radius: 8px; transition: background .15s, color .15s; }
 .st-btn:hover { background: var(--amber); color: var(--blu); }
 
-/* ---------- Home: numeri, Novità e "Come funziona" ----------
-   Numeri e Novità li scrive dentro index.html l'area amministratore (admin.js, voce "Numeri e Novità
-   della Home"); "Come funziona" è scritto a mano in index.html. */
 .st-numeri { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 28px; margin: -18px 0 40px; text-align: center; }
 .st-numeri b { display: block; font: 700 1.6rem/1.1 system-ui, -apple-system, sans-serif; }
 .st-numeri span { color: var(--muted); font-size: .85rem; }
 .st-sez-titolo { margin: 0 0 16px; font: 600 1.5rem/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .st-sezione { margin-bottom: 44px; }
 .st-sezione-fondo { margin: 56px 0 0; }
-/* card delle Novità: più piccole di quelle delle categorie, con copertina e scritta "NUOVA" ambra.
-   CAROSELLO: le card sono in una fila che scorre di lato (si trascina col dito, o con le frecce che mette script.js).
-   Se ne vedono 4 per volta sul computer (una colonna ogni quarto di larghezza) e 4 sul telefono (2 colonne × 2 righe):
-   le card non cambiano mai grandezza, quelle in più arrivano scorrendo. Per vederne di più o di meno cambia i "4" e i "2". */
 .st-car { position: relative; }
 .st-novita { list-style: none; margin: 0; padding: 4px 0 8px; display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 3 * 16px) / 4); gap: 16px;
              overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .st-novita::-webkit-scrollbar { display: none; }
 .st-novita li { min-width: 0; }
-.st-novita li:nth-child(4n+1) { scroll-snap-align: start; }   /* si ferma solo all'inizio di ogni blocco da 4 (qui e sul telefono) */
-/* frecce: SOLO computer (mouse), nascoste finché il mouse non è sopra le Novità; sul telefono non ci sono (si fa swipe) */
+.st-novita li:nth-child(4n+1) { scroll-snap-align: start; }
 .st-car-freccia { position: absolute; top: calc(50% - 19px); z-index: 2; width: 38px; height: 38px; padding: 0 0 3px; border: 1px solid var(--line); border-radius: 50%;
                   background: var(--white); color: var(--ink); font: 400 1.7rem/1 system-ui, sans-serif; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
                   opacity: 0; pointer-events: none; transition: opacity .2s, border-color .15s; }
@@ -145,7 +89,6 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
   .st-car:hover .st-car-freccia, .st-car:focus-within .st-car-freccia { opacity: 1; pointer-events: auto; }
   .st-car-freccia:hover { border-color: var(--amber); }
 }
-/* pallini sotto le card: uno per blocco, quello pieno (ambra) è il blocco in vista */
 .st-car-pallini { display: flex; justify-content: center; gap: 8px; margin-top: 6px; }
 .st-car-pallini button { width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%; background: var(--line); cursor: pointer; transition: background .2s, transform .2s; }
 .st-car-pallini button.attivo { background: var(--amber); transform: scale(1.3); }
@@ -155,59 +98,41 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-novita strong { font-size: .95rem; }
 .st-novita small { color: var(--muted); font-size: .8rem; }
 .st-nuova { position: absolute; top: 10px; left: 10px; padding: 4px 7px; border-radius: 6px; background: var(--amber); color: var(--blu); font: 700 .7rem/1 system-ui, sans-serif; letter-spacing: .04em; text-transform: uppercase; }
-/* "Come funziona": 3 passi con il numero nel cerchio ambra */
 .st-passi { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; counter-reset: passo; }
 .st-passi li { counter-increment: passo; position: relative; padding-left: 46px; }
 .st-passi li::before { content: counter(passo); position: absolute; left: 0; top: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--amber); color: var(--blu); font: 700 1rem/34px system-ui, sans-serif; text-align: center; }
 .st-passi strong { display: block; margin-bottom: 2px; }
 .st-passi span { color: var(--muted); font-size: .9rem; }
-@media (max-width: 600px) {   /* telefono: Novità 2 × 2 (due colonne e due righe) che scorrono di lato a blocchi di 4, numeri un po' più piccoli */
+@media (max-width: 600px) {
   .st-novita { grid-template-rows: repeat(2, auto); grid-auto-columns: calc((100% - 10px) / 2); gap: 10px; }
   .st-numeri { gap: 8px 18px; }
   .st-numeri b { font-size: 1.3rem; }
 }
 
-/* ---------- categorie fissate (Home) ----------
-   La categoria fissata ha il bordo ambra e una puntina; la scritta sotto "Tutte le categorie" spiega come fissarle
-   (la mette script.js solo a chi ha l'account). */
 .st-pin-hint { margin: -8px 0 14px; color: var(--muted); font-size: .85rem; }
 .st-cards > li { -webkit-touch-callout: none; }
 .st-cards > li.st-fissata > .st-card { border-color: var(--amber); position: relative; }
 .st-cards > li.st-fissata > .st-card::after { content: "\1F4CC"; position: absolute; top: 10px; right: 12px; font-size: 1rem; }
 
-/* ---------- barra sulle card delle serie ----------
-   "Apri" + barra ambra + "6 su 9" (la crea script.js, voce "Barra sulle card delle serie"),
-   solo sulle serie in cui hai segnato almeno un pezzo; "finita" = serie completa (numeri in grassetto). */
 .st-riga-apri { display: flex; align-items: center; gap: 12px; }
 .st-progresso { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
 .st-progresso i { display: block; height: 100%; border-radius: 3px; background: var(--amber); }
 .st-quanti { color: var(--muted); font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .st-riga-apri.finita .st-quanti { color: var(--ink); font-weight: 700; }
 
-/* ---------- banda in alto ----------
-   "position: sticky; top: 0" la tiene ferma in cima mentre si scorre.
-   z-index 15: sta sopra le penne ma sotto le finestre e gli avvisi. */
 .st-top {
   position: sticky; top: 0; z-index: 15;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px;
   margin: 0; padding: 12px 20px;
   border-bottom: 1px solid var(--line); background: var(--white);
 }
-.st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(19px, 5.4vw, 25px);   /* grandezza del nome del sito (il logo segue) */ line-height: 1; color: var(--ink); text-decoration: none; }
+.st-brand { display: inline-flex; align-items: center; gap: .45em; font-size: clamp(19px, 5.4vw, 25px);    line-height: 1; color: var(--ink); text-decoration: none; }
 .st-brand .mk { width: 1.55em; height: 1.55em; flex: none; }
 .st-wm { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; white-space: nowrap; }
 .st-clk { display: inline-block; width: .74em; height: .74em; vertical-align: -.03em; margin: 0 .03em; }
 
-/* ---------- striscioni (ticker) sotto la banda in alto ----------
-   Fino a 6, uno sotto l'altro: ognuno scorre (.st-ticker) o sta fermo (.st-ticker-fisso). Testo, link, colori, velocità, grandezza
-   e acceso/spento si cambiano dall'area amministratore → Impostazioni sito → Striscioni.
-   Variabili per striscione (le scrive l'admin nello style; se mancano valgono quelle di base):
-   --tk-sfondo (colore di sfondo, di base ambra) · --tk-testo (colore del testo, di base blu) · --tk-dim (grandezza del testo, di base .9rem)
-   Il testo è scritto due volte di seguito: la pista scorre di metà (50%) e riparte senza salti.
-   --durata = secondi per un giro (la mette l'area amministratore secondo la lunghezza del testo).
-   Si ferma con il mouse sopra. Chi ha scelto "meno animazioni" vede il testo fermo. */
 .st-ticker { overflow: hidden; background: var(--tk-sfondo, var(--amber)); color: var(--tk-testo, var(--blu)); font-size: var(--tk-dim, .9rem); font-weight: 600; }
-.st-ticker-fisso .st-ticker-riga { padding: 7px 16px; text-align: center; line-height: 1.35; }   /* striscione fisso: testo centrato che va a capo */
+.st-ticker-fisso .st-ticker-riga { padding: 7px 16px; text-align: center; line-height: 1.35; }
 .st-ticker-riga { display: block; padding: 7px 0; color: inherit; text-decoration: none; }
 .st-ticker-pista { display: inline-flex; white-space: nowrap; animation: st-scorri var(--durata, 30s) linear infinite; }
 .st-ticker-pista > span { min-width: 100vw; padding-right: 3rem; box-sizing: border-box; }
@@ -219,47 +144,38 @@ a.st-ticker-riga:hover { text-decoration: underline; }
   .st-ticker-pista > span { min-width: 0; padding: 0; } .st-ticker-pista > span + span { display: none; }
 }
 
-/* pulsante Accedi: sembra un link, con la riga ambra al passaggio del mouse */
 .st-top nav { display: flex; gap: 20px; }
 .st-top nav button {
   font: inherit; font-size: .875rem; color: var(--ink); cursor: pointer;
   background: none; border: 0; border-bottom: 2px solid transparent; padding: 6px 0;
 }
 .st-top nav button:hover { border-bottom-color: var(--amber); }
-/* solo PC (schermo largo + mouse): Accedi più grande e facile da cliccare.
-   Sul telefono restano come sopra, se no si accavallano col nome del sito. */
 @media (min-width: 768px) and (pointer: fine) {
   .st-top nav { gap: 28px; }
   .st-top nav button { font-size: 1.125rem; padding: 10px 2px; }
 }
 .st-top :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
-/* ---------- banda in basso (footer.html) ---------- */
 .st-band { margin-top: auto; background: var(--band-bg); color: var(--bianco); border-top: 3px solid var(--amber); padding: 22px 20px; font: .8125rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-.st-band-in { max-width: 1100px; margin: 0 auto; }   /* larghezza massima del contenuto */
+.st-band-in { max-width: 1100px; margin: 0 auto; }
 .st-band a { color: var(--bianco); text-underline-offset: 3px; }
 .st-band a:hover { color: var(--amber); }
 .st-band :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
-/* riga in alto: nome + frase a sinistra, pulsanti a destra */
 .st-band-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px 24px; }
 .st-band-nome { font: 1.125rem/1.2 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
 .st-band-frase { margin-top: 2px; color: var(--soft); }
 .st-band-pul { display: flex; flex-wrap: wrap; gap: 10px; }
-/* pulsanti: "Aggiungi alla Home" solo bordo, "Sostieni" pieno in ambra */
 .st-band .st-pul { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: 1px solid #6B7396;
                    background: none; color: var(--bianco); font: inherit; font-weight: 600; font-size: .875rem; line-height: 1.2; text-decoration: none; cursor: pointer; }
 .st-band .st-pul svg { width: 16px; height: 16px; flex: none; }
 .st-band .st-pul:hover { border-color: var(--amber); color: var(--bianco); }
 .st-band .st-pul-dona { background: var(--amber); border-color: var(--amber); color: var(--blu); }
 .st-band .st-pul-dona:hover { background: var(--bianco); border-color: var(--bianco); color: var(--blu); }
-/* link (FAQ, Contatti, Note legali, Privacy) */
 .st-band-link { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 16px 0 14px; }
-/* avviso legale e © */
 .st-band-legale { border-top: 1px solid var(--band-line); padding-top: 12px; color: var(--soft); font-size: .75rem; line-height: 1.55; }
 .st-band-legale p { margin: 0 0 8px; }
 .st-band-legale p:last-child { margin: 0; }
 .st-band-legale a { color: var(--soft); }
-/* testo solo PC / solo telefono */
 .st-solo-tel { display: none; }
 @media (max-width: 600px) {
   .st-band { text-align: center; }
@@ -270,7 +186,6 @@ a.st-ticker-riga:hover { text-decoration: underline; }
   p.st-solo-tel { display: block; }
 }
 
-/* ---------- finestra "Aggiungi alla Home" (la crea script.js) ---------- */
 .st-guida { max-width: min(360px, 90vw); padding: 20px; border: 0; border-radius: 14px; color: var(--ink); background: var(--white);
             font: 1rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
 .st-guida::backdrop { background: rgba(26, 33, 64, .55); }
@@ -282,18 +197,14 @@ a.st-ticker-riga:hover { text-decoration: underline; }
 .st-guida button { padding: 8px 18px; border: 0; border-radius: 8px; background: var(--ink); color: var(--white); font: inherit; font-weight: 600; font-size: .9375rem; cursor: pointer; }
 .st-guida button:hover { background: var(--amber); color: var(--blu); }
 
-/* ---------- finestra "Account" (Accedi con Google, la crea comune/cloud.js) ----------
-   Stessa finestra di "Aggiungi alla Home", con più pulsanti in basso. */
 .st-account { max-width: min(400px, 92vw); }
 .st-account p { margin: 0 0 10px; line-height: 1.5; }
 .st-account small { color: var(--muted); }
-/* iscrizione obbligatoria (comune/cloud.js): finestra senza "Chiudi", sfondo più coprente e sfocato */
 .st-account.st-obbligo::backdrop { background: rgba(14, 18, 38, .88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .st-account.st-obbligo .st-account-azioni { display: none; }
 .st-account-azioni { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .st-account .st-secondario { background: none; color: var(--ink); border: 1px solid var(--line); }
 .st-account .st-secondario:hover { background: none; border-color: var(--amber); color: var(--ink); }
-/* "Accedi con Google" largo quanto la finestra, poi il modulo email */
 .st-account .st-google { width: 100%; margin: 4px 0 0; }
 .st-oppure { display: flex; align-items: center; gap: 10px; margin: 14px 0 10px !important; color: var(--muted); font-size: .8125rem; }
 .st-oppure::before, .st-oppure::after { content: ""; flex: 1; height: 1px; background: var(--line); }
@@ -306,11 +217,9 @@ a.st-ticker-riga:hover { text-decoration: underline; }
 .st-email-azioni button { flex: 1; }
 .st-account .st-link { justify-self: start; padding: 2px 0; background: none; color: var(--muted); font-weight: 400; font-size: .8125rem; text-decoration: underline; }
 .st-account .st-link:hover { background: none; color: var(--ink); }
-.st-account-errore { margin: 0 !important; color: var(--errore); font-size: .875rem; }   /* rosso per gli errori */
-.st-account-errore.ok { color: var(--ink); }                                       /* messaggio "ti ho mandato un'email" */
+.st-account-errore { margin: 0 !important; color: var(--errore); font-size: .875rem; }
+.st-account-errore.ok { color: var(--ink); }
 
-/* ---------- pagine di solo testo (FAQ, Note legali, Privacy) ----------
-   Nel file basta: <body class="st-semplice"> e <main class="st-testo"> */
 body.st-semplice { line-height: 1.6; }
 .st-testo { width: 100%; max-width: 720px; margin: 0 auto; padding: 56px 20px 72px; }
 .st-testo h1 { margin: 0; font: 600 clamp(2rem, 4vw, 2.6rem)/1.1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
@@ -318,8 +227,7 @@ body.st-semplice { line-height: 1.6; }
 .st-testo .lead { margin: 18px 0 28px; color: var(--muted); }
 .st-testo h2 { margin: 32px 0 8px; font-size: 1.125rem; }
 .st-testo a { color: var(--ink); text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 3px; }
-.st-testo .agg { margin-top: 40px; color: var(--muted); font-size: .875rem; }   /* "Ultimo aggiornamento" */
-/* domande delle FAQ: si aprono e chiudono con un clic, senza script */
+.st-testo .agg { margin-top: 40px; color: var(--muted); font-size: .875rem; }
 .st-testo details { border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
 .st-testo summary { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; font-weight: 600; cursor: pointer; list-style: none; }
 .st-testo summary::-webkit-details-marker { display: none; }
@@ -327,8 +235,6 @@ body.st-semplice { line-height: 1.6; }
 .st-testo details[open] summary::after { content: "–"; }
 .st-testo details > :not(summary) { margin: 0 0 14px; }
 
-/* ---------- avviso temporaneo in basso ("File salvato…", "PDF salvato…") ----------
-   Lo crea la funzione avviso() di script.js; lo usano anche le pagine delle collezioni. */
 .st-avviso {
   position: fixed; left: 50%; bottom: 20px; z-index: 30; transform: translateX(-50%);
   max-width: 90vw; padding: 10px 16px; border-radius: 10px;
@@ -336,18 +242,12 @@ body.st-semplice { line-height: 1.6; }
   opacity: 0; pointer-events: none; transition: opacity .2s;
 }
 .st-avviso.show { opacity: 1; }
-/* avviso con il pulsante "Annulla" (es. "Non la cerco più") */
 .st-avviso.con-azione.show { pointer-events: auto; display: flex; align-items: center; gap: 14px; width: max-content; }
 .st-avviso button { padding: 4px 0; border: 0; background: none; color: var(--amber); font: inherit; font-weight: 700; cursor: pointer; }
 
-/* ---------- ricerca (lente) ----------
-   Si vede solo la lente; premendola il campo si allarga.
-   Nelle pagine con le card sta accanto alla frase ("Cerca una categoria"),
-   nelle pagine delle collezioni nella barra degli strumenti.
-   Apertura e chiusura sono in script.js (avviaCerca). */
 .st-sub { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 4px; margin: 14px 0 40px; }
-.st-sub .sub { margin: 0; color: var(--muted); cursor: pointer; }   /* toccando la frase si apre la ricerca */
-@media (hover: hover) { .st-sub .sub:hover { color: var(--amber); } }   /* solo col mouse: sul telefono non resta colorata */
+.st-sub .sub { margin: 0; color: var(--muted); cursor: pointer; }
+@media (hover: hover) { .st-sub .sub:hover { color: var(--amber); } }
 .st-cerca { display: flex; align-items: center; border: 1px solid transparent; border-radius: 8px; }
 .st-cerca.open { border-color: var(--line); }
 .st-cerca button { display: grid; place-items: center; padding: 8px 10px; border: 0; border-radius: 8px; background: none; color: var(--ink); cursor: pointer; }
@@ -356,19 +256,15 @@ body.st-semplice { line-height: 1.6; }
 .st-cerca input {
   -webkit-appearance: none; appearance: none;
   width: 0; padding: 8px 0; border: 0; opacity: 0; background: none; color: var(--ink);
-  font: inherit; font-size: 16px;   /* 16px: così l'iPhone non ingrandisce la pagina */
+  font: inherit; font-size: 16px;
   outline: none; transition: width .25s ease, opacity .2s ease, padding .25s ease;
 }
 .st-cerca.open input { width: min(220px, 50vw); padding: 8px 10px 8px 0; opacity: 1; }
 .st-nessuna { margin: 0 0 20px; text-align: center; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .st-cerca input { transition: none; } }
 
-/* ---------- barra in basso delle categorie ----------
-   La crea script.js (barraCategoria) in tutte le pagine dentro una categoria:
-   Serie · Mi mancano · Doppioni · Cerca. Bianca come la banda in alto;
-   la voce aperta è blu scuro con la lineetta ambra sopra (come sotto i titoli). */
-body.con-barra { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }   /* spazio perché la barra non copra il fondo della pagina */
-body.con-barra .st-avviso { bottom: calc(76px + env(safe-area-inset-bottom)); }  /* l'avviso resta sopra la barra */
+body.con-barra { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+body.con-barra .st-avviso { bottom: calc(76px + env(safe-area-inset-bottom)); }
 .st-barra { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: flex; justify-content: center;
             background: var(--white); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
 .st-barra a { position: relative; flex: 0 1 130px; display: grid; justify-items: center; gap: 1px; padding: 8px 4px 7px;
@@ -379,22 +275,15 @@ body.con-barra .st-avviso { bottom: calc(76px + env(safe-area-inset-bottom)); } 
 .st-barra a[aria-current="page"]::before { content: ""; position: absolute; top: -1px; left: 50%; width: 36px; height: 3px; margin-left: -18px; background: var(--amber); border-radius: 0 0 2px 2px; }
 @media print { .st-barra { display: none; } }
 
-/* ---------- "Estero" ----------
-   Serie solo estere (li con data-paese, le sposta script.js sotto le altre): un piccolo titolo e le loro card. */
 .st-estero { margin-top: 32px; }
 .st-estero-titolo { margin: 0 0 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 1.05rem; color: var(--ink); }
 
-/* ---------- tendine degli anni ----------
-   Card divise per anno (liste con data-per-anno, le crea script.js):
-   una riga per anno con l'anno grande, quante serie ha e la freccia ambra;
-   al clic si apre e mostra le sue card. */
 .st-anni { display: grid; gap: 0; border-top: 1px solid var(--line); }
 .st-cards + .st-anni { margin-top: 32px; }
-/* pulsante "Apri tutte le tendine": acceso (ambra) quando sono tutte aperte */
 .st-anni-tutte { display: block; margin: 0 0 12px auto; padding: 8px 16px; font: 600 .875rem/1 inherit; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; transition: background .15s, color .15s; }
 .st-anni-tutte:hover { border-color: var(--amber); }
-.st-anni-tutte[aria-pressed="true"] { background: var(--amber); border-color: var(--amber); color: var(--blu); }   /* scritta blu scuro sull'ambra pieno */
-.st-cards + .st-anni-tutte { margin-top: 32px; }   /* spazio tra le card senza anno (sopra) e le tendine */
+.st-anni-tutte[aria-pressed="true"] { background: var(--amber); border-color: var(--amber); color: var(--blu); }
+.st-cards + .st-anni-tutte { margin-top: 32px; }
 .st-anno { border-bottom: 1px solid var(--line); }
 .st-anno summary { display: flex; align-items: baseline; gap: 14px; padding: 16px 4px; cursor: pointer; list-style: none; }
 .st-anno summary::-webkit-details-marker { display: none; }
@@ -406,9 +295,6 @@ body.con-barra .st-avviso { bottom: calc(76px + env(safe-area-inset-bottom)); } 
 .st-anno > .st-cards { padding: 4px 0 24px; }
 @media (prefers-reduced-motion: reduce) { .st-anno summary::after { transition: none; } }
 
-/* ---------- promemoria accesso ----------
-   "Tieni al sicuro la tua collezione": lo crea script.js alla prima spunta di chi
-   non ha fatto l'accesso. In basso, sopra la barra delle categorie; non blocca la pagina. */
 .st-promemoria { position: fixed; left: 50%; bottom: 16px; z-index: 28; transform: translateX(-50%);
   width: min(460px, calc(100vw - 24px)); padding: 12px 14px; border: 1px solid var(--line); border-left: 4px solid var(--amber); border-radius: 12px;
   background: var(--white); color: var(--ink); box-shadow: 0 8px 28px rgba(26, 33, 64, .18);
@@ -421,13 +307,10 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-promemoria button:hover { border-color: var(--amber); }
 .st-promemoria button[data-p="accedi"]:hover { background: var(--amber); border-color: var(--amber); color: var(--blu); }
 
-/* ---------- pulsante del profilo e menu del profilo (li crea comune/cloud.js) ----------
-   Dopo l'accesso il pulsante in alto diventa un cerchietto con l'iniziale;
-   premendolo si apre il menu a destra, sotto la banda in alto. */
 #stAccedi:has(.st-avatar) { padding: 0; border: 0; }
 .st-avatar { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
   background: var(--ink); color: var(--white); font: 700 1rem/1 system-ui, -apple-system, "Segoe UI", sans-serif; }
-#stAccedi.st-da-confermare { position: relative; }   /* puntino ambra: email da confermare (comune/cloud.js, daConfermare) */
+#stAccedi.st-da-confermare { position: relative; }
 #stAccedi.st-da-confermare::after { content: ""; position: absolute; top: 0; right: 0; width: 11px; height: 11px; border-radius: 50%; background: var(--amber); border: 2px solid var(--white); }
 #stAccedi:hover .st-avatar { background: var(--amber); color: var(--blu); }
 .st-avatar.grande { width: 46px; height: 46px; font-size: 1.25rem; flex: none; }
@@ -442,7 +325,6 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-ma-numeri > span { padding: 8px 4px; border-radius: 10px; background: var(--riquadro); text-align: center; }
 .st-ma-numeri b { display: block; font-size: 1.25rem; }
 .st-ma-numeri small { color: var(--muted); font-size: .75rem; }
-/* numeri del menu = link alle statistiche: "Le mie statistiche ›" sotto, ambra al passaggio */
 .st-ma-stat { display: block; color: inherit; text-decoration: none; text-align: center; }
 .st-ma-stat > small { color: var(--muted); font-size: .8125rem; font-weight: 600; }
 .st-ma-stat:hover > small { color: var(--amber); }
@@ -452,49 +334,36 @@ body.con-barra .st-promemoria { bottom: calc(72px + env(safe-area-inset-bottom))
 .st-profilo .st-link, .st-account-copia .st-link { justify-self: start; padding: 6px 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: .9375rem; text-align: left; cursor: pointer; }
 .st-profilo .st-link:hover, .st-account-copia .st-link:hover { color: var(--amber); }
 .st-ma-fondo { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
-/* in fondo alla finestra Accedi: "Non vuoi un account? Copia di sicurezza" */
 .st-account-copia { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
 .st-account-copia .st-ma-sezione { display: none; }
 .st-account-copia .st-link { font-size: .8125rem; text-decoration: underline; }
-/* se è aperto il promemoria in basso, l'avviso breve compare in alto (sotto la banda) per non sovrapporsi */
 body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
-/* finestra di conferma: "Elimina per sempre" in rosso, lontano da "Annulla" */
 .st-elimina-azioni { justify-content: space-between; }
 .st-account .st-rosso { color: var(--errore); border-color: #E8B4B0; }
 .st-account .st-rosso:hover { color: var(--errore); border-color: var(--errore); }
-/* menu del profilo: le voci allineate a destra (il menu si apre sul lato destro) */
 .st-profilo .st-link { justify-self: end; text-align: right; }
-/* "Impostazioni" nel menu del profilo: con la rotellina, sopra la copia di sicurezza */
 .st-profilo .st-ma-imp { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; }
 .st-ma-imp svg { width: 18px; height: 18px; flex: none; }
 .st-profilo .st-ma-sezione { text-align: right; }
-/* "Esci" nel menu del profilo: pulsante rosso pieno, largo quanto il menu */
 .st-profilo .st-ma-fondo { display: block; }
 .st-esci { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 10px; border: 0; border-radius: 10px;
   background: #C62828; color: var(--bianco); font: inherit; font-weight: 700; cursor: pointer; }
 .st-esci svg { width: 18px; height: 18px; }
 .st-esci:hover { background: #A51F1F; }
 
-/* ---------- pagina Impostazioni (impostazioni.html) ----------
-   Statistiche: le scrive comune/impostazioni.js · Account e dati: comune/cloud.js
-   Usa anche le voci "pagine di solo testo" (titolo, tendine come nelle FAQ)
-   e "barra sulle card delle serie" (.st-progresso, .st-quanti). */
 .st-imp-nota { color: var(--muted); font-size: .9375rem; }
-/* i 4 numeri (Ce l'ho, Doppioni, Serie iniziate, Complete): 4 riquadri, 2 per fila sul telefono */
 .st-imp-numeri { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0 10px; }
 .st-imp-numeri div { padding: 12px 6px; border-radius: 12px; background: var(--riquadro); text-align: center; line-height: 1.2; }
 .st-imp-numeri b { display: block; font-size: 1.5rem; }
 .st-imp-numeri small { color: var(--muted); font-size: .8125rem; }
 @media (max-width: 480px) { .st-imp-numeri { grid-template-columns: repeat(2, 1fr); } }
-/* "Le mie serie": menu Tutte/In corso/Complete, menu categorie, ricerca (stile dei menu delle serie) */
 .st-imp-sotto { margin: 22px 0 10px; font-size: 1rem; }
 .st-imp-comandi { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
 .st-imp-comandi select, .st-imp-comandi input { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); font: inherit; font-size: .9375rem; }
 .st-imp-comandi select { flex: 0 1 auto; min-width: 0; }
 .st-imp-comandi input { flex: 1 1 180px; min-width: 0; }
-@media (max-width: 600px) { .st-imp-comandi select { flex: 1 1 0; } .st-imp-comandi input { flex-basis: 100%; } }   /* telefono: i due menu affiancati, la ricerca sotto */
+@media (max-width: 600px) { .st-imp-comandi select { flex: 1 1 0; } .st-imp-comandi input { flex-basis: 100%; } }
 .st-imp-comandi :focus { outline: none; border-color: var(--amber); }
-/* una serie per riga: titolo (+ categoria piccola sotto) · barra · "6 su 9" (sul telefono barra e numeri vanno sotto) */
 .st-imp-serie { list-style: none; margin: 0; padding: 0; }
 .st-imp-serie li { display: grid; grid-template-columns: minmax(0, 1fr) 110px 170px; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .9375rem; }
 .st-imp-tit { display: grid; line-height: 1.3; }
@@ -502,16 +371,14 @@ body:has(.st-promemoria) .st-avviso { bottom: auto; top: 76px; }
 .st-impostazioni .st-imp-serie a { text-decoration: none; font-weight: 600; }
 .st-impostazioni .st-imp-serie a:hover { text-decoration: underline; text-decoration-color: var(--amber); }
 .st-imp-serie .st-quanti { color: var(--muted); font-size: .875rem; text-align: right; }
-.st-imp-serie .finita .st-quanti { color: var(--ink); font-weight: 700; }   /* serie completa */
+.st-imp-serie .finita .st-quanti { color: var(--ink); font-weight: 700; }
 @media (max-width: 600px) { .st-imp-serie li { grid-template-columns: 1fr 150px; gap: 6px 12px; } .st-imp-tit { grid-column: 1 / -1; } }
-.st-imp-altre { margin: 12px 0 0; text-align: center; }   /* "Mostra altre 10" */
-/* Aspetto: Automatico · Chiaro · Scuro (lo fa funzionare script.js) */
+.st-imp-altre { margin: 12px 0 0; text-align: center; }
 .st-aspetto { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .st-aspetto button { padding: 8px 18px; border: 0; background: none; color: var(--ink); font: inherit; cursor: pointer; }
 .st-aspetto button + button { border-left: 1px solid var(--line); }
-.st-aspetto button[aria-pressed="true"] { background: var(--amber); color: var(--blu); font-weight: 600; }   /* scritta blu scuro sull'ambra */
+.st-aspetto button[aria-pressed="true"] { background: var(--amber); color: var(--blu); font-weight: 600; }
 .st-aspetto button:hover:not([aria-pressed="true"]) { color: var(--amber); }
-/* Account e dati: una voce per riga (nome a sinistra, pulsanti a destra) */
 .st-impostazioni .st-ma-testa { display: flex; align-items: center; gap: 12px; }
 .st-impostazioni .st-ma-testa b { display: block; }
 .st-impostazioni .st-ma-testa small { color: var(--muted); font-size: .875rem; word-break: break-all; }
@@ -524,22 +391,16 @@ button.st-btn { border: 0; font-family: inherit; cursor: pointer; }
 .st-imp-nome input { flex: 1 1 200px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; color: var(--ink); background: var(--white); }
 .st-imp-nome input:focus { outline: none; border-color: var(--amber); }
 .st-impostazioni .st-esci { width: auto; min-width: 200px; margin-top: 22px; }
-/* "Elimina account…": piccolo e grigio, lontano da "Esci" */
 .st-imp-elimina { margin-top: 28px; }
 .st-impostazioni .st-imp-elimina .st-link { color: var(--muted); font-size: .8125rem; text-decoration-color: currentColor; text-decoration-thickness: 1px; }
 .st-impostazioni .st-imp-elimina .st-link:hover { color: var(--errore); }
 
-/* ---------- "Fai parte della community": i gruppi in fondo a ogni categoria ----------
-   Il blocco sta in fondo a catalogo/<categoria>/index.html (tra SOCIAL-INIZIO e SOCIAL-FINE) e lo gestisce
-   l'area amministratore → Impostazioni del sito → "Community": per ogni gruppo c'è la spunta, il nome, il link
-   e (facoltativa) una descrizione. Striscia crema con una scheda bianca per gruppo; colori: --crema e --crema-line (in alto). */
 .st-collabora { margin-top: 48px; padding: 20px 22px; background: var(--crema); border: 1px solid var(--crema-line); border-radius: 14px; }
 .st-collabora h2 { margin: 0 0 4px; font-size: 1.125rem; }
 .st-collabora p { margin: 0; color: var(--muted); font-size: .9375rem; }
 .st-social { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 14px 0 0; padding: 0; list-style: none; }
 .st-social a, .st-proponi a { display: flex; align-items: center; gap: 14px; height: 100%; padding: 14px 18px; background: var(--white); border: 1px solid var(--crema-line); border-radius: 14px; color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s; }
 .st-social a:hover, .st-proponi a:hover { border-color: var(--amber); transform: translateY(-1px); }
-/* cerchio ambra con il logo del social in blu scuro (il disegno lo scrive l'area amministratore; stesso colore per tutti i social) */
 .st-soc-ic { flex: none; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--amber); }
 .st-soc-ic svg { width: 30px; height: 30px; fill: var(--blu); }
 .st-soc-t { min-width: 0; }
@@ -547,7 +408,6 @@ button.st-btn { border: 0; font-family: inherit; cursor: pointer; }
 .st-soc-t small { color: var(--muted); font-size: .8125rem; }
 .st-soc-ar { margin-left: auto; font-size: 1.25rem; font-weight: 700; color: var(--amber); }
 @media (prefers-reduced-motion: reduce) { .st-social a, .st-proponi a { transition: none; } .st-social a:hover, .st-proponi a:hover { transform: none; } }
-/* "Hai un gruppo su …? Scrivici": una riga discreta sotto i gruppi, senza banda né scheda (icona piccola + testo + freccia) */
 .st-collabora.st-proponi { margin-top: 32px; padding: 0; background: none; border: 0; border-radius: 0; }
 .st-collabora:not([hidden]) + .st-collabora.st-proponi { margin-top: 14px; }
 .st-collabora.st-proponi a { display: inline-flex; align-items: center; gap: 10px; height: auto; max-width: none; padding: 0; background: none; border: 0; border-radius: 0; font-size: .9375rem; transform: none; }
@@ -558,8 +418,6 @@ button.st-btn { border: 0; font-family: inherit; cursor: pointer; }
 .st-proponi .st-soc-ar { margin-left: 2px; font-size: 1.125rem; }
 .st-proponi a:hover .st-soc-t b { text-decoration: underline; text-decoration-color: var(--amber); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
-/* ---------- "Seguici": i social di Collection Time (Home) ----------
-   Striscia blu notte con un pulsante ambra per social; il disegno del logo lo scrive l'area amministratore. */
 .st-seguici { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 40px; padding: 22px 26px; background: var(--band-bg); border-radius: 14px; color: var(--bianco); }
 .st-seguici-t { flex: 1 1 240px; }
 .st-seguici h2 { margin: 0 0 2px; font-size: 1.125rem; color: var(--bianco); }
@@ -571,21 +429,51 @@ button.st-btn { border: 0; font-family: inherit; cursor: pointer; }
 .st-seguici .ic svg { width: 18px; height: 18px; fill: var(--amber); }
 
 
-/* =====================================================================
-   PROTEZIONE FOTO
-   Le foto non si possono trascinare, selezionare né salvare con la pressione lunga
-   (iPhone e Android). Il tasto destro è bloccato da script.js (voce 16).
-   Le copertine delle card (.thumb) non reagiscono nemmeno al clic destro:
-   il clic passa alla card sotto, quindi non compare "Salva immagine".
-   ===================================================================== */
 img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .thumb img { pointer-events: none; }
 .st-privacy-riga { margin: 2px 0 6px; text-align: left; color: var(--muted); }
 .st-privacy-riga a { color: inherit; text-decoration: underline; }
 .st-account .st-google-grande { padding: 14px 16px; font-size: 1.0625rem; font-weight: 700; }
 .st-google-nota { margin: 6px 0 0; color: var(--muted); text-align: center; }
-/* vista iniziale: tutto centrato, con aria tra le tre parti (Google, "registrati con l'email", "hai già un account") */
 .st-account-testo > .st-privacy-riga { margin: 8px 0 0; text-align: center; }
 .st-account-testo > .st-apri-email { display: block; margin: 22px auto 0; font-size: 1rem; }
 .st-account-testo > .st-link { display: block; margin: 16px auto 14px; text-align: center; }
 .st-account-testo > .st-apri-email + .st-link { margin: 18px auto 16px; font-size: .9375rem; }
+
+
+.trofeo-pop { position: fixed; left: 50%; top: calc(16px + env(safe-area-inset-top)); z-index: 70; width: min(92vw, 440px);
+  display: flex; gap: 14px; align-items: center; padding: 12px 18px 12px 12px; border-radius: 20px; background: #1A2140 !important; color: #fff !important;
+  border: 2px solid var(--col); box-shadow: var(--glow), var(--glow), 0 10px 30px rgba(26, 33, 64, .35);
+  transform: translate(-50%, calc(-100% - 40px)); transition: transform .35s ease-in; }
+.trofeo-pop.su { transform: translate(-50%, 0); transition: transform .45s cubic-bezier(.2, 1.3, .4, 1); }
+.trofeo-med { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #2A3358; color: #8A93AD; font-weight: 700; border: 2px solid #3A4570; }
+.trofeo-pop .trofeo-med, .trofeo.su .trofeo-med { border-color: var(--col); box-shadow: var(--glow); background: #1A2140; }
+.trofeo-pop .tt small { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--col); }
+.trofeo-pop .tt b { display: block; font-size: 1.05rem; color: #fff; }
+.trofeo-pop .tt span { font-size: .82rem; color: #C9CEDD; }
+.trofei-testa { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; }
+.trofei-testa b { white-space: nowrap; }
+.trofei-griglia { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.trofeo { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; opacity: .75; }
+.trofeo.su { opacity: 1; border-color: var(--col); box-shadow: var(--glow), 0 0 0 1px var(--col) inset; }
+.trofeo.mistero { opacity: .55; }
+.trofeo .tt { display: flex; flex-direction: column; min-width: 0; }
+.trofeo .tt b { font-size: .95rem; }
+.trofeo .tt small { font-size: .78rem; color: var(--muted); }
+.trofeo .tt small.ra { font-weight: 700; }
+.badge-lista { display: flex; flex-wrap: wrap; gap: 10px; }
+.badge { display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px 6px 6px; border-radius: 999px; border: 2px solid var(--line); background: var(--white); color: var(--ink); font: inherit; cursor: pointer; text-align: left; opacity: .7; }
+.badge .cuore { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--col); }
+.badge .tt { display: flex; flex-direction: column; line-height: 1.15; }
+.badge .tt small { font-size: .62rem; font-weight: 700; letter-spacing: .08em; color: var(--muted); }
+.badge .tt b { font-size: .9rem; }
+.badge.on { opacity: 1; border-color: var(--col); box-shadow: 0 0 0 2px var(--col) inset; }
+@media (prefers-reduced-motion: reduce) { .trofeo-pop, .trofeo-pop.su { transition: none; } }
+
+.st-ma-trofei { display: block; margin: 8px 0; padding: 10px 12px; border-radius: 10px; background: var(--riquadro); color: inherit; text-decoration: none; }
+.st-ma-trofei:hover { box-shadow: 0 0 0 2px var(--amber) inset; }
+.st-ma-trofei-t { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; font-size: .875rem; }
+.st-ma-trofei-t span { color: var(--muted); font-size: .8125rem; font-weight: 600; }
+.st-ma-trofei .st-progresso { display: block; }
+.st-ma-badge-riga { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.st-ma-badge { padding: 2px 9px; border-radius: 999px; background: var(--col); color: #fff; font-size: .72rem; font-weight: 700; }

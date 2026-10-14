@@ -3,15 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- ! MODIFICA: nome di questa pagina in og:title, description, og:description e indirizzo in og:url (righe qui sotto). Il <title> lo rifà da solo "Pubblica" (og:title + la pagina di sopra, es. "Adventure Time · Charms · Collection Time") -->
 <title>Kinder Sorpresa · Kinder Ferrero · Collection Time</title>
 <meta name="description" content="Kinder Sorpresa: le serie di sorpresine degli ovetti Kinder Sorpresa. Le checklist complete: segna quelle che hai e scopri quelle che ti mancano.">
 <meta name="theme-color" content="#1A2140">
-<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
-     I file stanno nella cartella principale e in "icone/".
-     favicon-96.png = icona della scheda (PNG: Safari non mostra le icone SVG).
-     Se sostituisci un'icona con un file con lo STESSO nome, metti la data di oggi in "?v=…"
-     (es. apple-touch-icon.png?v=2026-09-27) in tutte le pagine: così il browser scarica quella nuova. -->
 <link rel="icon" href="../../../favicon.ico" sizes="32x32">
 <link rel="icon" href="../../../favicon-96.png" type="image/png" sizes="96x96">
 <link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2026-09-27">
@@ -25,42 +19,26 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-13-4">
-<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-14-1">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
-  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
-     qui solo ciò che è diverso in questa pagina. */
   :root {
-    /* Colore del titolo, a parte: per cambiarlo basta sostituire questo codice. */
-    --titolo: var(--ink); }   /* colore del testo del sito: blu scuro (chiaro nel tema scuro), quasi nero (il rosso è solo per Legami) */
-  /* Titolo in carattere di sistema molto grosso (nessun file da scaricare: pagina leggera) */
+    --titolo: var(--ink); }
   .st-titolo { font: 900 clamp(2rem, 4vw, 3rem)/1.1 "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; letter-spacing: .02em; color: var(--titolo); }
-  /* telefoni: titolo grande come nelle altre sezioni */
   @media (max-width: 520px) { .st-titolo { font-size: 9vw; } }
-  /* Card con la foto IN ALTO, come nella sezione LEGO.
-     L'immagine va dentro il suo <a>:  <div class="thumb"><img src="..." alt=""></div> */
   .st-card { --foto-h: 170px; }
   .thumb { order: -1; display: grid; place-items: center; height: var(--foto-h); margin-bottom: 4px; }
   .thumb img { max-width: 100%; max-height: var(--foto-h); width: auto; height: auto; object-fit: contain; display: block; }
-  /* scritta mostrata finché non c'è nessuna collezione (poi si cancella) */
 </style>
-<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
-     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
 <link rel="canonical" href="https://collectiontime.com/catalogo/kinder/kinder-sorpresa/">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Kinder Ferrero","item":"https://collectiontime.com/catalogo/kinder/"},{"@type":"ListItem","position":3,"name":"Kinder Sorpresa","item":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Kinder Sorpresa","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Kinder Sorpresa: le serie di sorpresine degli ovetti Kinder Sorpresa. Le checklist complete: segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/immagini/anteprima.jpg?v=2026-10-05","mainEntity":{"@type":"ItemList","numberOfItems":80,"itemListElement":[{"@type":"ListItem","position":1,"name":"Disney Princess","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/disney-princess/"},{"@type":"ListItem","position":2,"name":"Natale 2020","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natale-2020/"},{"@type":"ListItem","position":3,"name":"Super Mario","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/super-mario/"},{"@type":"ListItem","position":4,"name":"Masha e Orso 7","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/masha-e-orso-7/"},{"@type":"ListItem","position":5,"name":"Justice League 2","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/justice-league-2/"},{"@type":"ListItem","position":6,"name":"Masha e Orso 6","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/masha-e-orso-6/"},{"@type":"ListItem","position":7,"name":"Enchantimals","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/enchantimals/"},{"@type":"ListItem","position":8,"name":"Troll","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/troll/"},{"@type":"ListItem","position":9,"name":"Wonka","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/wonka/"},{"@type":"ListItem","position":10,"name":"Funko Street Style","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/funko-street-style/"},{"@type":"ListItem","position":11,"name":"Star Wars Il Risveglio della Forza","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/star-wars-risveglio-forza/"},{"@type":"ListItem","position":12,"name":"Happy Hippo Olimpiadi","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/happy-hippo-olimpiadi/"},{"@type":"ListItem","position":13,"name":"Liga della Giustizia","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/liga-della-giustizia/"},{"@type":"ListItem","position":14,"name":"Emoji Music","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/emoji-music/"},{"@type":"ListItem","position":15,"name":"Ben 10","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/ben-10/"},{"@type":"ListItem","position":16,"name":"Applaydu 2022","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2022/"},{"@type":"ListItem","position":17,"name":"Pasqua 2023","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pasqua-2023/"},{"@type":"ListItem","position":18,"name":"Pasqua 2024","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pasqua-2024/"},{"@type":"ListItem","position":19,"name":"Natale 2024","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natale-2024/"},{"@type":"ListItem","position":20,"name":"Pasqua 2025","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pasqua-2025/"},{"@type":"ListItem","position":21,"name":"Natale 2023","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natale-2023/"},{"@type":"ListItem","position":22,"name":"Natoons Polonia","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natoons-polonia/"},{"@type":"ListItem","position":23,"name":"Natoons Germania","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natoons-germania/"},{"@type":"ListItem","position":24,"name":"Natale 2022","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natale-2022/"},{"@type":"ListItem","position":25,"name":"Natoons Animali Amati","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natoons-animali-amati/"},{"@type":"ListItem","position":26,"name":"Natoons Sostenibili","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natoons-sostenibili/"},{"@type":"ListItem","position":27,"name":"Miraculous","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/miraculous/"},{"@type":"ListItem","position":28,"name":"Principesse Disney","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/principesse-disney/"},{"@type":"ListItem","position":29,"name":"Avatar","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/avatar/"},{"@type":"ListItem","position":30,"name":"Puffi Edizione Oro","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/puffi-edizione-oro/"},{"@type":"ListItem","position":31,"name":"Marvel Heroes","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/marvel-heroes/"},{"@type":"ListItem","position":32,"name":"PJ Masks","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pj-masks/"},{"@type":"ListItem","position":33,"name":"Minions 2","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/minions-2/"},{"@type":"ListItem","position":34,"name":"Flower Pixies","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/flower-pixies/"},{"@type":"ListItem","position":35,"name":"Hot Wheels","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/hot-wheels-brasile/"},{"@type":"ListItem","position":36,"name":"Disney 100","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/disney-100/"},{"@type":"ListItem","position":37,"name":"Paw Patrol 2024","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/paw-patrol-2024/"},{"@type":"ListItem","position":38,"name":"Minions 2023","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/minions-2023/"},{"@type":"ListItem","position":39,"name":"Principesse Disney Braccialetti","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/principesse-disney-braccialetti/"},{"@type":"ListItem","position":40,"name":"Barbie","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/barbie-puoi-essere/"},{"@type":"ListItem","position":41,"name":"Natoons Cuccioli","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natoons-cuccioli/"},{"@type":"ListItem","position":42,"name":"Applaydu 2024","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/applaydu-2024/"},{"@type":"ListItem","position":43,"name":"Star Wars","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/star-wars/"},{"@type":"ListItem","position":44,"name":"Natale 2025","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natale-2025/"},{"@type":"ListItem","position":45,"name":"Jurassic Natoons","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/jurassic-natoons/"},{"@type":"ListItem","position":46,"name":"Marvel Super Heroes","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/marvel-super-heroes/"},{"@type":"ListItem","position":47,"name":"DC Playmobil","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/dc-playmobil/"},{"@type":"ListItem","position":48,"name":"Unicorns & Friends","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/unicorns-e-friends/"},{"@type":"ListItem","position":49,"name":"Frozen 4","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/frozen-4/"},{"@type":"ListItem","position":50,"name":"Frozen 3","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/frozen-3/"},{"@type":"ListItem","position":51,"name":"Gabby's Dollhouse","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/gabbys-dollhouse/"},{"@type":"ListItem","position":52,"name":"Pinguini Collection","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pinguini-rock-band/"},{"@type":"ListItem","position":53,"name":"Colorbots","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/colorbots/"},{"@type":"ListItem","position":54,"name":"Hello Kitty e amici","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/hello-kitty/"},{"@type":"ListItem","position":55,"name":"Disney Playmobil","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/disney-playmobil/"},{"@type":"ListItem","position":56,"name":"Natale 2026","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natale-2026/"},{"@type":"ListItem","position":57,"name":"Pasqua 2026","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pasqua-2026/"},{"@type":"ListItem","position":58,"name":"Natoons Famiglie","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/natoons-famiglie/"},{"@type":"ListItem","position":59,"name":"Sirene","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/sirene/"},{"@type":"ListItem","position":60,"name":"I Puffi","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/puffi-2010/"},{"@type":"ListItem","position":61,"name":"Pixie","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pixie-2009/"},{"@type":"ListItem","position":62,"name":"I Fortunosi","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/fortunosi/"},{"@type":"ListItem","position":63,"name":"Madagascar 2","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/madagascar-2/"},{"@type":"ListItem","position":64,"name":"Christmas Battle","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/christmas-battle/"},{"@type":"ListItem","position":65,"name":"Il Bosco degli Auguri","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/bosco-degli-auguri/"},{"@type":"ListItem","position":66,"name":"Monster Hotel Halloween","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/monster-hotel-halloween/"},{"@type":"ListItem","position":67,"name":"Justice League","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/justice-league/"},{"@type":"ListItem","position":68,"name":"Pixie","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/pixie-2007/"},{"@type":"ListItem","position":69,"name":"Champion Ghost","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/champion-ghost/"},{"@type":"ListItem","position":70,"name":"I Folletti di Natale","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/folletti-di-natale/"},{"@type":"ListItem","position":71,"name":"I Piramolli","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/piramolli/"},{"@type":"ListItem","position":72,"name":"Città delle Note","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/citta-delle-note/"},{"@type":"ListItem","position":73,"name":"The Polar Express","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/polar-express/"},{"@type":"ListItem","position":74,"name":"Il Presepe","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/presepe-2004/"},{"@type":"ListItem","position":75,"name":"Le 10 Spericolate Super Giraffe","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/super-giraffe/"},{"@type":"ListItem","position":76,"name":"Il Presepe","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/presepe-1998/"},{"@type":"ListItem","position":77,"name":"Fantasmini","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/fantasmini/"},{"@type":"ListItem","position":78,"name":"Panda Party","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/panda-party/"},{"@type":"ListItem","position":79,"name":"Le simpatiche Ranoplà","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/ranopla/"},{"@type":"ListItem","position":80,"name":"Leo Venturas","url":"https://collectiontime.com/catalogo/kinder/kinder-sorpresa/leo-venturas/"}]}}]}</script>
 </head>
 <body>
-<!-- Banda in alto (logo, Accedi): la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
-<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
-  <!-- ! MODIFICA: dove porta il link per tornare indietro e la scritta dopo la freccia -->
   <a class="st-back" href="../index.html">&larr; Kinder Ferrero</a>
-  <!-- ! MODIFICA: titolo della pagina -->
   <h1 class="st-titolo">KINDER SORPRESA</h1>
-  <!-- Frase + lente: la lente apre il campo per cercare tra le serie (funziona con script.js) -->
   <div class="st-sub">
     <p class="sub">Cerca una serie</p>
     <div class="st-cerca" id="stCerca">
@@ -71,28 +49,6 @@
     </div>
   </div>
   <p class="st-nessuna" hidden>Nessuna serie trovata.</p>
-  <!-- TUTTE LE SERIE in ordine di uscita, DALLA PIÙ RECENTE: una serie nuova va aggiunta IN CIMA.
-       Una card per ogni serie: per aggiungerne una, copia l'esempio qui sotto,
-       togli i segni di commento e cambia cartella, foto e testi.
-       data-cerca="..." sul <li> = parole in più che la ricerca trova (es. i nomi delle sorpresine).
-       Esempio:
-       <li data-cerca="nomi delle sorpresine"><a class="st-card" href="nome-cartella/index.html"><div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div><h2>Nome della serie</h2><p>Anno · numero di sorpresine</p><span class="st-apri">Apri</span></a></li>
-  -->
-  <!-- DOVE SI METTE LA COPERTINA (la foto in alto nella card)
-       • Il file si chiama sempre copertina.webp e sta nella cartella "immagini" della collezione,
-         es. nome-cartella/immagini/copertina.webp
-       • Per cambiarla basta sostituire il file con uno con lo stesso nome; poi nella riga della card
-         metti la data di oggi in "?v=…" in fondo al nome del file (es. copertina.webp?v=2026-09-26, oppure aggiungilo
-         se manca): obbliga il browser a scaricare la copertina nuova invece di quella vecchia salvata.
-       • Nella card la foto è questa riga, dentro il suo <a> (se manca, la card è senza foto):
-         <div class="thumb"><img src="nome-cartella/immagini/copertina.webp" alt="" loading="lazy"></div>
-       • Per crearla: _strumenti/strumento-copertina.html (nella cartella principale del sito) (aprilo con Chrome):
-         con 1 immagine (la foto di gruppo della serie) la ritaglia e la rimpicciolisce,
-         con 2–4 immagini (es. oggetti di serie diverse) le mette una accanto all'altra. -->
-  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
-  <!-- data-per-anno = le card vengono raccolte in tendine, una per anno (lo fa script.js leggendo l'anno scritto nel <p> della card;
-       le card senza anno restano normali, sopra).
-       Per tornare a tutte le card aperte, cancella data-per-anno. -->
   <ul class="st-cards" data-per-anno>
     <li data-cerca="Ariel Aurora Mulan Rapunzel Jasmine Belle Biancaneve Cenerentola 2020"><a class="st-card" href="disney-princess/index.html"><div class="thumb"><img src="disney-princess/immagini/copertina.webp?v=2026-10-05" alt="" loading="lazy"></div><h2>Disney Princess</h2><p>8 sorpresine<br>2020</p><span class="st-apri">Apri</span></a></li>
     <li data-cerca="Pupazzo di Neve in Sfera Scoiattolo in Sfera Alce in Sfera Pinguino in Sfera Pinguino Luminoso Orso Polare Elicottero Elfo Hovercraft Husky Polare Renna Renny Babbo Natale Pupazzo di Neve su Slittino Scoiattolo su Carrello 2020"><a class="st-card" href="natale-2020/index.html"><div class="thumb"><img src="natale-2020/immagini/copertina.webp?v=2026-10-05" alt="" loading="lazy"></div><h2>Natale 2020</h2><p>12 sorpresine<br>2020</p><span class="st-apri">Apri</span></a></li>
@@ -177,12 +133,8 @@
   </ul>
 </main>
 
-<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
-<!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
-<!-- "?v=…" è la versione del file: la mette da solo l'area amministratore (Pubblica → Controlla cosa cambia), uguale in tutte le pagine
-     (es. v=2026-10-09-1). NON va cambiata a mano: i browser così scaricano i file nuovi e non quelli vecchi salvati. -->
-<script src="../../../script.js?v=2026-10-13-4"></script>
+<script src="../../../script.js?v=2026-10-14-1"></script>
 </body>
 </html>

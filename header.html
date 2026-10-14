@@ -1,43 +1,13 @@
-<!-- ==========================================================
-     header.html — BANDA IN ALTO, uguale in tutte le pagine
-     Viene inserita da script.js nel segnaposto
-     <div id="header-placeholder"></div> di ogni pagina.
-     · il logo porta alla pagina iniziale. Tessera ambra con la spunta:
-       i due tratti hanno la stessa forma delle lancette della "o" a orologio
-     · Accedi: il funzionamento è in script.js e in comune/cloud.js;
-       gli id stImportaFile e stAccedi NON vanno cambiati
-     · l'aspetto (colori, misure, banda fissa) è in sito.css; il cerchio della "o"
-       a orologio usa il colore del testo (currentColor), così si vede anche nel tema scuro
-     I link si scrivono come se la pagina fosse nella cartella
-     principale (es. "index.html"): script.js li corregge da solo.
-     ========================================================== -->
 <header class="st-top">
   <a class="st-brand" href="index.html" aria-label="Collection Time, pagina iniziale">
     <svg class="mk" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#F2A900"/><path d="M8.22 16.6 13.4 21.6" fill="none" stroke="#1A2140" stroke-width="4.6" stroke-linecap="round"/><path d="M13.4 21.6 24.52 11.23" fill="none" stroke="#1A2140" stroke-width="3.8" stroke-linecap="round"/></svg>
     <span class="st-wm">Collecti<svg class="st-clk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M8.83 8.94 12 12" fill="none" stroke="#F2A900" stroke-width="2.6" stroke-linecap="round"/><path d="M12 12 17.41 6.95" fill="none" stroke="#F2A900" stroke-width="2.1" stroke-linecap="round"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg>n Time</span>
   </a>
-  <!-- Accedi / profilo. "Copia di sicurezza" (Scarica / Carica un file, i vecchi Esporta e Importa)
-       è nel menu del profilo e nella finestra Accedi (comune/cloud.js); il campo nascosto qui
-       sotto serve a "Carica un file" (script.js) -->
   <nav aria-label="Account">
     <input type="file" id="stImportaFile" accept="application/json,.json" hidden>
-    <!-- Accedi con Google: salva la collezione nel cloud (comune/cloud.js). Dopo l'accesso mostra il nome -->
     <button type="button" id="stAccedi" title="Accedi con Google e salva la collezione nel cloud">Accedi</button>
   </nav>
 </header>
-<!-- STRISCIONI (sotto la banda in alto): li gestisce l'area amministratore, voce "Impostazioni sito" → Striscioni. Fino a 6, ognuno tra BANNER e /BANNER.
-     Spento = c'è l'attributo "hidden". NON modificare a mano tra TICKER-INIZIO e TICKER-FINE: si perderebbe. -->
-<!-- TICKER-INIZIO -->
-<!-- BANNER -->
 <div class="st-ticker" hidden data-modo="scorre" data-vel="5" data-dim="normale"><div class="st-ticker-riga" style="--durata: 20s"><span class="st-ticker-pista"><span>Scrivi qui il messaggio</span><span aria-hidden="true">Scrivi qui il messaggio</span></span></div></div>
-<!-- /BANNER -->
-<!-- BANNER -->
 <div class="st-ticker st-ticker-fisso" hidden data-modo="fisso" data-vel="5" data-dim="normale"><div class="st-ticker-riga">Scrivi qui il messaggio</div></div>
-<!-- /BANNER -->
-<!-- TICKER-FINE -->
-<!-- ISCRIZIONE: content = "libera" (sito aperto a tutti) · "uso" (prova a uso: libero finché non fai data-spunte spunte o passano data-giorni giorni, poi l'iscrizione)
-     · "obbligatoria" (blocco totale, subito; vince sulla prova). data-prova / data-blocco ricordano i due interruttori dell'admin. Chi non ha un account vede una finestra che non si chiude finché non si iscrive o accede (vedi script.js, controllaIscrizione).
-     Lo accende/spegne l'area amministratore, voce "Impostazioni sito". NON modificare a mano tra ISCRIZIONE-INIZIO e ISCRIZIONE-FINE: si perderebbe. -->
-<!-- ISCRIZIONE-INIZIO -->
 <meta name="ct-iscrizione" content="uso" data-prova="on" data-blocco="off" data-spunte="100" data-giorni="15">
-<!-- ISCRIZIONE-FINE -->

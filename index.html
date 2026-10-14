@@ -3,15 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- ! MODIFICA: nome di questa pagina in <title>, description, og:title, og:description e indirizzo in og:url (righe qui sotto) -->
 <title>Collection Time · Checklist di sorpresine e collezionabili</title>
 <meta name="description" content="Collection Time: checklist gratuite di sorpresine e collezionabili — Kinder, LEGO Minifigures, Happy Meal McDonald's, Legami, Stikeez Lidl e altro. Segna quelli che hai, i doppioni e scopri cosa ti manca.">
 <meta name="theme-color" content="#1A2140">
-<!-- Icona della scheda, icona per il telefono e anteprima quando condividi il link.
-     I file stanno nella cartella principale e in "icone/".
-     favicon-96.png = icona della scheda (PNG: Safari non mostra le icone SVG).
-     Se sostituisci un'icona con un file con lo STESSO nome, metti la data di oggi in "?v=…"
-     (es. apple-touch-icon.png?v=2026-09-27) in tutte le pagine: così il browser scarica quella nuova. -->
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon-96.png" type="image/png" sizes="96x96">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2026-09-27">
@@ -25,60 +19,33 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<!-- Stile comune del sito (colori, bande in alto e in basso) -->
-<link rel="stylesheet" href="sito.css?v=2026-10-13-4">
-<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  <!-- aspetto chiaro/scuro scelto (vedi script.js, voce "Aspetto"): deve stare qui, prima che la pagina si veda -->
-<!-- scarica subito il carattere dei titoli Legami (vedi sito.css) -->
+<link rel="stylesheet" href="sito.css?v=2026-10-14-1">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <link rel="preload" href="comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  /* Base della pagina, titolo e card (st-wrap, st-titolo, st-cards…) sono in sito.css:
-     qui solo ciò che è diverso in questa pagina. */
-  .st-wrap { padding-top: 73px; }   /* niente link "indietro" in alto: spazio al suo posto, così il titolo sta alla stessa altezza delle altre pagine */
-  /* Logo scritto della collezione nella card (es. "Legami / Milano"),
-     nello stesso carattere del titolo della collezione (var(--font-legami), in sito.css).
-     Il colore è a parte, nella voce --titolo di ogni card. */
-  /* margin-top negativo: la scritta parte a circa 5 mm dal bordo alto della card */
-  /* min-height = altezza del logo più alto (Legami + Milano): così tutti i loghi occupano lo stesso spazio
-     e le descrizioni sotto partono alla stessa altezza in ogni card.
-     align-content: center = un logo senza seconda riga (es. "Lidl") sta al centro di quello spazio. */
-  /* background: var(--piastra) = nel tema scuro una piastra chiara dietro la scritta, così i colori
-     dei marchi (blu Lidl, rosso Mulino Bianco…) si leggono; nel tema chiaro è trasparente (sito.css) */
+  .st-wrap { padding-top: 73px; }
   .logo-coll { display: grid; justify-items: center; align-content: center; min-height: calc(5.3rem + 14px);
                margin: -3px 0 6px; padding: var(--piastra-pad, 0); border-radius: 12px; background: var(--piastra);
                line-height: 1; color: var(--titolo);
                font-family: var(--font-legami); font-weight: 700; }
-  .logo-coll span { font-size: 3.6rem; }   /* grandezza di "Legami" */
-  /* "Milano": grandezza (font-size) e distanza da "Legami" (margin-top) */
+  .logo-coll span { font-size: 3.6rem; }
   .logo-coll small { font-size: 1.7rem; letter-spacing: .18em; text-transform: uppercase; margin-top: 14px; }
-  /* card LEGO e Kinder: stesso carattere delle loro pagine (carattere di sistema molto grosso) */
   .logo-coll.lego, .logo-coll.kinder { font-family: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif; font-weight: 900; }
   .logo-coll.lego small, .logo-coll.kinder small { font-size: 1.15rem; letter-spacing: .12em; }
-  .logo-coll.lego small { color: #000; }   /* "Minifigures" in nero */
-  /* card Cool Things: "COOL THINGS" su una riga (più piccolo, se no esce dalla card),
-     con lo spazio tra le due parole ristretto (word-spacing: più negativo = più vicine),
-     nel carattere Legami (var(--font-legami)): nessun file in più, è già scaricato per la card Legami */
+  .logo-coll.lego small { color: #000; }
   .logo-coll.cool span { font-size: 1.8rem; white-space: nowrap; word-spacing: -.15em; }
-  /* card McDonald's: "McDonald's" su una riga, più piccolo (se no esce dalla card) */
   .logo-coll.mcd span { font-size: 2.1rem; white-space: nowrap; }
-  /* card Burger King: "Burger King" su una riga, un po' più piccolo (se no esce dalla card) */
   .logo-coll.bk span { font-size: 1.85rem; white-space: nowrap; }
-  /* card Eurospin: "Eurospin" su una riga, un po' più piccolo di "Lidl" (se no esce dalla card) */
   .logo-coll.euro span { font-size: 2.6rem; white-space: nowrap; }
 </style>
-<!-- DATI PER GOOGLE E LE IA: indirizzo giusto della pagina (canonical), percorso ed elenco (JSON-LD).
-     Li rifà da solo l'area amministratore quando premi "Pubblica": NON modificarli a mano. -->
 <link rel="canonical" href="https://collectiontime.com/">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"Organization","name":"Collection Time","url":"https://collectiontime.com/","logo":"https://collectiontime.com/icone/icona-512.png","email":"collectiontime.support@gmail.com","sameAs":["https://ko-fi.com/collectiontime"]},{"@type":"CollectionPage","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Collection Time: checklist gratuite di sorpresine e collezionabili — Kinder, LEGO Minifigures, Happy Meal McDonald's, Legami, Stikeez Lidl e altro. Segna quelli che hai, i doppioni e scopri cosa ti manca.","image":"https://collectiontime.com/icone/anteprima.jpg","mainEntity":{"@type":"ItemList","numberOfItems":10,"itemListElement":[{"@type":"ListItem","position":1,"name":"Legami Milano","url":"https://collectiontime.com/catalogo/legami/"},{"@type":"ListItem","position":2,"name":"Kinder Ferrero","url":"https://collectiontime.com/catalogo/kinder/"},{"@type":"ListItem","position":3,"name":"McDonald's","url":"https://collectiontime.com/catalogo/mcdonalds/"},{"@type":"ListItem","position":4,"name":"Burger King","url":"https://collectiontime.com/catalogo/burger-king/"},{"@type":"ListItem","position":5,"name":"LEGO Minifigures","url":"https://collectiontime.com/catalogo/lego/"},{"@type":"ListItem","position":6,"name":"Eurospin","url":"https://collectiontime.com/catalogo/eurospin/"},{"@type":"ListItem","position":7,"name":"GranTerre","url":"https://collectiontime.com/catalogo/granterre/"},{"@type":"ListItem","position":8,"name":"Mulino Bianco","url":"https://collectiontime.com/catalogo/mulino-bianco/"},{"@type":"ListItem","position":9,"name":"Cool Things","url":"https://collectiontime.com/catalogo/coolthings/"},{"@type":"ListItem","position":10,"name":"Lidl","url":"https://collectiontime.com/catalogo/lidl/"}]}}]}</script>
 </head>
 <body>
-<!-- Banda in alto (logo, Accedi): la riempie script.js con header.html. Lasciare vuoto. -->
 <div id="header-placeholder"></div>
 
-<!-- ============ CONTENUTO DELLA PAGINA: i testi si cambiano qui ============ -->
 <main class="st-wrap">
-  <!-- ! MODIFICA: titolo della pagina -->
   <h1 class="st-titolo">Catalogo collezioni</h1>
-  <!-- Frase + lente: la lente apre il campo per cercare tra le categorie (funziona con script.js) -->
   <div class="st-sub">
     <p class="sub">Cerca una categoria</p>
     <div class="st-cerca" id="stCerca">
@@ -88,9 +55,7 @@
       <input type="search" placeholder="Cerca una categoria" aria-label="Cerca una categoria" tabindex="-1" autocomplete="off">
     </div>
   </div>
-  <!-- NUMERI E NOVITÀ: li riscrive da sola l'area amministratore ("Nuova serie", "Pubblica", "Statistiche").
-       NON modificare a mano fino a "FINE NUMERI E NOVITÀ": si perderebbe. Come cambiarli: _admin/admin.js, voce "Numeri e Novità della Home". -->
-  <div class="st-numeri"><div><b>5.072</b><span>pezzi catalogati</span></div><div><b>354</b><span>serie</span></div><div><b>10</b><span>categorie</span></div><div><b>219</b><span>collezionisti iscritti</span></div></div>
+  <div class="st-numeri"><div><b>5.072</b><span>pezzi catalogati</span></div><div><b>354</b><span>serie</span></div><div><b>10</b><span>categorie</span></div><div><b>221</b><span>collezionisti iscritti</span></div></div>
   <section class="st-sezione" id="novita">
     <h2 class="st-sez-titolo">Novità</h2>
     <ul class="st-novita">
@@ -101,18 +66,11 @@
       <li><a href="catalogo/granterre/zoomogi-3d-pencil-top/index.html"><span class="st-nuova">Nuova</span><img src="catalogo/granterre/zoomogi-3d-pencil-top/immagini/copertina.webp?v=1" alt="" decoding="async"><strong>ZooMogi 3D Pencil Top</strong><small>GranTerre</small></a></li>
     </ul>
   </section>
-  <!-- FINE NUMERI E NOVITÀ -->
-  <!-- ! MODIFICA: titolo sopra le card delle categorie -->
   <h2 class="st-sez-titolo">Tutte le categorie</h2>
   <p class="st-nessuna" hidden>Nessuna categoria trovata.</p>
-  <!-- Una card per ogni categoria: per aggiungerne una, copia un <li> ... </li> e cambia link e testi.
-       data-cerca = parole in più che la ricerca trova (es. le collezioni che ci sono dentro). -->
-  <!-- ! MODIFICA: le card: cartella, foto, nome, testo e parole di ricerca (data-cerca) -->
-  <!-- data-pin-max = quante categorie può fissare in alto chi ha l'account (tenendo premuto): si cambia dall'area amministratore → Impostazioni sito -->
   <ul class="st-cards" data-pin-max="3">
     <li data-cerca="Erasable Pens Lovely Friends penne gel penne cancellabili Bulb Fiction lampade lampada Astucci astuccio Portachiavi portachiavi peluche Tiny Super Soft">
       <a class="st-card" href="catalogo/legami/index.html" aria-label="Legami Milano">
-        <!-- logo scritto: --titolo = colore della collezione (rosso Legami) -->
         <div class="logo-coll" style="--titolo: #E50A15" aria-hidden="true"><span>Legami</span><small>Milano</small></div>
         <p>Le collezioni a tema Legami.</p>
         <span class="st-apri">Apri</span>
@@ -120,7 +78,6 @@
     </li>
     <li data-cerca="Kinder Ferrero Kinder Sorpresa Kinder Joy Merendine Ferrero merendina sorpresine ovetti Gnomburloni gnomi Svitatelli animali Banda Bidon bidoni Lattimbri latte Amicozze cozze Penne Pazze Golden Garfield Matte Mollette Looney Tunes Monster Allergy">
       <a class="st-card" href="catalogo/kinder/index.html" aria-label="Kinder Ferrero">
-        <!-- logo scritto: --titolo = colore della collezione (blu scuro del sito, quasi nero) -->
         <div class="logo-coll kinder" style="--titolo: #1A2140" aria-hidden="true"><span>Kinder</span><small>Ferrero</small></div>
         <p>Le sorpresine di ovetti e merendine.</p>
         <span class="st-apri">Apri</span>
@@ -128,7 +85,6 @@
     </li>
     <li data-cerca="McDonald's McDonalds Mc Happy Meal sorprese giocattoli Gadget The Minecraft Movie Creeper Steve Squishmallows peluche Lil McDonald's miniature Disneyland 70 Disney Hello Kitty Ninja Turtles Super Mario Stranger Things SpongeBob One Piece UNO Anime Naruto Back to School scuola Spider-Man Friends tazze bicchieri PLAYMOBIL Crayola Adopt Me Roblox Libri Grinch Little People Big Dreams TinyTAN BTS Care Bears Orsetti del Cuore Merry Grinchmas calze Back to School 2025 teli mare Minecraft Movie Meal Jurassic World dinosauri Sonic Mario Kart Cattivissimo Me 4 Minions Pet Simulator Panini Family Wiltopia Yu-Gi-Oh Dobble MultiVersus KPop Demon Hunters Elf on the Shelf Hot Wheels Karma palloni calcio pallavolo">
       <a class="st-card" href="catalogo/mcdonalds/index.html" aria-label="McDonald's">
-        <!-- logo scritto: --titolo = colore di "McDonald's" (rosso McDonald's) -->
         <div class="logo-coll kinder mcd" style="--titolo: #DA291C" aria-hidden="true"><span>McDonald's</span></div>
         <p>Happy Meal e gadget da collezione.</p>
         <span class="st-apri">Apri</span>
@@ -136,7 +92,6 @@
     </li>
     <li data-cerca="Burger King BK fast food King Jr. Meal King Junior menu bambini giochi giocattoli figure Dragon Ball Super Goku Vegeta Piccolo Beerus Super Saiyan Blue corona Paw Patrol Dino Movie Rhubarb Marshall Rubble Skye Rex Chase Looney Tunes Taz Daffy Duck Bugs Bunny Titti Beep Beep Lola Bunny Star Wars Mandalorian Grogu Din Djarin Razor Crest Zeb Orrelios Stormtrooper AT-RT Driver Imperial Remnant Tartarughe Ninja TMNT Teenage Mutant Ninja Turtles Splinter Raffaello Michelangelo Leonardo Donatello Top Launcher trottola Puffi Smurfs Moxy Vanity Vanitoso Gargamel Gargamella No Name Brainy Quattrocchi Jaunty Ken Hefty Forzuto Mama Poot Papa Smurf Grande Puffo Smurfette Puffetta Razamel Sonic Hedgehog SEGA Amy Rose Rouge Bat Knuckles Tails Shadow Scooby-Doo Haunted Headless Horseman Shaggy Fred Daphne Velma Pumpkin Horseman Halloween maschere SpongeBob Movie Search for SquarePants Gary Mr. Krab Mr. Krabs Squiddi Squidward Patrick Olandese Volante Flying Dutchman pirati Naruto Uzumaki Sasuke Uchiha Sakura Haruno Kakashi Hatake Neji Hyuuga Hinata Hyuuga Rock Lee Gaara anime Dragon Trainer How to Train Your Dragon draghi Toothless Barf Belch Meatlug Hookfang Terrible Terror Stormfly Peppa Pig George Daddy Mummy Granny Grandpa Suzy Sheep Danny Dog Pedro Pony Freddy Fox Emily Elephant Miss Rabbit DreamWorks Keyclips portachiavi Kung Fu Panda Po Trolls Poppy Branch Shrek Puss in Boots Gatto con gli Stivali Donkey Ciuchino peluche">
       <a class="st-card" href="catalogo/burger-king/index.html" aria-label="Burger King">
-        <!-- logo scritto: --titolo = colore di "Burger King" (rosso Burger King) -->
         <div class="logo-coll kinder bk" style="--titolo: #D62300" aria-hidden="true"><span>Burger King</span></div>
         <p>I giochi dei King Jr. Meal.</p>
         <span class="st-apri">Apri</span>
@@ -144,7 +99,6 @@
     </li>
     <li data-cerca="LEGO Minifigures minifigure minifig Serie DC Super Heroes DFB Disney Disney 100 Dungeons &amp; Dragons F1 Collectible Race Cars Harry Potter Harry Potter e Animali Fantastici Looney Tunes Marvel Studios Shrek Spider-Man: Across the Spider-Verse Team GB Technic Mighty Machines The LEGO Batman Movie The LEGO Movie The LEGO Movie 2 The LEGO Ninjago Movie The Muppets The Simpsons">
       <a class="st-card" href="catalogo/lego/index.html" aria-label="LEGO Minifigures">
-        <!-- logo scritto: --titolo = colore di "LEGO" (rosso normale, diverso da Legami); "Minifigures" è nero (vedi .logo-coll.lego small) -->
         <div class="logo-coll lego" style="--titolo: #E00000" aria-hidden="true"><span>LEGO</span><small>Minifigures</small></div>
         <p>Le serie di minifigure da collezione.</p>
         <span class="st-apri">Apri</span>
@@ -152,7 +106,6 @@
     </li>
     <li data-cerca="Eurospin supermercato Minions Fruit Sounds frutta verdura Harry Potter Sonic macchinine Kung Fu Panda 4 The Simpsons Simpson Star Wars Flash Heroes">
       <a class="st-card" href="catalogo/eurospin/index.html" aria-label="Eurospin">
-        <!-- logo scritto: --titolo = colore di "Eurospin" (blu Eurospin) -->
         <div class="logo-coll kinder euro" style="--titolo: #004A99" aria-hidden="true"><span>Eurospin</span></div>
         <p>Le collezioni dei supermercati Eurospin.</p>
         <span class="st-apri">Apri</span>
@@ -160,7 +113,6 @@
     </li>
     <li data-cerca="GranTerre merende Parmareggio Teneroni L'ABC della Merenda Minions Gomme 3D gomme Minions Kevin Stuart Phil Dave Pietra Zodiacale ZooMogi 3D Pencil Top matita animaletti Ippopotamo Volpe Cinghiale Procione Leone Cerbiatto Capibara Ariete Maiale Scimmia Cane Axolotl Mucca Pantera Elefante Panda Rana Pinguino Amore Furbizia Party Amicizia Coraggio Timidezza Calma Rabbia Paura Sorpresa Caos Delusione Gentilezza Mistero Chill Tenerezza Allegria Tristezza">
       <a class="st-card" href="catalogo/granterre/index.html" aria-label="GranTerre">
-        <!-- logo scritto: --titolo = colore di "GranTerre" (blu scuro del sito) -->
         <div class="logo-coll kinder euro" style="--titolo: #1A2140" aria-hidden="true"><span>GranTerre</span></div>
         <p>Le collezioni delle merende GranTerre.</p>
         <span class="st-apri">Apri</span>
@@ -168,7 +120,6 @@
     </li>
     <li data-cerca="Mulino Bianco Raccolta punti premi colazione Momenti più buoni tazze piattini Felicitazza Frullotto Coccini Cappuccine Schiumalatte Coccio delle Origini Biscotazza Mattutina Sorpresine Gommine 2023 gomme Tarallucci Baiocchi Macine Abbracci Tegolino Gli Animabili Serie 1 Serie 2 animaletti cancelleria Shelly Birba Bee Polly Pepe Pinky Nella Sofi lumachina volpina apina paperella asinello maialino coccinella pecorella gufetto mucchina gallinella coniglietto Stampy Otto Mu">
       <a class="st-card" href="catalogo/mulino-bianco/index.html" aria-label="Mulino Bianco">
-        <!-- logo scritto: --titolo = colore di "Mulino" (rosso mattone); "Bianco" piccolo sotto, come "Milano" nella card Legami -->
         <div class="logo-coll kinder" style="--titolo: #A3282B" aria-hidden="true"><span>Mulino</span><small>Bianco</small></div>
         <p>Sorpresine e raccolta punti.</p>
         <span class="st-apri">Apri</span>
@@ -176,7 +127,6 @@
     </li>
     <li data-cerca="Cool Things coolthings oggetti curiosi charm charms portachiavi ciondoli Gumball Molang South Park Cartman Pudgy Penguins Pengu Hello Kitty Powerpuff Girls Tokidoki Cinnamoroll Ben 10 Steven Universe Adventure Time Tasty Mao Snoopy Barbie Paw Patrol Harry Potter SpongeBob Sushi Sweet Times Tutty Frutty Western Cactus Friends Horror My Melody Kuromi DC Justice League Batman Superman Yoga Teen Titans Go Robin Raven">
       <a class="st-card" href="catalogo/coolthings/index.html" aria-label="Cool Things">
-        <!-- logo scritto: --titolo = colore della collezione (rosso, lo stesso di Legami) -->
         <div class="logo-coll cool" style="--titolo: #E50A15" aria-hidden="true"><span>COOL THINGS</span></div>
         <p>Oggetti Gacha da collezionare.</p>
         <span class="st-apri">Apri</span>
@@ -184,14 +134,12 @@
     </li>
     <li data-cerca="Lidl Stikeez pupazzetti gomma ventosa">
       <a class="st-card" href="catalogo/lidl/index.html" aria-label="Lidl">
-        <!-- logo scritto: --titolo = colore di "Lidl" (blu) -->
         <div class="logo-coll kinder" style="--titolo: #1d1d86" aria-hidden="true"><span>Lidl</span></div>
         <p>Le collezioni dei supermercati Lidl.</p>
         <span class="st-apri">Apri</span>
       </a>
     </li>
   </ul>
-  <!-- ! MODIFICA: "Come funziona" in 3 passi (titolo e testi) -->
   <section class="st-sezione st-sezione-fondo">
     <h2 class="st-sez-titolo">Come funziona</h2>
     <ol class="st-passi">
@@ -201,31 +149,20 @@
     </ol>
   </section>
 
-  <!-- ============ SEGUICI (i social di Collection Time) ============
-       NON sono i gruppi community delle categorie. Si gestiscono dall'area amministratore → Impostazioni del sito →
-       "I miei social": per ogni social c'è la spunta e il link. Non modificare a mano le righe tra SEGUICI-INIZIO
-       e SEGUICI-FINE (un social con "hidden" è spento, il link resta salvato). Se sono tutti spenti la sezione sparisce.
-       Gli stessi social compaiono anche nella pagina Contatti. -->
   <section class="st-seguici">
     <div class="st-seguici-t">
       <h2>Seguici per le novità</h2>
       <p>Nuove serie, curiosità e storie dal catalogo.</p>
     </div>
-    <!-- SEGUICI-INIZIO -->
     <ul>
       <li data-social="instagram"><a href="https://www.instagram.com/collectiontime.official/" target="_blank" rel="noopener noreferrer"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></span>Instagram</a></li>
       <li data-social="facebook"><a href="https://www.facebook.com/p/Collection-Time-61594772436518/" target="_blank" rel="noopener noreferrer"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></span>Facebook</a></li>
     </ul>
-    <!-- SEGUICI-FINE -->
   </section>
 </main>
 
-<!-- Banda in basso: la riempie script.js con footer.html. Lasciare vuoto. -->
 <div id="footer-placeholder"></div>
 
-<!-- Carica stile comune, bande e Accedi: questa riga serve in ogni pagina -->
-<!-- "?v=…" è la versione del file: la mette da solo l'area amministratore (Pubblica → Controlla cosa cambia), uguale in tutte le pagine
-     (es. v=2026-10-09-1). NON va cambiata a mano: i browser così scaricano i file nuovi e non quelli vecchi salvati. -->
-<script src="script.js?v=2026-10-13-4"></script>
+<script src="script.js?v=2026-10-14-1"></script>
 </body>
 </html>

@@ -1,23 +1,7 @@
-/* =====================================================================
-   stile.css — collezioni Legami (Collection Time)
-   ---------------------------------------------------------------------
-   Solo ciò che è diverso nelle pagine Legami: tutto il resto
-   dell'aspetto è in comune/collezione.css (uguale per tutte le collezioni).
-   Lo richiamano tutte le pagine delle collezioni Legami con
-     <link rel="stylesheet" href="../css/stile.css?v=…">
-   Quanti oggetti per fila e quanto sono grandi NON sono qui: sono nel
-   CONFIG di ogni pagina (colonne, altezza, proporzione) e si cambiano
-   anche dall'area amministratore (Modifica una serie → Aspetto).
-   ===================================================================== */
 
-/* Colore del titolo, a parte: rosso Legami. */
 :root { --titolo: #E50A15; }
 
-/* Titolo nel carattere Legami (var(--font-legami), in sito.css):
-   uguale su iPhone, Android e PC. */
 h1 .titolo-testo { font-family: var(--font-legami); font-weight: 700; letter-spacing: .01em; }
 
-/* Distanze tra gli oggetti in "La mia collezione" (Mi mancano, Doppioni, Cerca).
-   Nelle pagine delle collezioni le decide comune/collezione.css (griglia "su misura"). */
 .grid { gap: 28px 16px; }
 @media (max-width: 900px) { .grid { gap: 22px 10px; } }
