@@ -226,7 +226,7 @@ function vHome(){
  const u=me();
  if(!u.attivo)return `<h1>Ciao ${u.nome}</h1><div class="card"><span class="pill bad">Accesso disattivato</span><p>Il tuo accesso è stato sospeso. Se pensi sia un errore, scrivi a Collection Time.</p><button class="btn ghost" data-go="login">Esci</button></div>`;
  const n=S.proposte.filter(x=>x.da===u.nome).length;
- return `<div class="home"><h1>Ciao ${u.nome} 👋</h1><p class="mut">Cosa vuoi fare oggi? Niente va online subito: tutto viene controllato prima.</p>
+ return `<div class="home"><h1>Ciao ${u.nome} 👋</h1><p class="mut">Cosa vuoi fare oggi? Il tuo aiuto conta: le tue proposte vengono messe sul sito appena le abbiamo viste.</p>
  <div class="info">Puoi lavorare su: ${mieCat().map(c=>`<b>${CATS[c].nome}</b>`).join(', ')||'nessuna categoria'}</div>
  ${(()=>{const b=bozzeLeggi();const k=Object.keys(b);return k.length?`<div class="card bozze"><h2 style="font-size:16px">Hai delle bozze</h2>${k.map(x=>{const d=b[x];const t=d.tipo==='nuova'?'Nuova serie «'+esc(d.ns.titolo||'senza titolo')+'», '+d.ns.pezzi.length+' pezzi':'Aggiungi a «'+esc((SERIE.find(q=>q.id===d.serie)||{}).nome||d.serie)+'», '+d.bozza.length+' pezzi';return `<div class="row" style="margin:6px 0;gap:8px"><div class="grow"><b>${t}</b><div class="small mut">salvata ${quando(d.data)}</div></div><button class="btn sec small" data-bz="${esc(x)}">Riprendi</button><button class="btn ghost small" data-bzdel="${esc(x)}">Elimina</button></div>`}).join('')}<p class="small mut" style="margin:6px 0 0">Le bozze sono salvate solo su questo dispositivo: se cambi telefono o svuoti il browser non le ritrovi. Tienile al massimo 30 giorni.</p></div>`:''})()}
  <div class="griglia">
@@ -250,9 +250,9 @@ function vAggiungi(){
  const ok=S.bozza.length>0,n=S.bozza.length;
  const dropGrande=`<div class="drop" id="drop"><div style="font-size:30px">📷</div><b>Tocca o trascina le foto</b><div class="small mut">Meglio con sfondo trasparente (PNG). Massimo 10 per volta.</div><input type="file" id="file" accept="image/*" multiple hidden></div>`;
  const dropPiccolo=`<div class="drop" id="drop" style="padding:12px"><b>＋ Aggiungi altre foto</b><input type="file" id="file" accept="image/*" multiple hidden></div>`;
- const altri=`<div class="row" style="margin:8px 0"><button class="btn ghost small" id="demoFoto">Non ho foto: aggiungi un esempio</button><button class="btn sec small" id="creaSag">Non ho la foto di un pezzo: crea una sagoma</button></div>`;
+ const altri=`<div class="row" style="margin:8px 0"><button class="btn sec small" id="creaSag">Non ho la foto di un pezzo: crea una sagoma</button></div>`;
  return `<button class="back" data-go="serie">← Cambia serie</button><h1>Aggiungi a «${esc(s.nome)}»</h1>
- ${n?'':`<p class="mut">Prossimo numero (esempio): <b>${s.prox}</b>. Trascina qui le foto: le preparo io (ritaglio e riduzione automatici).</p>${dropGrande}${altri}`}
+ ${n?'':`<p class="mut">Prossimo numero: <b>${s.prox}</b>. Trascina qui le foto: le preparo io (ritaglio e riduzione automatici).</p>${dropGrande}${altri}`}
  <div class="pieces">${S.bozza.map((p,i)=>pezzoForm(p,i,s)).join('')}</div>
  ${n?dropPiccolo+altri:''}
  ${n?(S.fotoDi.altra?`<div class="card" style="padding:12px"><div class="row" style="gap:8px"><b class="grow" style="font-size:14px">Ringrazia chi ti ha mandato le foto</b><button class="btn ghost small" id="fdClose">Annulla</button></div><input type="text" id="fdNome" value="${esc(S.fotoDi.nome)}" placeholder="Nome (es. Giovanni)" style="margin-top:6px"><div id="fdMsg" class="small wc" style="margin-top:4px">${msgNomi((SERIE.find(x=>x.id===S.serie)||{}).grazie,S.fotoDi.nome)}</div><label class="row" style="font-weight:500;margin-top:8px;font-size:14px"><input type="checkbox" id="fdOk" ${S.fotoDi.ok?'checked':''}> Lo sa e è d'accordo che compaia il suo nome</label></div>`:`<button class="btn ghost small" id="fdOpen" style="margin-top:8px">+ Ringrazia qualcuno per le foto</button>`):''}
@@ -327,7 +327,7 @@ function vNuova(){
   <label class="row" style="font-weight:500"><input type="checkbox" id="nscol" ${n.vColore?'checked':''}> Voce «Colore» (penne con inchiostro)</label>
   `;
  if(n.step===3)body=`<h2>3 · I pezzi e le foto</h2><p class="small mut">Trascina qui le foto dei pezzi (già scontornate): ogni foto diventa una riga da compilare.</p>
-  <div class="drop" id="nsdrop"><b>Tocca o trascina le foto</b><input type="file" id="nsfile" accept="image/*" multiple hidden></div><button class="btn ghost small" id="nsdemo">Non ho foto: aggiungi esempi</button>
+  <div class="drop" id="nsdrop"><b>Tocca o trascina le foto</b><input type="file" id="nsfile" accept="image/*" multiple hidden></div>
   <div class="pieces" style="margin-top:10px">${n.pezzi.map((p,i)=>`<div class="piece"><div class="img"><img src="${p.src}" alt=""></div><div>
    <div class="g"><div><label>Numero</label><input type="text" data-np="numero" data-i="${i}" value="${esc(p.numero)}"></div><div><label>Nome</label><input type="text" data-np="nome" data-i="${i}" value="${esc(p.nome)}" placeholder="es. RICCIO"></div>
    ${n.vCodice?`<div><label>Codice</label><input type="text" data-np="codice" data-i="${i}" value="${esc(p.codice!==undefined?p.codice:n.anno)}"></div>`:''}</div>
@@ -353,7 +353,7 @@ function vImpost(){const u=me();
  <p class="small mut" style="margin:6px 0 0">È il grazie per il tuo lavoro di gestione della sezione, non per le foto (quelle si ringraziano a parte). Non compare in automatico: lo scegli tu e puoi spegnerlo quando vuoi.</p>
  <div class="info small" id="gAnt">${u.grazieOn&&u.nick?'Così comparirai in fondo alla home: <b>Grazie a '+esc(u.nick)+' per la gestione della sezione '+mieCat().map(c=>CATS[c].nome).join(' e ')+'</b>':'Così non comparirai da nessuna parte.'}</div></div>
  <div class="card"><h2 style="font-size:16px">Il mio accesso</h2><p style="margin:0">${esc(u.email)}</p><p class="small mut" style="margin:4px 0 8px">Puoi lavorare su: ${mieCat().map(c=>CATS[c].nome).join(', ')||'nessuna categoria'}. Le categorie le decide Collection Time.</p>
- <details><summary class="small" style="cursor:pointer">Come funziona</summary><p class="small mut">Le tue foto e correzioni arrivano come proposte. Sul sito non cambia nulla finché non le approva.</p></details>
+ <details><summary class="small" style="cursor:pointer">Come funziona</summary><p class="small mut">Le tue foto e correzioni arrivano da noi come proposte. Le guardiamo e le mettiamo sul sito appena possibile: finché non sono pubblicate vedi lo stato in «Le mie proposte». Nessuna fretta e nessun problema se qualcosa va sistemato: lo facciamo insieme, il tuo aiuto è prezioso.</p></details>
  <div class="row" style="margin-top:8px"><button class="btn ghost" data-go="login">Esci</button></div></div>`}
 function vSegnala(){const g=S.sg=S.sg||{serie:(SERIE.find(x=>me()[x.cat])||{}).id||'',tipo:'numero',pezzo:'',testo:''};
  return `<button class="back" data-go="home">← Indietro</button><h1>Segnala un problema</h1><p class="mut">Non cambi nulla tu: scrivi cosa non va e Collection Time decide.</p>
@@ -483,7 +483,7 @@ function bind(){
   d.ondrop=e=>{e.preventDefault();add([...e.dataTransfer.files])};f.onchange=()=>add([...f.files]);
   async function add(fs){for(const x of fs.slice(0,10)){try{const r=await elabora(x,s.cat);S.bozza.push({numero:s.prox+S.bozza.length,nome:'',colore:'',hex:'',...r})}catch(e){}}render()}
   $('#creaSag').onclick=()=>{S.sag=sagDefaults(s);S.sag.ritorno=true;S.sag.numero=String(s.prox+S.bozza.length);sagOggetto=null;go('sagoma')};
-  $('#demoFoto').onclick=()=>{const cv=document.createElement('canvas');cv.width=s.cat==='legami'?150:560;cv.height=s.cat==='legami'?640:560;const cx=cv.getContext('2d');cx.fillStyle='#F5A623';cx.beginPath();cx.arc(cv.width/2,cv.height/2,Math.min(cv.width,cv.height)/3,0,7);cx.fill();const im=cv.toDataURL('image/png');S.bozza.push({numero:s.prox+S.bozza.length,nome:'',colore:'',hex:'',src:im,w:s.cat==='legami'?150:560,h:s.cat==='legami'?640:560,kb:s.cat==='legami'?38:61});render()};
+  if($('#demoFoto'))$('#demoFoto').onclick=()=>{const cv=document.createElement('canvas');cv.width=s.cat==='legami'?150:560;cv.height=s.cat==='legami'?640:560;const cx=cv.getContext('2d');cx.fillStyle='#F5A623';cx.beginPath();cx.arc(cv.width/2,cv.height/2,Math.min(cv.width,cv.height)/3,0,7);cx.fill();const im=cv.toDataURL('image/png');S.bozza.push({numero:s.prox+S.bozza.length,nome:'',colore:'',hex:'',src:im,w:s.cat==='legami'?150:560,h:s.cat==='legami'?640:560,kb:s.cat==='legami'?38:61});render()};
   const sv=$('#svuota');if(sv)sv.onclick=()=>{S.bozza=[];render()};
   const iv=$('#invia');if(iv)iv.onclick=()=>{
    bozzaDel('aggiungi:'+S.serie);invia({id:uid++,da:me().nome,chi:S.utente,tipo:'nuovi',fotoDi:{...S.fotoDi},serie:s.nome,serieId:s.id,cat:s.cat,stato:'attesa',pezzi:S.bozza.map(p=>({...p,img:p.src,retro:p.extra||[],codice:p.codice!==undefined?p.codice:(s.pre?s.pre+String(p.numero).padStart(4,'0'):'')})),data:'adesso'});S.bozza=[];go('fatto')};
@@ -497,7 +497,7 @@ function bind(){
   document.querySelectorAll('[data-c]').forEach(i=>i.oninput=()=>{S.corr.v[i.dataset.c]=i.value;const d=i.value!==(S.corr.orig[i.dataset.c]||'');i.style.borderColor=d?'var(--warn)':'';i.style.background=d?'var(--warnbg)':'';upd()});
   $('#cnota').oninput=e=>{S.corr.nota=e.target.value;upd()};
   if($('#cextra')){$('#cextra').onclick=()=>$('#fileX').click();$('#fileX').onchange=async e=>{const r=await elabora(e.target.files[0],cs.cat);S.corr.extra.push(r.src);render()}}
-  const dm=document.createElement('button');dm.className='btn ghost small';dm.textContent='Usa foto di esempio';dm.onclick=()=>{S.corr.nuova={src:DATA.erasable[(+S.corr.orig.numero.replace(/\D/g,'')||1)%12].img};render()};if(!S.corr.nuova)$('#cfoto').after(dm);
+  const dm=document.createElement('button');dm.className='btn ghost small';dm.textContent='Usa foto di esempio';dm.onclick=()=>{S.corr.nuova={src:DATA.erasable[(+S.corr.orig.numero.replace(/\D/g,'')||1)%12].img};render()};
   $('#invcorr').onclick=()=>{invia({id:uid++,da:me().nome,chi:S.utente,tipo:'correzione',serie:cs.nome,serieId:cs.id,numero:S.corr.orig.numero,cat:cs.cat,stato:'attesa',pezzo:'n. '+S.corr.orig.numero+' · '+S.corr.orig.nome,mods:modifiche(),extra:S.corr.extra||[],nota:S.corr.nota,data:'adesso'});S.corr=null;go('fatto')};
  }
  if(S.page==='nuova'&&S.vista==='c'&&S.utente){
@@ -515,7 +515,7 @@ function bind(){
   if($('#nsdrop')){const d=$('#nsdrop'),f=$('#nsfile');d.onclick=()=>f.click();d.ondragover=e=>{e.preventDefault();d.classList.add('over')};d.ondragleave=()=>d.classList.remove('over');
    const add=async fs=>{for(const x of fs){try{const r=await elabora(x,n.cat);n.pezzi.push({numero:String(n.pezzi.length+1).padStart(2,'0'),nome:'',colore:'',hex:'',hashtag:'',info:'',src:r.src,cop:false})}catch(e){}}render()};
    d.ondrop=e=>{e.preventDefault();add([...e.dataTransfer.files])};f.onchange=()=>add([...f.files]);
-   $('#nsdemo').onclick=()=>{const nomi=['BABBO NATALE','RENNA','FIOCCO DI NEVE','ALBERO DI NATALE','CUORE','CACTUS'];const cols=['#D62A1A','#2C357E','#1E7F4F','#F2A900','#7A3E8E','#D95A44'];nomi.forEach((nm,k)=>{const cv=document.createElement('canvas');cv.width=150;cv.height=640;const cx=cv.getContext('2d');cx.fillStyle=cols[k];cx.fillRect(55,20,40,600);cx.beginPath();cx.arc(75,90,40,0,7);cx.fill();n.pezzi.push({numero:String(n.pezzi.length+1).padStart(2,'0'),nome:nm,colore:'',hex:'',hashtag:'',info:'',src:cv.toDataURL('image/png'),cop:false})});render()}}
+   if($('#nsdemo'))$('#nsdemo').onclick=()=>{const nomi=['BABBO NATALE','RENNA','FIOCCO DI NEVE','ALBERO DI NATALE','CUORE','CACTUS'];const cols=['#D62A1A','#2C357E','#1E7F4F','#F2A900','#7A3E8E','#D95A44'];nomi.forEach((nm,k)=>{const cv=document.createElement('canvas');cv.width=150;cv.height=640;const cx=cv.getContext('2d');cx.fillStyle=cols[k];cx.fillRect(55,20,40,600);cx.beginPath();cx.arc(75,90,40,0,7);cx.fill();n.pezzi.push({numero:String(n.pezzi.length+1).padStart(2,'0'),nome:nm,colore:'',hex:'',hashtag:'',info:'',src:cv.toDataURL('image/png'),cop:false})});render()}}
   if($('#nsback'))$('#nsback').onclick=()=>{n.step--;render()};
   $('#nsnext').onclick=()=>{if(n.step<5){n.step++;render()}else{bozzaDel('nuova');invia({id:uid++,da:me().nome,chi:S.utente,tipo:'serie',serie:n.titolo||'Nuova serie di prova',cat:n.cat,stato:'attesa',n:n.pezzi.length,pezzi:n.pezzi.map(p=>({...p,img:p.src})),cop:n.pezzi.filter(p=>p.cop).map(p=>p.src),modello:n.modello,anno:n.anno,paese:n.paese,un:n.un,tutti:n.tutti,vCodice:n.vCodice,vColore:n.vColore,data:'adesso'});go('fatto')}};
  }

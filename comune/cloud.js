@@ -430,7 +430,7 @@ function disegnaFinestra() {
     (obbligo && motivoObbligo === 'spunte' ? '<p>Hai già segnato tanti pezzi: per continuare crea il tuo account gratuito (o accedi se ce l\'hai già). Le tue spunte si salvano nel cloud e le ritrovi su telefono, computer e ogni nuovo dispositivo.</p>'
      : obbligo && motivoObbligo === 'giorni' ? '<p>Per continuare a usare Collection Time crea il tuo account gratuito (o accedi se ce l\'hai già). La tua collezione si salva nel cloud e la ritrovi su ogni dispositivo.</p>'
      : obbligo ? '<p>Collection Time è <b>gratuito</b>: per usarlo crea il tuo account (o accedi se ce l\'hai già). La tua collezione si salva nel cloud e la ritrovi su telefono, computer e ogni nuovo dispositivo.</p>'
-     : '<p>Accedi per <b>salvare la collezione nel cloud</b> e ritrovarla sul telefono, sul computer e su un nuovo dispositivo.</p>')
+     : '<p>Accedi per <b>salvare la collezione nel cloud</b>.</p>')
     + '<button type="button" data-azione="accedi" class="st-google st-google-grande">Continua con Google</button>'
     + '<p class="st-google-nota"><small>Il modo più rapido: senza password e senza email da confermare.</small></p>'
     + (obbligo && nuovo && !emailAperta ? '<p class="st-account-errore st-errore-google" role="alert" hidden></p>' : '')
