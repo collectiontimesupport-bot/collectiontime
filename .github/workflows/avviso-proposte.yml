@@ -1,7 +1,7 @@
 name: Avviso proposte in attesa
 on:
   schedule:
-    - cron: '0 6,9,12,15,18 * * *'   # ogni 3 ore circa, dalle 8 alle 20 in Italia
+    - cron: '0 7,10,13,16,19 * * *'   # ogni 3 ore circa: 9-21 in estate, 8-20 in inverno (ora italiana), mai di notte
   workflow_dispatch:                  # per provarlo a mano dal sito GitHub
 jobs:
   avviso:
