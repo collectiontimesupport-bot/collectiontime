@@ -101,7 +101,13 @@ body.login .btn.ghost{color:var(--ink)}
 .griglia .big strong{font-size:15px}
 .griglia .big>span:last-child{font-size:12px;color:var(--mut)}
 .azioni{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 10px}
-.sito{display:block;text-align:center;text-decoration:none;padding:13px;border-radius:12px;margin-top:6px}
+.inst-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--amber);border-color:var(--amber);color:var(--ink);font-weight:800;padding:13px}
+.inst-btn:hover:not(:disabled){background:#ffc233!important}
+.azioni .inst-btn{width:auto;padding:10px 18px}
+dialog.guida{border:0;border-radius:16px;padding:22px;max-width:340px;width:calc(100% - 40px);color:var(--ink)}
+dialog.guida::backdrop{background:rgba(26,33,64,.6)}
+dialog.guida h2{margin:0 0 10px;font-size:19px}dialog.guida ol{margin:0 0 14px;padding-left:20px;line-height:1.7}
+dialog.guida svg{width:18px;height:18px;vertical-align:-3px}
 </style>
 </head>
 <body>
@@ -222,8 +228,7 @@ function vHome(){
  <button class="card big" data-go="nuova"><span class="ic">🆕</span><span><strong>Creare una serie</strong>Non c'è ancora nel catalogo</span></button>
  <button class="card big" data-go="segnala"><span class="ic">⚠️</span><span><strong>Segnala un problema</strong>Qualcosa non va nell'area</span></button>
  </div>
- <div class="azioni"><button class="btn sec" data-go="mie">Le mie proposte (${n})</button> <button class="btn ghost" data-go="impostazioni">⚙ Impostazioni</button> <button class="btn ghost" data-go="login">Esci</button></div>
- <a class="btn sito" href="https://collectiontime.com/" target="_blank" rel="noopener">Apri il sito normale</a>`;
+ <div class="azioni"><button class="btn sec" data-go="mie">Le mie proposte (${n})</button> <button class="btn ghost" data-go="impostazioni">⚙ Impostazioni</button> <button class="btn ghost" data-go="login">Esci</button>${(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'':'<button class="btn inst-btn" data-installa="1">⬇ Installa l\'app</button>'}</div>`;
 }
 function vScegliSerie(){
  const l=SERIE.filter(s=>me()[s.cat]);
@@ -610,7 +615,7 @@ const meOr=me;
 function vLogin(){const L=S.login||{};
  if(L.stato==='attesa')return `<h1>Quasi fatto</h1><div class="card"><p>Il tuo account c'è, ma non sei ancora stato abilitato.</p><p>Manda questo codice a Collection Time (copialo tutto):</p><input type="text" readonly value="${esc(L.codice)}" onclick="this.select()" style="font-family:monospace"><p class="small mut" style="margin-top:8px">Quando ti avvisa, ricarica questa pagina.</p><button class="btn ghost" data-esci="1">Esci</button></div>`;
  const giaApp=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
- const inst=giaApp?'':`<div class="inst"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F2A900" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg><div><b>Installa l'app</b><br>iPhone: Condividi › Aggiungi a Home. Android: menu › Installa app.</div></div>`;
+ const inst=giaApp?'':`<button type="button" class="btn inst-btn" data-installa="1" style="margin-top:16px">⬇ Installa l'app</button>`;
  return `<div class="hero"><span class="logo">CT</span><h1>Collection Time<br><span>TEAM</span></h1><p>Area riservata ai collaboratori. Entra con la tua email.</p></div>
  <form class="card" id="fLogin" autocomplete="on"><label style="margin-top:0">Email</label><input type="email" id="lEm" name="email" autocomplete="username" value="${esc(lsG(EMK))}"><label>Password</label><input type="password" id="lPw" name="password" autocomplete="current-password">
  ${S.loginMsg?`<p class="small wc" style="margin:8px 0 0">${S.loginMsg}</p>`:''}
@@ -652,6 +657,22 @@ const goOrig=go;
 go=function(p,x){if(p==='login'){lsS(RTK,'');ACC=null;S.utente=null;S.mie=null;S.login={stato:'form'};S.loginMsg=''}return goOrig(p,x)};
 (async()=>{if(lsG(RTK)&&await rinnovaTk())await entra()})();
 render();
+</script>
+<script>
+let invitoInstalla=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();invitoInstalla=e});
+window.addEventListener('appinstalled',()=>{invitoInstalla=null;try{render()}catch(e){}});
+const ICONA_COND='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Condividi"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>';
+function passiInstalla(){const ua=navigator.userAgent;const ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+ if(ios)return ['Apri questa pagina con <b>Safari</b>','Tocca '+ICONA_COND+' <b>Condividi</b>','Scegli <b>Aggiungi alla schermata Home</b>','Tocca <b>Aggiungi</b>'];
+ return ['Apri il menu del browser (i tre puntini \u22EE)','Scegli <b>Installa app</b> o <b>Aggiungi alla schermata Home</b>','Conferma'];}
+function guidaInstalla(){let d=document.querySelector('dialog.guida');if(!d){d=document.createElement('dialog');d.className='guida';
+ d.innerHTML='<h2>Installa CT Team</h2><ol>'+passiInstalla().map(x=>'<li>'+x+'</li>').join('')+'</ol><form method="dialog"><button class="btn">Ho capito</button></form>';
+ d.addEventListener('click',e=>{const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()});document.body.append(d)}
+ d.showModal()}
+document.addEventListener('click',async e=>{if(!e.target.closest('[data-installa]'))return;
+ if(!invitoInstalla)return guidaInstalla();
+ invitoInstalla.prompt();await invitoInstalla.userChoice;invitoInstalla=null;try{render()}catch(x){}});
 </script>
 </body>
 </html>
