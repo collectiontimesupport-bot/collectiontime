@@ -528,3 +528,11 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
   :root[data-tema="auto"] .badge .cuore, :root[data-tema="auto"] .st-ma-badge { box-shadow: 0 0 0 2px rgba(238, 240, 247, .8); }
   :root[data-tema="auto"] .badge.on { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink) inset; }
 }
+
+.st-grazie { max-width: 640px; margin: 48px auto 8px; padding: 26px 22px 24px; text-align: center; background: var(--crema); border: 1px solid var(--crema-line); border-radius: 16px; }
+.st-grazie .st-grazie-ic { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; margin-bottom: 10px; border-radius: 50%; background: var(--amber); color: #1A2140; font-size: 1.5rem; line-height: 1; box-shadow: 0 0 0 5px rgba(242, 169, 0, .2); }
+.st-grazie .st-grazie-t { margin: 0 auto 10px; font-size: 1.25rem; font-weight: 800; color: var(--ink); }
+.st-grazie p { margin: 0 auto; max-width: 34rem; color: var(--ink); font-size: 1rem; line-height: 1.55; }
+.st-grazie p + p { margin-top: 8px; }
+.st-grazie p + p + p { color: var(--muted); font-size: .9375rem; }
+.st-grazie b { font-weight: 800; }
