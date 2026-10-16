@@ -170,7 +170,7 @@
   }
   rigaInfo();
 
-  const MINIMO_COLLEZIONISTI = 3;
+  const MINIMO_COLLEZIONISTI = 100;
   const RADICE = new URL('../', document.currentScript.src);
   function descrizione() {
     const fondo = document.querySelector('.wrap > footer');
@@ -190,12 +190,6 @@
       + (tra ? ' (' + tra + ')' : '') + ', con foto, nome e ' + (codici.length ? 'codice' : 'numero') + ' di ognuna'
       + (codici.length > 1 ? ' (da ' + codici[0] + ' a ' + codici[codici.length - 1] + ').' : '.');
     sec.append(p);
-    if (CONFIG.grazieAcceso && String(CONFIG.grazieNome || '').trim()) {
-      const g = document.createElement('p');
-      g.className = 'descr-grazie';
-      g.textContent = 'Grazie a ' + String(CONFIG.grazieNome).trim() + ' per le foto.';
-      sec.append(g);
-    }
     const segnala = document.createElement('a');
     segnala.className = 'btn segnala';
     segnala.textContent = 'Segnala un problema';
@@ -203,6 +197,20 @@
       + '?subject=' + encodeURIComponent('Segnalazione · ' + CONFIG.titolo)
       + '&body=' + encodeURIComponent('Ciao! Ho trovato un problema nella serie «' + CONFIG.titolo + '» (' + location.href + ').\n\nCosa non va (foto, nome, numero…):\n');
     sec.append(segnala);
+    if (CONFIG.grazieAcceso && String(CONFIG.grazieNome || '').trim()) {
+      const g = document.createElement('p');
+      g.className = 'descr-grazie';
+      g.textContent = 'Grazie a ' + String(CONFIG.grazieNome).trim() + ' per le foto.';
+      sec.append(g);
+      const apri = document.createElement('button');
+      apri.type = 'button'; apri.className = 'descr-grazie-apri'; apri.textContent = 'Leggi tutto'; apri.hidden = true;
+      apri.addEventListener('click', () => { const aperto = g.classList.toggle('aperto'); g.classList.toggle('corto', !aperto); apri.textContent = aperto ? 'Mostra meno' : 'Leggi tutto'; });
+      sec.append(apri);
+      const misura = () => { g.classList.add('corto'); apri.hidden = !(g.scrollHeight > g.clientHeight + 1) && !g.classList.contains('aperto'); if (g.classList.contains('aperto')) g.classList.remove('corto'); };
+      g.classList.add('corto'); requestAnimationFrame(misura); addEventListener('resize', misura); if (document.fonts) document.fonts.ready.then(misura);
+    }
+    const suggerimento = [...fondo.querySelectorAll('p.hint')].find(h => /^\s*Premi su/.test(h.textContent));
+    if (suggerimento) fondo.before(suggerimento);
     fondo.before(sec);
     fetch(new URL('comune/collezionisti.json', RADICE)).then(r => r.ok ? r.json() : null).then(d => {
       const n = d && d.serie && d.serie[CONFIG.dbName];

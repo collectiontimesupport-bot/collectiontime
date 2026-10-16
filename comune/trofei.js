@@ -1,5 +1,8 @@
 
 const CH_QUASI = 'ct-trofei-quasi', CH_TROFEI = 'ct-trofei', CH_SNAP = 'ct-trofei-snap', CH_BADGE = 'ct-badge';
+const CH_BADGE_SU = 'ct-badge-su';
+const SERIE_BADGE = 3;
+const BADGE_CERCA = 7;
 const MAX_BADGE = 3;
 const MAX_POPUP = 3;
 const MS_POPUP = 4200;
@@ -107,7 +110,7 @@ async function leggiSpunte() {
     totaleCat[categoriaDi(s)] = (totaleCat[categoriaDi(s)] || 0) + tot;
   }
   const serie = {};
-  const cePerCat = {};
+  const cePerCat = {}, perSlug = {};
   let conTag = false;
   for (const nome of await archivi()) {
     const s = R[nome];
@@ -121,8 +124,10 @@ async function leggiSpunte() {
     if (!ce) continue;
     serie[nome] = { ce, tot, doppi: righe.reduce((n, r) => n + (r.doppi > 0 ? r.doppi : 0), 0) };
     cePerCat[categoriaDi(s)] = (cePerCat[categoriaDi(s)] || 0) + ce;
+    const slug = String(s[0]).split('/')[0];
+    perSlug[slug] = (perSlug[slug] || 0) + 1;
   }
-  return { serie, cePerCat, totaleCat, conTag };
+  return { serie, cePerCat, totaleCat, conTag, perSlug };
 }
 function numeri(d, cloud) {
   const v = Object.values(d.serie);
@@ -154,7 +159,7 @@ export function valutaTrofei(S, ev, gia) {
   return TROFEI.filter(t => !gia[t.id] && t.ok(S, ev));
 }
 
-let inCorso = null;
+let inCorso = null, iniziatePerSlug = {};
 export function controlla(modo) {
   if (inCorso) return inCorso;
   inCorso = (async () => {
@@ -167,6 +172,11 @@ export function controlla(modo) {
     const qm = leggiJ(CH_QUASI, {}), nq = {};
     for (const [k, s] of Object.entries(d.serie)) if (s.tot >= 3 && s.ce === s.tot - 1) { nq[k] = qm[k] || oggi(); if (qm[k] && qm[k] < oggi()) ev.quasi = true; }
     scriviJ(CH_QUASI, nq);
+    iniziatePerSlug = d.perSlug || {};
+    const su = leggiJ(CH_BADGE_SU, {});
+    let suCambiato = false;
+    for (const [id] of BADGE) if (!su[id] && iniziatePerSlug[id] >= SERIE_BADGE) { su[id] = oggi(); suCambiato = true; }
+    if (suCambiato) scriviJ(CH_BADGE_SU, su);
     const gia = leggiJ(CH_TROFEI, {});
     const nuovi = valutaTrofei(S, ev, gia);
     nuovi.forEach(t => { gia[t.id] = oggi(); });
@@ -226,7 +236,8 @@ export async function disegnaProfilo(box) {
             : '<small>' + esc(descDi(t)) + '</small>') + '</div></li>';
   };
   const mistero = '<li class="trofeo mistero"><div class="trofeo-med">??</div><div class="tt"><b>??</b></div></li>';
-  const scelti = leggiJ(CH_BADGE, []);
+  const scelti = leggiJ(CH_BADGE, []), badgeSu = leggiJ(CH_BADGE_SU, {});
+  const aperto = id => !!badgeSu[id] || scelti.includes(id);
   let conAccount = false; try { conAccount = localStorage.getItem('ct-accesso') === '1'; } catch (e) {}
   if (!box.dataset.accesso) { box.dataset.accesso = '1'; window.addEventListener('ct-accesso', () => disegnaProfilo(box)); }
   box.innerHTML =
@@ -236,12 +247,16 @@ export async function disegnaProfilo(box) {
     + '<h3 class="st-imp-sotto">' + (en() ? 'My badges' : 'I miei badge') + '</h3>'
     + (conAccount
       ? '<p class="st-imp-nota">' + (en() ? 'Pick up to ' + MAX_BADGE + ' badges to show on your profile.' : 'Scegli fino a ' + MAX_BADGE + ' badge da mostrare sul tuo profilo.') + '</p>'
-        + '<div class="badge-lista">' + BADGE.map(([id, nome, col]) => badgeHtml(id, nome, col, scelti.includes(id))).join('') + '</div>'
+        + '<div class="badge-zona"></div>'
       : '<p class="st-imp-nota">' + (en() ? 'Badges are for people with an account: sign in to pick the ones that represent you.' : 'I badge sono per chi ha un account: accedi per scegliere quelli che ti rappresentano.') + '</p>'
         + '<p><button type="button" class="st-btn" data-accedi>' + (en() ? 'Sign in' : 'Accedi') + '</button></p>');
+  const zona = box.querySelector('.badge-zona');
+  if (zona) disegnaBadge(zona);
   box.onclick = async e => {
+    if (e.target.closest('[data-badge-apri]')) { badgeAperto = !badgeAperto; if (zona) disegnaBadge(zona); return; }
     const b = e.target.closest('[data-badge]');
     if (!b || !conAccount) return;
+    if (b.dataset.bloccato) { if (typeof avviso === 'function') avviso(en() ? 'Start ' + SERIE_BADGE + ' series in this category to unlock it.' : 'Inizia ' + SERIE_BADGE + ' serie in questa categoria per sbloccarlo.'); return; }
     let s = leggiJ(CH_BADGE, []);
     const id = b.dataset.badge;
     if (s.includes(id)) s = s.filter(x => x !== id);
@@ -250,15 +265,33 @@ export async function disegnaProfilo(box) {
     scriviJ(CH_BADGE, s);
     try { localStorage.setItem('ct-badge-t', String(Date.now())); } catch (e) {}
     window.dispatchEvent(new Event('ct-trofei-cambiati'));
-    b.setAttribute('aria-pressed', String(s.includes(id)));
-    b.classList.toggle('on', s.includes(id));
+    if (zona) disegnaBadge(zona);
     mostraNuovi(await controlla('pagina'));
   };
 }
-function badgeHtml(id, nome, col, on) {
-  return '<button type="button" class="badge' + (on ? ' on' : '') + '" data-badge="' + id + '" aria-pressed="' + on + '" style="--col:' + col + '">'
+let badgeAperto = false, badgeQ = '';
+function disegnaBadge(zona) {
+  const scelti = leggiJ(CH_BADGE, []), su = leggiJ(CH_BADGE_SU, {});
+  const mie = BADGE.filter(([id]) => su[id] || scelti.includes(id));
+  const card = ([id, nome, col]) => badgeHtml(id, nome, col, scelti.includes(id), true, 0);
+  if (!mie.length) { zona.innerHTML = '<p class="st-imp-nota">' + (en() ? 'No badges yet: start ' + SERIE_BADGE + ' series in a category to unlock its badge.' : 'Ancora nessun badge: inizia ' + SERIE_BADGE + ' serie in una categoria per sbloccare il suo.') + '</p>'; return; }
+  if (mie.length < BADGE_CERCA) { zona.innerHTML = '<div class="badge-lista">' + mie.map(card).join('') + '</div>'; return; }
+  const q = badgeQ.trim().toLowerCase(), filtrati = q ? mie.filter(([, nome]) => nome.toLowerCase().includes(q)) : mie;
+  zona.innerHTML =
+    '<p class="st-imp-nota"><b>' + (en() ? scelti.length + ' picked of ' + MAX_BADGE + ' · ' + mie.length + ' unlocked' : scelti.length + ' scelti su ' + MAX_BADGE + ' · ' + mie.length + ' sbloccati') + '</b></p>'
+    + '<div class="badge-lista">' + (scelti.length ? mie.filter(([id]) => scelti.includes(id)).map(card).join('') : '<span class="st-imp-nota">' + (en() ? 'No badge picked yet.' : 'Nessun badge scelto.') + '</span>') + '</div>'
+    + '<p><button type="button" class="st-btn" data-badge-apri aria-expanded="' + badgeAperto + '">' + (badgeAperto ? (en() ? 'Close' : 'Chiudi') : (en() ? 'Change or pick from ' + mie.length + ' unlocked' : 'Cambia o scegli tra i ' + mie.length + ' sbloccati')) + '</button></p>'
+    + (badgeAperto
+      ? '<input id="badgeCerca" type="search" placeholder="' + (en() ? 'Search a category' : 'Cerca una categoria') + '" aria-label="' + (en() ? 'Search a category' : 'Cerca una categoria') + '" value="' + esc(badgeQ) + '">'
+        + '<div class="badge-lista">' + (filtrati.length ? filtrati.map(card).join('') : '<span class="st-imp-nota">' + (en() ? 'No results.' : 'Nessun risultato.') + '</span>') + '</div>'
+      : '');
+  const inp = zona.querySelector('#badgeCerca');
+  if (inp) inp.oninput = () => { badgeQ = inp.value; const pos = inp.selectionStart; disegnaBadge(zona); const n = zona.querySelector('#badgeCerca'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } };
+}
+function badgeHtml(id, nome, col, on, aperto, n) {
+  return '<button type="button" class="badge' + (on ? ' on' : '') + (aperto ? '' : ' bloccato') + '"' + (aperto ? '' : ' data-bloccato="1"') + ' data-badge="' + id + '" aria-pressed="' + on + '" style="--col:' + col + '">'
     + '<span class="cuore"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 21s-8-5-8-11a4.500 4.500 0 0 1 8-2.800A4.500 4.500 0 0 1 20 10c0 6-8 11-8 11z"/></svg></span>'
-    + '<span class="tt"><small>' + (en() ? 'LOVER OF' : 'AMANTE DI') + '</small><b>' + esc(nome) + '</b></span></button>';
+    + '<span class="tt"><small>' + (aperto ? (en() ? 'LOVER OF' : 'AMANTE DI') : (en() ? 'LOCKED · ' : 'BLOCCATO · ') + Math.min(n, SERIE_BADGE) + '/' + SERIE_BADGE + (en() ? ' series' : ' serie')) + '</small><b>' + esc(nome) + '</b></span></button>';
 }
 
 export const _TROFEI = TROFEI;

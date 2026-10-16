@@ -509,6 +509,8 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
 .badge .tt { display: flex; flex-direction: column; line-height: 1.15; }
 .badge .tt small { font-size: .62rem; font-weight: 700; letter-spacing: .08em; color: var(--muted); }
 .badge .tt b { font-size: .9rem; }
+#badgeCerca { width: 100%; max-width: 360px; margin: 4px 0 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); font: inherit; }
+.badge.bloccato { opacity: .45; cursor: not-allowed; filter: grayscale(1); }
 .badge.on { opacity: 1; border-color: var(--col); box-shadow: 0 0 0 2px var(--col) inset; }
 @media (prefers-reduced-motion: reduce) { .trofeo-pop, .trofeo-pop.su { transition: none; } }
 

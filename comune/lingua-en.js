@@ -195,6 +195,8 @@
     "Community Reddit": "Reddit community",
     "Scrivici e lo aggiungiamo qui": "Write to us and we'll add it here",
     "Segnala un problema": "Report a problem",
+    "Leggi tutto": "Read more",
+    "Mostra meno": "Show less",
     "Serie": "Series",
     "Doppioni": "Duplicates",
     "Cerca": "Search",
