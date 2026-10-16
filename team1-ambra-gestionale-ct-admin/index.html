@@ -309,7 +309,7 @@ function vCorreggi(){
  <div class="info" id="riep">${riepilogoMod()}</div>
  <label>Perché la correzione? (aiuta a decidere)</label><textarea id="cnota" placeholder="es. Sul pezzo vero il colore è diverso">${esc(c.nota)}</textarea>
  <div class="row" style="margin-top:12px"><button class="btn grow" id="invcorr" >Invia correzione</button></div>
- <p class="small mut">Si vedrà il prima/dopo di ogni campo. Sul sito non cambia nulla finché non approva.</p>`;
+ <p class="small mut">Si vedrà il prima/dopo di ogni campo. Verrà messo sul sito appena visto.</p>`;
 }
 function nsOk(){return true;const n=S.ns;if(n.step===2)return n.titolo.trim().length>1;if(n.step===3)return n.pezzi.length>0&&n.pezzi.every(p=>p.nome.trim()&&(!n.vColore||(p.colore&&p.hex)));return true}
 function copTesto(n){return n.pezzi.filter(p=>p.cop).map(p=>p.numero).join(', ')}
@@ -341,7 +341,7 @@ function vNuova(){
   <div class="info" style="margin-top:12px"><b>Anteprima della card:</b><div style="display:flex;gap:2px;justify-content:center;align-items:flex-end;margin-top:8px;min-height:60px">${sel.length?sel.map(p=>`<img src="${p.src}" style="height:110px">`).join(''):'<span class="mut small">nessuna copertina scelta (resta la sagoma)</span>'}</div></div>`}
  if(n.step===5){const sel=n.pezzi.filter(p=>p.cop);body=`<h2>5 · Riepilogo</h2><div class="row" style="align-items:flex-end;margin-bottom:8px">${sel.map(p=>`<img src="${p.src}" style="height:90px">`).join('')}</div>
   <p><b>${esc(n.titolo||'Nuova serie di prova')}</b>${n.anno?' · '+esc(n.anno):''}${n.paese?' · '+esc(n.paese):''}<br><span class="mut">${CATS[n.cat].nome} · ${n.pezzi.length} pezzi${n.modello?' · aspetto copiato da '+esc(SERIE.find(x=>x.id===n.modello).nome):''}</span></p>
-  <div class="note">Dopo l'approvazione viene creata la pagina e la card. Sul sito non cambia nulla finché non approva.</div>`}
+  <div class="note">Dopo l'approvazione viene creata la pagina e la card. Verrà messo sul sito appena visto.</div>`}
  return `<button class="back" data-go="home">← Annulla</button><h1>Nuova serie</h1><div class="steps">${steps}</div><div class="card">${body}</div>
  <div class="row">${n.step>1?'<button class="btn sec" id="nsback">Indietro</button>':''}<button class="btn grow" id="nsnext" ${nsOk()?'':'disabled'}>${n.step===5?'Invia':'Avanti'}</button></div>`;
 }
@@ -394,7 +394,7 @@ function disegnaSag(){const g=S.sag,im=$('#sagImg');if(!g||!sagOggetto||!im)retu
   else if(g.contorno){x.lineWidth=fs*0.14;x.strokeStyle='#fff';x.strokeText(testo,0,0)}
   x.fillStyle=col;x.fillText(testo,0,0);x.restore()}
  const fin=sagRitaglia(tela);g.finale=fin;g.url=durl(fin);g.w=fin.width;g.h=fin.height;im.src=g.url;const inf=$('#sagInfo');if(inf)inf.textContent=fin.width+' × '+fin.height+' px'}
-function vFatto(){return `<div class="card" style="text-align:center;margin-top:40px"><div style="font-size:44px">✅</div><h2>Proposta inviata!</h2><p>La proposta sarà controllata. Vedrai lo stato in «Le mie proposte».</p><div class="row" style="justify-content:center"><button class="btn" data-go="home">Torna all'inizio</button><button class="btn sec" data-go="mie">Le mie proposte</button></div></div>`}
+function vFatto(){return `<div class="card" style="text-align:center;margin-top:40px"><div style="font-size:44px">✅</div><h2>Proposta inviata!</h2><p>Grazie! La metteremo sul sito appena verrà vista. Puoi seguire lo stato in «Le mie proposte».</p><div class="row" style="justify-content:center"><button class="btn" data-go="home">Torna all'inizio</button><button class="btn sec" data-go="mie">Le mie proposte</button></div></div>`}
 function vMie(){
  const l=S.proposte.filter(x=>x.da===me().nome);
  return `<button class="back" data-go="home">← Indietro</button><h1>Le mie proposte</h1>${l.length?l.map(p=>`<div class="card"><div class="row"><b class="grow">${descr(p)}</b>${pill(p)}</div>${p.motivo?`<p class="small mut">Risposta: «${esc(p.motivo)}»</p>`:''}${p.grazie?`<p class="small okc">🙏 Ringraziato sul sito: «Grazie a ${esc(p.grazie)} per le foto»</p>`:''}<div class="small mut">${p.data}</div></div>`).join(''):'<p class="mut">Ancora nessuna proposta.</p>'}`;
@@ -497,7 +497,6 @@ function bind(){
   document.querySelectorAll('[data-c]').forEach(i=>i.oninput=()=>{S.corr.v[i.dataset.c]=i.value;const d=i.value!==(S.corr.orig[i.dataset.c]||'');i.style.borderColor=d?'var(--warn)':'';i.style.background=d?'var(--warnbg)':'';upd()});
   $('#cnota').oninput=e=>{S.corr.nota=e.target.value;upd()};
   if($('#cextra')){$('#cextra').onclick=()=>$('#fileX').click();$('#fileX').onchange=async e=>{const r=await elabora(e.target.files[0],cs.cat);S.corr.extra.push(r.src);render()}}
-  const dm=document.createElement('button');dm.className='btn ghost small';dm.textContent='Usa foto di esempio';dm.onclick=()=>{S.corr.nuova={src:DATA.erasable[(+S.corr.orig.numero.replace(/\D/g,'')||1)%12].img};render()};
   $('#invcorr').onclick=()=>{invia({id:uid++,da:me().nome,chi:S.utente,tipo:'correzione',serie:cs.nome,serieId:cs.id,numero:S.corr.orig.numero,cat:cs.cat,stato:'attesa',pezzo:'n. '+S.corr.orig.numero+' · '+S.corr.orig.nome,mods:modifiche(),extra:S.corr.extra||[],nota:S.corr.nota,data:'adesso'});S.corr=null;go('fatto')};
  }
  if(S.page==='nuova'&&S.vista==='c'&&S.utente){
