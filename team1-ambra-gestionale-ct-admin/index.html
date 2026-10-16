@@ -52,11 +52,15 @@ textarea{min-height:70px}
 .drop{border:2px dashed var(--line);border-radius:var(--r);padding:26px;text-align:center;cursor:pointer;background:var(--bg)}
 .drop:hover,.drop.over{border-color:var(--acc);background:var(--acc2)}
 .pieces{display:grid;gap:12px}
-.piece{display:grid;grid-template-columns:96px 1fr;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px}
-.piece .img{background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/14px 14px;border-radius:8px;height:110px;display:grid;place-items:center;overflow:hidden}
+.piece{display:grid;grid-template-columns:1fr;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.piece .img{background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/14px 14px;border-radius:8px;min-height:120px;padding:12px;display:grid;place-items:center;overflow:hidden}
+.piece .img img{width:auto;height:auto;max-width:100%;max-height:300px;object-fit:contain}
 .piece img{max-width:100%;max-height:100%}
-.piece .g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.piece label{margin:0 0 2px;font-size:12px}
+.piece .g{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.piece label{display:block;margin:16px 0 5px;font-size:12px}
+.piece .g label{margin-top:0}
+.piece .chk{margin-top:14px}
+.piece .row{gap:10px;margin-top:2px}
 .chk{font-size:13px;margin-top:6px}.chk span{margin-right:10px}
 .okc{color:var(--ok)}.wc{color:var(--warn)}
 .ba{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -186,14 +190,15 @@ function svgFoto(emoji,bg){return 'data:image/svg+xml;utf8,'+encodeURIComponent(
 
 const LSK=()=>'ct-prova-bozze-'+S.utente;
 function bozzeLeggi(){try{return JSON.parse(localStorage.getItem(LSK())||'{}')}catch(e){return {}}}
-function bozzeScrivi(o){try{localStorage.setItem(LSK(),JSON.stringify(o))}catch(e){}}
-function bozzaSalva(k,v){const o=bozzeLeggi();o[k]={...v,data:Date.now()};bozzeScrivi(o)}
-function bozzaDel(k){const o=bozzeLeggi();delete o[k];bozzeScrivi(o)}
+let bzUltimo={};
+function bozzeScrivi(o){try{localStorage.setItem(LSK(),JSON.stringify(o));return true}catch(e){return false}}
+function bozzaSalva(k,v){const j=JSON.stringify(v);if(bzUltimo[k]===j)return;const o=bozzeLeggi();o[k]={...v,data:Date.now()};const ok=bozzeScrivi(o);if(ok)bzUltimo[k]=j;const n=document.getElementById('bzNota');if(n)n.textContent=ok?'💾 Bozza salvata in automatico su questo dispositivo.':'⚠️ Bozza non salvata: la memoria del telefono è piena. Invia i pezzi o togli qualche foto.'}
+function bozzaDel(k){const o=bozzeLeggi();delete o[k];delete bzUltimo[k];bozzeScrivi(o)}
 function quando(t){const m=Math.round((Date.now()-t)/60000);return m<1?'adesso':m<60?m+' min fa':m<1440?Math.round(m/60)+' ore fa':Math.round(m/1440)+' giorni fa'}
 function salvaAuto(){if(S.vista!=='c'||!S.utente)return;
  if(S.page==='aggiungi'&&S.serie){if(S.bozza.length)bozzaSalva('aggiungi:'+S.serie,{tipo:'aggiungi',serie:S.serie,bozza:S.bozza,fotoDi:S.fotoDi});else bozzaDel('aggiungi:'+S.serie)}
  if(S.page==='nuova'&&(S.ns.titolo||S.ns.pezzi.length))bozzaSalva('nuova',{tipo:'nuova',ns:S.ns})}
-setInterval(salvaAuto,1500);
+setInterval(salvaAuto,5000);document.addEventListener('visibilitychange',()=>{if(document.hidden)salvaAuto()});window.addEventListener('pagehide',salvaAuto);
 function render(){
  document.querySelectorAll('#vista button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.vista));
  document.body.classList.toggle('login',!S.utente||S.page==='login');const a=$('#app');
@@ -256,7 +261,7 @@ function vAggiungi(){
  <div class="pieces">${S.bozza.map((p,i)=>pezzoForm(p,i,s)).join('')}</div>
  ${n?dropPiccolo+altri:''}
  ${n?(S.fotoDi.altra?`<div class="card" style="padding:12px"><div class="row" style="gap:8px"><b class="grow" style="font-size:14px">Ringrazia chi ti ha mandato le foto</b><button class="btn ghost small" id="fdClose">Annulla</button></div><input type="text" id="fdNome" value="${esc(S.fotoDi.nome)}" placeholder="Nome (es. Giovanni)" style="margin-top:6px"><div id="fdMsg" class="small wc" style="margin-top:4px">${msgNomi((SERIE.find(x=>x.id===S.serie)||{}).grazie,S.fotoDi.nome)}</div><label class="row" style="font-weight:500;margin-top:8px;font-size:14px"><input type="checkbox" id="fdOk" ${S.fotoDi.ok?'checked':''}> Lo sa e è d'accordo che compaia il suo nome</label></div>`:`<button class="btn ghost small" id="fdOpen" style="margin-top:8px">+ Ringrazia qualcuno per le foto</button>`):''}
- ${n?`<p class="small mut" style="margin:8px 0 0">💾 Bozza salvata in automatico su questo dispositivo.</p><div class="note">Controlla i dati. Quando premi Invia, la proposta viene inviata: <b>sul sito non cambia ancora nulla.</b></div>
+ ${n?`<p class="small mut" id="bzNota" style="margin:8px 0 0">💾 Bozza salvata in automatico su questo dispositivo.</p><div class="note">Controlla i dati. Quando premi Invia, la proposta viene inviata: <b>sul sito non cambia ancora nulla.</b></div>
  ${ok?'':`<p class="small mut">Per inviare servono nome${s.colore?' e colore':''} su ogni pezzo.</p>`}
  <div class="barra"><button class="btn grow" id="piuFoto" style="padding:16px 14px;font-size:17px">＋ Aggiungi foto</button><button class="btn small" id="invia" ${ok?'':'disabled'}>Invia (${n})</button><button class="btn ghost small" id="svuota">Svuota</button></div>`:''}`;
 }
