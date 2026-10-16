@@ -1,0 +1,18 @@
+name: Avviso proposte in attesa
+on:
+  schedule:
+    - cron: '0 6,9,12,15,18 * * *'   # ogni 3 ore circa, dalle 8 alle 20 in Italia
+  workflow_dispatch:                  # per provarlo a mano dal sito GitHub
+jobs:
+  avviso:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node .github/avviso/controlla.mjs
+        env:
+          FIREBASE_CHIAVE: ${{ secrets.FIREBASE_CHIAVE }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
