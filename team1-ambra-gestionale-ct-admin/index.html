@@ -100,6 +100,9 @@ body.login .btn.ghost{color:var(--ink)}
 .griglia .big .ic{width:40px;height:40px;font-size:22px}
 .griglia .big strong{font-size:15px}
 .griglia .big>span:last-child{font-size:12px;color:var(--mut)}
+.home{min-height:calc(100dvh - 120px);display:flex;flex-direction:column}
+.fondo{margin-top:auto;padding-top:28px;display:flex;gap:10px;align-items:center}
+.btn.esci{background:#fff;border:2px solid var(--bad);color:var(--bad)}.btn.esci:hover:not(:disabled){background:var(--badbg)}
 .azioni{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 10px}
 .inst-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--amber);border-color:var(--amber);color:var(--ink);font-weight:800;padding:13px}
 .inst-btn:hover:not(:disabled){background:#ffc233!important}
@@ -219,7 +222,7 @@ function vHome(){
  const u=me();
  if(!u.attivo)return `<h1>Ciao ${u.nome}</h1><div class="card"><span class="pill bad">Accesso disattivato</span><p>Il tuo accesso è stato sospeso. Se pensi sia un errore, scrivi a Collection Time.</p><button class="btn ghost" data-go="login">Esci</button></div>`;
  const n=S.proposte.filter(x=>x.da===u.nome).length;
- return `<h1>Ciao ${u.nome} 👋</h1><p class="mut">Cosa vuoi fare oggi? Niente va online subito: tutto viene controllato prima.</p>
+ return `<div class="home"><h1>Ciao ${u.nome} 👋</h1><p class="mut">Cosa vuoi fare oggi? Niente va online subito: tutto viene controllato prima.</p>
  <div class="info">Puoi lavorare su: ${mieCat().map(c=>`<b>${CATS[c].nome}</b>`).join(', ')||'nessuna categoria'}</div>
  ${(()=>{const b=bozzeLeggi();const k=Object.keys(b);return k.length?`<div class="card bozze"><h2 style="font-size:16px">Hai delle bozze</h2>${k.map(x=>{const d=b[x];const t=d.tipo==='nuova'?'Nuova serie «'+esc(d.ns.titolo||'senza titolo')+'», '+d.ns.pezzi.length+' pezzi':'Aggiungi a «'+esc((SERIE.find(q=>q.id===d.serie)||{}).nome||d.serie)+'», '+d.bozza.length+' pezzi';return `<div class="row" style="margin:6px 0;gap:8px"><div class="grow"><b>${t}</b><div class="small mut">salvata ${quando(d.data)}</div></div><button class="btn sec small" data-bz="${esc(x)}">Riprendi</button><button class="btn ghost small" data-bzdel="${esc(x)}">Elimina</button></div>`}).join('')}<p class="small mut" style="margin:6px 0 0">Le bozze sono salvate solo su questo dispositivo: se cambi telefono o svuoti il browser non le ritrovi. Tienile al massimo 30 giorni.</p></div>`:''})()}
  <div class="griglia">
@@ -228,7 +231,8 @@ function vHome(){
  <button class="card big" data-go="nuova"><span class="ic">🆕</span><span><strong>Creare una serie</strong>Non c'è ancora nel catalogo</span></button>
  <button class="card big" data-go="segnala"><span class="ic">⚠️</span><span><strong>Segnala un problema</strong>Qualcosa non va nell'area</span></button>
  </div>
- <div class="azioni"><button class="btn sec" data-go="mie">Le mie proposte (${n})</button> <button class="btn ghost" data-go="impostazioni">⚙ Impostazioni</button> <button class="btn ghost" data-go="login">Esci</button>${(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'':'<button class="btn inst-btn" data-installa="1">⬇ Installa l\'app</button>'}</div>`;
+ <div class="azioni"><button class="btn sec" data-go="mie">Le mie proposte (${n})</button> ${(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'':'<button class="btn inst-btn" data-installa="1">⬇ Installa l\'app</button>'}</div>
+ <div class="fondo"><button class="btn ghost small" data-go="impostazioni">⚙ Impostazioni</button><button class="btn esci small" data-go="login">Esci</button></div></div>`;
 }
 function vScegliSerie(){
  const l=SERIE.filter(s=>me()[s.cat]);
