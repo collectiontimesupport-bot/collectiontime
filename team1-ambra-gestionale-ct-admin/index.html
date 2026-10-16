@@ -60,6 +60,7 @@ textarea{min-height:70px}
 .piece label{display:block;margin:16px 0 5px;font-size:12px}
 .piece .g label{margin-top:0}
 .piece .chk{margin-top:14px}
+.hq{display:flex;align-items:center;gap:8px;margin:16px 0 5px}.hq label{margin:0!important}.hqb{width:22px;height:22px;padding:0;border-radius:50%;border:1.5px solid var(--ink);background:#fff;color:var(--ink);font:700 13px/1 inherit;cursor:pointer}.hqt{margin:0 0 8px;padding:10px 12px;background:var(--acc2);border-radius:10px;font-size:13px;line-height:1.45}
 .piece .row{gap:10px;margin-top:2px}
 .chk{font-size:13px;margin-top:6px}.chk span{margin-right:10px}
 .okc{color:var(--ok)}.wc{color:var(--warn)}
@@ -272,6 +273,7 @@ function htags(val,ctx){const sel=tagList(val);
  <select data-htsel="${ctx}"><option value="">+ Aggiungi un hashtag…</option>${TAGS.filter(t=>!sel.includes(t)).map(t=>`<option value="${esc(t)}">#${t}</option>`).join('')}<option value="__new">✏️ Scrivi un nuovo hashtag…</option></select>
  ${S.htNew===ctx?`<div class="row" style="gap:6px;margin-top:6px"><input type="text" data-htnew="${ctx}" placeholder="es. Glitter" style="flex:1"><button type="button" class="btn sec small" data-ht="new" data-ctx="${ctx}">Aggiungi</button></div>`:''}</div>`}
 function setTags(ctx,fn){S.htNew=null;if(ctx==='c'){S.corr.v.hashtagT=fn(tagList(S.corr.v.hashtagT)).join(', ')}else{const o=ctx[0]==='n'?S.ns.pezzi[+ctx.slice(1)]:S.bozza[+ctx.slice(1)];o.hashtag=fn(tagList(o.hashtag)).join(', ')}render()}
+const hashEt=t=>`<div class="hq"><label>${t}</label><button type="button" class="hqb" aria-label="Cos'è un hashtag?" onclick="this.parentNode.nextElementSibling.hidden=!this.parentNode.nextElementSibling.hidden">?</button></div><p class="hqt" hidden>Gli hashtag aiutano i collezionisti a trovare i pezzi per tema. Chi cerca <b>#Natale</b> vede tutte le penne di Natale, chi cerca <b>#Limited Edition</b> tutte le edizioni limitate. Scegli quelli che descrivono il pezzo, anche più di uno: così finisce nella lista giusta.</p>`;
 function pezzoForm(p,i,s){
  const dup=S.bozza.filter(q=>q.numero===p.numero).length>1;const cod=p.codice!==undefined?p.codice:(s.pre?s.pre+String(p.numero).padStart(4,'0'):'');
  return `<div class="piece"><div class="img"><img src="${p.src}" alt=""></div><div>
@@ -279,7 +281,7 @@ function pezzoForm(p,i,s){
  <div><label>Nome</label><input type="text" data-f="nome" data-i="${i}" value="${esc(p.nome||'')}" placeholder="es. RICCIO"></div>
  <div><label>Codice</label><input type="text" data-f="codice" data-i="${i}" value="${esc(cod)}"></div>
  </div>
- <label>#Hashtag (anche più di uno)</label>${htags(p.hashtag,'b'+i)}
+ ${hashEt('#Hashtag (anche più di uno)')}${htags(p.hashtag,'b'+i)}
  ${s.colore?`<label>Colore</label>${colSel(p,`data-ci="${i}"`)}`:''}
  <label>Descrizione (facoltativa)</label><input type="text" data-f="info" data-i="${i}" value="${esc(p.info||'')}" placeholder="es. Prima versione con stellina">
  <label>Foto descrizione (retro, dettaglio… max 3)</label><div class="row">${(p.extra||[]).map(e=>`<img src="${e}" style="height:56px;border-radius:6px">`).join('')}${(p.extra||[]).length<3?`<button type="button" class="btn sec small" data-px="${i}">+ Aggiungi foto descrizione</button><input type="file" accept="image/*" hidden data-pxf="${i}">`:''}</div>
@@ -308,7 +310,7 @@ function vCorreggi(){
  <label>Nome</label><input type="text" data-c="nome" value="${esc(v.nome)}" ${ch('nome')}>
  ${s.colore?`<label>Colore</label>${colSel(v,'data-cc="1"')}`:''}</div></div>
  <label>Descrizione</label><textarea data-c="info" placeholder="(nessuna info)" ${ch('info')}>${esc(v.info)}</textarea>
- <label>#Hashtag (anche più di uno)</label>${htags(v.hashtagT,'c')}
+ ${hashEt('#Hashtag (anche più di uno)')}${htags(v.hashtagT,'c')}
  <label>Foto descrizione (retro, dettaglio… max 3)</label><div class="row">${retro}${ex}${(c.extra||[]).length+(o.retro||[]).length<3?'<button class="btn sec small" id="cextra">+ Aggiungi foto descrizione</button><input type="file" id="fileX" accept="image/*" hidden>':''}</div>
  <p class="small mut">${retro?'Quelle già presenti sono le foto del retro, come sul sito. ':''}Il testo resta solo testo: le immagini si allegano qui. I campi che cambi si colorano di giallo.</p></div>
  <div class="info" id="riep">${riepilogoMod()}</div>
@@ -338,7 +340,7 @@ function vNuova(){
    ${n.vCodice?`<div><label>Codice</label><input type="text" data-np="codice" data-i="${i}" value="${esc(p.codice!==undefined?p.codice:n.anno)}"></div>`:''}</div>
    ${n.vColore?`<label>Colore</label>${colSel(p,`data-cn="${i}"`)}`:''}
    <label>Descrizione (facoltativa)</label><input type="text" data-np="info" data-i="${i}" value="${esc(p.info||'')}">
-   <label>#Hashtag</label>${htags(p.hashtag,'n'+i)}
+   ${hashEt('#Hashtag')}${htags(p.hashtag,'n'+i)}
    <button class="btn ghost small" data-npdel="${i}">Rimuovi</button></div></div>`).join('')}</div>
   <p class="small mut">${n.pezzi.length} pezzi · il numero è messo in ordine, lo puoi cambiare.</p>`;
  if(n.step===4){const sel=n.pezzi.filter(p=>p.cop);body=`<h2>4 · La copertina della card</h2><p class="small mut">Spunta i pezzi da mettere in copertina (es. il 01, il 10 e il 21). Fino a 3, affiancati.</p>
