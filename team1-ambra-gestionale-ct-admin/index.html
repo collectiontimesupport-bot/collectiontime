@@ -103,6 +103,10 @@ body.login .btn.ghost{color:var(--ink)}
 .home{min-height:calc(100dvh - 120px);display:flex;flex-direction:column}
 .fondo{margin-top:auto;padding-top:28px;display:flex;gap:10px;align-items:center}
 .btn.esci{background:#fff;border:2px solid var(--bad);color:var(--bad)}.btn.esci:hover:not(:disabled){background:var(--badbg)}
+.gcard{padding:8px;margin-top:12px}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#fff;border:0;border-radius:9px;padding:12px;font:inherit;font-weight:700;font-size:16px;color:var(--ink);cursor:pointer}
+.gbtn:hover{background:var(--acc2)}
+.glink{background:none;border:0;color:var(--mut);text-decoration:underline;font:inherit;font-size:13px;cursor:pointer;padding:6px}
 .azioni{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 10px}
 .inst-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--amber);border-color:var(--amber);color:var(--ink);font-weight:800;padding:13px}
 .inst-btn:hover:not(:disabled){background:#ffc233!important}
@@ -623,7 +627,8 @@ function vLogin(){const L=S.login||{};
  return `<div class="hero"><span class="logo">CT</span><h1>Collection Time<br><span>TEAM</span></h1><p>Area riservata ai collaboratori. Entra con la tua email.</p></div>
  <form class="card" id="fLogin" autocomplete="on"><label style="margin-top:0">Email</label><input type="email" id="lEm" name="email" autocomplete="username" value="${esc(lsG(EMK))}"><label>Password</label><input type="password" id="lPw" name="password" autocomplete="current-password">
  ${S.loginMsg?`<p class="small wc" style="margin:8px 0 0">${S.loginMsg}</p>`:''}
- <div class="row" style="margin-top:12px"><button class="btn" type="submit" id="lGo">Entra</button><button class="btn ghost" type="button" id="lReset">Non ho la password</button></div></form>${inst}`}
+ <div class="row" style="margin-top:12px"><button class="btn" type="submit" id="lGo">Entra</button><button class="btn ghost" type="button" id="lReset">Non ho la password</button></div></form>
+ <div class="card gcard"><button type="button" class="gbtn" data-google="1"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Entra con Google</span></button></div>${inst}`}
 function vMie(){if(S.mie===null){caricaMie();return `<button class="back" data-go="home">← Indietro</button><h1>Le mie proposte</h1><p class="mut">Carico…</p>`}
  const l=S.mie;return `<button class="back" data-go="home">← Indietro</button><h1>Le mie proposte</h1>${l.length?l.map(p=>`<div class="card"><div class="row"><b class="grow">${descr(p)}</b>${pill(p)}</div>${p.motivo?`<p class="small mut">Risposta: «${esc(p.motivo)}»</p>`:''}<div class="small mut">${quando(p.creato)}</div></div>`).join(''):'<p class="mut">Ancora nessuna proposta.</p>'}`}
 const STMAP={attesa:'attesa',approvata:'ok',rifiutata:'no',modifiche:'mod'};
@@ -677,6 +682,31 @@ function guidaInstalla(){let d=document.querySelector('dialog.guida');if(!d){d=d
 document.addEventListener('click',async e=>{if(!e.target.closest('[data-installa]'))return;
  if(!invitoInstalla)return guidaInstalla();
  invitoInstalla.prompt();await invitoInstalla.userChoice;invitoInstalla=null;try{render()}catch(x){}});
+</script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+const auth=getAuth(initializeApp({apiKey:'AIzaSyCgch5N04Z8YBprYCyJiMj_cYoXfz32b7c',authDomain:'collectiontime.com',projectId:'collection-time-dd8fe',appId:'1:1017812174787:web:ec1b01b93047e387861f76'}));
+auth.languageCode='it';
+const comeApp=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const manda=async u=>document.dispatchEvent(new CustomEvent('ct-google',{detail:{token:await u.getIdToken(),uid:u.uid,email:u.email||'',rt:u.refreshToken}}));
+const errore=e=>document.dispatchEvent(new CustomEvent('ct-google-err',{detail:e&&e.code||String(e)}));
+getRedirectResult(auth).then(r=>{if(r&&r.user)return manda(r.user)}).catch(errore);
+document.addEventListener('ct-google-vai',async()=>{
+ try{const prov=new GoogleAuthProvider();
+  if(comeApp())return await signInWithRedirect(auth,prov);
+  const r=await signInWithPopup(auth,prov);await manda(r.user);
+ }catch(e){if(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request')return;errore(e)}
+});
+</script>
+<script>
+document.addEventListener('click',e=>{if(e.target.closest('[data-google]'))document.dispatchEvent(new CustomEvent('ct-google-vai'))});
+document.addEventListener('ct-google',async e=>{const d=e.detail;
+ ACC={token:d.token,uid:d.uid,email:d.email,scade:Date.now()+3300e3};lsS(RTK,d.rt);if(d.email)lsS(EMK,d.email);S.loginMsg='';
+ await entra()});
+document.addEventListener('ct-google-err',e=>{const c=e.detail;
+ S.loginMsg=c==='auth/unauthorized-domain'?'Google funziona solo dall\'indirizzo online della pagina.':c==='auth/popup-blocked'?'Il browser ha bloccato la finestra di Google: consentila e riprova.':'Non sono riuscito a entrare con Google ('+c+'). Riprova o usa email e password.';
+ S.login={stato:'form'};render()});
 </script>
 </body>
 </html>
