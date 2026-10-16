@@ -226,7 +226,7 @@ function vHome(){
  const u=me();
  if(!u.attivo)return `<h1>Ciao ${u.nome}</h1><div class="card"><span class="pill bad">Accesso disattivato</span><p>Il tuo accesso è stato sospeso. Se pensi sia un errore, scrivi a Collection Time.</p><button class="btn ghost" data-go="login">Esci</button></div>`;
  const n=S.proposte.filter(x=>x.da===u.nome).length;
- return `<div class="home"><h1>Ciao ${u.nome} 👋</h1><p class="mut">Cosa vuoi fare oggi? Il tuo aiuto conta: le tue proposte vengono messe sul sito appena le abbiamo viste.</p>
+ return `<div class="home"><h1>Ciao ${u.nome} 👋</h1><p class="mut">Cosa vuoi fare oggi? Il tuo aiuto conta: le proposte vengono messe sul sito appena verranno viste.</p>
  <div class="info">Puoi lavorare su: ${mieCat().map(c=>`<b>${CATS[c].nome}</b>`).join(', ')||'nessuna categoria'}</div>
  ${(()=>{const b=bozzeLeggi();const k=Object.keys(b);return k.length?`<div class="card bozze"><h2 style="font-size:16px">Hai delle bozze</h2>${k.map(x=>{const d=b[x];const t=d.tipo==='nuova'?'Nuova serie «'+esc(d.ns.titolo||'senza titolo')+'», '+d.ns.pezzi.length+' pezzi':'Aggiungi a «'+esc((SERIE.find(q=>q.id===d.serie)||{}).nome||d.serie)+'», '+d.bozza.length+' pezzi';return `<div class="row" style="margin:6px 0;gap:8px"><div class="grow"><b>${t}</b><div class="small mut">salvata ${quando(d.data)}</div></div><button class="btn sec small" data-bz="${esc(x)}">Riprendi</button><button class="btn ghost small" data-bzdel="${esc(x)}">Elimina</button></div>`}).join('')}<p class="small mut" style="margin:6px 0 0">Le bozze sono salvate solo su questo dispositivo: se cambi telefono o svuoti il browser non le ritrovi. Tienile al massimo 30 giorni.</p></div>`:''})()}
  <div class="griglia">
