@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://collectiontime.com/catalogo/kinder/tutte/">
 <meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-16-3">
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-19-1">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
   :root {
@@ -81,11 +81,12 @@
     <button type="button" class="st-anni-tutte" id="apriTutte" aria-pressed="false">Apri tutte le tendine</button>
   </div>
   <div class="st-anni" id="gruppi"></div>
-  <p class="hint">Tocca una sorpresina per segnare che ce l'hai (o toglierlo). Tieni il dito sopra (o passa col mouse) per vedere il nome e la serie. Sotto ogni foto c'è il codice.</p>
+  <p class="hint">Tocca una sorpresina per segnare che ce l'hai (o toglierlo). Tieni premuto (o clic destro) su una sorpresina per aprire le sue Info o andare alla sua serie. Sotto ogni foto c'è il codice.</p>
 </main>
 
 <div id="footer-placeholder"></div>
 
+<script src="../../../comune/menu-pezzo.js?v=2026-10-19-1"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -129,7 +130,7 @@
         id: campo(r, 'id'), nome: campo(r, 'nome').replace(/\\(.)/g, '$1'), serie: s.titolo, anno: Number(campo(r, 'codice')) || 0,
         cod, fam: cod ? (p[1] || cod) : '', num: Number(p[2]) || 0, suf: p[3] || '',
         pos: s.ordine * 1000 + i,
-        foto: '../' + s.cartella + '/' + foto, db, ce: false
+        foto: '../' + s.cartella + '/' + foto, url: '../' + s.cartella + '/index.html', db, ce: false
       };
     });
   }
@@ -179,6 +180,8 @@
         li.className = p.ce ? 'ce' : '';
         const b = document.createElement('button');
         b.type = 'button';
+        b.dataset.url = p.url; b.dataset.id = p.id;
+        if (p.serieMenu) b.dataset.serie = JSON.stringify(p.serieMenu);
         b.title = p.nome + ' — ' + p.serie + (p.anno ? ' (' + p.anno + ')' : '');
         b.setAttribute('aria-label', (p.cod || p.anno) + ', ' + p.nome + ', ' + p.serie);
         b.setAttribute('aria-pressed', String(p.ce));
@@ -201,6 +204,7 @@
       sezioni.push({ el: sec, conta, f });
     });
     $('gruppi').append(frag);
+    if (window.ctMenuPezzo) ctMenuPezzo($('gruppi'));
   }
 
   function disegna() {
@@ -253,15 +257,39 @@
   });
   $('gruppi').addEventListener('toggle', aggiornaPulsante, true);
 
+  async function unisciRistampe() {
+    const per = new Map();
+    pezzi.forEach(p => { if (p.cod) { if (!per.has(p.cod)) per.set(p.cod, []); per.get(p.cod).push(p); } });
+    const via = new Set();
+    for (const l of per.values()) {
+      if (l.length < 2 || new Set(l.map(p => p.db)).size !== l.length) continue;
+      const capo = l[0];
+      capo.gemelli = l;
+      capo.serieMenu = l.map(p => ({ t: p.serie, u: p.url, id: p.id }));
+      capo.serie = [...new Set(l.map(p => p.serie))].join(' · ');
+      const ce = l.some(p => p.ce);
+      for (const p of l) if (p.ce !== ce) await scrivi(p, ce);
+      l.forEach(p => { p.ce = ce; });
+      l.slice(1).forEach(p => via.add(p));
+    }
+    pezzi = pezzi.filter(p => !via.has(p));
+  }
+
+  async function scrivi(p, owned) {
+    const db = await apri(p.db);
+    const vecchia = await richiesta(db.transaction(STORE).objectStore(STORE).get(p.id));
+    const nuova = Object.assign(vecchia || { id: p.id }, { owned });
+    if (!owned) nuova.doppi = 0;
+    await richiesta(db.transaction(STORE, 'readwrite').objectStore(STORE).put(nuova));
+  }
+
   async function segna(p) {
     p.ce = !p.ce;
     p.li.classList.toggle('ce', p.ce);
     p.b.setAttribute('aria-pressed', String(p.ce));
     disegna();
     try {
-      const db = await apri(p.db);
-      const vecchia = await richiesta(db.transaction(STORE).objectStore(STORE).get(p.id));
-      await richiesta(db.transaction(STORE, 'readwrite').objectStore(STORE).put(Object.assign(vecchia || { id: p.id }, { owned: p.ce })));
+      for (const q of (p.gemelli || [p])) await scrivi(q, p.ce);
       if (typeof segnalaModifica === 'function') segnalaModifica();
     } catch (e) {  }
   }
@@ -281,6 +309,7 @@
           ps.forEach(p => { p.ce = ce.has(p.id); });
         } catch (e) {  }
       }));
+      try { await unisciRistampe(); } catch (e) {  }
       $('attesa').hidden = true;
       crea(ordina());
       applicaOrdine();
@@ -298,6 +327,6 @@
   $('cerca').addEventListener('input', e => { testo = e.target.value; disegna(); });
 })();
 </script>
-<script src="../../../script.js?v=2026-10-16-3"></script>
+<script src="../../../script.js?v=2026-10-19-1"></script>
 </body>
 </html>

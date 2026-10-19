@@ -7,12 +7,26 @@
   SERIE.forEach(s => s.x.forEach(o => { serieDi[o[0]] = s; }));
   const gruppi = [...new Set(SERIE.map(s => s.g))].filter(Boolean);
 
+  const gemelli = {};
+  try {
+    if (/\/catalogo\/kinder\//.test(location.pathname)) {
+      const per = {};
+      SERIE.forEach(s => s.x.forEach(o => { const c = /^\s*\d+\s*-\s*(.+)$/.exec(o[1] || ''); if (c) { const k = c[1].trim(); (per[k] = per[k] || []).push({ s, id: o[0] }); } }));
+      Object.keys(per).forEach(k => {
+        const l = per[k];
+        if (l.length < 2 || new Set(l.map(x => x.s)).size !== l.length) return;
+        l.forEach(x => { gemelli[x.id] = l.filter(y => y !== x).map(y => y.id); });
+      });
+    }
+  } catch (e) {}
+  const primo = id => { const g = gemelli[id]; return !g || SERIE.indexOf(serieDi[id]) < Math.min(...g.map(i => SERIE.indexOf(serieDi[i]))); };
+
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const semplice = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   const plurale = (n, uno, tanti) => n + ' ' + (n === 1 ? uno : tanti);
   const principali = s => s.x.filter(o => !paeseEstero(o[5]));
   const quante = s => principali(s).filter(o => ce[o[0]]).length;
-  const doppiDi = s => s.x.reduce((t, o) => t + (doppi[o[0]] || 0), 0);
+  const doppiDi = s => s.x.reduce((t, o) => t + (primo(o[0]) ? (doppi[o[0]] || 0) : 0), 0);
   const fotoDi = (s, o) => '../' + s.p + '/' + o[3];
   const LENTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
 
@@ -97,7 +111,7 @@
     const tot = elenco.reduce((t, s) => t + doppiDi(s), 0);
     app.innerHTML = testa('DOPPIONI', plurale(tot, 'doppione', 'doppioni') + (elenco.length ? ' in ' + plurale(elenco.length, 'serie', 'serie') : ''),
       menuGruppi())
-      + (elenco.map(s => titoloSerie(s, '', true) + griglia(s, s.x.filter(o => doppi[o[0]]))).join('')
+      + (elenco.map(s => titoloSerie(s, '', true) + griglia(s, s.x.filter(o => doppi[o[0]] && primo(o[0])))).join('')
         || vuoto('Nessun doppione. Hai qualcosa in più? Premi + sotto la foto, nella pagina della serie.'));
   }
 
@@ -158,6 +172,11 @@
     }
     else { doppi[id] = Math.max(0, (doppi[id] || 0) - 1); if (!doppi[id]) delete doppi[id]; }
     salva(id);
+    (gemelli[id] || []).forEach(g => {
+      if (ce[id]) ce[g] = true; else delete ce[g];
+      if (doppi[id]) doppi[g] = doppi[id]; else delete doppi[g];
+      salva(g);
+    });
     const y = scrollY;
     if (document.getElementById('risultati')) risultati(); else mostra();
     scrollTo(0, y);
@@ -169,5 +188,19 @@
     mostra();
   });
 
-  leggiTutto().finally(mostra);
+  function unisci() {
+    const fatti = new Set();
+    Object.keys(gemelli).forEach(id => {
+      if (fatti.has(id)) return;
+      const ids = [id, ...gemelli[id]]; ids.forEach(i => fatti.add(i));
+      const c = ids.some(i => ce[i]), d = Math.max(...ids.map(i => doppi[i] || 0));
+      ids.forEach(i => {
+        const diverso = !!ce[i] !== c || (doppi[i] || 0) !== d;
+        if (c) ce[i] = true; else delete ce[i];
+        if (d) doppi[i] = d; else delete doppi[i];
+        if (diverso) salva(i);
+      });
+    });
+  }
+  leggiTutto().then(() => { try { unisci(); } catch (e) {} }).finally(mostra);
 })();

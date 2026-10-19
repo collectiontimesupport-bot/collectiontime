@@ -72,8 +72,84 @@
   }
   const wrap = req => new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
   const datiVisitatore = p => ({ id: p.id, owned: p.owned, doppi: p.doppi, tags: p.tags, tagsTouched: p.tagsTouched });
+  const ristampe = (() => {
+    const m = /^(.*\/catalogo\/kinder\/)/.exec(location.pathname);
+    if (!m) return null;
+    let gruppi = null;
+    let esistenti = null;
+    const costruisci = IND => {
+      const per = {};
+      IND.serie.forEach(s => s.x.forEach(o => {
+        const c = /^\s*\d+\s*-\s*(.+)$/.exec(o[1] || '');
+        if (c) { const k = c[1].trim(); (per[k] = per[k] || []).push({ db: s.db, id: o[0] }); }
+      }));
+      const g = {};
+      Object.keys(per).forEach(k => {
+        const l = per[k];
+        if (l.length < 2 || new Set(l.map(x => x.db)).size !== l.length) return;
+        l.forEach(x => { g[x.db + '|' + x.id] = l.filter(y => y !== x); });
+      });
+      gruppi = g;
+    };
+    const carica = () => gruppi ? Promise.resolve(gruppi) : new Promise(ok => {
+      const fine = () => ok(gruppi = gruppi || {});
+      try {
+        if (typeof INDICE !== 'undefined') { costruisci(INDICE); return fine(); }
+        const s = document.createElement('script');
+        s.src = m[1] + 'la-mia-collezione/indice.js?v=' + Math.floor(Date.now() / 3600000);
+        s.onload = () => { try { costruisci(INDICE); } catch (e) {} fine(); };
+        s.onerror = fine;
+        document.head.append(s);
+      } catch (e) { fine(); }
+    });
+    const apriDb = nome => new Promise((ok, ko) => {
+      const r = indexedDB.open(nome, 1);
+      r.onupgradeneeded = () => r.result.createObjectStore(STORE, { keyPath: 'id' });
+      r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error);
+    });
+    const leggi = async (nome, id) => {
+      if (esistenti === null) esistenti = indexedDB.databases ? new Set((await indexedDB.databases()).map(d => d.name)) : false;
+      if (esistenti && !esistenti.has(nome)) return null;
+      const d = await apriDb(nome);
+      return new Promise(ok => { const g = d.transaction(STORE).objectStore(STORE).get(id); g.onsuccess = () => { d.close(); ok(g.result || null); }; g.onerror = () => { d.close(); ok(null); }; });
+    };
+    const propaga = async p => {
+      try {
+        const altri = (await carica())[CONFIG.dbName + '|' + p.id];
+        if (!altri) return;
+        for (const a of altri) {
+          const d = await apriDb(a.db);
+          await new Promise(ok => {
+            const t = d.transaction(STORE, 'readwrite'), st = t.objectStore(STORE), g = st.get(a.id);
+            g.onsuccess = () => st.put(Object.assign(g.result || { tags: [], tagsTouched: false }, { id: a.id, owned: !!p.owned, doppi: p.doppi || 0 }));
+            t.oncomplete = () => { d.close(); ok(); }; t.onerror = t.onabort = () => { d.close(); ok(); };
+          });
+        }
+      } catch (e) {  }
+    };
+    const unisci = async () => {
+      try {
+        const g = await carica();
+        let cambiato = false;
+        for (const p of pens) {
+          const altri = g[CONFIG.dbName + '|' + p.id];
+          if (!altri) continue;
+          let owned = p.owned, doppi = p.doppi;
+          for (const a of altri) {
+            const v = await leggi(a.db, a.id);
+            if (v) { if (v.owned === true || v.doppi > 0) owned = true; if (v.doppi > doppi) doppi = v.doppi; }
+          }
+          if (owned !== p.owned || doppi !== p.doppi) { p.owned = owned; p.doppi = doppi; cambiato = true; savePen(p); }
+        }
+        return cambiato;
+      } catch (e) { return false; }
+    };
+    return { propaga, unisci };
+  })();
+
   const savePen = p => db
     ? wrap(db.transaction(STORE, 'readwrite').objectStore(STORE).put(datiVisitatore(p)))
+        .then(() => ristampe ? ristampe.propaga(p) : null)
         .then(segnalaModifica)
         .catch(() => say('Salvataggio non riuscito.'))
     : Promise.resolve();
@@ -1165,11 +1241,28 @@
       say('Questo browser non permette di salvare la collezione (per esempio in navigazione privata).');
     }
     render();
+    if (ristampe && db) ristampe.unisci().then(c => { if (c) render(); });
     if (location.hash === '#cerco-scambio') {
       history.replaceState(null, '', location.pathname + location.search);
       const scambi = printDlg.querySelector('input[value="scambi"]');
       if (conAccount()) scambi.checked = true;
       $('btnPrint').click();
+    }
+    const arrivo = location.hash.match(/^#(info|pezzo)=(.+)$/);
+    if (arrivo) {
+      history.replaceState(null, '', location.pathname + location.search);
+      let id = arrivo[2]; try { id = decodeURIComponent(id); } catch (e) {}
+      const p = pens.find(x => x.id === id);
+      if (p) {
+        if (arrivo[1] === 'info') openEdit(p);
+        else {
+          const li = grid.querySelector('[data-id="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]');
+          if (li) {
+            li.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            li.animate([{ outline: '3px solid var(--amber)', outlineOffset: '2px' }, { outline: '3px solid var(--amber)', outlineOffset: '2px' }, { outline: '3px solid transparent', outlineOffset: '2px' }], { duration: 2200, easing: 'ease-out' });
+          }
+        }
+      }
     }
   })();
 })();

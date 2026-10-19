@@ -311,6 +311,7 @@
     "Tutte le sorpresine": "All the surprise toys",
     "Vedi tutte le sorpresine per codice →": "See all the surprise toys by code →",
     "Cerca un codice o un nome": "Search a code or a name",
+    "Vai alla serie": "Go to the series",
     "Senza codice": "No code",
     "Carico le sorpresine…": "Loading the surprise toys…",
     "Nessuna sorpresina trovata.": "No surprise toy found.",
