@@ -11,7 +11,7 @@
   try {
     if (/\/catalogo\/kinder\//.test(location.pathname)) {
       const per = {};
-      SERIE.forEach(s => s.x.forEach(o => { const c = /^\s*\d+\s*-\s*(.+)$/.exec(o[1] || ''); if (c) { const k = c[1].trim(); (per[k] = per[k] || []).push({ s, id: o[0] }); } }));
+      SERIE.forEach(s => s.x.forEach(o => { const c = o[5] === 'Variante' ? null : /^\s*\d+\s*-\s*(.+)$/.exec(o[1] || ''); if (c) { const k = c[1].trim(); (per[k] = per[k] || []).push({ s, id: o[0] }); } }));
       Object.keys(per).forEach(k => {
         const l = per[k];
         if (l.length < 2 || new Set(l.map(x => x.s)).size !== l.length) return;
@@ -61,7 +61,7 @@
 
   function oggetto(s, o) {
     const [id, num, nome] = o, si = !!ce[id], n = doppi[id] || 0;
-    const numero = o[5] && !String(num).includes(' - ') ? num + ' - ' + o[5] : num;
+    const numero = o[5] && o[5] !== 'Variante' && !String(num).includes(' - ') ? num + ' - ' + o[5] : num;
     return `<li class="pen${si ? ' owned' : ''}">
       <button type="button" class="open" data-ce="${id}" aria-pressed="${si}" aria-label="Ce l'ho: ${esc(nome || numero)}"><div class="pic"><img class="pen-img" src="${fotoDi(s, o)}" alt="${esc(nome || numero)}"${s.nomi ? '' : ` title="${esc(nome)}"`} loading="lazy" decoding="async" draggable="false"><span class="spunta" aria-hidden="true"></span></div></button>
       ${s.nomi ? `<div class="nome"><span>${esc(nome)}</span></div>` : ''}

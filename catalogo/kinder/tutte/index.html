@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://collectiontime.com/catalogo/kinder/tutte/">
 <meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-19-1">
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-20-1">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
   :root {
@@ -45,6 +45,8 @@
   .tutte button { all: unset; box-sizing: border-box; display: block; width: 100%; aspect-ratio: 1; border-radius: 10px; cursor: pointer; }
   .tutte button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
   .tutte img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .tutte li { position: relative; }
+  .tutte .var-et { position: absolute; top: 4px; left: 4px; background: var(--amber); color: #1A2140; font: 700 .6875rem/1 system-ui, sans-serif; padding: 3px 7px; border-radius: 999px; box-shadow: 0 1px 3px rgba(0,0,0,.3); pointer-events: none; }
   .tutte .cod { display: block; margin-top: 2px; font-size: .75rem; font-weight: 600; color: var(--muted); }
   .tutte li:not(.ce) img { filter: var(--spento, grayscale(1)); opacity: var(--spento-op, .3); }
   .tutte li.ce button { background: color-mix(in srgb, var(--amber) 14%, var(--white)); }
@@ -86,7 +88,7 @@
 
 <div id="footer-placeholder"></div>
 
-<script src="../../../comune/menu-pezzo.js?v=2026-10-19-1"></script>
+<script src="../../../comune/menu-pezzo.js?v=2026-10-20-1"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -96,7 +98,7 @@
   let filtro = 'tutte';
   let testo = '';
 
-  const GRUPPI = ['kinder-sorpresa', 'kinder-joy', 'merendine-ferrero'];
+  const GRUPPI = ['kinder-sorpresa', 'kinder-sorpresa-maxi', 'kinder-joy', 'merendine-ferrero'];
 
   const richiesta = r => new Promise((ok, ko) => { r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
   function apri(nome) {
@@ -129,6 +131,7 @@
       return {
         id: campo(r, 'id'), nome: campo(r, 'nome').replace(/\\(.)/g, '$1'), serie: s.titolo, anno: Number(campo(r, 'codice')) || 0,
         cod, fam: cod ? (p[1] || cod) : '', num: Number(p[2]) || 0, suf: p[3] || '',
+        variante: /\bvariante:\s*true\b/.test(r),
         pos: s.ordine * 1000 + i,
         foto: '../' + s.cartella + '/' + foto, url: '../' + s.cartella + '/index.html', db, ce: false
       };
@@ -136,7 +139,7 @@
   }
 
   const FAMIGLIE = { C: 2004, S: 2005, '2S': 2006, ST: 2006, TT: 2007, NV: 2008, DE: 2009, UN: 2010, DC: 2011, TR: 2012, FT: 2013,
-                     FF: 2014, FS: 2015, SD: 2016, SE: 2017, EN: 2018, DV: 2019, VV: 2020, VU: 2021, VD: 2022, VT: 2023, VQ: 2024, VC: 2025, VS: 2026 };
+                     FF: 2014, FS: 2015, SD: 2016, SE: 2017, EN: 2018, DV: 2019, VV: 2020, VU: 2021, VUB: 2021, VD: 2022, VDB: 2022, VT: 2023, VTB: 2023, VQ: 2024, VC: 2025, VS: 2026 };
 
   function ordina() {
     const fam = new Map();
@@ -195,6 +198,7 @@
         cod.className = 'cod';
         cod.textContent = p.cod || (p.anno || '');
         li.append(b, cod);
+        if (p.variante) { const et = document.createElement('span'); et.className = 'var-et'; et.textContent = 'Variante'; li.append(et); }
         p.li = li; p.b = b;
         b.addEventListener('click', () => segna(p));
         ul.append(li);
@@ -259,7 +263,7 @@
 
   async function unisciRistampe() {
     const per = new Map();
-    pezzi.forEach(p => { if (p.cod) { if (!per.has(p.cod)) per.set(p.cod, []); per.get(p.cod).push(p); } });
+    pezzi.forEach(p => { if (p.cod && !p.variante) { if (!per.has(p.cod)) per.set(p.cod, []); per.get(p.cod).push(p); } });
     const via = new Set();
     for (const l of per.values()) {
       if (l.length < 2 || new Set(l.map(p => p.db)).size !== l.length) continue;
@@ -327,6 +331,6 @@
   $('cerca').addEventListener('input', e => { testo = e.target.value; disegna(); });
 })();
 </script>
-<script src="../../../script.js?v=2026-10-19-1"></script>
+<script src="../../../script.js?v=2026-10-20-1"></script>
 </body>
 </html>

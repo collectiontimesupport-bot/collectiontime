@@ -29,7 +29,8 @@
       pos: i,
       code: paese && numero && !numero.includes(' - ') ? numero + ' - ' + paese : numero,
       paese,
-      estero: paeseEstero(paese),
+      estero: paeseEstero(paese) || !!r.variante,
+      variante: !!r.variante,
       codice: r.codice || '',
       senzaCodice: !!r.senzaCodice,
       name: r.nome || '',
@@ -39,7 +40,7 @@
       richInfo: r.richInfo ? r.richInfo + (infoPaese ? escHtml(infoPaese) : '') : '',
       limited: !!r.limitata,
       tags: Array.isArray(r.hashtag) ? r.hashtag.slice() : [],
-      info: (r.info || '') + infoPaese,
+      info: (r.info || '') + infoPaese + (r.variante && !/variante/i.test(r.info || '') ? ((r.info || infoPaese) ? '. ' : '') + 'Variante' : ''),
       image: r.foto || '',
       fotoInfo: Array.isArray(r.fotoInfo) ? r.fotoInfo.filter(Boolean) : []
     };
@@ -80,7 +81,7 @@
     const costruisci = IND => {
       const per = {};
       IND.serie.forEach(s => s.x.forEach(o => {
-        const c = /^\s*\d+\s*-\s*(.+)$/.exec(o[1] || '');
+        const c = o[5] === 'Variante' ? null : /^\s*\d+\s*-\s*(.+)$/.exec(o[1] || '');
         if (c) { const k = c[1].trim(); (per[k] = per[k] || []).push({ db: s.db, id: o[0] }); }
       }));
       const g = {};
@@ -193,8 +194,7 @@
     if (doppi) t += ' · ' + doppi + (doppi === 1 ? ' doppione' : ' doppioni');
     if (typeof shown === 'number' && shown !== pens.length) t += ' · ' + shown + (shown === 1 ? ' visibile' : ' visibili');
     $('count').textContent = t;
-    const estere = grid.querySelector('.estere-titolo small');
-    if (estere) estere.textContent = testoEstere();
+    grid.querySelectorAll('.estere-titolo').forEach(li => { li.querySelector('small').textContent = testoEstere(!!li.dataset.variante); });
     if (!barra) {
       barra = document.createElement('div');
       barra.className = 'avanz-barra';
@@ -238,7 +238,7 @@
     const anni = new Set(SEED.map(s => s.codice));
     const anno = anni.size === 1 && /^(19|20)\d\d$/.test(SEED[0].codice) ? SEED[0].codice : '';
     const principali = SEED.filter(s => !s.estero).length, estere = SEED.length - principali;
-    const quanti = principali + ' ' + (principali === 1 ? CONFIG.nome : plurale(CONFIG.nome)) + (estere ? ' + ' + estere + ' estere' : '');
+    const quanti = principali + ' ' + (principali === 1 ? CONFIG.nome : plurale(CONFIG.nome)) + (estere ? ' + ' + estere + (SEED.some(s => s.estero && !s.variante) ? ' estere' : (estere === 1 ? ' variante' : ' varianti')) : '');
     const p = document.createElement('p');
     p.className = 'info-serie';
     p.textContent = [anno, quanti].filter(Boolean).join(' · ');
@@ -483,17 +483,18 @@
     return li;
   }
 
-  const testoEstere = () => {
-    const tutte = pens.filter(p => p.estero && (p.image || p.owned));
+  const testoEstere = v => {
+    const tutte = pens.filter(p => p.estero && !!p.variante === !!v && (p.image || p.owned));
     return tutte.filter(p => p.owned).length + ' su ' + tutte.length + ' · non contano per completare la serie';
   };
-  function titoloEstere() {
+  function titoloEstere(v) {
     const li = document.createElement('li');
     li.className = 'estere-titolo';
+    li.dataset.variante = v ? '1' : '';
     const t = document.createElement('b');
-    t.textContent = 'Varianti estere';
+    t.textContent = v ? 'Varianti' : 'Varianti estere';
     const n = document.createElement('small');
-    n.textContent = testoEstere();
+    n.textContent = testoEstere(v);
     li.append(t, n);
     return li;
   }
@@ -501,8 +502,9 @@
   function render() {
     const list = visiblePens();
     const nodi = list.filter(p => !p.estero).map(card);
-    const estere = list.filter(p => p.estero);
-    if (estere.length) nodi.push(titoloEstere(), ...estere.map(card));
+    const varianti = list.filter(p => p.estero && p.variante), estere = list.filter(p => p.estero && !p.variante);
+    if (varianti.length) nodi.push(titoloEstere(true), ...varianti.map(card));
+    if (estere.length) nodi.push(titoloEstere(false), ...estere.map(card));
     grid.replaceChildren(...nodi);
     $('noResults').hidden = list.length > 0 || pens.length === 0;
     $('emptyAll').hidden = pens.length > 0;
@@ -1130,7 +1132,7 @@
   const estereVoce = (function () {
     const l = document.createElement('label');
     l.className = 'print-estere';
-    l.innerHTML = '<input type="checkbox" id="printEstere"><span>Stampa anche le varianti estere</span>';
+    l.innerHTML = '<input type="checkbox" id="printEstere"><span>Stampa anche le varianti' + (SEED.some(p => p.estero && !p.variante) ? ' estere' : '') + '</span>';
     printDlg.querySelector('.actions').before(l);
     return l;
   })();

@@ -795,7 +795,7 @@ function paeseCoincide(testo) {
   const mio = paeseVisitatore();
   return String(testo).split(/[,;]/).some(p => (GRUPPI_PAESI[senzaAccenti(p)] || '').split(' ').includes(mio) || codicePaese(p) === mio);
 }
-function paeseEstero(testo) { return !!testo && !paeseCoincide(testo); }
+function paeseEstero(testo) { return !!testo && (/^variante$/i.test(String(testo).trim()) || !paeseCoincide(testo)); }
 
 const eEstera = li => paeseEstero(li.dataset.paese);
 function sezioneEstere(card) {
