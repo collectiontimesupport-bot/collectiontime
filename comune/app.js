@@ -452,6 +452,7 @@
     } else {
       img.className = 'ghost';
       img.src = SLOT_IMG;
+      img.onerror = () => { img.onerror = null; img.src = new URL('comune/slot-vuoto-quadrato.webp', RADICE).href; };
       img.alt = '';
       pic.append(img);
     }

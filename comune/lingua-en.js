@@ -153,7 +153,7 @@
     "pezzi catalogati": "items cataloged",
     "serie": "series",
     "categorie": "categories",
-    "collezionisti iscritti": "registered collectors",
+    "collezionisti": "collectors",
     "Novità": "New",
     "Nuova": "New",
     "Tutte le categorie": "All categories",
