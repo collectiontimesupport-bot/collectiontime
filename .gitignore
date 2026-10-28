@@ -1,4 +1,7 @@
 .DS_Store
 
 # foto senza filigrana: non vanno mai pubblicate
-catalogo/kinder/_Originali/
+catalogo/*/_Originali/
+
+# file temporaneo della "Prova la pagina" nell'admin
+catalogo/**/_prova-anteprima.html

@@ -17,6 +17,33 @@ const versioneDati = () => _versioneDati || (_versioneDati = (async () => {
 if (window.parent !== window) {
   const dillo = () => parent.postMessage({ anteprimaUrl: location.href, titolo: document.title }, '*');
   dillo(); addEventListener('load', dillo);
+  const CHIAVE_POS = 'ct-anteprima-posizione:' + location.pathname;
+  const salvaPos = () => {
+    try {
+      const dlg = document.getElementById('dlg'), aperta = !!(dlg && dlg.open), f = document.getElementById('fCode');
+      sessionStorage.setItem(CHIAVE_POS, JSON.stringify({ y: scrollY, num: aperta && f ? f.value : null, dlgY: aperta ? ((dlg.querySelector('.dlg-body') || dlg).scrollTop) : 0, dlgY2: aperta ? dlg.scrollTop : 0 }));
+    } catch (e) {}
+  };
+  addEventListener('pagehide', salvaPos); addEventListener('beforeunload', salvaPos);
+  addEventListener('scroll', () => { clearTimeout(salvaPos.t); salvaPos.t = setTimeout(salvaPos, 200); }, { passive: true });
+  document.addEventListener('click', () => setTimeout(salvaPos, 120), true);
+  document.addEventListener('close', () => setTimeout(salvaPos, 50), true);
+  let st = null; try { st = JSON.parse(sessionStorage.getItem(CHIAVE_POS) || 'null'); } catch (e) {}
+  if (st) {
+    let giri = 0;
+    const rimetti = () => {
+      const schede = document.querySelectorAll('li.pen');
+      if (!schede.length && ++giri < 40) { setTimeout(rimetti, 150); return; }
+      if (st.num !== null) {
+        const li = [...schede].find(x => { const c = x.querySelector('.code'); return c && c.textContent.trim() === st.num; });
+        const b = li && li.querySelector('.edit');
+        if (b) { b.click(); const dlg = document.getElementById('dlg'); if (dlg) { (dlg.querySelector('.dlg-body') || dlg).scrollTop = st.dlgY || 0; dlg.scrollTop = st.dlgY2 || 0; } }
+      }
+      scrollTo(0, st.y || 0);
+      [300, 900].forEach(t => setTimeout(() => { if (Math.abs(scrollY - (st.y || 0)) > 4 && !(document.getElementById('dlg') || {}).open) scrollTo(0, st.y || 0); }, t));
+    };
+    if (document.readyState === 'complete') setTimeout(rimetti, 100); else addEventListener('load', () => setTimeout(rimetti, 100));
+  }
 }
 
 const LINGUA = (() => { try { return localStorage.getItem('ct-lingua') === 'en' ? 'en' : 'it'; } catch (e) { return 'it'; } })();
@@ -321,7 +348,41 @@ async function aggiungiHome() {
   await invitoInstalla.userChoice;
   invitoInstalla = null;
 }
-document.addEventListener('click', e => { if (e.target.closest('#stHome')) aggiungiHome(); });
+document.addEventListener('click', e => { if (e.target.closest('#stHome, [data-installa]')) aggiungiHome(); });
+if (giaInstallato()) document.getElementById('stAppSez')?.remove();
+
+function invitoApp() {
+  const forza = /[?&]invito=1/.test(location.search);
+  if (giaInstallato() || document.querySelector('dialog[open]')) return;
+  let stato = '';
+  try {
+    stato = localStorage.getItem('ct-invito-app') || '';
+    if (stato === '2') return;
+    if (!stato && !forza) {
+      if (!document.getElementById('novita')) return;
+      if (!matchMedia('(pointer: coarse)').matches) return;
+      let v = +localStorage.getItem('ct-visite') || 0;
+      if (!sessionStorage.getItem('ct-visita')) { v++; localStorage.setItem('ct-visite', String(v)); sessionStorage.setItem('ct-visita', '1'); }
+      if (v < 3) return;
+    }
+    localStorage.setItem('ct-invito-app', '1');
+  } catch (e) { return; }
+  const chiudi = () => { try { localStorage.setItem('ct-invito-app', '2'); } catch (e) {} el.remove(); };
+  const el = document.createElement('div');
+  el.className = 'st-invito-app';
+  el.setAttribute('role', 'status');
+  el.innerHTML = '<span>Metti <b>Collection Time</b> sulla Home: si apre come una app.</span><button type="button" data-si>Come si fa</button><button type="button" class="chiudi" data-no aria-label="Chiudi">×</button>';
+  el.addEventListener('click', e => {
+    if (e.target.closest('[data-si]')) { chiudi(); aggiungiHome(); }
+    else if (e.target.closest('[data-no]')) chiudi();
+  });
+  document.body.append(el);
+  setTimeout(() => el.classList.add('show'), 50);
+}
+window.addEventListener('appinstalled', () => { try { localStorage.setItem('ct-invito-app', '2'); } catch (e) {} document.querySelector('.st-invito-app')?.remove(); });
+setTimeout(invitoApp, 2500);
+
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register(new URL('sw.js', BASE)).catch(() => {}));
 
 
 function avviaCerca() {
@@ -333,14 +394,127 @@ function avviaCerca() {
   const nessuna = document.querySelector('.st-nessuna');
   const semplice = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
+  const inHome = !dentroCatalogo() && !!nessuna;
+  let riepilogo = null, copertine = {}, scarica = null, mie = null, gettone = 0;
+  const trovate = document.createElement('section');
+  trovate.className = 'st-serie-trovate'; trovate.hidden = true;
+  if (inHome) nessuna.before(trovate);
+  const titoloCat = document.createElement('h2');
+  titoloCat.className = 'st-sez-titolo'; titoloCat.textContent = 'Categorie'; titoloCat.hidden = true;
+  const grigliaCat = document.querySelector('.st-cards');
+  if (inHome && grigliaCat) { grigliaCat.before(titoloCat); grigliaCat.after(trovate); }
+  const blocchi = ['.st-numeri', '#novita'].map(q => document.querySelector(q)).filter(Boolean);
+  const posto = blocchi.length ? document.createComment('') : null;
+  if (posto) blocchi[0].before(posto);
+  const titoloTutte = nessuna && nessuna.previousElementSibling && nessuna.previousElementSibling.matches('h2') ? nessuna.previousElementSibling : null;
+  let giu = false;
+  function scendi(si) {
+    if (!inHome || !posto || si === giu) return;
+    giu = si;
+    if (si) trovate.after(...blocchi); else posto.after(...blocchi);
+  }
+  let espanso = false, ultima = '';
+  trovate.addEventListener('click', e => { if (e.target.closest('.st-altre-serie')) { espanso = true; filtra(); } });
+  function caricaRiepilogo() {
+    if (!scarica) scarica = Promise.all([
+      fetch(new URL('riepilogo.json', CATALOGO), { cache: 'no-cache' }).then(r => r.json()).then(j => { riepilogo = j.serie || {}; }).catch(() => { riepilogo = {}; }),
+      fetch(new URL('copertine.json', CATALOGO), { cache: 'no-cache' }).then(r => r.json()).then(j => { copertine = j || {}; }).catch(() => {})
+    ]).then(() => filtra());
+    return scarica;
+  }
+  const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  function distanza(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    let prec = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i]; let minimo = i;
+      for (let j = 1; j <= b.length; j++) {
+        cur[j] = Math.min(prec[j] + 1, cur[j - 1] + 1, prec[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (cur[j] < minimo) minimo = cur[j];
+      }
+      if (minimo > max) return max + 1;
+      prec = cur;
+    }
+    return prec[b.length];
+  }
+  function puntiParola(p, token) {
+    let migliore = 0;
+    for (const t of token) {
+      if (t.startsWith(p)) return 3;
+      if (t.includes(p)) migliore = Math.max(migliore, 2);
+      else if (p.length >= 4 && !migliore) {
+        const max = p.length >= 7 ? 2 : 1;
+        if (distanza(p, t.slice(0, p.length + 1), max) <= max || distanza(p, t, max) <= max) migliore = 1;
+      }
+    }
+    return migliore;
+  }
+  function punteggio(parole, r) {
+    const titolo = semplice(r[1]).split(/[^a-z0-9]+/).filter(Boolean), resto = semplice(r[3]).split(/[^a-z0-9]+/).filter(Boolean);
+    let tot = 0;
+    for (const p of parole) {
+      const a = puntiParola(p, titolo) * 2, b = puntiParola(p, resto);
+      if (!a && !b) return 0;
+      tot += Math.max(a, b);
+    }
+    return tot + (semplice(r[1]).startsWith(parole[0]) ? 2 : 0);
+  }
+  async function avanzamento(db, r) {
+    try {
+      if (!mie) mie = new Set(await archivi());
+      if (!mie.has(db)) return null;
+      const d = await apriArchivio(db), righe = await leggi(d); d.close();
+      const esteri = r[4] || {}, fuori = id => Object.keys(esteri).length < r[2] && !!esteri[id] && paeseEstero(esteri[id]);
+      const tot = r[2] - Object.keys(esteri).filter(fuori).length;
+      const ce = Math.min(righe.filter(x => !fuori(x.id) && (x.owned === true || x.doppi > 0)).length, tot);
+      return ce ? { ce, tot } : null;
+    } catch (e) { return null; }
+  }
+  function cercaSerie(parole, nCat) {
+    if (!inHome) return 0;
+    if (!parole.length) { trovate.hidden = true; trovate.innerHTML = ''; return 0; }
+    if (!riepilogo) { caricaRiepilogo(); return 0; }
+    const data = db => (copertine[db] && copertine[db][1]) || '';
+    const ris = Object.entries(riepilogo).map(([db, r]) => ({ db, r, p: punteggio(parole, r) })).filter(x => x.p > 0)
+      .sort((a, b) => b.p - a.p || (data(b.db) > data(a.db) ? 1 : data(b.db) < data(a.db) ? -1 : 0) || a.r[1].localeCompare(b.r[1])).slice(0, 60);
+    const limite = espanso ? 60 : nCat > 0 ? 5 : 30, tutte = ris.length;
+    ris.length = Math.min(ris.length, limite);
+    trovate.hidden = !ris.length;
+    trovate.innerHTML = ris.length ? '<h2 class="st-sez-titolo">Serie</h2><ul>' + ris.map(x => {
+      const r = x.r, c = copertine[x.db] && copertine[x.db][0];
+      return '<li><a href="' + esc(new URL('catalogo/' + r[0] + '/index.html', BASE).href) + '" data-db="' + esc(x.db) + '">'
+        + (c ? '<img src="' + esc(new URL(c, CATALOGO).href) + '" alt="" loading="lazy" decoding="async">' : '<span class="st-sf"></span>')
+        + '<span class="st-st"><strong>' + esc(r[1]) + '</strong><small>' + esc(r[3]) + ' · ' + r[2] + (r[2] === 1 ? ' pezzo' : ' pezzi') + '</small><em></em></span></a></li>';
+    }).join('') + '</ul>' + (tutte > ris.length ? '<p class="st-altre"><button type="button" class="st-btn st-altre-serie">Mostra tutte le serie (' + tutte + ')</button></p>' : '') : '';
+    const mio = ++gettone;
+    ris.forEach(async x => {
+      const a = await avanzamento(x.db, x.r); if (!a || mio !== gettone) return;
+      const em = trovate.querySelector('a[data-db="' + (window.CSS && CSS.escape ? CSS.escape(x.db) : x.db) + '"] em');
+      if (em) em.textContent = a.ce >= a.tot ? '✓ Completa' : 'Ce l’hai: ' + a.ce + '/' + a.tot;
+    });
+    return ris.length;
+  }
   function filtra() {
     const parole = semplice(campo.value).split(/\s+/).filter(Boolean);
     let visibili = 0;
+    const soloParole = new Set();
     card.forEach(li => {
-      const testo = semplice(li.textContent + ' ' + (li.dataset.cerca || ''));
+      const nome = inHome ? semplice(((li.querySelector('.st-card') || li).getAttribute('aria-label') || '') + ' ' + ((li.querySelector('.logo-coll') || {}).textContent || '')) : '';
+      const testo = inHome ? nome : semplice(li.textContent + ' ' + (li.dataset.cerca || ''));
       li.hidden = !parole.every(p => testo.includes(p));
       if (!li.hidden) visibili++;
     });
+    visibili -= soloParole.size;
+    if (campo.value !== ultima) { ultima = campo.value; espanso = false; }
+    if (grigliaCat) grigliaCat.classList.toggle('st-ricerca', inHome && parole.length > 0);
+    scendi(parole.length > 0); if (titoloTutte) titoloTutte.hidden = inHome && parole.length > 0;
+    const nSerie = cercaSerie(parole, visibili);
+    if (nSerie > 0) soloParole.forEach(li => { li.hidden = true; });
+    else visibili += soloParole.size;
+    titoloCat.hidden = !(inHome && parole.length && visibili > 0);
+    visibili += nSerie;
+    const suggFissa = document.querySelector('.st-pin-hint');
+    if (suggFissa) suggFissa.hidden = inHome && parole.length > 0 && !card.some(li => !li.hidden);
     if (nessuna) nessuna.hidden = visibili > 0;
     document.querySelectorAll('.st-estero').forEach(s => { s.hidden = ![...s.querySelectorAll('li')].some(li => !li.hidden); });
     aggiornaAnni(parole.length > 0);
@@ -445,7 +619,8 @@ function aggiornaAnni(cercando) {
 
 const NOMI_CATEGORIE = {
   'burger-king': 'Burger King', 'coolthings': 'Cool Things', 'eurospin': 'Eurospin', 'granterre': 'GranTerre', 'kinder': 'Kinder Ferrero', 'legami': 'Legami',
-  'lego': 'LEGO Minifigures', 'lidl': 'Lidl', 'mcdonalds': "McDonald's", 'mulino-bianco': 'Mulino Bianco'
+  'lego': 'LEGO Minifigures', 'lidl': 'Lidl', 'mcdonalds': "McDonald's", 'mulino-bianco': 'Mulino Bianco',
+  'findus': 'Findus'
 };
 function percorso() {
   const back = document.querySelector('a.st-back');
@@ -506,16 +681,25 @@ async function barreSerie() {
       if (!s || !apri || !miei.has(s.db)) continue;
       const db = await apriArchivio(s.db), righe = await leggi(db);
       db.close();
-      const ids = new Set(s.x.filter(o => !paeseEstero(o[5])).map(o => o[0]));
+      let ids = new Set(s.x.filter(o => !paeseEstero(o[5])).map(o => o[0]));
+      if (!ids.size) ids = new Set(s.x.map(o => o[0]));
       const ce = righe.filter(r => ids.has(r.id) && (r.owned === true || r.doppi > 0)).length, tot = ids.size;
-      if (!ce) continue;
+      const idsE = s.x.filter(o => paeseEstero(o[5]) && !ids.has(o[0])).map(o => o[0]), ceE = righe.filter(r => idsE.includes(r.id) && (r.owned === true || r.doppi > 0)).length;
+      if (!ce && !ceE) continue;
+      const soloE = !ce, nUsi = soloE ? ceE : ce, totUsi = soloE ? idsE.length : tot;
       const riga = document.createElement('div');
-      riga.className = 'st-riga-apri' + (ce >= tot ? ' finita' : '');
+      riga.className = 'st-riga-apri' + (nUsi >= totUsi ? ' finita' : '');
       riga.innerHTML = '<span class="st-progresso"><i></i></span><span class="st-quanti"></span>';
-      riga.querySelector('i').style.width = Math.round(ce * 100 / tot) + '%';
-      riga.querySelector('.st-quanti').textContent = ce + ' su ' + tot;
+      riga.querySelector('i').style.width = Math.round(nUsi * 100 / totUsi) + '%';
+      riga.querySelector('.st-quanti').textContent = nUsi + ' su ' + totUsi + (soloE ? ' estere' : '');
       apri.replaceWith(riga);
       riga.prepend(apri);
+      if (!soloE && ceE) {
+        const nota = document.createElement('div');
+        nota.className = 'st-estere-nota';
+        nota.textContent = '+ ' + ceE + ' su ' + idsE.length + ' estere';
+        riga.after(nota);
+      }
     }
   } catch (e) {  }
 }
@@ -524,7 +708,7 @@ function pinCategorie() {
   const lista = document.querySelector('ul.st-cards[data-pin-max]');
   if (!lista) return;
   const max = Math.max(0, parseInt(lista.dataset.pinMax, 10) || 3);
-  const originali = [...lista.children];
+  const originali = [...lista.children].filter(li => li.tagName === 'LI');
   const chiave = li => (li.querySelector('a.st-card') || {}).href || '';
   const leggiPin = () => { try { return JSON.parse(localStorage.getItem('ct-pin')) || []; } catch (e) { return []; } };
   const salvaPin = v => { try { localStorage.setItem('ct-pin', JSON.stringify(v)); } catch (e) {} };

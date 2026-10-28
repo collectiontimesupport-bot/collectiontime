@@ -514,7 +514,7 @@ async function contaNumeri() {
     for (const [nome, c] of Object.entries(tutte)) {
       const s = R[nome];
       if (!s) continue;
-      const esteri = s[4] || {}, fuori = id => !!esteri[id] && paeseEstero(esteri[id]);
+      const esteri = s[4] || {}, fuori = id => Object.keys(esteri).length < s[2] && !!esteri[id] && paeseEstero(esteri[id]);
       const doppi = c.doppi || {};
       const ids = new Set([...(c.possedute || []), ...Object.keys(doppi).filter(id => doppi[id] > 0)]);
       const tot = s[2] - Object.keys(esteri).filter(fuori).length;

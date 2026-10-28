@@ -86,7 +86,8 @@ const TROFEI = [
 const BADGE = [
   ['burger-king', 'Burger King', '#D62300'], ['coolthings', 'Cool Things', '#E50A15'], ['eurospin', 'Eurospin', '#004A99'],
   ['granterre', 'Granterre', '#7A9A2E'], ['kinder', 'Kinder', '#1A2140'], ['legami', 'Legami', '#E50A15'],
-  ['lego', 'LEGO', '#E00000'], ['lidl', 'Lidl', '#1d1d86'], ['mcdonalds', 'McDonald’s', '#DA291C'], ['mulino-bianco', 'Mulino Bianco', '#A3282B']
+  ['lego', 'LEGO', '#E00000'], ['lidl', 'Lidl', '#1d1d86'], ['mcdonalds', 'McDonald’s', '#DA291C'], ['mulino-bianco', 'Mulino Bianco', '#A3282B'],
+  ['findus', 'Findus', '#ff0000']
 ];
 
 const en = () => typeof LINGUA !== 'undefined' && LINGUA === 'en';
@@ -106,7 +107,7 @@ async function leggiSpunte() {
   const totaleCat = {};
   for (const s of Object.values(R)) {
     const esteri = s[4] || {};
-    const tot = s[2] - Object.keys(esteri).filter(id => paeseEstero(esteri[id])).length;
+    const tot = s[2] - (Object.keys(esteri).length < s[2] ? Object.keys(esteri).filter(id => paeseEstero(esteri[id])).length : 0);
     totaleCat[categoriaDi(s)] = (totaleCat[categoriaDi(s)] || 0) + tot;
   }
   const serie = {};
@@ -117,7 +118,7 @@ async function leggiSpunte() {
     if (!s) continue;
     const db = await apriArchivio(nome), righe = await leggi(db);
     db.close();
-    const esteri = s[4] || {}, fuori = id => !!esteri[id] && paeseEstero(esteri[id]);
+    const esteri = s[4] || {}, fuori = id => Object.keys(esteri).length < s[2] && !!esteri[id] && paeseEstero(esteri[id]);
     const tot = s[2] - Object.keys(esteri).filter(fuori).length;
     const ce = Math.min(righe.filter(r => !fuori(r.id) && (r.owned === true || r.doppi > 0)).length, tot);
     if (righe.some(r => r.tagsTouched === true && Array.isArray(r.tags) && r.tags.length)) conTag = true;

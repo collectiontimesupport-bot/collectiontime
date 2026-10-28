@@ -25,12 +25,14 @@ async function mostraStatistiche() {
       if (!s) continue;
       const db = await apriArchivio(nome), righe = await leggi(db);
       db.close();
-      const esteri = s[4] || {}, fuori = id => !!esteri[id] && paeseEstero(esteri[id]);
+      const esteri = s[4] || {}, fuori = id => Object.keys(esteri).length < s[2] && !!esteri[id] && paeseEstero(esteri[id]);
       const tot = s[2] - Object.keys(esteri).filter(fuori).length;
       const ce = Math.min(righe.filter(r => !fuori(r.id) && (r.owned === true || r.doppi > 0)).length, tot);
-      if (!ce) continue;
-      mie.push({ link: new URL(s[0] + '/', CATALOGO).href, t: s[1], tot, cat: s[3], ce,
-                 doppi: righe.reduce((n, r) => n + (r.doppi > 0 ? r.doppi : 0), 0) });
+      const doppiDi = f => righe.reduce((n, r) => n + (f(r) && r.doppi > 0 ? r.doppi : 0), 0);
+      const link = new URL(s[0] + '/', CATALOGO).href;
+      if (ce) mie.push({ link, t: s[1], tot, cat: s[3], ce, doppi: doppiDi(r => !fuori(r.id)) });
+      const nFuori = s[2] - tot, ceFuori = Math.min(righe.filter(r => fuori(r.id) && (r.owned === true || r.doppi > 0)).length, nFuori);
+      if (nFuori && ceFuori) mie.push({ link, t: s[1] + ' (estere)', tot: nFuori, cat: s[3], ce: ceFuori, doppi: doppiDi(r => fuori(r.id)) });
     }
   } catch (e) {
     console.warn(e);

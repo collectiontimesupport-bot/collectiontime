@@ -5,3 +5,8 @@ h1 .titolo-testo { font-family: var(--font-legami); font-weight: 700; letter-spa
 
 .grid { gap: 28px 16px; }
 @media (max-width: 900px) { .grid { gap: 22px 10px; } }
+
+.grid.quadrata { max-width: 1400px; }
+@media (max-width: 1000px) {
+  .grid.quadrata { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+}

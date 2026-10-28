@@ -24,7 +24,7 @@
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const semplice = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   const plurale = (n, uno, tanti) => n + ' ' + (n === 1 ? uno : tanti);
-  const principali = s => s.x.filter(o => !paeseEstero(o[5]));
+  const principali = s => { const p = s.x.filter(o => !paeseEstero(o[5])); return p.length ? p : s.x; };
   const quante = s => principali(s).filter(o => ce[o[0]]).length;
   const doppiDi = s => s.x.reduce((t, o) => t + (primo(o[0]) ? (doppi[o[0]] || 0) : 0), 0);
   const fotoDi = (s, o) => '../' + s.p + '/' + o[3];

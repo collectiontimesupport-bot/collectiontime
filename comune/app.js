@@ -9,15 +9,15 @@
   if (CONFIG.altezza) {
     document.documentElement.style.setProperty('--altezza', CONFIG.altezza + 'px');
     grid.classList.add('su-misura');
-  }
+  } else if (CONFIG.proporzione === 1) grid.classList.add('quadrata');
   if ((CONFIG.proporzione || 7) >= 4) grid.classList.add('stretti');
 
 
-  const SLOT_IMG = 'immagini/slot-vuoto.webp';
+  const SLOT_IMG = 'immagini/in-arrivo.webp';
 
   const escHtml = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const idVisti = new Set();
-  const SEED = ELENCO.map((r, i) => {
+  const SEED = ELENCO.filter(r => !r.nascosto).map((r, i) => {
     const id = r.id || ('penna-' + String(r.foto || i).split('/').pop().replace(/\.[a-z]+$/i, ''));
     if (idVisti.has(id)) console.warn('ELENCO: l\'id "' + id + '" è usato due volte. Cambiane uno!');
     idVisti.add(id);
@@ -45,6 +45,7 @@
       fotoInfo: Array.isArray(r.fotoInfo) ? r.fotoInfo.filter(Boolean) : []
     };
   });
+  if (SEED.length && SEED.every(p => p.estero && !p.variante)) SEED.forEach(p => { p.estero = false; });
 
   const campoColore = (() => {
     const c = document.createElement('div'); c.className = 'field';
@@ -194,7 +195,7 @@
     if (doppi) t += ' · ' + doppi + (doppi === 1 ? ' doppione' : ' doppioni');
     if (typeof shown === 'number' && shown !== pens.length) t += ' · ' + shown + (shown === 1 ? ' visibile' : ' visibili');
     $('count').textContent = t;
-    grid.querySelectorAll('.estere-titolo').forEach(li => { li.querySelector('small').textContent = testoEstere(!!li.dataset.variante); });
+    grid.querySelectorAll('.estere-titolo').forEach(aggiornaTitoloEstere);
     if (!barra) {
       barra = document.createElement('div');
       barra.className = 'avanz-barra';
@@ -441,7 +442,7 @@
       img.className = 'pen-img';
       img.src = p.image;
       img.alt = p.name || (CONFIG.nome + ' ' + p.code);
-      if (!CONFIG.mostraNomi) img.title = img.alt;
+      if (!CONFIG.mostraNomi && p.name) img.title = p.name;
       img.decoding = 'async';
       img.loading = 'lazy';
       const spunta = document.createElement('span');
@@ -484,19 +485,25 @@
     return li;
   }
 
-  const testoEstere = v => {
-    const tutte = pens.filter(p => p.estero && !!p.variante === !!v && (p.image || p.owned));
-    return tutte.filter(p => p.owned).length + ' su ' + tutte.length + ' · non contano per completare la serie';
-  };
+  function aggiornaTitoloEstere(li) {
+    const v = !!li.dataset.variante, tutte = pens.filter(p => p.estero && !!p.variante === v && (p.image || p.owned));
+    const ce = tutte.filter(p => p.owned).length, tot = tutte.length, perc = tot ? Math.round(ce * 100 / tot) : 0;
+    li.querySelector('.estere-count').textContent = ce + ' ' + CONFIG.possedute + ' su ' + tot;
+    li.querySelector('.estere-barra span').style.width = perc + '%';
+    li.querySelector('.estere-barra').classList.toggle('completa', tot > 0 && ce >= tot);
+    li.querySelector('.avanz-perc').textContent = tot && ce >= tot ? 'Completa!' : perc + '% · mancano ' + Math.max(0, tot - ce);
+  }
   function titoloEstere(v) {
     const li = document.createElement('li');
     li.className = 'estere-titolo';
     li.dataset.variante = v ? '1' : '';
-    const t = document.createElement('b');
-    t.textContent = v ? 'Varianti' : 'Varianti estere';
-    const n = document.createElement('small');
-    n.textContent = testoEstere(v);
-    li.append(t, n);
+    li.innerHTML = '<b>' + (v ? 'Varianti' : 'Varianti estere') + '</b>'
+      + '<p class="sub estere-count"></p>'
+      + '<div class="avanz-riga"><div class="avanz-barra estere-barra" role="progressbar" aria-label="Quanto hai completato delle varianti estere"><span></span></div><span class="avanz-perc"></span></div>'
+      + '<div class="riga-bottoni"><button class="btn" type="button" data-e="stampa">Stampa</button><button class="btn" type="button" data-e="condividi">Condividi</button></div>';
+    li.querySelector('[data-e=stampa]').addEventListener('click', () => { viaEstere = true; $('btnPrint').click(); });
+    li.querySelector('[data-e=condividi]').addEventListener('click', () => $('btnShare').click());
+    aggiornaTitoloEstere(li);
     return li;
   }
 
@@ -510,7 +517,35 @@
     $('noResults').hidden = list.length > 0 || pens.length === 0;
     $('emptyAll').hidden = pens.length > 0;
     updateCount(list.length);
+    centraRighe();
   }
+
+  function centraRighe() {
+    const cs = getComputedStyle(grid), cols = cs.gridTemplateColumns.split(' ').filter(Boolean), n = cols.length;
+    const passo = (parseFloat(cols[0]) || 0) + (parseFloat(cs.columnGap) || 0);
+    const uguali = CONFIG.righeUguali !== false;
+    let gruppo = [];
+    const chiudi = () => {
+      const N = gruppo.length;
+      if (N && n > 1 && passo) {
+        const righe = Math.ceil(N / n), base = Math.floor(N / righe), piu = N % righe;
+        let k = 0;
+        for (let r = 0; r < righe; r++) {
+          const quanti = uguali ? base + (r < piu ? 1 : 0) : (r < righe - 1 ? n : N - n * (righe - 1));
+          const sposta = (n - quanti) / 2 * passo + 'px';
+          gruppo.slice(k, k + quanti).forEach((el, q) => { el.style.translate = quanti < n ? sposta : ''; if (q === 0 && r > 0) el.style.gridColumnStart = '1'; });
+          k += quanti;
+        }
+      }
+      gruppo = [];
+    };
+    [...grid.children].forEach(el => {
+      el.style.translate = ''; el.style.gridColumnStart = '';
+      if (el.classList.contains('pen')) gruppo.push(el); else chiudi();
+    });
+    chiudi();
+  }
+  if ('ResizeObserver' in window) { let largo = 0; new ResizeObserver(() => { const w = grid.clientWidth; if (w !== largo) { largo = w; centraRighe(); } }).observe(grid); }
 
   let editTags = [];
   const tagSug = $('tagSug');
@@ -665,9 +700,11 @@
 
   const printDlg = $('printDlg');
   const kindName = { owned: 'collezione', scambi: 'cerco-scambio', mancanti: 'mi-mancano', doppioni: 'doppioni', all: 'checklist' };
+  let viaEstere = false, soloEstere = false;
   let conEstere = false;
   function printList(soloMancanti) {
     const all = [...pens].sort(byPos);
+    if (soloEstere) { const e = all.filter(p => p.estero); return soloMancanti ? e.filter(p => !p.owned && p.image) : e; }
     const stampabili = (conEstere || !all.some(p => !p.estero)) ? all : all.filter(p => !p.estero);
     return soloMancanti ? stampabili.filter(p => !p.owned && p.image) : stampabili;
   }
@@ -876,7 +913,7 @@
                                  : fotoW;
 
     const list = sezioni.flatMap(s => s.items);
-    const fotoLette = await Promise.all(list.map(p => (p.image || SLOT_IMG) ? ritaglio(p.image || SLOT_IMG).catch(() => null) : null));
+    const fotoLette = await Promise.all(list.map(p => p.image ? ritaglio(p.image).catch(() => null) : ritaglio(SLOT_IMG).catch(() => null)));
     const foto = new Map(list.map((p, i) => [p, fotoLette[i]]));
     const altiUguali = (CONFIG.proporzione || 7) > 1;
     const maxW = Math.max(1, ...fotoLette.map(f => f ? f.w : 0)), maxH = Math.max(1, ...fotoLette.map(f => f ? f.h : 0));
@@ -943,13 +980,16 @@
       const cw = font.widthOfTextAtSize(cosa, 16);
       page.drawText(cosa, { x: W - MX - cw, y: H - 26.5, size: 16, font, color: bianco });
 
-      const title = pdfText(CONFIG.titolo);
-      const tw = logo ? LOGO_W : bold.widthOfTextAtSize(title, TITOLO_H * 1.35);
+      const usaLogo = logo && !soloEstere;
+      const title = pdfText(CONFIG.titolo + (soloEstere ? ' (ESTERE)' : ''));
+      let tsz = TITOLO_H * 1.35;
+      while (!usaLogo && tsz > 10 && bold.widthOfTextAtSize(title, tsz) > W - 2 * MX - 2 * CART_PX) tsz -= 1;
+      const tw = usaLogo ? LOGO_W : bold.widthOfTextAtSize(title, tsz);
       const cartW = tw + 2 * CART_PX;
       page.drawSvgPath(scheda(cartW, CART_H), { x: (W - cartW) / 2, y: cartTop, color: bianco, borderColor: gray, borderWidth: 0.6 });
       page.drawRectangle({ x: (W - cartW) / 2 + R, y: cartTop - CART_H, width: cartW - 2 * R, height: 2.5, color: ambra });
-      if (logo) page.drawImage(logo, { x: (W - LOGO_W) / 2, y: cartTop - CART_PY - TITOLO_H, width: LOGO_W, height: TITOLO_H });
-      else page.drawText(title, { x: (W - tw) / 2, y: cartTop - CART_PY - TITOLO_H, size: TITOLO_H * 1.35, font: bold, color: ink });
+      if (usaLogo) page.drawImage(logo, { x: (W - LOGO_W) / 2, y: cartTop - CART_PY - TITOLO_H, width: LOGO_W, height: TITOLO_H });
+      else page.drawText(title, { x: (W - tw) / 2, y: cartTop - CART_PY - TITOLO_H, size: tsz, font: bold, color: ink });
 
       let top = primaFila;
       for (const fila of filePagina) {
@@ -1058,7 +1098,7 @@
 
     const blob = await fileDi(pages[0].tela, 'image/jpeg');
     const oggi = new Date(), dd = n => String(n).padStart(2, '0');
-    const nome = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + '.jpg';
+    const nome = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + (soloEstere ? '-estere' : '') + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + '.jpg';
     const scarica = () => {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -1139,7 +1179,7 @@
   })();
   const estereCasella = estereVoce.querySelector('input');
   function conteggiStampa() {
-    const base = conEstere ? pens : pens.filter(p => !p.estero);
+    const base = soloEstere ? pens.filter(p => p.estero) : conEstere ? pens : pens.filter(p => !p.estero);
     const total = base.filter(p => p.image || p.owned).length;
     $('cnt-owned').textContent = base.filter(p => p.owned).length + ' su ' + total;
     const nMancanti = printList(true).length, nDoppioni = printList(false).filter(p => p.doppi > 0).length;
@@ -1149,8 +1189,9 @@
   }
   estereCasella.addEventListener('change', () => { conEstere = estereCasella.checked; conteggiStampa(); });
   $('btnPrint').addEventListener('click', () => {
+    soloEstere = viaEstere; viaEstere = false;
     conEstere = false; estereCasella.checked = false;
-    estereVoce.hidden = !(pens.some(p => p.estero) && pens.some(p => !p.estero));
+    estereVoce.hidden = soloEstere || !(pens.some(p => p.estero) && pens.some(p => !p.estero));
     conteggiStampa();
     bloccaStampa();
     printDlg.showModal();

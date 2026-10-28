@@ -161,6 +161,7 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; back
 .st-progresso i { display: block; height: 100%; border-radius: 3px; background: var(--amber); }
 .st-quanti { color: var(--muted); font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .st-riga-apri.finita .st-quanti { color: var(--ink); font-weight: 700; }
+.st-estere-nota { height: 0; overflow: visible; margin-top: -10px; transform: translateY(1px); line-height: 1.1; text-align: right; color: var(--muted); font-size: .75rem; font-variant-numeric: tabular-nums; }
 
 .st-top {
   position: sticky; top: 0; z-index: 15;
@@ -303,6 +304,24 @@ body.st-semplice { line-height: 1.6; }
 }
 .st-cerca.open input { width: min(220px, 50vw); padding: 8px 10px 8px 0; opacity: 1; }
 .st-nessuna { margin: 0 0 20px; text-align: center; color: var(--muted); }
+.st-cards.st-ricerca { grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 10px; }
+.st-cards.st-ricerca .st-card { flex-direction: row; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 12px; }
+.st-cards.st-ricerca .st-card > :not(.logo-coll):not(.st-logo) { display: none; }
+.st-cards.st-ricerca .st-card .logo-coll { flex: none; zoom: .4; width: 300px; }
+.st-cards.st-ricerca .st-card > img { display: block; flex: none; height: 48px; width: auto; max-width: 140px; object-fit: contain; }
+.st-cards.st-ricerca .st-card::after { content: attr(aria-label); font-weight: 700; font-size: .95rem; }
+.st-serie-trovate { margin: 32px 0 56px; min-width: 0; max-width: 100%; }
+.st-serie-trovate ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: 10px; }
+.st-serie-trovate li { display: flex; }
+.st-serie-trovate a { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; color: inherit; text-decoration: none; background: var(--white); transition: border-color .15s; }
+.st-serie-trovate a:hover, .st-serie-trovate a:focus-visible { border-color: var(--amber); }
+.st-serie-trovate img, .st-serie-trovate .st-sf { flex: none; width: 64px; height: 48px; object-fit: contain; }
+.st-serie-trovate .st-st { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.st-serie-trovate strong { font-size: .95rem; }
+.st-serie-trovate small { color: var(--muted); font-size: .8rem; }
+.st-serie-trovate em { font-style: normal; font-size: .8rem; font-weight: 700; color: var(--amber); }
+.st-serie-trovate em:empty { display: none; }
+.st-serie-trovate .st-altre { margin: 16px 0 0; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .st-cerca input { transition: none; } }
 
 body.con-barra { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
@@ -536,3 +555,12 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
 .st-grazie p + p { margin-top: 8px; }
 .st-grazie p + p + p { color: var(--muted); font-size: .9375rem; }
 .st-grazie b { font-weight: 800; }
+
+.st-invito-app { position: fixed; left: 12px; right: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 60; max-width: 460px; margin: 0 auto;
+                 display: flex; align-items: center; gap: 10px; padding: 12px 8px 12px 16px; border-radius: 12px; background: var(--ink); color: var(--white);
+                 font-size: .9375rem; line-height: 1.35; box-shadow: 0 6px 20px rgba(0,0,0,.28); opacity: 0; transform: translateY(12px); transition: opacity .25s, transform .25s; }
+.st-invito-app.show { opacity: 1; transform: none; }
+.st-invito-app span { flex: 1; }
+.st-invito-app button { padding: 6px 4px; border: 0; background: none; color: var(--amber); font: inherit; font-weight: 700; cursor: pointer; }
+.st-invito-app .chiudi { padding: 4px 10px; color: inherit; font-size: 1.4rem; line-height: 1; opacity: .7; }
+body.con-barra .st-invito-app { bottom: calc(76px + env(safe-area-inset-bottom)); }
