@@ -32,7 +32,7 @@ async function mostraStatistiche() {
       const link = new URL(s[0] + '/', CATALOGO).href;
       if (ce) mie.push({ link, t: s[1], tot, cat: s[3], ce, doppi: doppiDi(r => !fuori(r.id)) });
       const nFuori = s[2] - tot, ceFuori = Math.min(righe.filter(r => fuori(r.id) && (r.owned === true || r.doppi > 0)).length, nFuori);
-      if (nFuori && ceFuori) mie.push({ link, t: s[1] + ' (estere)', tot: nFuori, cat: s[3], ce: ceFuori, doppi: doppiDi(r => fuori(r.id)) });
+      if (nFuori && ceFuori) mie.push({ link, t: s[1] + ' (ESTERO)', tot: nFuori, cat: s[3], ce: ceFuori, doppi: doppiDi(r => fuori(r.id)) });
     }
   } catch (e) {
     console.warn(e);

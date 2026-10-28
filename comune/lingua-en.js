@@ -236,6 +236,8 @@
     "Metadati": "Metadata",
     "Suggeriti:": "Suggested:",
     "Varianti estere": "Foreign variants",
+    "ESTERO": "ABROAD",
+    "Stampa anche ESTERO": "Also print ABROAD",
     "Estero": "Abroad",
     "non indicato": "not specified",
     "Percorso": "Breadcrumb",
@@ -284,7 +286,7 @@
     "Lingua": "Language",
     "English": "Italiano",
     "Il tuo paese": "Your country",
-    "Serve per mostrarti come normali i pezzi del tuo paese: gli altri stanno sotto «Varianti estere».": "This shows items from your country as regular ones: the others appear under “Foreign variants”.",
+    "Serve per mostrarti come normali i pezzi del tuo paese: gli altri stanno sotto «ESTERO».": "This shows items from your country as regular ones: the others appear under “ABROAD”.",
     "Account e dati": "Account and data",
     "Non hai fatto l'accesso: la collezione è salvata solo in questo browser. Con l'account la salvi nel cloud e la ritrovi su tutti i tuoi dispositivi.": "You're not signed in: your collection is saved only in this browser. With an account you save it in the cloud and find it on all your devices.",
     "Copia di sicurezza": "Backup",
@@ -384,8 +386,8 @@
     [/^In corso \((\d+)\)$/, "In progress ($1)"],
     [/^Complete \((\d+)\)$/, "Complete ($1)"],
     [/^Tutte le categorie \((\d+)\)$/, "All categories ($1)"],
-    [new RegExp('^(\\d+) (' + ELENCO_NOMI + ')((?: \\+ \\d+ estere)?)$'), function (m) {
-      return m[1] + ' ' + nome(m[2]) + m[3].replace(' estere', ' foreign');
+    [new RegExp('^(\\d+) (' + ELENCO_NOMI + ')((?: \\+ \\d+ (?:estere|ESTERO))?)$'), function (m) {
+      return m[1] + ' ' + nome(m[2]) + m[3].replace(/ (estere|ESTERO)/, ' ABROAD');
     }],
     [/^(\d+) oggett[io] in (\d+) seri[ae]$/, function (m) { return m[1] + (m[1] === '1' ? ' item' : ' items') + ' in ' + m[2] + ' ' + (m[2] === '1' ? 'series' : 'series'); }],
     [/^(\d+) cerco · (\d+) scambio$/, "$1 wanted · $2 trading"],

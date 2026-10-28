@@ -691,13 +691,13 @@ async function barreSerie() {
       riga.className = 'st-riga-apri' + (nUsi >= totUsi ? ' finita' : '');
       riga.innerHTML = '<span class="st-progresso"><i></i></span><span class="st-quanti"></span>';
       riga.querySelector('i').style.width = Math.round(nUsi * 100 / totUsi) + '%';
-      riga.querySelector('.st-quanti').textContent = nUsi + ' su ' + totUsi + (soloE ? ' estere' : '');
+      riga.querySelector('.st-quanti').textContent = nUsi + ' su ' + totUsi + (soloE ? ' ESTERO' : '');
       apri.replaceWith(riga);
       riga.prepend(apri);
       if (!soloE && ceE) {
         const nota = document.createElement('div');
         nota.className = 'st-estere-nota';
-        nota.textContent = '+ ' + ceE + ' su ' + idsE.length + ' estere';
+        nota.textContent = '+ ' + ceE + ' su ' + idsE.length + ' ESTERO';
         riga.after(nota);
       }
     }

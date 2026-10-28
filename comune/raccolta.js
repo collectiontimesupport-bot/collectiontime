@@ -24,7 +24,7 @@
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const semplice = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   const plurale = (n, uno, tanti) => n + ' ' + (n === 1 ? uno : tanti);
-  const principali = s => { const p = s.x.filter(o => !paeseEstero(o[5])); return p.length ? p : s.x; };
+  const principali = s => { if (s._e) return s.x; const p = s.x.filter(o => !paeseEstero(o[5])); return p.length ? p : s.x; };
   const quante = s => principali(s).filter(o => ce[o[0]]).length;
   const doppiDi = s => s.x.reduce((t, o) => t + (primo(o[0]) ? (doppi[o[0]] || 0) : 0), 0);
   const fotoDi = (s, o) => '../' + s.p + '/' + o[3];
@@ -90,7 +90,8 @@
 
   let soloIniziate = true, gruppo = '';
   function mancanti() {
-    const tutte = SERIE.filter(s => (!gruppo || s.g === gruppo) && quante(s) < principali(s).length && (!soloIniziate || quante(s) > 0));
+    const conEstere = SERIE.flatMap(s => { const e = s.x.filter(o => paeseEstero(o[5])); return e.length && e.length < s.x.length ? [s, Object.assign({}, s, { _e: true, t: s.t + ' (ESTERO)', db: s.db + '#estero', x: e })] : [s]; });
+    const tutte = conEstere.filter(s => (!gruppo || s.g === gruppo) && quante(s) < principali(s).length && (!soloIniziate || quante(s) > 0));
     const elenco = tutte.filter(s => !pausa.has(s.db));
     const ferme = tutte.filter(s => pausa.has(s.db));
     const manca = s => principali(s).length - quante(s);

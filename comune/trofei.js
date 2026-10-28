@@ -112,7 +112,7 @@ async function leggiSpunte() {
   }
   const serie = {};
   const cePerCat = {}, perSlug = {};
-  let conTag = false;
+  let conTag = false, estPezzi = 0;
   for (const nome of await archivi()) {
     const s = R[nome];
     if (!s) continue;
@@ -122,19 +122,20 @@ async function leggiSpunte() {
     const tot = s[2] - Object.keys(esteri).filter(fuori).length;
     const ce = Math.min(righe.filter(r => !fuori(r.id) && (r.owned === true || r.doppi > 0)).length, tot);
     if (righe.some(r => r.tagsTouched === true && Array.isArray(r.tags) && r.tags.length)) conTag = true;
+    estPezzi += righe.filter(r => fuori(r.id) && (r.owned === true || r.doppi > 0)).length;
     if (!ce) continue;
     serie[nome] = { ce, tot, doppi: righe.reduce((n, r) => n + (r.doppi > 0 ? r.doppi : 0), 0) };
     cePerCat[categoriaDi(s)] = (cePerCat[categoriaDi(s)] || 0) + ce;
     const slug = String(s[0]).split('/')[0];
     perSlug[slug] = (perSlug[slug] || 0) + 1;
   }
-  return { serie, cePerCat, totaleCat, conTag, perSlug };
+  return { serie, cePerCat, totaleCat, conTag, perSlug, estPezzi };
 }
 function numeri(d, cloud) {
   const v = Object.values(d.serie);
   const finita = s => s.tot >= 2 && s.ce >= s.tot;
   return {
-    pezzi: v.reduce((n, s) => n + s.ce, 0),
+    pezzi: v.reduce((n, s) => n + s.ce, 0) + (d.estPezzi || 0),
     complete: v.filter(finita).length,
     iniziate: v.length,
     categorie: Object.keys(d.cePerCat).length,
@@ -149,7 +150,8 @@ function eventi(d, prima, ora) {
   const ev = { notte: false, mattina: false, domenica: false, sabato: false, quasi: false };
   if (!prima) return ev;
   const somma = o => Object.values(o).reduce((n, x) => n + x, 0);
-  const aumento = somma(Object.fromEntries(Object.entries(d.serie).map(([k, s]) => [k, s.ce]))) - somma(prima);
+  const prima2 = Object.assign({ _estere: d.estPezzi || 0 }, prima);
+  const aumento = somma(Object.fromEntries(Object.entries(d.serie).map(([k, s]) => [k, s.ce]))) + (d.estPezzi || 0) - somma(prima2);
   if (aumento < 1 || aumento > 3) return ev;
   const h = ora.getHours();
   ev.notte = h < 5; ev.mattina = h >= 5 && h < 7; ev.domenica = ora.getDay() === 0; ev.sabato = ora.getDay() === 6 && h >= 20 && h < 23;
@@ -182,7 +184,7 @@ export function controlla(modo) {
     const nuovi = valutaTrofei(S, ev, gia);
     nuovi.forEach(t => { gia[t.id] = oggi(); });
     if (nuovi.length) { scriviJ(CH_TROFEI, gia); window.dispatchEvent(new Event('ct-trofei-cambiati')); }
-    scriviJ(CH_SNAP, Object.fromEntries(Object.entries(d.serie).map(([k, s]) => [k, s.ce])));
+    scriviJ(CH_SNAP, Object.assign(Object.fromEntries(Object.entries(d.serie).map(([k, s]) => [k, s.ce])), { _estere: d.estPezzi || 0 }));
     return nuovi;
   })().catch(e => { console.warn('Trofei:', e); return []; }).finally(() => { inCorso = null; });
   return inCorso;

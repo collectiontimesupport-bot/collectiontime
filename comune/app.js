@@ -178,7 +178,7 @@
     const terms = foldText(query).replace(/#/g, ' ').split(/\s+/).filter(Boolean);
     return pens
       .filter(p => filterMode === 'owned' ? p.owned
-        : filterMode === 'missing' ? (!p.owned && p.image && !p.estero)
+        : filterMode === 'missing' ? (!p.owned && p.image)
         : filterMode === 'doppi' ? p.doppi > 0
         : true)
       .filter(p => { if (!terms.length) return true; const hay = searchText(p); return terms.every(t => hay.includes(t)); })
@@ -239,7 +239,7 @@
     const anni = new Set(SEED.map(s => s.codice));
     const anno = anni.size === 1 && /^(19|20)\d\d$/.test(SEED[0].codice) ? SEED[0].codice : '';
     const principali = SEED.filter(s => !s.estero).length, estere = SEED.length - principali;
-    const quanti = principali + ' ' + (principali === 1 ? CONFIG.nome : plurale(CONFIG.nome)) + (estere ? ' + ' + estere + (SEED.some(s => s.estero && !s.variante) ? ' estere' : (estere === 1 ? ' variante' : ' varianti')) : '');
+    const quanti = principali + ' ' + (principali === 1 ? CONFIG.nome : plurale(CONFIG.nome)) + (estere ? ' + ' + estere + (SEED.some(s => s.estero && !s.variante) ? ' ESTERO' : (estere === 1 ? ' variante' : ' varianti')) : '');
     const p = document.createElement('p');
     p.className = 'info-serie';
     p.textContent = [anno, quanti].filter(Boolean).join(' · ');
@@ -497,9 +497,9 @@
     const li = document.createElement('li');
     li.className = 'estere-titolo';
     li.dataset.variante = v ? '1' : '';
-    li.innerHTML = '<b>' + (v ? 'Varianti' : 'Varianti estere') + '</b>'
+    li.innerHTML = '<b>' + (v ? 'Varianti' : 'ESTERO') + '</b>'
       + '<p class="sub estere-count"></p>'
-      + '<div class="avanz-riga"><div class="avanz-barra estere-barra" role="progressbar" aria-label="Quanto hai completato delle varianti estere"><span></span></div><span class="avanz-perc"></span></div>'
+      + '<div class="avanz-riga"><div class="avanz-barra estere-barra" role="progressbar" aria-label="Quanto hai completato di ESTERO"><span></span></div><span class="avanz-perc"></span></div>'
       + '<div class="riga-bottoni"><button class="btn" type="button" data-e="stampa">Stampa</button><button class="btn" type="button" data-e="condividi">Condividi</button></div>';
     li.querySelector('[data-e=stampa]').addEventListener('click', () => { viaEstere = true; $('btnPrint').click(); });
     li.querySelector('[data-e=condividi]').addEventListener('click', () => $('btnShare').click());
@@ -981,7 +981,7 @@
       page.drawText(cosa, { x: W - MX - cw, y: H - 26.5, size: 16, font, color: bianco });
 
       const usaLogo = logo && !soloEstere;
-      const title = pdfText(CONFIG.titolo + (soloEstere ? ' (ESTERE)' : ''));
+      const title = pdfText(CONFIG.titolo + (soloEstere ? ' (ESTERO)' : ''));
       let tsz = TITOLO_H * 1.35;
       while (!usaLogo && tsz > 10 && bold.widthOfTextAtSize(title, tsz) > W - 2 * MX - 2 * CART_PX) tsz -= 1;
       const tw = usaLogo ? LOGO_W : bold.widthOfTextAtSize(title, tsz);
@@ -1098,7 +1098,7 @@
 
     const blob = await fileDi(pages[0].tela, 'image/jpeg');
     const oggi = new Date(), dd = n => String(n).padStart(2, '0');
-    const nome = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + (soloEstere ? '-estere' : '') + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + '.jpg';
+    const nome = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + (soloEstere ? '-estero' : '') + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + '.jpg';
     const scarica = () => {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -1173,7 +1173,7 @@
   const estereVoce = (function () {
     const l = document.createElement('label');
     l.className = 'print-estere';
-    l.innerHTML = '<input type="checkbox" id="printEstere"><span>Stampa anche le varianti' + (SEED.some(p => p.estero && !p.variante) ? ' estere' : '') + '</span>';
+    l.innerHTML = '<input type="checkbox" id="printEstere"><span>' + (SEED.some(p => p.estero && !p.variante) ? 'Stampa anche ESTERO' : 'Stampa anche le varianti') + '</span>';
     printDlg.querySelector('.actions').before(l);
     return l;
   })();
