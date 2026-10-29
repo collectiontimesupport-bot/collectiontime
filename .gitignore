@@ -5,3 +5,6 @@ catalogo/*/_Originali/
 
 # file temporaneo della "Prova la pagina" nell'admin
 catalogo/**/_prova-anteprima.html
+
+# note private per l'IA locale (memoria, prompt, prove): non vanno pubblicate
+Claude outputs/

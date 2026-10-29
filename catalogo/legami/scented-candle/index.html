@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scented Candle · Legami · Collection Time</title>
+<meta name="description" content="Scented Candle: Candele profumate. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.">
+<meta name="theme-color" content="#1A2140">
+<link rel="icon" href="../../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../../favicon-96.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="../../../apple-touch-icon.png?v=2026-09-27">
+<link rel="manifest" href="../../../site.webmanifest">
+<meta property="og:site_name" content="Collection Time">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Scented Candle · Collection Time">
+<meta property="og:description" content="Scented Candle: Candele profumate. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.">
+<meta property="og:url" content="https://collectiontime.com/catalogo/legami/scented-candle/">
+<meta property="og:image" content="https://collectiontime.com/catalogo/legami/scented-candle/immagini/anteprima.jpg?v=2026-10-29">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="../../../sito.css?v=2026-10-28-2">
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
+<link rel="preload" href="../../../comune/caratteri/legami-titolo.woff2" as="font" type="font/woff2" crossorigin>
+
+<link rel="stylesheet" href="../../../comune/collezione.css?v=2026-10-28-2">
+<link rel="stylesheet" href="../css/stile.css?v=2026-10-28-2">
+<link rel="canonical" href="https://collectiontime.com/catalogo/legami/scented-candle/">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Collection Time","item":"https://collectiontime.com/"},{"@type":"ListItem","position":2,"name":"Legami","item":"https://collectiontime.com/catalogo/legami/"},{"@type":"ListItem","position":3,"name":"Scented Candle","item":"https://collectiontime.com/catalogo/legami/scented-candle/"}]},{"@type":"WebSite","@id":"https://collectiontime.com/#sito","name":"Collection Time","url":"https://collectiontime.com/","inLanguage":"it"},{"@type":"CollectionPage","name":"Scented Candle","url":"https://collectiontime.com/catalogo/legami/scented-candle/","inLanguage":"it","isPartOf":{"@id":"https://collectiontime.com/#sito"},"description":"Scented Candle: Candele profumate. Checklist completa: segna quelle che hai e scopri quelle che ti mancano.","image":"https://collectiontime.com/catalogo/legami/scented-candle/immagini/anteprima.jpg?v=2026-10-29","mainEntity":{"@type":"ItemList","numberOfItems":12,"itemListElement":[{"@type":"ListItem","position":1,"name":"01 · LOVE IS IN THE AIR"},{"@type":"ListItem","position":2,"name":"02 · RENNA"},{"@type":"ListItem","position":3,"name":"03 · PANDA"},{"@type":"ListItem","position":4,"name":"04 · UNICORN"},{"@type":"ListItem","position":5,"name":"05 · KITTY"},{"@type":"ListItem","position":6,"name":"06 · SPACE"},{"@type":"ListItem","position":7,"name":"07 · CORGI"},{"@type":"ListItem","position":8,"name":"08 · LAMA"},{"@type":"ListItem","position":9,"name":"09 · FANTASMA"},{"@type":"ListItem","position":10,"name":"10 · RENNA"},{"@type":"ListItem","position":11,"name":"11 · SCHIACCIANOCI"},{"@type":"ListItem","position":12,"name":"12 · TEDDY BEAR"}]}}]}</script>
+</head>
+<body>
+
+<div id="header-placeholder"></div>
+
+<div class="wrap">
+  <a class="st-back" href="../index.html">&larr; Legami Milano</a>
+
+  <header>
+    <h1 id="pageTitle"><span class="titolo-testo">SCENTED CANDLE</span></h1>
+    <div class="bar">
+      <div class="conta-stampa">  
+        <p class="sub" id="count"></p>
+        <div class="riga-bottoni">  
+          <button class="btn" id="btnPrint" type="button">Stampa</button>
+          <button class="btn" id="btnShare" type="button">Condividi</button>
+        </div>
+      </div>
+      <div class="tools">
+        <div class="st-cerca" id="stCerca">
+          <button type="button" aria-label="Cerca" aria-expanded="false" title="Cerca">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </button>
+          <input type="search" id="search" placeholder="Cerca numero, nome, info" aria-label="Cerca" tabindex="-1" autocomplete="off">
+        </div>
+        <select id="filter" aria-label="Mostra">
+          <option value="all" id="optAll">Tutte</option>
+          <option value="owned" id="optOwned">In possesso</option>
+          <option value="missing">Mi mancano</option>
+        </select>
+        <select id="sort" aria-label="Ordine">
+          <option value="asc">Dalla prima</option>
+          <option value="desc">Dall'ultima</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <ul class="grid" id="grid"></ul>
+
+  <section class="empty" id="noResults" hidden>
+    <p>Nessun risultato per questi filtri.</p>
+  </section>
+  <section class="empty" id="emptyAll" hidden>
+    <p>Non ci sono ancora elementi in questa collezione.</p>
+  </section>
+
+  <footer>
+    <p class="hint">Premi su una candela per segnare che ce l'hai. Con info vedi i dettagli, le info e gli hashtag.</p>
+  </footer>
+</div>
+
+<div id="footer-placeholder"></div>
+
+
+<dialog id="printDlg">
+  <div class="dlg-body" tabindex="-1" autofocus>
+    <h2 class="dlg-title">Cosa vuoi stampare?</h2>
+    <p class="sub">Crea un'immagine da condividere.</p>
+    <label class="choice">
+      <input type="radio" name="printKind" value="owned" checked>
+      <span><strong>La mia collezione</strong> (<span id="cnt-owned"></span>)<small>Tutte le candele, con il quadratino spuntato dove ce l'hai.</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="scambi">
+      <span><strong>Cerco e scambio</strong> (<span id="cnt-scambi"></span>)<small>Da condividere: in alto quelli che cerco (mi mancano), sotto quelli che scambio (i doppioni).</small></span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="printKind" value="all">
+      <span><strong>Checklist vuota</strong><small>Tutte le candele con il quadratino vuoto, da compilare a mano.</small></span>
+    </label>
+    <div class="actions">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="printCancel">Annulla</button>
+      <button type="button" class="btn primary" id="printImg">Crea immagine</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg">
+  <form id="editForm">
+    <div class="dlg-pic"><img id="dlgImg" alt="" draggable="false"><span class="nophoto" id="dlgNoPhoto" hidden>Nessuna foto per questo numero.</span></div>
+    <div class="dlg-body">
+      <div class="trio">
+        <div class="field"><span id="lblCodice">Codice</span><input type="text" id="fCodice" readonly tabindex="-1" aria-labelledby="lblCodice"></div>
+        <div class="field"><span id="lblNumero">Numero</span><input type="text" id="fCode" readonly tabindex="-1" aria-labelledby="lblNumero"></div>
+      </div>
+      <div class="field"><span id="lblNome">Nome</span><input type="text" id="fName" readonly tabindex="-1" aria-labelledby="lblNome"></div>
+      <div class="field" id="fInfoBox">Info<p class="info" id="fInfo"></p></div>
+      <div class="field">Metadati
+        <div class="tagbox"><span class="chips" id="tagChips"></span><input type="text" id="fTagInput" placeholder="Aggiungi un hashtag" autocomplete="off" aria-label="Aggiungi un hashtag"></div>
+        <div class="tagsug" id="tagSug"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fOwned"> Ce l'ho</label>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btnClose">Chiudi</button>
+        <button type="submit" class="btn primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+
+<script>
+const CONFIG = {
+  id: "scented-candle",
+  dbName: "catalogo-scented-candle",
+  titolo: "Scented Candle",
+  nome: "candela",
+  possedute: "possedute",
+  colonne: 7,
+  proporzione: 0.7,
+  altezza: 174,
+  pdfColonne: 7,
+  pdfFile: 2,
+  suggerimenti: ["Halloween", "Natale", "San Valentino", "Pasqua", "Limited Edition"],
+  criteri: "codice,fotoInfo"
+};
+
+const ELENCO = [
+  { id: "scented-candle-01", numero: "01", codice: "CDL0001", nome: "LOVE IS IN THE AIR", foto: "immagini/01.webp?v=2026-10-28b", hashtag: ["San Valentino"], fotoInfo: ["info/scented-candle-01-1.webp?v=2026-10-29"], info: "Fragranza Porcelain peony" },
+  { id: "scented-candle-02", numero: "02", codice: "CDL0002", nome: "RENNA", foto: "immagini/02.webp?v=2026-10-28b", hashtag: ["Natale"], fotoInfo: ["info/scented-candle-02-1.webp?v=2026-10-29"], info: "Fragranza Christmas delight" },
+  { id: "scented-candle-03", numero: "03", codice: "CDL0003", nome: "PANDA", foto: "immagini/03.webp?v=2026-10-28b", fotoInfo: ["info/scented-candle-03-1.webp?v=2026-10-29"], info: "Fragranza White tea" },
+  { id: "scented-candle-04", numero: "04", codice: "CDL0004", nome: "UNICORN", foto: "immagini/04.webp?v=2026-10-28b", fotoInfo: ["info/scented-candle-04-1.webp?v=2026-10-29"], info: "Fragranza Vanilla cake" },
+  { id: "scented-candle-05", numero: "05", codice: "CDL0005", nome: "KITTY", foto: "immagini/05.webp?v=2026-10-28b", fotoInfo: ["info/scented-candle-05-1.webp?v=2026-10-29"], info: "Fragranza Berry rose" },
+  { id: "scented-candle-06", numero: "06", codice: "CDL0006", nome: "SPACE", foto: "immagini/06.webp?v=2026-10-28b", fotoInfo: ["info/scented-candle-06-1.webp?v=2026-10-29"], info: "Fragranza Frosty nights" },
+  { id: "scented-candle-07", numero: "07", codice: "CDL0007", nome: "CORGI", foto: "immagini/07.webp?v=2026-10-28b", fotoInfo: ["info/scented-candle-07-1.webp?v=2026-10-29"], info: "Fragranza Sweet cookie" },
+  { id: "scented-candle-08", numero: "08", codice: "CDL0008", nome: "LAMA", foto: "immagini/08.webp?v=2026-10-28b", fotoInfo: ["info/scented-candle-08-1.webp?v=2026-10-29"], info: "Fragranza Lime blossom & vanilla" },
+  { id: "scented-candle-09", numero: "09", codice: "CDL0009", nome: "FANTASMA", foto: "immagini/09.webp?v=2026-10-28b", hashtag: ["Halloween"], fotoInfo: ["info/scented-candle-09-1.webp?v=2026-10-29"], info: "Fragranza Amber night" },
+  { id: "scented-candle-10", numero: "10", codice: "CDL0010", nome: "RENNA", foto: "immagini/10.webp?v=2026-10-28b", hashtag: ["Natale"], fotoInfo: ["info/scented-candle-10-1.webp?v=2026-10-29"], info: "Fragranza Christmas delight" },
+  { id: "scented-candle-11", numero: "11", codice: "CDL0011", nome: "SCHIACCIANOCI", foto: "immagini/11.webp?v=2026-10-28b", hashtag: ["Natale"], fotoInfo: ["info/scented-candle-11-1.webp?v=2026-10-29"], info: "Fragranza Christmas magic" },
+  { id: "scented-candle-12", numero: "12", codice: "CDL0012", nome: "TEDDY BEAR", foto: "immagini/12.webp?v=2026-10-28b", hashtag: ["San Valentino"], fotoInfo: ["info/scented-candle-12-1.webp?v=2026-10-29"], info: "Fragranza Berry kiss" },
+];
+</script>
+
+<script src="../../../script.js?v=2026-10-28-2"></script>
+<script src="../../../comune/bagliore.js?v=2026-10-28-2"></script>
+<script src="../../../comune/app.js?v=2026-10-28-2"></script>
+</body>
+</html>
