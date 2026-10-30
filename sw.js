@@ -1,4 +1,4 @@
-const VERSIONE = 'ct-offline-1';
+const VERSIONE = 'ct-offline-2';
 const ATTESA = 6000;
 const MAX_FOTO = 600;
 const FOTO = /\.(webp|png|jpe?g|gif|svg|avif)$/i;

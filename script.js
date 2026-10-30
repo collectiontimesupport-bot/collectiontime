@@ -17,6 +17,17 @@ const versioneDati = () => _versioneDati || (_versioneDati = (async () => {
 if (window.parent !== window) {
   const dillo = () => parent.postMessage({ anteprimaUrl: location.href, titolo: document.title }, '*');
   dillo(); addEventListener('load', dillo);
+  const temaAnteprima = t => {
+    if (t !== 'chiaro' && t !== 'scuro') return;
+    document.documentElement.dataset.tema = t;
+    try { sessionStorage.setItem('ct-anteprima-tema', t); } catch (e) {}
+  };
+  try { temaAnteprima(sessionStorage.getItem('ct-anteprima-tema')); } catch (e) {}
+  addEventListener('message', e => {
+    if (e.source !== window.parent || !e.data || !e.data.anteprimaTema) return;
+    temaAnteprima(e.data.anteprimaTema);
+    window.parent.postMessage({ anteprimaTemaOk: e.data.anteprimaTema }, '*');
+  });
   const CHIAVE_POS = 'ct-anteprima-posizione:' + location.pathname;
   const salvaPos = () => {
     try {

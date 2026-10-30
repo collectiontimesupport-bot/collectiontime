@@ -23,14 +23,14 @@
   :root[data-tema="auto"] {
     --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
     --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126; --crema: #232A4D; --crema-line: #6E5A22;
-    --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg); --pin: #F2A900;
+    --spento: grayscale(1) drop-shadow(0 0 1px rgba(160,170,200,.95)); --spento-op: .55; --sagoma: invert(1) hue-rotate(180deg); --pin: #F2A900;
     color-scheme: dark;
   }
 }
 :root[data-tema="scuro"] {
   --ink: #EEF0F7; --muted: #A7AECB; --line: #333C66; --white: #141A33;
   --piastra: #F4F5F8; --piastra-pad: 8px 4px; --riquadro: #1E2647; --errore: #FF8A80; --band-bg: #0C1126; --crema: #232A4D; --crema-line: #6E5A22;
-  --spento: grayscale(1) brightness(1.7); --spento-op: .4; --sagoma: invert(1) hue-rotate(180deg); --pin: #F2A900;
+  --spento: grayscale(1) drop-shadow(0 0 1px rgba(160,170,200,.95)); --spento-op: .55; --sagoma: invert(1) hue-rotate(180deg); --pin: #F2A900;
   color-scheme: dark;
 }
 

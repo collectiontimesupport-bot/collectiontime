@@ -176,6 +176,8 @@
     "I giochi dei King Jr. Meal.": "Toys from the King Jr. Meal.",
     "I giochi dei menu per bambini.": "Toys from the kids' meals.",
     "I ciondoli da collezione.": "Collectible charms.",
+    "Le sorpresine dei Sofficini": "Surprises from Sofficini",
+    "Le sorpresine dei Sofficini.": "Surprises from Sofficini.",
     "Apri": "Open",
     "Come funziona": "How it works",
     "Trova la serie": "Find the series",
@@ -200,7 +202,10 @@
     "Canale YouTube": "YouTube channel",
     "Community Reddit": "Reddit community",
     "Scrivici e lo aggiungiamo qui": "Write to us and we'll add it here",
-    "Segnala un problema": "Report a problem",
+    "Scrivici": "Write to us",
+    "C'è un problema?": "Something wrong?",
+    "Hai una foto che ci manca": "Have a photo we're missing",
+    "o c'è un problema?": "or something wrong?",
     "Leggi tutto": "Read more",
     "Mostra meno": "Show less",
     "Serie": "Series",
@@ -220,6 +225,8 @@
     "Mi mancano": "Missing",
     "Dalla prima": "From the first",
     "Dall'ultima": "From the last",
+    "Dalla 1ª": "First",
+    "Dal 1°": "First",
     "Dal primo": "From the first",
     "Dall'ultimo": "From the last",
     "Doppi": "Dupes",
@@ -294,6 +301,7 @@
     "Carica un file": "Upload a file",
     "Serie iniziate": "Series started",
     "Complete": "Complete",
+    "Completa!": "Complete!",
     "Le mie serie": "My series",
     "Cerca tra le tue serie": "Search your series",
     "Nessuna serie trovata.": "No series found.",
@@ -377,7 +385,9 @@
     [/^(\d+) (?:possedute|posseduti|posseduto|posseduta) su (\d+)((?: · \d+ doppion[ei])?)((?: · \d+ visibil[ei])?)$/, function (m) {
       return m[1] + ' owned of ' + m[2] + m[3].replace(/doppion[ei]/, function (d) { return d === 'doppione' ? 'duplicate' : 'duplicates'; }).replace(/visibil[ei]/, 'shown');
     }],
-    [/^(\d+) su (\d+)$/, "$1 of $2"],
+    [/^(\d+) su (\d+)((?: · \d+ doppion[ei])?)((?: · \d+ visibil[ei])?)$/, function (m) {
+      return m[1] + ' of ' + m[2] + m[3].replace(/doppion[ei]/, function (d) { return d === 'doppione' ? 'duplicate' : 'duplicates'; }).replace(/visibil[ei]/, 'shown');
+    }],
     [/^dal (\d{4})$/, "from $1"],
     [/^(Tutte|Tutti) \((\d+)\)$/, "All ($2)"],
     [/^In possesso \((\d+)\)$/, "Owned ($1)"],
@@ -406,6 +416,8 @@
     [/^Cerca in (.+)$/, "Search in $1"],
     [/^Tolti anche i (\d+) doppioni\.$/, "The $1 duplicates were removed too."],
     [/^Fai parte della community di (.+)$/, "Join the $1 community"],
+    [/^Unisciti a una community di collezionisti (.+)$/, "Join a community of $1 collectors"],
+    [/^Unisciti a una community$/, "Join a community"],
     [/^Hai un gruppo su (.+)\?$/, "Do you run a $1 group?"],
     [/^Il mio gruppo su (.+) · Collection Time$/, "My $1 group · Collection Time"],
     [/^Segnato anche «Ce l'ho»(.*)$/, "Also marked “Owned”$1"],
@@ -415,18 +427,14 @@
     [/^Puoi fissare al massimo (\d+) categorie: togline una tenendola premuta$/, "You can pin up to $1 categories: unpin one by pressing and holding it"],
     [/^Ho corretto «(.+)» in «(.+)»: controlla e premi di nuovo "Crea account"\.$/, function (m) { return 'I corrected “' + m[1] + '” to “' + m[2] + '”: check it and press “Create account” again.'; }],
     [/^Salvata nel cloud · (.+)$/, function (m) { return 'Saved in the cloud · ' + m[1].replace(/[a-zì]+/g, function (w) { return MESI[w] || w; }); }],
-    [/^(\d+) collezionisti la stanno completando su Collection Time: inizia anche tu!$/, "$1 collectors are completing it on Collection Time: start yours too!"],
+    [/^(\d+) collezionisti la stanno completando: inizia anche tu!$/, "$1 collectors are completing it: start yours too!"],
     [/^Grazie a (.+) per le foto\.$/, "Thanks to $1 for the photos."],
     [/^Uscito solo (?:in (.+)|all'estero)$/, function (m) { return 'Released only ' + (m[1] ? 'in ' + m[1].replace(/ e /g, ' and ') : 'abroad'); }],
     [/^(.*?)\. Uscito solo (?:in (.+)|all'estero)$/, function (m) { return m[1] + '. Released only ' + (m[2] ? 'in ' + m[2].replace(/ e /g, ' and ') : 'abroad'); }],
-    [/^La checklist completa (?:di 1|delle|dei|degli|della) (?:(\d+) )?(.+?) di «(.+?)»(?: \((.+?)\))?, con foto, nome e (codice|numero) di ognuna(?: \(da (.+?) a (.+?)\))?\.$/, function (m) {
-      var uno = !m[1];
-      return 'The complete checklist of ' + (uno ? '1 ' : m[1] + ' ') + nome(m[2]) + ' in “' + m[3] + '”' + (m[4] ? ' (' + m[4] + ')' : '')
-        + ', with photo, name and ' + (m[5] === 'codice' ? 'code' : 'number') + ' of each' + (m[6] ? ' (from ' + m[6] + ' to ' + m[7] + ')' : '') + '.';
-    }],
     [/^Tutt[eiao] .+?,? con il quadratino spuntato dove ce l'hai\.$/, "All items, with the box checked where you own them."],
     [/^Tutt[eiao] .+? con il quadratino vuoto, da compilare a mano\.$/, "All items with an empty box, to fill in by hand."],
     [/^(?:Premi su|Tocca) (?:una|uno|un)'? ?.+? per segnare che ce l'hai\. Con info vedi i dettagli, le info e gli hashtag\.$/, "Tap an item to mark that you own it. Use info to see details, notes and hashtags."],
+    [/^(?:Premi su|Tocca) (?:una|uno|un)'? ?.+? per segnare che ce l'hai\.$/, "Tap an item to mark that you own it."],
     [/^Nessun risultato per (.+)$/, "No results for $1"],
     [/^Tocca (?:una|uno|un)'? ?.+? per segnare che ce l'hai \(o toglierlo\)\. Tieni il dito sopra \(o passa col mouse\) per vedere il nome e la serie\.$/,
       "Tap an item to mark that you own it (or unmark it). Hold your finger over it (or hover with the mouse) to see the name and the series."],

@@ -191,10 +191,11 @@
     const owned = base.filter(p => p.owned).length;
     const total = base.filter(p => p.image || p.owned).length;
     const doppi = pens.reduce((t, p) => t + p.doppi, 0);
-    let t = owned + ' ' + CONFIG.possedute + ' su ' + total;
+    let t = owned + ' su ' + total;
     if (doppi) t += ' · ' + doppi + (doppi === 1 ? ' doppione' : ' doppioni');
     if (typeof shown === 'number' && shown !== pens.length) t += ' · ' + shown + (shown === 1 ? ' visibile' : ' visibili');
     $('count').textContent = t;
+    const sug = document.querySelector('.hint-sopra'); if (sug) sug.hidden = pens.some(p => p.owned);
     grid.querySelectorAll('.estere-titolo').forEach(aggiornaTitoloEstere);
     if (!barra) {
       barra = document.createElement('div');
@@ -202,78 +203,64 @@
       barra.setAttribute('role', 'progressbar');
       barra.setAttribute('aria-label', 'Quanto hai completato');
       barra.append(document.createElement('span'));
-      const riga = document.createElement('div');
-      riga.className = 'avanz-riga';
+      const testa = document.createElement('div');
+      testa.className = 'stato-testa';
+      $('count').before(testa);
       percTesto = document.createElement('span');
       percTesto.className = 'avanz-perc';
-      riga.append(barra, percTesto);
-      $('count').after(riga);
+      testa.append($('count'), percTesto);
+      const riga = document.createElement('div');
+      riga.className = 'avanz-riga';
+      riga.append(barra);
+      testa.after(riga);
     }
     const perc = total ? Math.round(owned / total * 100) : 0;
     barra.firstChild.style.width = perc + '%';
     barra.setAttribute('aria-valuenow', String(perc));
     barra.classList.toggle('completa', total > 0 && owned >= total);
-    const mancano = Math.max(0, total - owned);
-    percTesto.textContent = total && owned >= total ? 'Completa!' : perc + '% · mancano ' + mancano;
-    const quanti = { all: pens.length, owned, missing: pens.filter(p => !p.owned && p.image && !p.estero).length, doppi: pens.filter(p => p.doppi > 0).length };
+    percTesto.textContent = total && owned >= total ? 'Completa!' : perc + '%';
+    const quanti = { owned, missing: pens.filter(p => !p.owned && p.image && !p.estero).length, doppi: pens.filter(p => p.doppi > 0).length };
     [...$('filter').options].forEach(o => {
       if (!o.dataset.testo) o.dataset.testo = o.textContent;
       if (o.value in quanti) o.textContent = o.dataset.testo + ' (' + quanti[o.value] + ')';
     });
   }
 
-  const PLURALI_UGUALI = ['auto', 'box', 'charm', 'gadget', 'minifigure', 'peluche', 'photocard', 'portachiavi', 'poster', 'set', 'tote bag'];
-  function plurale(nome) {
-    const n = String(nome || '').trim();
-    if (CONFIG.plurale) return CONFIG.plurale;
-    if (!n || PLURALI_UGUALI.includes(n) || /[^aeiou]$/i.test(n)) return n;
-    if (/io$/.test(n)) return n.slice(0, -1);
-    if (/[cg]o$/.test(n)) return n.slice(0, -1) + 'hi';
-    if (/[cg]a$/.test(n)) return n.slice(0, -1) + 'he';
-    if (/a$/.test(n)) return n.slice(0, -1) + 'e';
-    return n.slice(0, -1) + 'i';
-  }
   function rigaInfo() {
     const h1 = document.querySelector('header h1');
     if (!h1 || !SEED.length) return;
     const anni = new Set(SEED.map(s => s.codice));
     const anno = anni.size === 1 && /^(19|20)\d\d$/.test(SEED[0].codice) ? SEED[0].codice : '';
-    const principali = SEED.filter(s => !s.estero).length, estere = SEED.length - principali;
-    const quanti = principali + ' ' + (principali === 1 ? CONFIG.nome : plurale(CONFIG.nome)) + (estere ? ' + ' + estere + (SEED.some(s => s.estero && !s.variante) ? ' ESTERO' : (estere === 1 ? ' variante' : ' varianti')) : '');
+    if (!anno) return;
     const p = document.createElement('p');
     p.className = 'info-serie';
-    p.textContent = [anno, quanti].filter(Boolean).join(' · ');
+    p.textContent = anno;
     h1.after(p);
   }
   rigaInfo();
 
-  const MINIMO_COLLEZIONISTI = 100;
+  const MINIMO_COLLEZIONISTI = 50;
   const RADICE = new URL('../', document.currentScript.src);
   function descrizione() {
     const fondo = document.querySelector('.wrap > footer');
     if (!fondo || !SEED.length) return;
-    const gruppo = document.querySelector('.st-percorso a:last-of-type, a.st-back');
-    const nomeGruppo = gruppo ? gruppo.textContent.replace(/^\s*\u2190\s*/, '').trim() : '';
-    const anni = new Set(SEED.map(x => x.codice));
-    const anno = anni.size === 1 && /^(19|20)\d\d$/.test(SEED[0].codice) ? SEED[0].codice : '';
-    const principali = SEED.filter(x => !x.estero);
-    const codici = principali.map(x => (/ - (.+)$/.exec(x.paese ? x.code.replace(' - ' + x.paese, '') : x.code) || [])[1]).filter(Boolean);
-    const cosa = principali.length + ' ' + (principali.length === 1 ? CONFIG.nome : plurale(CONFIG.nome));
-    const tra = [nomeGruppo, anno].filter(Boolean).join(', ');
     const sec = document.createElement('section');
     sec.className = 'descr-serie';
-    const p = document.createElement('p');
-    p.textContent = 'La checklist completa ' + (principali.length === 1 ? 'di 1 ' + CONFIG.nome : 'delle ' + cosa) + ' di «' + CONFIG.titolo + '»'
-      + (tra ? ' (' + tra + ')' : '') + ', con foto, nome e ' + (codici.length ? 'codice' : 'numero') + ' di ognuna'
-      + (codici.length > 1 ? ' (da ' + codici[0] + ' a ' + codici[codici.length - 1] + ').' : '.');
-    sec.append(p);
-    const segnala = document.createElement('a');
-    segnala.className = 'btn segnala';
-    segnala.textContent = 'Segnala un problema';
-    segnala.href = 'mailto:' + 'collectiontime.support' + '@' + 'gmail.com'
+    const riga = document.createElement('div');
+    riga.className = 'descr-scrivi';
+    const frase = document.createElement('span');
+    frase.className = 'descr-scrivi-frase';
+    if (CONFIG.cercaAcceso) frase.innerHTML = '<span>Hai una foto che ci manca</span><br><span>o c\'è un problema?</span>';
+    else frase.textContent = 'C\'è un problema?';
+    const scrivi = document.createElement('a');
+    scrivi.className = 'btn';
+    scrivi.textContent = 'Scrivici';
+    scrivi.href = 'mailto:' + 'collectiontime.support' + '@' + 'gmail.com'
       + '?subject=' + encodeURIComponent('Segnalazione · ' + CONFIG.titolo)
-      + '&body=' + encodeURIComponent('Ciao! Ho trovato un problema nella serie «' + CONFIG.titolo + '» (' + location.href + ').\n\nCosa non va (foto, nome, numero…):\n');
-    sec.append(segnala);
+      + '&body=' + encodeURIComponent('Ciao! Ti scrivo per la serie «' + CONFIG.titolo + '» (' + location.href + ').\n\n'
+        + (CONFIG.cercaAcceso ? 'Ho una foto che vi manca / ho trovato un problema (foto, nome, numero…):\n' : 'Cosa non va (foto, nome, numero…):\n'));
+    riga.append(frase, scrivi);
+    sec.append(riga);
     if (CONFIG.grazieAcceso && String(CONFIG.grazieNome || '').trim()) {
       const g = document.createElement('p');
       g.className = 'descr-grazie';
@@ -286,16 +273,23 @@
       const misura = () => { g.classList.add('corto'); apri.hidden = !(g.scrollHeight > g.clientHeight + 1) && !g.classList.contains('aperto'); if (g.classList.contains('aperto')) g.classList.remove('corto'); };
       g.classList.add('corto'); requestAnimationFrame(misura); addEventListener('resize', misura); if (document.fonts) document.fonts.ready.then(misura);
     }
-    const suggerimento = [...fondo.querySelectorAll('p.hint')].find(h => /^\s*Premi su/.test(h.textContent));
-    if (suggerimento) fondo.before(suggerimento);
+    const suggerimento = [...fondo.querySelectorAll('p.hint')].find(h => /^\s*(Premi su|Tocca)/.test(h.textContent));
+    if (suggerimento) {
+      suggerimento.textContent = suggerimento.textContent.trim().split(/(?<=\.)\s/)[0];
+      suggerimento.classList.add('hint-sopra');
+      suggerimento.hidden = pens.some(p => p.owned);
+      grid.before(suggerimento);
+    }
     fondo.before(sec);
     fetch(new URL('comune/collezionisti.json', RADICE)).then(r => r.ok ? r.json() : null).then(d => {
       const n = d && d.serie && d.serie[CONFIG.dbName];
       if (!n || n < MINIMO_COLLEZIONISTI) return;
       const b = document.createElement('p');
       b.className = 'descr-conta';
-      b.textContent = n + ' collezionisti la stanno completando su Collection Time: inizia anche tu!';
-      segnala.before(b);
+      b.textContent = n + ' collezionisti la stanno completando: inizia anche tu!';
+      const linea = document.createElement('hr');
+      linea.className = 'descr-linea';
+      sec.prepend(b, linea);
     }).catch(() => {});
   }
   descrizione();
@@ -488,10 +482,10 @@
   function aggiornaTitoloEstere(li) {
     const v = !!li.dataset.variante, tutte = pens.filter(p => p.estero && !!p.variante === v && (p.image || p.owned));
     const ce = tutte.filter(p => p.owned).length, tot = tutte.length, perc = tot ? Math.round(ce * 100 / tot) : 0;
-    li.querySelector('.estere-count').textContent = ce + ' ' + CONFIG.possedute + ' su ' + tot;
+    li.querySelector('.estere-count').textContent = ce + ' su ' + tot;
     li.querySelector('.estere-barra span').style.width = perc + '%';
     li.querySelector('.estere-barra').classList.toggle('completa', tot > 0 && ce >= tot);
-    li.querySelector('.avanz-perc').textContent = tot && ce >= tot ? 'Completa!' : perc + '% · mancano ' + Math.max(0, tot - ce);
+    li.querySelector('.avanz-perc').textContent = tot && ce >= tot ? 'Completa!' : perc + '%';
   }
   function titoloEstere(v) {
     const li = document.createElement('li');
@@ -1197,6 +1191,38 @@
     printDlg.showModal();
   });
   $('printCancel').addEventListener('click', () => printDlg.close());
+
+  (function azioniSerie() {
+    const h1 = document.querySelector('.wrap header h1');
+    if (!h1 || !$('btnPrint') || !$('btnShare')) return;
+    const svg = d => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+    const box = document.createElement('div');
+    box.className = 'azioni-serie';
+    for (const [id, nome, disegno] of [
+      ['btnPrint', 'Stampa', '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="9" rx="2"/><path d="M7 14h10v7H7z"/>'],
+      ['btnShare', 'Condividi', '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>'],
+    ]) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn';
+      b.innerHTML = svg(disegno) + '<span>' + nome + '</span>';
+      b.addEventListener('click', () => $(id).click());
+      box.append(b);
+    }
+    const info = h1.nextElementSibling && h1.nextElementSibling.classList.contains('info-serie') ? h1.nextElementSibling : h1;
+    info.after(box);
+    const CORTI = { 'Dalla prima': 'Dalla 1ª', 'Dal primo': 'Dal 1°' };
+    const opz = $('sort') && $('sort').querySelector('option[value=asc]');
+    const stretto = matchMedia('(max-width: 360px)');
+    function testoOrdine() {
+      if (!opz) return;
+      if (!opz.dataset.lungo) opz.dataset.lungo = opz.textContent;
+      const corto = CORTI[opz.dataset.lungo];
+      if (corto) opz.textContent = stretto.matches ? corto : opz.dataset.lungo;
+    }
+    testoOrdine();
+    stretto.addEventListener('change', testoOrdine);
+  })();
 
   $('btnShare').addEventListener('click', async () => {
     const dati = { title: document.title, url: location.href };
