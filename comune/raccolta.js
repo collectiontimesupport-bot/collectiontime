@@ -1,6 +1,7 @@
 
 (() => {
   const app = document.getElementById('raccolta');
+  app.classList.add(new URLSearchParams(location.search).get('stile') === 'a' ? 'stile-a' : 'stile-b');
   const SERIE = INDICE.serie;
   const ce = {}, doppi = {};
   const serieDi = {};
@@ -69,9 +70,9 @@
       <div class="doppi${n ? ' si' : ''}"><span class="etichetta">Doppi</span><span class="conta"><button type="button" data-meno="${id}"${n ? '' : ' disabled'} aria-label="Un doppione in meno">−</button><span class="n">${n}</span><button type="button" data-piu="${id}" aria-label="Un doppione in più">+</button></span></div>
     </li>`;
   }
-  function griglia(s, oggetti) {
+  function griglia(s, oggetti, unaRiga) {
     const stretta = s.pr >= 3;
-    return `<div class="${esc(s.cl)}"><ul class="grid${stretta ? ' stretti' : ''}" style="--proporzione:${s.pr}; --pen-vh:${stretta ? 260 : 170}px; grid-template-columns: repeat(auto-fill, minmax(${stretta ? 56 : 110}px, 1fr))">${oggetti.map(o => oggetto(s, o)).join('')}</ul></div>`;
+    return `<div class="${esc(s.cl)}"><ul class="grid${stretta ? ' stretti' : ''}${unaRiga ? ' una-riga' : ''}"${unaRiga ? ` data-serie="${esc(s.db)}"` : ''} style="--proporzione:${s.pr}; --pen-vh:${stretta ? 260 : 170}px; grid-template-columns: repeat(auto-fill, minmax(${stretta ? 56 : 110}px, 1fr))">${oggetti.map(o => oggetto(s, o)).join('')}</ul></div>`;
   }
   const titoloSerie = (s, extra, scambi) =>
     `<div class="serie-titolo"><h2><a href="../${s.p}/index.html">${esc(s.t)}</a></h2><small>${[s.g, s.d, extra].filter(Boolean).map(esc).join(' · ')}</small>`
@@ -82,6 +83,8 @@
   const menu = (id, voci, scelta, etichetta) =>
     `<select id="${id}" aria-label="${etichetta}">${voci.map(([k, t]) => `<option value="${esc(k)}"${k === scelta ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
   const menuGruppi = () => gruppi.length > 1 ? menu('gruppo', [['', 'Tutti i gruppi'], ...gruppi.map(g => [g, g])], gruppo, 'Gruppo') : '';
+  let filtro = '';
+  const lenteSerie = () => `<div class="st-cerca${filtro ? ' open' : ''}" id="cerca-serie"><button type="button" id="apri-cerca-serie" aria-label="Cerca una serie" aria-expanded="${!!filtro}">${LENTE}</button><input type="search" id="filtro-serie" placeholder="Cerca una serie" aria-label="Cerca una serie" value="${esc(filtro)}" autocomplete="off" enterkeyhint="search"${filtro ? '' : ' tabindex="-1"'}></div>`;
   const vuoto = testo => `<section class="empty"><p>${testo}</p><a class="st-btn" href="../index.html">Vai alle serie</a></section>`;
 
 
@@ -97,13 +100,14 @@
     const manca = s => principali(s).length - quante(s);
     const tot = elenco.reduce((t, s) => t + manca(s), 0);
     app.innerHTML = testa('MI MANCANO', plurale(tot, 'oggetto', 'oggetti') + ' in ' + plurale(elenco.length, 'serie', 'serie'),
-      menu('iniziate', [['1', 'Serie che ho iniziato'], ['0', 'Tutte le serie']], soloIniziate ? '1' : '0', 'Quali serie') + menuGruppi())
-      + (elenco.map(s => { const m = principali(s).filter(o => !ce[o[0]]); return titoloSerie(s, m.length === 1 ? 'ne manca 1' : 'ne mancano ' + m.length, true) + griglia(s, m)
-          + `<button type="button" class="non-cerco" data-pausa="${esc(s.db)}">Non la cerco più</button>`; }).join('')
+      (elenco.length || ferme.length ? lenteSerie() : '') + menu('iniziate', [['1', 'Serie che ho iniziato'], ['0', 'Tutte le serie']], soloIniziate ? '1' : '0', 'Quali serie') + menuGruppi())
+      + (elenco.map(s => { const m = principali(s).filter(o => !ce[o[0]]); return `<section class="r-serie" data-nome="${esc(semplice(s.t + ' ' + s.g + ' ' + s.d))}">` + titoloSerie(s, m.length === 1 ? 'ne manca 1' : 'ne mancano ' + m.length, true) + griglia(s, m, true)
+          + `<button type="button" class="non-cerco" data-pausa="${esc(s.db)}">Non la cerco più</button></section>`; }).join('')
         || (ferme.length ? '' : vuoto(soloIniziate ? 'Non hai ancora iniziato nessuna serie. Segna con "Ce l\'ho" quello che hai: qui vedrai cosa manca per completare le serie.' : 'Non ti manca niente!')))
       + (ferme.length ? `<details class="pausa"><summary>Non le cerco più (${ferme.length})</summary>`
-          + ferme.map(s => `<div class="pausa-serie"><div><b>${esc(s.t)}</b><small>${[s.g, 'ne ' + (manca(s) === 1 ? 'manca 1' : 'mancano ' + manca(s))].filter(Boolean).map(esc).join(' · ')}</small></div><button type="button" class="st-btn" data-riprendi="${esc(s.db)}">Riprendi</button></div>`).join('')
+          + ferme.map(s => `<div class="pausa-serie" data-nome="${esc(semplice(s.t + ' ' + s.g + ' ' + s.d))}"><div><b>${esc(s.t)}</b><small>${[s.g, 'ne ' + (manca(s) === 1 ? 'manca 1' : 'mancano ' + manca(s))].filter(Boolean).map(esc).join(' · ')}</small></div><button type="button" class="st-btn" data-riprendi="${esc(s.db)}">Riprendi</button></div>`).join('')
           + '</details>' : '')
+      + '<p class="st-nessuna nessuna-serie" hidden></p>'
       + '<p class="hint" style="margin-top:28px">Premi su una foto per segnare che ce l\'hai. Con + e − conti i doppioni.</p>';
   }
 
@@ -111,9 +115,10 @@
     const elenco = SERIE.filter(s => (!gruppo || s.g === gruppo) && doppiDi(s));
     const tot = elenco.reduce((t, s) => t + doppiDi(s), 0);
     app.innerHTML = testa('DOPPIONI', plurale(tot, 'doppione', 'doppioni') + (elenco.length ? ' in ' + plurale(elenco.length, 'serie', 'serie') : ''),
-      menuGruppi())
-      + (elenco.map(s => titoloSerie(s, '', true) + griglia(s, s.x.filter(o => doppi[o[0]] && primo(o[0])))).join('')
-        || vuoto('Nessun doppione. Hai qualcosa in più? Premi + sotto la foto, nella pagina della serie.'));
+      (elenco.length ? lenteSerie() : '') + menuGruppi())
+      + (elenco.map(s => `<section class="r-serie" data-nome="${esc(semplice(s.t + ' ' + s.g + ' ' + s.d))}">` + titoloSerie(s, '', true) + griglia(s, s.x.filter(o => doppi[o[0]] && primo(o[0])), true) + '</section>').join('')
+        || vuoto('Nessun doppione. Hai qualcosa in più? Premi + sotto la foto, nella pagina della serie.'))
+      + '<p class="st-nessuna nessuna-serie" hidden></p>';
   }
 
   let testoCerca = '';
@@ -139,14 +144,68 @@
   }
 
   const accendi = () => app.querySelectorAll('.pen.owned .pic').forEach(pic => accendiBagliore(pic, pic.querySelector('.pen-img').src));
+
+  const aperte = new Set();
+  const FRECCIA = '<svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function unaRiga(ul) {
+    ul.querySelectorAll(':scope > .altri').forEach(x => x.remove());
+    const pezzi = [...ul.children];
+    pezzi.forEach(li => { li.hidden = false; });
+    const col = getComputedStyle(ul).gridTemplateColumns.split(' ').filter(c => /px$/.test(c)).length;
+    if (!col || pezzi.length <= col) return;
+    const aperta = aperte.has(ul.dataset.serie), resto = pezzi.length - (col - 1);
+    if (!aperta) pezzi.slice(col - 1).forEach(li => { li.hidden = true; });
+    const prossimo = pezzi[col - 1].querySelector('img.pen-img');
+    ul.insertAdjacentHTML('beforeend', `<li class="pen altri${aperta ? ' aperta' : ''}" data-altri><button type="button" class="open" aria-expanded="${aperta}" aria-label="${aperta ? 'Chiudi la tendina' : 'Mostra altri ' + resto}">`
+      + `<div class="pic">${aperta ? '' : `<img class="sfocata" src="${prossimo ? prossimo.src : ''}" alt="" aria-hidden="true" loading="lazy" decoding="async">`}<span class="bollo">${aperta ? '' : `<b>+${resto}</b>`}${FRECCIA}</span></div></button>`
+      + `<div class="code" aria-hidden="true">${aperta ? 'Chiudi' : 'Apri'}</div></li>`);
+  }
+  const righe = () => app.querySelectorAll('ul.una-riga').forEach(unaRiga);
+  let attesa;
+  window.addEventListener('resize', () => { clearTimeout(attesa); attesa = setTimeout(righe, 120); });
+
+  function filtra() {
+    const parole = semplice(filtro).split(/\s+/).filter(Boolean);
+    let viste = 0, tutte = 0;
+    app.querySelectorAll('.r-serie, .pausa-serie').forEach(el => {
+      const va = parole.every(w => el.dataset.nome.includes(w));
+      el.hidden = !va;
+      if (el.classList.contains('r-serie')) { tutte++; if (va) viste++; }
+    });
+    const pausa = app.querySelector('details.pausa');
+    if (pausa) { const v = pausa.querySelectorAll('.pausa-serie:not([hidden])').length; pausa.hidden = !v; if (parole.length && v) pausa.open = true; }
+    const msg = app.querySelector('.nessuna-serie');
+    const pausaViste = pausa && !pausa.hidden;
+    if (msg) { msg.hidden = !(parole.length && tutte && !viste && !pausaViste); msg.textContent = parole.length ? 'Nessuna serie con «' + filtro.trim() + '».' : ''; }
+    righe();
+  }
+
   function mostra() {
     const v = location.hash.replace(/^#\/?/, '');
     if (v === 'doppioni') doppioni(); else if (v === 'cerca') cerca(); else mancanti();
+    if (v !== 'cerca') filtra();
     accendi();
   }
-  window.addEventListener('hashchange', () => { mostra(); scrollTo(0, 0); });
+  window.addEventListener('hashchange', () => { filtro = ''; aperte.clear(); mostra(); scrollTo(0, 0); });
 
   app.addEventListener('click', e => {
+    const al = e.target.closest('[data-altri]');
+    if (al) {
+      const ul = al.closest('ul'), k = ul.dataset.serie, chiudo = aperte.has(k);
+      chiudo ? aperte.delete(k) : aperte.add(k);
+      unaRiga(ul);
+      if (chiudo) { const sez = ul.closest('.r-serie'); if (sez && sez.getBoundingClientRect().top < 0) sez.scrollIntoView({ block: 'start' }); }
+      else { const b = ul.querySelector(':scope > .altri .open'); if (b) b.blur(); }
+      accendi();
+      return;
+    }
+    if (e.target.closest('#apri-cerca-serie')) {
+      const box = document.getElementById('cerca-serie'), campo = document.getElementById('filtro-serie');
+      if (box.classList.contains('open') && !filtro) { box.classList.remove('open'); campo.tabIndex = -1; e.target.closest('button').setAttribute('aria-expanded', 'false'); }
+      else if (box.classList.contains('open')) { filtro = campo.value = ''; filtra(); campo.focus(); }
+      else { box.classList.add('open'); campo.tabIndex = 0; e.target.closest('button').setAttribute('aria-expanded', 'true'); campo.focus(); }
+      return;
+    }
     const p = e.target.closest('[data-pausa], [data-riprendi]');
     if (p) {
       const db = p.dataset.pausa || p.dataset.riprendi, ferma = !!p.dataset.pausa;
@@ -181,6 +240,12 @@
     const y = scrollY;
     if (document.getElementById('risultati')) risultati(); else mostra();
     scrollTo(0, y);
+  });
+  app.addEventListener('input', e => { if (e.target.id === 'filtro-serie') { filtro = e.target.value; filtra(); } });
+  app.addEventListener('keydown', e => {
+    if (e.target.id !== 'filtro-serie') return;
+    if (e.key === 'Escape') { filtro = e.target.value = ''; filtra(); }
+    if (e.key === 'Enter') e.target.blur();
   });
   app.addEventListener('change', e => {
     if (e.target.id === 'iniziate') soloIniziate = e.target.value === '1';
