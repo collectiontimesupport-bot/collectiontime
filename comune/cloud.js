@@ -626,7 +626,7 @@ function confermaElimina() {
   const d = document.createElement('dialog');
   d.className = 'st-guida st-account';
   d.innerHTML = '<h2>Eliminare l\'account?</h2>'
-    + '<p>Vengono cancellati <b>per sempre</b> il tuo account e la collezione salvata nel cloud: spunte, doppioni e hashtag di tutte le collezioni. Non si può tornare indietro.</p>'
+    + '<p>Vengono cancellati <b>per sempre</b> il tuo account e la collezione salvata nel cloud: spunte, doppioni e liste di tutte le collezioni. Non si può tornare indietro.</p>'
     + '<p><small>Se vuoi solo uscire da questo dispositivo, usa <b>Esci</b>: la collezione resta nel tuo account.</small></p>'
     + '<div class="st-account-azioni st-elimina-azioni"><button type="button" value="si" class="st-secondario st-rosso">Elimina per sempre</button><button type="button" value="no" autofocus>Annulla</button></div>';
   d.addEventListener('click', e => { const b = e.target.closest('button'); if (b) d.close(b.value); });

@@ -167,6 +167,8 @@
   function searchText(p) {
     const parts = [p.code, p.codice, p.name, p.info, p.colorName];
     p.tags.forEach(t => {
+      if (LISTE && LISTE.eSpunta(t)) return;
+      if (LISTE && LISTE.eLista(t)) { parts.push(LISTE.nomeDi(t)); return; }
       parts.push(t, '#' + t);
       const al = TAG_ALIASES[String(t).toLowerCase()];
       if (al) parts.push(...al);
@@ -180,6 +182,7 @@
       .filter(p => filterMode === 'owned' ? p.owned
         : filterMode === 'missing' ? (!p.owned && p.image)
         : filterMode === 'doppi' ? p.doppi > 0
+        : filterMode.startsWith('L:') ? inLista(p, filterMode.slice(2))
         : true)
       .filter(p => { if (!terms.length) return true; const hay = searchText(p); return terms.every(t => hay.includes(t)); })
       .sort((a, b) => sortDir * byPos(a, b));
@@ -224,6 +227,38 @@
       if (!o.dataset.testo) o.dataset.testo = o.textContent;
       if (o.value in quanti) o.textContent = o.dataset.testo + ' (' + quanti[o.value] + ')';
     });
+    filtroListe();
+  }
+  function filtroListe() {
+    const sel = $('filter');
+    if (!LISTE || !sel) return;
+    const conti = new Map();
+    pens.forEach(p => listeDi(p).forEach(n => { const k = LISTE.chiave(n); conti.set(k, [n, (conti.get(k) || [n, 0])[1] + 1]); }));
+    const nomi = LISTE.nomi().filter(n => conti.has(LISTE.chiave(n)));
+    conti.forEach(([n]) => { if (!ha(nomi, n)) nomi.push(n); });
+    let gr = sel.querySelector('optgroup.gr-liste');
+    const firma = nomi.map(n => n + '=' + conti.get(LISTE.chiave(n))[1]).join('|');
+    if (!gr || gr.dataset.firma !== firma) {
+      if (gr) gr.remove();
+      if (nomi.length) {
+        gr = document.createElement('optgroup');
+        gr.className = 'gr-liste'; gr.label = 'Le mie liste'; gr.dataset.firma = firma;
+        nomi.forEach(n => gr.append(new Option('Lista: ' + n + ' (' + conti.get(LISTE.chiave(n))[1] + ')', 'L:' + n)));
+        sel.append(gr);
+      }
+    }
+    if (filterMode.startsWith('L:') && !ha(nomi, filterMode.slice(2))) { filterMode = 'all'; setTimeout(render); }
+    sel.value = filterMode;
+    let nota = document.querySelector('.liste-nota');
+    if (filterMode.startsWith('L:')) {
+      const n = filterMode.slice(2), quanti = pens.filter(p => inLista(p, n)).length;
+      if (!nota) { nota = document.createElement('p'); nota.className = 'liste-nota'; grid.before(nota); }
+      nota.innerHTML = '';
+      const b = document.createElement('b'); b.textContent = n;
+      const a = document.createElement('a'); a.textContent = 'Vai alla lista';
+      a.href = new URL('la-mia-collezione/index.html#/lista/' + encodeURIComponent(n), BASE).href;
+      nota.append('Lista ', b, ': ' + quanti + (quanti === 1 ? ' oggetto' : ' oggetti') + ' · ', a);
+    } else if (nota) nota.remove();
   }
 
   function rigaInfo() {
@@ -541,55 +576,68 @@
   }
   if ('ResizeObserver' in window) { let largo = 0; new ResizeObserver(() => { const w = grid.clientWidth; if (w !== largo) { largo = w; centraRighe(); } }).observe(grid); }
 
-  let editTags = [];
-  const tagSug = $('tagSug');
-  tagSug.append('Suggeriti: ');
-  (CONFIG.suggerimenti || []).forEach(t => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.dataset.tag = t; b.textContent = '#' + t;
-    b.addEventListener('click', () => addTag(t));
-    tagSug.append(b);
-  });
-  tagSug.hidden = !(CONFIG.suggerimenti || []).length;
-  const suggeriti = () => [...tagSug.querySelectorAll('button')];
-
-  const cleanTag = t => {
-    t = String(t).replace(/^#+/, '').trim().replace(/\s+/g, ' ');
-    return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
-  };
-  function renderTags() {
-    const box = $('tagChips');
-    box.replaceChildren();
-    editTags.forEach((t, i) => {
-      const chip = document.createElement('span');
-      chip.className = 'chip';
-      chip.append(document.createTextNode('#' + t));
-      const x = document.createElement('button');
-      x.type = 'button';
-      x.textContent = '\u00D7';
-      x.setAttribute('aria-label', 'Togli ' + t);
-      x.addEventListener('click', () => { editTags.splice(i, 1); renderTags(); });
-      chip.append(x);
-      box.append(chip);
+  const LISTE = typeof ctListe !== 'undefined' ? ctListe : null;
+  let editListe = [];
+  const campoListe = (() => {
+    const vecchio = $('tagChips') ? $('tagChips').closest('.field') : null;
+    if (!LISTE || !vecchio) return null;
+    vecchio.className = 'field liste-campo';
+    vecchio.innerHTML = '<span id="lblListe">Le mie liste</span><div class="liste-pill" id="listePill" role="group" aria-labelledby="lblListe"></div><p class="liste-err" id="listeErr" role="alert" hidden></p>';
+    return vecchio;
+  })();
+  const ha = (elenco, n) => elenco.some(x => LISTE.uguale(x, n));
+  ['ct-accesso', 'ct-header'].forEach(ev => window.addEventListener(ev, () => { if (campoListe) disegnaListe(); }));
+  function disegnaListe() {
+    if (!campoListe) return;
+    const box = $('listePill'), err = $('listeErr');
+    if (!LISTE.puoi()) {
+      err.hidden = true;
+      box.innerHTML = '<p class="liste-blocco">Le liste sono per chi è iscritto. <button type="button" class="st-link" data-accedi-liste>Accedi</button></p>';
+      box.querySelector('[data-accedi-liste]').addEventListener('click', () => LISTE.chiediAccesso());
+      return;
+    }
+    const tutti = LISTE.nomi();
+    editListe.forEach(n => { if (!ha(tutti, n)) tutti.push(n); });
+    box.replaceChildren(...tutti.map(n => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'lp'; b.textContent = n;
+      const dentro = ha(editListe, n);
+      b.setAttribute('aria-pressed', String(dentro));
+      b.addEventListener('click', () => {
+        editListe = ha(editListe, n) ? editListe.filter(x => !LISTE.uguale(x, n)) : [...editListe, n];
+        err.hidden = true;
+        disegnaListe();
+      });
+      return b;
+    }));
+    const nuova = document.createElement('button');
+    nuova.type = 'button'; nuova.className = 'lp lp-nuova'; nuova.textContent = '+ Nuova lista';
+    nuova.addEventListener('click', () => {
+      const campo = document.createElement('input');
+      campo.type = 'text'; campo.className = 'lp-campo'; campo.maxLength = LISTE.MAX_NOME;
+      campo.placeholder = 'Nome della lista'; campo.setAttribute('aria-label', 'Nome della nuova lista'); campo.autocomplete = 'off';
+      const conferma = () => {
+        const testo = campo.value.trim();
+        if (!testo) { disegnaListe(); return; }
+        const v = LISTE.crea(testo);
+        if (v.errore) { err.textContent = v.errore; err.hidden = false; campo.focus(); return; }
+        err.hidden = true;
+        editListe = [...editListe, v.nome];
+        disegnaListe();
+      };
+      campo.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); conferma(); }
+        else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); err.hidden = true; disegnaListe(); }
+      });
+      campo.addEventListener('blur', () => { if (campo.isConnected && !campo.value.trim()) disegnaListe(); });
+      nuova.replaceWith(campo);
+      campo.focus();
     });
-    suggeriti().forEach(b => { b.hidden = editTags.some(t => t.toLowerCase() === b.dataset.tag.toLowerCase()); });
+    box.append(nuova);
   }
-  function addTag(raw) {
-    let t = cleanTag(raw);
-    if (!t) return;
-    const known = suggeriti().find(b => b.dataset.tag.toLowerCase() === t.toLowerCase());
-    if (known) t = known.dataset.tag;
-    if (!editTags.some(x => x.toLowerCase() === t.toLowerCase())) editTags.push(t);
-    renderTags();
-  }
-  const tagInput = $('fTagInput');
-  tagInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(tagInput.value); tagInput.value = ''; }
-    else if (e.key === 'Backspace' && !tagInput.value && editTags.length) { editTags.pop(); renderTags(); }
-  });
-  tagInput.addEventListener('blur', () => {
-    if (tagInput.value.trim()) { addTag(tagInput.value); tagInput.value = ''; }
-  });
+  const listeDi = p => LISTE ? LISTE.diPezzo(p.tags) : [];
+  const inLista = (p, n) => listeDi(p).some(x => LISTE.uguale(x, n));
+
 
   let fotoBox = null;
   function mostraFotoInfo(p) {
@@ -670,9 +718,9 @@
     if (p.richInfo) $('fInfo').innerHTML = p.richInfo; else $('fInfo').textContent = p.info;
     $('fInfoBox').hidden = !p.info;
     mostraFotoInfo(p);
-    editTags = p.tags.slice();
-    tagInput.value = '';
-    renderTags();
+    editListe = listeDi(p);
+    if (campoListe) $('listeErr').hidden = true;
+    disegnaListe();
     $('fOwned').checked = p.owned;
     dlg.showModal();
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
@@ -681,10 +729,23 @@
   $('editForm').addEventListener('submit', async e => {
     e.preventDefault();
     if (!editing) return;
-    addTag(tagInput.value);
-    tagInput.value = '';
-    if (editTags.join('|') !== editing.tags.join('|')) editing.tagsTouched = true;
-    editing.tags = editTags.slice();
+    if (campoListe) {
+      const campo = campoListe.querySelector('.lp-campo');
+      if (campo && campo.value.trim()) {
+        const v = LISTE.crea(campo.value);
+        if (v.errore) { $('listeErr').textContent = v.errore; $('listeErr').hidden = false; return; }
+        editListe = [...editListe, v.nome];
+      }
+      const prima = listeDi(editing);
+      const aggiunte = editListe.filter(n => !ha(prima, n)), tolte = prima.filter(n => !ha(editListe, n));
+      if (aggiunte.length && !(await LISTE.c_e_posto(aggiunte))) return;
+      if (aggiunte.length || tolte.length) {
+        editing.tags = [...editing.tags.filter(t => !LISTE.eDiLista(t)), ...editListe.map(n => LISTE.tag(LISTE.nomeGiusto(n))),
+          ...editing.tags.filter(t => LISTE.eSpunta(t) && ha(editListe, t.slice(LISTE.OK.length)))];
+        editing.tagsTouched = true;
+        [...aggiunte, ...tolte].forEach(n => LISTE.ricorda(n, true));
+      }
+    }
     editing.owned = $('fOwned').checked;
     await savePen(editing);
     dlg.close();
@@ -945,7 +1006,7 @@
       for (let k = 0; k < 2; k++) pg.drawLine({ start: P[k], end: P[k + 1], thickness: SPESSORI[k] * scale, color: spunta, lineCap: true });
     }
 
-    const cosa = { owned: 'La mia collezione', scambi: 'Cerco e scambio', mancanti: 'Mi mancano', doppioni: 'Doppioni', all: 'Checklist da compilare' }[kind];
+    const cosa = { owned: 'La mia collezione', scambi: 'Cerco e scambio', mancanti: 'Mancanti', doppioni: 'Doppioni', all: 'Checklist da compilare' }[kind];
 
     function testata(pg, s, top) {
       const T = pdfText(s.titolo), D = pdfText(s.sotto || ''), SZ = 12, sz = 9;
@@ -1111,7 +1172,7 @@
   }
 
   const LIBERE = ['all'];
-  const conAccount = () => { try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; } };
+  const conAccount = () => haAccesso();
   function bloccaStampa() {
     const si = conAccount();
     const voci = [...printDlg.querySelectorAll('input[name=printKind]')];
@@ -1126,7 +1187,7 @@
     if (!nota) {
       nota = document.createElement('p');
       nota.className = 'print-accedi';
-      nota.innerHTML = 'Per creare l\'immagine della tua collezione, dei "Mi mancano" e dei "Doppioni" serve un account gratuito. ' +
+      nota.innerHTML = 'Per creare l\'immagine della tua collezione, dei "Mancanti" e dei "Doppioni" serve un account gratuito. ' +
         '<button type="button" data-accedi>Accedi</button>';
       printDlg.querySelector('.actions').before(nota);
       nota.querySelector('button').addEventListener('click', () => printDlg.close());
@@ -1134,14 +1195,14 @@
     nota.hidden = si;
   }
 
-  const parteMancanti = titolo => { const l = printList(true); return { titolo, sotto: 'Mi mancano · ' + l.length, items: l }; };
+  const parteMancanti = titolo => { const l = printList(true); return { titolo, sotto: 'Mancanti · ' + l.length, items: l }; };
   const parteDoppioni = titolo => {
     const l = printList(false).filter(p => p.doppi > 0);
     return { titolo, sotto: 'Doppioni · ' + l.reduce((t, p) => t + p.doppi, 0), items: l, scambio: true };
   };
   const sezioniDi = {
     scambi:   () => [parteMancanti('CERCO'), parteDoppioni('SCAMBIO')],
-    mancanti: () => [parteMancanti('MI MANCANO')],
+    mancanti: () => [parteMancanti('MANCANTI')],
     doppioni: () => [parteDoppioni('DOPPIONI')],
     owned:    () => [{ items: printList(false) }],
     all:      () => [{ items: printList(false) }]
@@ -1160,7 +1221,7 @@
     const fine = dopo.closest('label');
     const coppia = document.createElement('div');
     coppia.className = 'choice-coppia';
-    coppia.append(voce('mancanti', 'Mi mancano', 'cnt-mancanti'), voce('doppioni', 'Doppioni', 'cnt-doppioni'));
+    coppia.append(voce('mancanti', 'Mancanti', 'cnt-mancanti'), voce('doppioni', 'Doppioni', 'cnt-doppioni'));
     fine.after(coppia);
   })();
 
@@ -1288,15 +1349,32 @@
     try {
       db = await openDB();
       let salvate = await wrap(db.transaction(STORE).objectStore(STORE).getAll());
+      let convertite = false;
       salvate = rinumera(salvate);
       const perId = new Map(salvate.map(v => [v.id, v]));
+      const tagAdmin = LISTE ? new Set(SEED.flatMap(x => x.tags || []).map(x => LISTE.chiave(x))) : new Set();
       pens = SEED.map(s => {
         const p = nuovo(s), v = perId.get(s.id);
         if (v) {
           p.owned = v.owned === true;
           p.doppi = Number.isInteger(v.doppi) && v.doppi > 0 ? v.doppi : 0;
           if (p.doppi) p.owned = true;
-          if (v.tagsTouched && Array.isArray(v.tags)) { p.tags = v.tags.map(String); p.tagsTouched = true; }
+          if (v.tagsTouched && Array.isArray(v.tags)) {
+            p.tagsTouched = true;
+            if (!LISTE) p.tags = v.tags.map(String);
+            else {
+              const salvate = v.tags.map(String), liste = [], spunte = salvate.filter(LISTE.eSpunta);
+              salvate.forEach(t => {
+                let n = '';
+                if (LISTE.eSpunta(t)) return;
+                if (LISTE.eLista(t)) n = LISTE.pulisci(LISTE.nomeDi(t));
+                else if (!s.tags.some(x => LISTE.uguale(x, t)) && !tagAdmin.has(LISTE.chiave(t))) { n = LISTE.pulisci(t).slice(0, LISTE.MAX_NOME); if (n) { convertite = true; LISTE.ricorda(n, false); } }
+                if (n) n = LISTE.nomeGiusto(n);
+                if (n && !ha(liste, n)) liste.push(n);
+              });
+              p.tags = [...s.tags, ...liste.map(n => LISTE.tag(n)), ...spunte.filter(t => ha(liste, t.slice(LISTE.OK.length)))];
+            }
+          }
         }
         return p;
       });
@@ -1305,6 +1383,7 @@
       pens.filter(p => p.owned || p.doppi || p.tagsTouched).forEach(p => st.put(datiVisitatore(p)));
       await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
       if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+      if (convertite) segnalaModifica();
     } catch (e) {
       db = null;
       pens = SEED.map(nuovo);

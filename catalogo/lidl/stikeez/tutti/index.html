@@ -16,7 +16,7 @@
 <meta property="og:url" content="https://collectiontime.com/catalogo/lidl/stikeez/tutti/">
 <meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="../../../../sito.css?v=2026-10-31-1">
+<link rel="stylesheet" href="../../../../sito.css?v=2026-11-01-1">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
   :root {
@@ -60,7 +60,7 @@
     <div class="filtro" role="group" aria-label="Mostra">
       <button type="button" data-f="tutte" aria-pressed="true">Tutti</button>
       <button type="button" data-f="ce">In possesso</button>
-      <button type="button" data-f="manca">Mi mancano</button>
+      <button type="button" data-f="manca">Mancanti</button>
     </div>
   </div>
   <p class="attesa" id="attesa">Carico gli Stikeez…</p>
@@ -70,7 +70,7 @@
 
 <div id="footer-placeholder"></div>
 
-<script src="../../../../comune/menu-pezzo.js?v=2026-10-31-1"></script>
+<script src="../../../../comune/menu-pezzo.js?v=2026-11-01-1"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -125,7 +125,7 @@
       li.className = p.ce ? 'ce' : '';
       const b = document.createElement('button');
       b.type = 'button';
-      b.dataset.url = p.url; b.dataset.id = p.id;
+      b.dataset.url = p.url; b.dataset.id = p.id; b.dataset.db = p.db;
       b.title = p.nome + ' — ' + p.serie;
       b.setAttribute('aria-label', p.nome + ', ' + p.serie);
       b.setAttribute('aria-pressed', String(p.ce));
@@ -186,6 +186,6 @@
   }));
 })();
 </script>
-<script src="../../../../script.js?v=2026-10-31-1"></script>
+<script src="../../../../script.js?v=2026-11-01-1"></script>
 </body>
 </html>

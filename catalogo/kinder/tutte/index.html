@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://collectiontime.com/catalogo/kinder/tutte/">
 <meta property="og:image" content="https://collectiontime.com/icone/anteprima.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="../../../sito.css?v=2026-10-31-1">
+<link rel="stylesheet" href="../../../sito.css?v=2026-11-01-1">
 <script>try{document.documentElement.dataset.tema=localStorage.getItem('ct-tema')||'auto'}catch(e){document.documentElement.dataset.tema='auto'}</script>  
 <style>
   :root {
@@ -72,7 +72,7 @@
     <div class="filtro" role="group" aria-label="Mostra">
       <button type="button" data-f="tutte" aria-pressed="true">Tutte</button>
       <button type="button" data-f="ce">In possesso</button>
-      <button type="button" data-f="manca">Mi mancano</button>
+      <button type="button" data-f="manca">Mancanti</button>
     </div>
   </div>
   <input class="cerca" id="cerca" type="search" placeholder="Cerca un codice o un nome" aria-label="Cerca un codice o un nome" autocomplete="off">
@@ -88,7 +88,7 @@
 
 <div id="footer-placeholder"></div>
 
-<script src="../../../comune/menu-pezzo.js?v=2026-10-31-1"></script>
+<script src="../../../comune/menu-pezzo.js?v=2026-11-01-1"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -183,7 +183,7 @@
         li.className = p.ce ? 'ce' : '';
         const b = document.createElement('button');
         b.type = 'button';
-        b.dataset.url = p.url; b.dataset.id = p.id;
+        b.dataset.url = p.url; b.dataset.id = p.id; b.dataset.db = p.db;
         if (p.serieMenu) b.dataset.serie = JSON.stringify(p.serieMenu);
         b.title = p.nome + ' — ' + p.serie + (p.anno ? ' (' + p.anno + ')' : '');
         b.setAttribute('aria-label', (p.cod || p.anno) + ', ' + p.nome + ', ' + p.serie);
@@ -329,8 +329,9 @@
     disegna();
   }));
   $('cerca').addEventListener('input', e => { testo = e.target.value; disegna(); });
+  try { const q = new URLSearchParams(location.search).get('cerca'); if (q) { $('cerca').value = q; $('cerca').dispatchEvent(new Event('input')); } } catch (e) {}
 })();
 </script>
-<script src="../../../script.js?v=2026-10-31-1"></script>
+<script src="../../../script.js?v=2026-11-01-1"></script>
 </body>
 </html>

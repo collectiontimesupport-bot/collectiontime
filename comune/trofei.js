@@ -75,7 +75,7 @@ const TROFEI = [
   n_('d100', 'Doppioni', '100 doppioni', '100 duplicates', 'Hai 100 doppioni da scambiare.', 'You have 100 duplicates to swap.', 'E', S => S.doppi >= 100),
   n_('cloud', 'Cloud', 'Collezione nel cloud', 'Collection in the cloud', 'Hai fatto l\'accesso: la tua collezione è al sicuro nel cloud.', 'You signed in: your collection is safe in the cloud.', 'C', S => S.cloud),
   n_('badge3', 'Profilo', 'Mi rappresenta', 'It\'s me', 'Hai scelto tutti e 3 i tuoi badge "Amante di…".', 'You picked all 3 of your "Lover of…" badges.', 'C', S => S.badge3),
-  n_('tag', 'Profilo', 'Etichettatore', 'Tagger', 'Hai aggiunto il tuo primo hashtag a un pezzo.', 'You added your first hashtag to an item.', 'C', S => S.conTag),
+  n_('tag', 'Profilo', 'Etichettatore', 'Tagger', 'Hai messo il primo pezzo in una delle tue liste.', 'You put your first item in one of your lists.', 'C', S => S.conTag),
   n_('notte', 'Nascosti', 'Nottambulo', 'Night owl', 'Hai segnato un pezzo tra mezzanotte e le 5.', 'You ticked an item between midnight and 5 a.m.', 'R', (S, ev) => ev.notte, true),
   n_('mattina', 'Nascosti', 'Mattiniero', 'Early bird', 'Hai segnato un pezzo tra le 5 e le 7.', 'You ticked an item between 5 and 7 a.m.', 'R', (S, ev) => ev.mattina, true),
   n_('domenica', 'Nascosti', 'Domenica da collezionista', 'Collector\'s Sunday', 'Hai segnato un pezzo di domenica.', 'You ticked an item on a Sunday.', 'C', (S, ev) => ev.domenica, true),
@@ -122,7 +122,7 @@ async function leggiSpunte() {
     const esteri = s[4] || {}, fuori = id => Object.keys(esteri).length < s[2] && !!esteri[id] && paeseEstero(esteri[id]);
     const tot = s[2] - Object.keys(esteri).filter(fuori).length;
     const ce = Math.min(righe.filter(r => !fuori(r.id) && (r.owned === true || r.doppi > 0)).length, tot);
-    if (righe.some(r => r.tagsTouched === true && Array.isArray(r.tags) && r.tags.length)) conTag = true;
+    if (righe.some(r => r.tagsTouched === true && Array.isArray(r.tags) && r.tags.some(t => typeof t === 'string' && t.startsWith('lista:')))) conTag = true;
     estPezzi += righe.filter(r => fuori(r.id) && (r.owned === true || r.doppi > 0)).length;
     if (!ce) continue;
     serie[nome] = { ce, tot, doppi: righe.reduce((n, r) => n + (r.doppi > 0 ? r.doppi : 0), 0) };
@@ -169,7 +169,7 @@ export function controlla(modo) {
   inCorso = (async () => {
     const d = await leggiSpunte();
     if (!d) return [];
-    let cloud = false; try { cloud = localStorage.getItem('ct-accesso') === '1'; } catch (e) {}
+    const cloud = (typeof haAccesso === 'function' ? haAccesso() : (() => { try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; } })());
     const S = numeri(d, cloud);
     const snapPrima = leggiJ(CH_SNAP, null);
     const ev = modo === 'tocco' ? eventi(d, snapPrima, new Date()) : { notte: false, mattina: false, domenica: false, sabato: false, quasi: false };
@@ -242,7 +242,7 @@ export async function disegnaProfilo(box) {
   const mistero = '<li class="trofeo mistero"><div class="trofeo-med">??</div><div class="tt"><b>??</b></div></li>';
   const scelti = leggiJ(CH_BADGE, []), badgeSu = leggiJ(CH_BADGE_SU, {});
   const aperto = id => !!badgeSu[id] || scelti.includes(id);
-  let conAccount = false; try { conAccount = localStorage.getItem('ct-accesso') === '1'; } catch (e) {}
+  const conAccount = (typeof haAccesso === 'function' ? haAccesso() : (() => { try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; } })());
   if (!box.dataset.accesso) { box.dataset.accesso = '1'; window.addEventListener('ct-accesso', () => disegnaProfilo(box)); }
   box.innerHTML =
     '<div class="trofei-testa"><b>' + (en() ? 'Trophies unlocked: ' + sbloccati.length + ' of ' + tot : 'Trofei sbloccati: ' + sbloccati.length + ' su ' + tot) + '</b>'

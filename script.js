@@ -3,6 +3,49 @@ const BASE = new URL('.', document.currentScript.src);
 const VERSIONE = new URL(document.currentScript.src).searchParams.get('v') || '';
 const conVersione = file => { const u = new URL(file, BASE); if (VERSIONE) u.searchParams.set('v', VERSIONE); return u; };
 const scaricaDati = file => fetch(new URL(file, BASE), { cache: 'no-cache' });
+const NOVITA_DAL = (() => {
+  try {
+    const d = localStorage.getItem('ct-dal');
+    if (d) return Promise.resolve(d);
+    if (localStorage.length) { localStorage.setItem('ct-dal', '0'); return Promise.resolve('0'); }
+  } catch (e) { return Promise.resolve(null); }
+  const conDati = nome => new Promise(ok => {
+    try {
+      const r = indexedDB.open(nome);
+      r.onerror = () => ok(false);
+      r.onsuccess = () => {
+        const db = r.result;
+        if (!db.objectStoreNames.length) { db.close(); return ok(false); }
+        const q = db.transaction(db.objectStoreNames[0]).objectStore(db.objectStoreNames[0]).count();
+        q.onsuccess = () => { db.close(); ok(q.result > 0); };
+        q.onerror = () => { db.close(); ok(false); };
+      };
+    } catch (e) { ok(false); }
+  });
+  return (async () => {
+    let vecchio = false;
+    try {
+      const nomi = (await indexedDB.databases()).map(x => x.name).filter(n => n && n.startsWith('catalogo-'));
+      for (const n of nomi) if (await conDati(n)) { vecchio = true; break; }
+    } catch (e) {}
+    const d = vecchio ? '0' : new Date().toLocaleDateString('sv-SE');
+    try { localStorage.setItem('ct-dal', d); } catch (e) { return null; }
+    return d;
+  })();
+})();
+const IN_LOCALE = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+const ACCESSO_PROVA = (() => {
+  if (!IN_LOCALE) return false;
+  try {
+    const m = /[?&]accesso=([01])\b/.exec(location.search);
+    if (m) sessionStorage.setItem('ct-accesso-prova', m[1]);
+    return sessionStorage.getItem('ct-accesso-prova') === '1';
+  } catch (e) { return false; }
+})();
+function haAccesso() {
+  if (ACCESSO_PROVA) return true;
+  try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; }
+}
 let _versioneDati;
 const versioneDati = () => _versioneDati || (_versioneDati = (async () => {
   try {
@@ -27,6 +70,12 @@ if (window.parent !== window) {
     if (e.source !== window.parent || !e.data || !e.data.anteprimaTema) return;
     temaAnteprima(e.data.anteprimaTema);
     window.parent.postMessage({ anteprimaTemaOk: e.data.anteprimaTema }, '*');
+  });
+  addEventListener('message', e => {
+    if (e.source !== window.parent || !e.data || (e.data.anteprimaAccesso !== '1' && e.data.anteprimaAccesso !== '0') || !IN_LOCALE) return;
+    let prima = '0';
+    try { prima = sessionStorage.getItem('ct-accesso-prova') || '0'; sessionStorage.setItem('ct-accesso-prova', e.data.anteprimaAccesso); } catch (err) { return; }
+    if (prima !== e.data.anteprimaAccesso) location.reload();
   });
   const CHIAVE_POS = 'ct-anteprima-posizione:' + location.pathname;
   const salvaPos = () => {
@@ -71,7 +120,7 @@ async function caricaParte(idSegnaposto, file) {
     box.innerHTML = html;
     sistemaLink(box);
     nascondiHomeSeInstallato();
-    if (file === 'header.html') controllaIscrizione();
+    if (file === 'header.html') { controllaIscrizione(); window.dispatchEvent(new Event('ct-header')); setTimeout(vignetteNovita, 1200); }
   } catch (e) {
     console.warn('Impossibile caricare ' + file + ':', e);
   }
@@ -220,6 +269,149 @@ async function scriviTutto(collezioni, sostituisci) {
   return tot;
 }
 
+const ctListe = (() => {
+  const PRE = 'lista:', OK = 'listaok:', CHIAVE = 'ct-liste';
+  const LIMITI_BASE = { liste: 5, pezzi: 100, nome: 30 };
+  function limite(k) {
+    const m = document.querySelector('meta[name="ct-liste"]'), v = parseInt(m && m.dataset[k], 10);
+    return v >= 1 && v <= 1000 ? v : LIMITI_BASE[k];
+  }
+  const soloIscritti = () => { const m = document.querySelector('meta[name="ct-liste"]'); return !!m && m.dataset.account === 'on'; };
+  const iscritto = () => haAccesso();
+  const puoi = () => !soloIscritti() || iscritto();
+  function chiediAccesso() {
+    avviso('Le liste sono per chi è iscritto: accedi con Google, è gratis.');
+    const b = document.getElementById('stAccedi');
+    if (b) setTimeout(() => b.click(), 300);
+  }
+  const chiave = n => String(n).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+  const uguale = (a, b) => chiave(a) === chiave(b);
+  const pulisci = n => String(n == null ? '' : n).replace(/^#+/, '').replace(/[\u0000-\u001f]/g, '').replace(/\s+/g, ' ').trim();
+  const eLista = t => typeof t === 'string' && t.startsWith(PRE) && t.length > PRE.length;
+  const nomeDi = t => t.slice(PRE.length);
+  const tag = n => PRE + n;
+  const eSpunta = t => typeof t === 'string' && t.startsWith(OK) && t.length > OK.length;
+  const spuntaDi = (tags, n) => (tags || []).some(t => eSpunta(t) && uguale(t.slice(OK.length), n));
+  const eDiLista = t => eLista(t) || eSpunta(t);
+  const meta = () => { try { const m = JSON.parse(localStorage.getItem(CHIAVE)); if (m && Array.isArray(m.l)) return { l: m.l.filter(x => x && typeof x.n === 'string' && pulisci(x.n)) }; } catch (e) {} return { l: [] }; };
+  const salvaMeta = m => { try { localStorage.setItem(CHIAVE, JSON.stringify(m)); } catch (e) {} };
+  const nomi = () => meta().l.sort((a, b) => (b.t || 0) - (a.t || 0)).map(x => x.n);
+  const nomeGiusto = n => nomi().find(x => uguale(x, n)) || pulisci(n);
+  function ricorda(n, tocca) {
+    n = pulisci(n);
+    if (!n) return;
+    const m = meta(), x = m.l.find(y => uguale(y.n, n));
+    if (x) { if (tocca) x.t = Date.now(); } else m.l.push({ n, t: tocca ? Date.now() : 0 });
+    salvaMeta(m);
+  }
+  function valida(n, escluso) {
+    n = pulisci(n);
+    if (!n) return { errore: 'Scrivi il nome della lista.' };
+    if (n.length > limite('nome')) return { errore: 'Il nome può avere al massimo ' + limite('nome') + ' caratteri.' };
+    if (/^lista:/i.test(n)) return { errore: 'Scegli un altro nome.' };
+    const doppio = nomi().find(x => uguale(x, n) && !(escluso && uguale(x, escluso)));
+    if (doppio) return { errore: 'Hai già una lista «' + doppio + '».' };
+    if (!escluso && nomi().length >= limite('liste')) return { errore: 'Puoi avere al massimo ' + limite('liste') + (limite('liste') === 1 ? ' lista.' : ' liste.') };
+    return { nome: n };
+  }
+  function crea(n) { if (!puoi()) return { errore: 'Accedi per creare le tue liste.' }; const v = valida(n); if (v.nome) ricorda(v.nome, true); return v; }
+
+  async function tutte() {
+    const per = new Map();
+    try {
+      for (const db of await archivi()) {
+        const d = await apriArchivio(db), righe = await leggi(d);
+        d.close();
+        righe.forEach(r => {
+          if (!r || r.tagsTouched !== true || !Array.isArray(r.tags)) return;
+          const visti = new Set();
+          r.tags.forEach(t => {
+            if (!eLista(t)) return;
+            const k = chiave(nomeDi(t));
+            if (visti.has(k)) return;
+            visti.add(k);
+            if (!per.has(k)) per.set(k, { nome: nomeDi(t), pezzi: [] });
+            per.get(k).pezzi.push({ db, id: r.id, ok: spuntaDi(r.tags, nomeDi(t)) });
+          });
+        });
+      }
+    } catch (e) { console.warn('Liste: archivi non leggibili', e); }
+    per.forEach(v => ricorda(v.nome, false));
+    return nomi().map(n => { const v = per.get(chiave(n)); return { nome: n, pezzi: v ? v.pezzi : [] }; });
+  }
+  const totale = l => l.reduce((t, x) => t + x.pezzi.length, 0);
+  async function c_e_posto(liste) {
+    const max = limite('pezzi'), piene = (await tutte()).filter(x => x.pezzi.length >= max && [].concat(liste).some(n => uguale(n, x.nome)));
+    if (!piene.length) return true;
+    avviso('La lista «' + piene[0].nome + '» ha già ' + max + (max === 1 ? ' oggetto' : ' oggetti') + ': togline qualcuno per aggiungerne altri.');
+    return false;
+  }
+  async function metti(db, id, n, si) {
+    n = nomeGiusto(n);
+    const d = await apriArchivio(db);
+    await new Promise((ok, ko) => {
+      const t = d.transaction(STORE, 'readwrite'), st = t.objectStore(STORE), g = st.get(id);
+      g.onsuccess = () => {
+        const r = g.result || { id, owned: false, doppi: 0, tags: [], tagsTouched: false };
+        const vecchie = Array.isArray(r.tags) ? r.tags : [];
+        const tags = vecchie.filter(x => !(eLista(x) && uguale(nomeDi(x), n)) && !(!si && eSpunta(x) && uguale(x.slice(OK.length), n)));
+        if (si) tags.push(tag(n));
+        r.tags = tags; r.tagsTouched = true;
+        st.put(r);
+      };
+      t.oncomplete = ok; t.onerror = t.onabort = () => ko(t.error);
+    }).finally(() => d.close());
+    ricorda(n, true);
+    segnalaModifica();
+  }
+  async function spunta(db, id, n, si) {
+    const d = await apriArchivio(db);
+    await new Promise((ok, ko) => {
+      const t = d.transaction(STORE, 'readwrite'), st = t.objectStore(STORE), g = st.get(id);
+      g.onsuccess = () => {
+        const r = g.result;
+        if (!r || !Array.isArray(r.tags) || !r.tags.some(x => eLista(x) && uguale(nomeDi(x), n))) return;
+        r.tags = r.tags.filter(x => !(eSpunta(x) && uguale(x.slice(OK.length), n)));
+        if (si) r.tags.push(OK + nomeGiusto(n));
+        r.tagsTouched = true;
+        st.put(r);
+      };
+      t.oncomplete = ok; t.onerror = t.onabort = () => ko(t.error);
+    }).finally(() => d.close());
+    ricorda(n, true);
+    segnalaModifica();
+  }
+  const diPezzo = tags => (tags || []).filter(eLista).map(nomeDi);
+  async function cambiaTutte(fn) {
+    for (const db of await archivi()) {
+      const d = await apriArchivio(db), righe = await leggi(d), cambiate = [];
+      righe.forEach(r => {
+        if (!r || !Array.isArray(r.tags) || !r.tags.some(eDiLista)) return;
+        const nuove = fn(r.tags);
+        if (nuove.join('|') !== r.tags.join('|')) { r.tags = nuove; r.tagsTouched = true; cambiate.push(r); }
+      });
+      if (cambiate.length) await scrivi(d, cambiate);
+      d.close();
+    }
+    segnalaModifica();
+  }
+  async function rinomina(vecchio, nuovo) {
+    const v = valida(nuovo, vecchio);
+    if (v.errore) return v;
+    await cambiaTutte(tags => { const out = []; tags.forEach(t => { const x = eLista(t) && uguale(nomeDi(t), vecchio) ? tag(v.nome) : eSpunta(t) && uguale(t.slice(OK.length), vecchio) ? OK + v.nome : t; if (!out.includes(x)) out.push(x); }); return out; });
+    const m = meta(), x = m.l.find(y => uguale(y.n, vecchio));
+    if (x) { x.n = v.nome; x.t = Date.now(); } else m.l.push({ n: v.nome, t: Date.now() });
+    salvaMeta(m);
+    return v;
+  }
+  async function elimina(n) {
+    await cambiaTutte(tags => tags.filter(t => !((eLista(t) && uguale(nomeDi(t), n)) || (eSpunta(t) && uguale(t.slice(OK.length), n)))));
+    const m = meta(); m.l = m.l.filter(y => !uguale(y.n, n)); salvaMeta(m);
+    return true;
+  }
+  return { PRE, OK, get MAX_NOME() { return limite('nome'); }, eSpunta, eDiLista, spuntaDi, spunta, eLista, nomeDi, tag, uguale, chiave, pulisci, nomi, nomeGiusto, ricorda, valida, crea, tutte, totale, c_e_posto, metti, diPezzo, rinomina, elimina, soloIscritti, iscritto, puoi, chiediAccesso };
+})();
+
 let cloud = null;
 const caricaCloud = () => cloud || (cloud = import(conVersione('comune/cloud.js').href));
 function segnaAccesso(si) {
@@ -254,7 +446,7 @@ function controllaIscrizione() {
   } catch (e) {}
   if (!prova && !/(^|\.)collectiontime\.com$/.test(location.hostname)) return;
   if (modo === 'obbligatoria') return chiediIscrizione('');
-  try { if (localStorage.getItem('ct-accesso') === '1') return; } catch (e) { return; }
+  if (haAccesso()) return;
   const maxSpunte = Math.max(1, +m.dataset.spunte || 30), maxGiorni = Math.max(1, +m.dataset.giorni || 7);
   let inizio = 0, spunte = null, scattata = false;
   try {
@@ -269,7 +461,7 @@ function controllaIscrizione() {
   if (spunte === null) contaSpunte().catch(e => console.warn(e));
   let t = null;
   window.addEventListener('ct-modifica', () => {
-    try { if (localStorage.getItem('ct-accesso') === '1') return; } catch (e) { return; }
+    if (haAccesso()) return;
     clearTimeout(t); t = setTimeout(verifica, 1000);
   });
 }
@@ -277,7 +469,7 @@ function controllaIscrizione() {
 const SETTE_GIORNI = 7 * 24 * 60 * 60 * 1000;
 window.addEventListener('ct-modifica', () => {
   try {
-    if (localStorage.getItem('ct-accesso') === '1') return;
+    if (haAccesso()) return;
     if (Date.now() - Number(localStorage.getItem('ct-promemoria') || 0) < SETTE_GIORNI) return;
   } catch (e) { return; }
   if (document.querySelector('.st-promemoria')) return;
@@ -364,7 +556,7 @@ if (giaInstallato()) document.getElementById('stAppSez')?.remove();
 
 function invitoApp() {
   const forza = /[?&]invito=1/.test(location.search);
-  if (giaInstallato() || document.querySelector('dialog[open]')) return;
+  if (giaInstallato() || document.querySelector('dialog[open], .vg-giro')) return;
   let stato = '';
   try {
     stato = localStorage.getItem('ct-invito-app') || '';
@@ -548,31 +740,43 @@ const CATALOGO = new URL('catalogo/', BASE).href;
 const dentroCatalogo = () => location.href.startsWith(CATALOGO) ? decodeURIComponent(location.href.slice(CATALOGO.length)) : '';
 const ICONE_BARRA = {
   serie: '<path d="M3 5.5c3-1.3 6-1.3 9 .5 3-1.8 6-1.8 9-.5V19c-3-1.3-6-1.3-9 .5-3-1.8-6-1.8-9-.5z"/><path d="M12 6v13.5"/>',
-  mancanti: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12h6"/>',
-  doppioni: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  home: '<path d="M3.5 10.5 12 4l8.5 6.5"/><path d="M5.5 9v10.5h4.5v-6h4v6h4.5V9"/>',
+  collezione: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
   cerca: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'
 };
-function barraCategoria() {
-  const dentro = dentroCatalogo();
-  const cat = dentro.split(/[/?#]/)[0];
-  if (!dentro.includes('/') || !cat || cat.startsWith('_')) return;
-  const lista = new URL(cat + '/la-mia-collezione/index.html', CATALOGO).href;
-  const voci = [['serie', 'Serie', new URL(cat + '/index.html', CATALOGO).href],
-                ['mancanti', 'Mi mancano', lista + '#/mancanti'],
-                ['doppioni', 'Doppioni', lista + '#/doppioni'],
-                ['cerca', 'Cerca', lista + '#/cerca']];
+const ultimaCollezione = () => { try { const u = localStorage.getItem('ct-collezione-ultima'); return u === 'doppioni' || u === 'liste' ? u : 'mancanti'; } catch (e) { return 'mancanti'; } };
+function barraSito() {
+  const qui = location.href.startsWith(BASE.href) ? decodeURIComponent(location.href.slice(BASE.href.length)).split(/[?#]/)[0] : '';
+  if (/(^|\/)_/.test(qui) || /^(header|footer)\.html$/.test(qui)) return;
+  const raccolta = /^la-mia-collezione\//.test(qui);
+  const cat = raccolta ? new URLSearchParams(location.search).get('categoria') : (dentroCatalogo().includes('/') ? dentroCatalogo().split(/[/?#]/)[0] : '');
+  const lista = raccolta ? new URL(location.href.split('#')[0]) : new URL('la-mia-collezione/index.html', BASE);
+  if (!raccolta && cat && !cat.startsWith('_')) lista.searchParams.set('categoria', cat);
+  const categoria = cat && !cat.startsWith('_') ? cat : '';
+  const voci = [['home', 'Home', new URL('index.html', BASE).href],
+                ['serie', 'Serie', new URL(categoria + '/index.html', CATALOGO).href],
+                ['collezione', 'Collezione', lista.href + '#/' + ultimaCollezione()],
+                ['cerca', 'Cerca', lista.href + '#/cerca']];
   const nav = document.createElement('nav');
   nav.className = 'st-barra';
-  nav.setAttribute('aria-label', 'Sezioni della categoria');
+  nav.setAttribute('aria-label', 'Menu del sito');
   nav.innerHTML = voci.map(([k, t, href]) => '<a href="' + href + '" data-voce="' + k + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONE_BARRA[k] + '</svg>' + t + '</a>').join('');
+  if (!categoria) nav.querySelector('[data-voce="serie"]').hidden = true;
   document.body.append(nav);
   document.body.classList.add('con-barra');
   const accendi = () => {
-    const attiva = dentro.includes('/la-mia-collezione/') ? (location.hash.replace(/^#\/?/, '') || 'mancanti') : 'serie';
+    const attiva = raccolta ? (/^#\/?cerca/.test(location.hash) ? 'cerca' : 'collezione') : (qui === '' || qui === 'index.html' ? 'home' : categoria ? 'serie' : '');
     nav.querySelectorAll('a').forEach(a => a.dataset.voce === attiva ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
   };
   accendi();
   window.addEventListener('hashchange', accendi);
+  nav.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if (!a || a.getAttribute('aria-current') !== 'page' || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    e.preventDefault();
+    if (window.scrollY > 5) window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    else if (/^#\/?lista\//.test(location.hash)) location.hash = '#/liste';
+  });
 }
 
 function perAnno() {
@@ -1033,14 +1237,160 @@ function attivaLingua() {
   });
 }
 
+const PUNTI_NOVITA = {
+  'barra-home': { sel: '.st-barra [data-voce="home"]' },
+  'barra-serie': { sel: '.st-barra [data-voce="serie"]' },
+  'barra-collezione': { sel: '.st-barra [data-voce="collezione"]' },
+  'barra-cerca': { sel: '.st-barra [data-voce="cerca"]' },
+  'collezione-mancanti': { sel: '.coll-schede a[href="#/mancanti"]', pagina: 'collezione' },
+  'collezione-doppioni': { sel: '.coll-schede a[href="#/doppioni"]', pagina: 'collezione' },
+  'collezione-liste': { sel: '.coll-schede a[href="#/liste"]', pagina: 'collezione' },
+  'home-ricerca': { sel: '#stCerca', pagina: 'home' },
+  'accedi': { sel: '#stAccedi' }
+};
+const ICONE_NOVITA = {
+  collezione: ICONE_BARRA.collezione, cerca: ICONE_BARRA.cerca, home: ICONE_BARRA.home, serie: ICONE_BARRA.serie,
+  liste: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r=".6"/><circle cx="4.5" cy="12" r=".6"/><circle cx="4.5" cy="18" r=".6"/>',
+  stella: '<path d="m12 3.5 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/>',
+  profilo: '<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/>',
+  cuore: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>'
+};
+const EN_NOVITA = LINGUA === 'en';
+const TESTI_NOVITA = EN_NOVITA
+  ? { tag: 'UPDATE', nuovo: 'NEW', capito: 'Got it', vedi: 'Show me', avanti: 'Next', fatto: 'Done', salta: 'Skip', titolo: 'What’s new' }
+  : { tag: 'AGGIORNAMENTO', nuovo: 'NOVITÀ', capito: 'Ho capito', vedi: 'Fammi vedere', avanti: 'Avanti', fatto: 'Fatto', salta: 'Salta', titolo: 'Cosa c’è di nuovo' };
+const svgNovita = k => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONE_NOVITA[k] || ICONE_NOVITA.stella) + '</svg>';
+const escNovita = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const testoNovita = t => escNovita(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+const inLingua = (v, k) => (EN_NOVITA && v[k + '_en'] && v[k + '_en'].trim()) || v[k] || '';
+
+function datiNovita() {
+  const el = document.getElementById('ct-novita');
+  if (!el) return null;
+  try {
+    const n = JSON.parse(el.textContent);
+    if (!n || !n.on || !/^\d{4}-\d{2}-\d{2}$/.test(n.data || '') || !Array.isArray(n.voci)) return null;
+    n.voci = n.voci.filter(v => v && (v.t || v.d));
+    return n.voci.length ? n : null;
+  } catch (e) { console.warn('Collection Time: vignette delle novità scritte male in header.html', e); return null; }
+}
+
+async function vignetteNovita() {
+  if (!document.querySelector('.st-barra')) return;
+  const dal = await NOVITA_DAL;
+  const n = datiNovita();
+  if (!n) { try { sessionStorage.removeItem('ct-novita-giro'); } catch (e) {} return; }
+  let giro = null;
+  try { giro = JSON.parse(sessionStorage.getItem('ct-novita-giro') || 'null'); } catch (e) {}
+  if (giro && giro.data === n.data) return giroNovita(n, giro.passo || 0);
+  try { sessionStorage.removeItem('ct-novita-giro'); } catch (e) {}
+  const forza = /[?&]novita=1\b/.test(location.search);
+  if (!forza) {
+    if (dal === null || !(dal < n.data)) return;
+    try { if (localStorage.getItem('ct-novita-vista') === n.data) return; } catch (e) { return; }
+  }
+  if (document.querySelector('dialog[open]')) return;
+  try { localStorage.setItem('ct-novita-vista', n.data); } catch (e) {}
+  finestraNovita(n);
+}
+
+function finestraNovita(n) {
+  const dlg = document.createElement('dialog');
+  dlg.className = 'vg-finestra';
+  dlg.setAttribute('translate', 'no');
+  dlg.setAttribute('aria-labelledby', 'vgTitolo');
+  const conPunto = n.voci.some(v => PUNTI_NOVITA[v.punto]);
+  dlg.innerHTML = '<span class="vg-tag">' + TESTI_NOVITA.tag + '</span>'
+    + '<h2 id="vgTitolo">' + escNovita(inLingua(n, 'titolo') || TESTI_NOVITA.titolo) + '</h2>'
+    + (inLingua(n, 'sotto') ? '<p class="vg-sotto">' + testoNovita(inLingua(n, 'sotto')) + '</p>' : '')
+    + '<ul class="vg-voci">' + n.voci.map(v => '<li><span class="vg-ic">' + svgNovita(v.icona) + '</span><div>'
+      + (inLingua(v, 't') ? '<b>' + escNovita(inLingua(v, 't')) + '</b>' : '') + (inLingua(v, 'd') ? '<span>' + testoNovita(inLingua(v, 'd')) + '</span>' : '') + '</div></li>').join('') + '</ul>'
+    + '<div class="vg-tasti"><button type="button" class="vg-no" data-no>' + TESTI_NOVITA.capito + '</button>'
+    + (conPunto ? '<button type="button" class="vg-si" data-si>' + TESTI_NOVITA.vedi + '</button>' : '') + '</div>';
+  const chiudi = () => { dlg.close(); dlg.remove(); };
+  dlg.addEventListener('click', e => {
+    if (e.target.closest('[data-no]')) chiudi();
+    else if (e.target.closest('[data-si]')) { chiudi(); giroNovita(n, 0); }
+  });
+  dlg.addEventListener('cancel', () => setTimeout(() => dlg.remove(), 0));
+  document.body.append(dlg);
+  dlg.showModal();
+  dlg.tabIndex = -1; dlg.focus({ preventScroll: true });
+  dlg.scrollTop = 0;
+}
+
+function giroNovita(n, passo) {
+  const passi = n.voci.filter(v => PUNTI_NOVITA[v.punto]);
+  const salva = p => { try { sessionStorage.setItem('ct-novita-giro', JSON.stringify({ data: n.data, passo: p })); } catch (e) {} };
+  const fine = () => { try { sessionStorage.removeItem('ct-novita-giro'); } catch (e) {} document.querySelector('.vg-giro')?.remove(); removeEventListener('resize', metti); removeEventListener('scroll', metti, true); removeEventListener('keydown', tasti); };
+  let bersaglio = null, giro = null;
+  function metti() {
+    if (!giro || !bersaglio || !bersaglio.isConnected) return;
+    const r = bersaglio.getBoundingClientRect(), buco = giro.querySelector('.vg-buco'), f = giro.querySelector('.vg-fum');
+    Object.assign(buco.style, { left: r.left - 4 + 'px', top: r.top - 4 + 'px', width: r.width + 8 + 'px', height: r.height + 8 + 'px' });
+    const w = f.offsetWidth, cx = r.left + r.width / 2, left = Math.min(Math.max(12, cx - w / 2), innerWidth - w - 12);
+    const sopra = r.top + r.height / 2 > innerHeight / 2;
+    f.classList.toggle('sotto', !sopra);
+    f.style.left = left + 'px';
+    f.style.setProperty('--freccia', Math.min(Math.max(18, cx - left), w - 18) + 'px');
+    if (sopra) { f.style.top = ''; f.style.bottom = (innerHeight - r.top + 16) + 'px'; } else { f.style.bottom = ''; f.style.top = (r.bottom + 16) + 'px'; }
+  }
+  function tasti(e) { if (e.key === 'Escape') fine(); else if (e.key === 'Enter' || e.key === 'ArrowRight') { e.preventDefault(); vai(passo + 1); } }
+  async function vai(p) {
+    passo = p;
+    giro?.remove(); giro = null;
+    if (p >= passi.length) return fine();
+    const punto = PUNTI_NOVITA[passi[p].punto];
+    const inCollezione = /\/la-mia-collezione\//.test(location.pathname) && !/^#\/?cerca/.test(location.hash);
+    const inHome = location.href.split(/[?#]/)[0] === new URL('index.html', BASE).href || location.href.split(/[?#]/)[0] === BASE.href;
+    if (punto.pagina === 'collezione' && !inCollezione) {
+      salva(p);
+      if (/\/la-mia-collezione\//.test(location.pathname)) { location.hash = '#/' + ultimaCollezione(); return setTimeout(() => vai(p), 400); }
+      return location.assign(new URL('la-mia-collezione/index.html', BASE).href + '#/' + ultimaCollezione());
+    }
+    if (punto.pagina === 'home' && !inHome) { salva(p); return location.assign(new URL('index.html', BASE).href); }
+    let el = null;
+    for (let t = 0; t < 40 && !(el = [...document.querySelectorAll(punto.sel)].find(x => x.offsetParent !== null || getComputedStyle(x).position === 'fixed')); t++) await new Promise(ok => setTimeout(ok, 100));
+    if (!el || el.hidden) return vai(p + 1);
+    if (passo !== p) return;
+    salva(p);
+    bersaglio = el;
+    const r = el.getBoundingClientRect();
+    if (r.top < 60 || r.bottom > innerHeight - 70) { el.scrollIntoView({ block: 'center' }); await new Promise(ok => setTimeout(ok, 150)); }
+    const v = passi[p], ultimo = p === passi.length - 1;
+    giro = document.createElement('div');
+    giro.className = 'vg-giro';
+    giro.setAttribute('translate', 'no');
+    giro.innerHTML = '<div class="vg-buco"></div><div class="vg-fum" role="dialog" aria-modal="true" aria-labelledby="vgFumT">'
+      + '<span class="vg-tag">' + TESTI_NOVITA.nuovo + '</span>'
+      + (inLingua(v, 't') ? '<b class="vg-fum-t" id="vgFumT">' + escNovita(inLingua(v, 't')) + '</b>' : '') + '<p>' + testoNovita(inLingua(v, 'd')) + '</p>'
+      + '<div class="vg-piede"><span class="vg-pal" aria-label="' + (p + 1) + ' / ' + passi.length + '">' + passi.map((_, i) => '<i' + (i === p ? ' class="on"' : '') + '></i>').join('') + '</span>'
+      + (ultimo ? '' : '<button type="button" class="vg-salta" data-salta>' + TESTI_NOVITA.salta + '</button>')
+      + '<button type="button" class="vg-avanti" data-avanti>' + (ultimo ? TESTI_NOVITA.fatto : TESTI_NOVITA.avanti) + '</button></div></div>';
+    giro.addEventListener('click', e => {
+      if (e.target.closest('[data-avanti]')) vai(p + 1);
+      else if (e.target.closest('[data-salta]')) fine();
+    });
+    document.body.append(giro);
+    metti();
+    requestAnimationFrame(() => giro && giro.classList.add('show'));
+    const fum = giro.querySelector('.vg-fum'); fum.tabIndex = -1; fum.focus({ preventScroll: true });
+  }
+  addEventListener('resize', metti);
+  addEventListener('scroll', metti, true);
+  addEventListener('keydown', tasti);
+  vai(passo);
+}
+
 
 caricaParte('header-placeholder', 'header.html');
 caricaParte('footer-placeholder', 'footer.html');
+if (ACCESSO_PROVA) document.body.insertAdjacentHTML('beforeend', '<div class="st-accesso-prova" translate="no" title="Solo sul tuo computer: il sito fa finta che tu abbia fatto l\'accesso">👤 Accesso di prova</div>');
 percorso();
 perAnno();
 serieEstere();
 avviaCerca();
-barraCategoria();
+barraSito();
 barreSerie();
 attivaAspetto();
 attivaPaese();

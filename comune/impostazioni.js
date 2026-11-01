@@ -13,7 +13,7 @@ async function mostraStatistiche() {
   const SENZA_ACCOUNT = '<p class="st-imp-nota">Le statistiche sono per chi ha un account: accedi per vedere la tua collezione in numeri e l\'elenco di tutte le serie che hai iniziato.</p>'
     + '<p><button type="button" class="st-btn" data-accedi>Accedi</button></p>';
   let conAccount = false;
-  try { conAccount = localStorage.getItem('ct-accesso') === '1'; } catch (e) {}
+  conAccount = (typeof haAccesso === 'function' ? haAccesso() : (() => { try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; } })());
   if (!conAccount) { box.innerHTML = SENZA_ACCOUNT; return; }
   const VUOTO = '<p class="st-imp-nota">Non hai ancora segnato niente. Apri una serie dal <a href="' + new URL('index.html', BASE).href + '">catalogo</a> e tocca gli oggetti che hai: qui vedrai la tua collezione in numeri.</p>';
 
