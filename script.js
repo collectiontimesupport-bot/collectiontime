@@ -303,6 +303,7 @@ const ctListe = (() => {
     const m = meta(), x = m.l.find(y => uguale(y.n, n));
     if (x) { if (tocca) x.t = Date.now(); } else m.l.push({ n, t: tocca ? Date.now() : 0 });
     salvaMeta(m);
+    if (tocca) segnaPreferenze('liste');
   }
   function valida(n, escluso) {
     n = pulisci(n);
@@ -401,12 +402,12 @@ const ctListe = (() => {
     await cambiaTutte(tags => { const out = []; tags.forEach(t => { const x = eLista(t) && uguale(nomeDi(t), vecchio) ? tag(v.nome) : eSpunta(t) && uguale(t.slice(OK.length), vecchio) ? OK + v.nome : t; if (!out.includes(x)) out.push(x); }); return out; });
     const m = meta(), x = m.l.find(y => uguale(y.n, vecchio));
     if (x) { x.n = v.nome; x.t = Date.now(); } else m.l.push({ n: v.nome, t: Date.now() });
-    salvaMeta(m);
+    salvaMeta(m); segnaPreferenze('liste');
     return v;
   }
   async function elimina(n) {
     await cambiaTutte(tags => tags.filter(t => !((eLista(t) && uguale(nomeDi(t), n)) || (eSpunta(t) && uguale(t.slice(OK.length), n)))));
-    const m = meta(); m.l = m.l.filter(y => !uguale(y.n, n)); salvaMeta(m);
+    const m = meta(); m.l = m.l.filter(y => !uguale(y.n, n)); salvaMeta(m); segnaPreferenze('liste');
     return true;
   }
   return { PRE, OK, get MAX_NOME() { return limite('nome'); }, eSpunta, eDiLista, spuntaDi, spunta, eLista, nomeDi, tag, uguale, chiave, pulisci, nomi, nomeGiusto, ricorda, valida, crea, tutte, totale, c_e_posto, metti, diPezzo, rinomina, elimina, soloIscritti, iscritto, puoi, chiediAccesso };
@@ -420,6 +421,10 @@ function segnaAccesso(si) {
   if (prima !== !!si) window.dispatchEvent(new Event('ct-accesso'));
 }
 function segnalaModifica() { window.dispatchEvent(new Event('ct-modifica')); }
+function segnaPreferenze(sezione) {
+  try { const t = JSON.parse(localStorage.getItem('ct-pref-t')) || {}; t[sezione] = Date.now(); localStorage.setItem('ct-pref-t', JSON.stringify(t)); } catch (e) {}
+  window.dispatchEvent(new Event('ct-preferenze-cambiate'));
+}
 try { if (localStorage.getItem('ct-accesso') === '1') caricaCloud(); } catch (e) {}
 
 let trofei = null;
@@ -925,9 +930,10 @@ function pinCategorie() {
   if (!lista) return;
   const max = Math.max(0, parseInt(lista.dataset.pinMax, 10) || 3);
   const originali = [...lista.children].filter(li => li.tagName === 'LI');
-  const chiave = li => (li.querySelector('a.st-card') || {}).href || '';
-  const leggiPin = () => { try { return JSON.parse(localStorage.getItem('ct-pin')) || []; } catch (e) { return []; } };
-  const salvaPin = v => { try { localStorage.setItem('ct-pin', JSON.stringify(v)); } catch (e) {} };
+  const cartella = h => (String(h).match(/catalogo\/([a-z0-9-]+)\//) || [])[1] || String(h);
+  const chiave = li => cartella((li.querySelector('a.st-card') || {}).href || '');
+  const leggiPin = () => { try { const v = JSON.parse(localStorage.getItem('ct-pin')); return Array.isArray(v) ? [...new Set(v.map(cartella))] : []; } catch (e) { return []; } };
+  const salvaPin = v => { try { localStorage.setItem('ct-pin', JSON.stringify(v)); } catch (e) {} segnaPreferenze('pin'); };
   const inLocale = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
   const loggato = () => { if (inLocale) return true; try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; } };
   const suggerimento = document.createElement('p');
@@ -942,6 +948,7 @@ function pinCategorie() {
     suggerimento.hidden = !si;
     originali.forEach(li => { const d = li.querySelector('.st-pin-dots'); if (d) d.hidden = !si; });
   };
+  window.addEventListener('ct-preferenze-arrivate', disegna);
 
   originali.forEach(li => {
     const d = document.createElement('button');

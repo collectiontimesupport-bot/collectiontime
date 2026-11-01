@@ -279,6 +279,8 @@
     "Ancora vuota": "Still empty",
     "Non hai ancora nessuna lista.": "You don't have any lists yet.",
     "+ Crea una nuova lista": "+ Create a new list",
+    "+ Aggiungi pezzi": "+ Add items",
+    "La lista è vuota. Premi «Aggiungi pezzi» per cercarli in tutto il sito.": "The list is empty. Press «Add items» to search the whole site.",
     "per ritrovarle su tutti i tuoi dispositivi.": "to find them on all your devices.",
     "Crea le tue liste": "Make your own lists",
     "Esempio": "Example",

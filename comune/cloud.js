@@ -103,6 +103,52 @@ function trofeiPerCloud(nube) {
 const ordina = v => Array.isArray(v) ? v.map(ordina) : v && typeof v === 'object'
   ? Object.keys(v).sort().reduce((o, k) => (o[k] = ordina(v[k]), o), {}) : v;
 
+const PREF = { pin: 'ct-pin', pausa: 'ct-pausa', liste: 'ct-liste' };
+const leggiLS = (k, v) => { try { const x = JSON.parse(localStorage.getItem(k)); return x === null || x === undefined ? v : x; } catch (e) { return v; } };
+const PULISCI_PREF = {
+  pin: v => Array.isArray(v) ? [...new Set(v.map(x => (String(x).match(/catalogo\/([a-z0-9-]+)\//) || [])[1] || String(x)).filter(x => /^[a-z0-9-]{1,60}$/.test(x)))].slice(0, 10) : null,
+  pausa: v => Array.isArray(v) ? [...new Set(v.filter(x => typeof x === 'string' && x.length > 0 && x.length <= 200))].slice(0, 1000) : null,
+  liste: v => v && Array.isArray(v.l) ? { l: v.l.filter(x => x && typeof x.n === 'string' && x.n.trim() && x.n.length <= 60).slice(0, 100).map(x => ({ n: x.n, t: +x.t || 0 })) } : null
+};
+const UNISCI_PREF = {
+  pin: (a, b) => [...new Set([...b, ...a])],
+  pausa: (a, b) => [...new Set([...a, ...b])],
+  liste: (a, b) => { const l = b.l.map(x => Object.assign({}, x)); a.l.forEach(x => { const y = l.find(z => z.n.toLowerCase() === x.n.toLowerCase()); if (!y) l.push(x); else y.t = Math.max(y.t, x.t); }); return { l }; }
+};
+function preferenzePerCloud(nube, soloAccount) {
+  const tLoc = leggiLS('ct-pref-t', {});
+  const np = nube && nube.preferenze && typeof nube.preferenze === 'object' ? nube.preferenze : {};
+  const out = {}, qui = [];
+  let cambia = false, tCambia = false;
+  for (const k of Object.keys(PREF)) {
+    const loc = PULISCI_PREF[k](leggiLS(PREF[k], null));
+    const c = np[k] && typeof np[k] === 'object' ? { v: PULISCI_PREF[k](np[k].v), t: +np[k].t || 0 } : null;
+    const nc = c && c.v ? c : null;
+    const tl = typeof tLoc === 'object' && tLoc ? +tLoc[k] || 0 : 0;
+    const uguali = (x, y) => JSON.stringify(x) === JSON.stringify(y);
+    let fin = null;
+    if (nc && (soloAccount || !loc)) fin = nc;
+    else if (nc && !tl) {
+      const u = UNISCI_PREF[k](loc, nc.v);
+      fin = uguali(u, nc.v) ? nc : { v: u, t: Date.now() };
+    }
+    else if (nc && nc.t > tl) fin = nc;
+    else if (loc) fin = { v: loc, t: tl || 1 };
+    if (!fin) continue;
+    out[k] = fin;
+    if (!nc || !uguali(fin.v, nc.v) || fin.t !== nc.t) cambia = true;
+    if (!uguali(fin.v, loc)) { try { localStorage.setItem(PREF[k], JSON.stringify(fin.v)); } catch (e) {} qui.push(k); }
+    if (tl !== fin.t) { tLoc[k] = fin.t; tCambia = true; }
+  }
+  if (tCambia) { try { localStorage.setItem('ct-pref-t', JSON.stringify(tLoc)); } catch (e) {} }
+  return { v: out, cambia, qui };
+}
+function preferenzeArrivate(qui) {
+  if (!qui || !qui.length) return;
+  if (document.getElementById('raccolta')) { location.reload(); return; }
+  window.dispatchEvent(new Event('ct-preferenze-arrivate'));
+}
+
 let inCorso = null, timer = null;
 const MINUTI_RICONTROLLO = 10;
 const controlloVecchio = () => { try { return Date.now() - (+sessionStorage.getItem('ct-cloud-controllo') || 0) > MINUTI_RICONTROLLO * 60000; } catch (e) { return false; } };
@@ -122,18 +168,21 @@ function sincronizza() {
       return;
     }
     const locale = await leggiTutto();
-    let finale = locale, daScrivereQui = false;
+    let finale = locale, daScrivereQui = false, pref = null, soloAccount = false;
     if (!nube) finale = locale;
     else if (stato.uid !== utente.uid) {
       const haQui = Object.keys(locale).length > 0, haAccount = Object.keys(nube.collezioni || {}).length > 0;
-      finale = haQui && haAccount && (await chiedi()) === 'unisci' ? unisci(locale, nube.collezioni)
+      const scelta = haQui && haAccount ? await chiedi() : '';
+      finale = scelta === 'unisci' ? unisci(locale, nube.collezioni)
         : haAccount ? (nube.collezioni || {}) : locale;
+      soloAccount = haAccount && scelta !== 'unisci';
       daScrivereQui = true;
     }
     else if (nube.aggiornato === stato.ultimo) {
       if (!stato.sporco) {
         let r = null; try { r = trofeiPerCloud(nube); } catch (e) { console.warn('Trofei:', e); }
-        if (!r || !r.cambia) return;
+        try { pref = preferenzePerCloud(nube); } catch (e) { console.warn('Preferenze:', e); }
+        if ((!r || !r.cambia) && (!pref || !pref.cambia)) { preferenzeArrivate(pref && pref.qui); return; }
       }
     }
     else if (stato.sporco) { finale = unisci3(leggiBase(), locale, nube.collezioni); daScrivereQui = true; }
@@ -145,13 +194,17 @@ function sincronizza() {
     const paeseDoc = paese || (nube && nube.paese ? Object.assign({ paese: nube.paese }, nube.paeseAuto ? { paeseAuto: true } : {}) : {});
     let tro = { extra: {}, cambia: false };
     try { tro = trofeiPerCloud(nube); } catch (e) { console.warn('Trofei:', e); }
+    if (!pref) { try { pref = preferenzePerCloud(nube, soloAccount); } catch (e) { console.warn('Preferenze:', e); } }
+    const prefDoc = pref && Object.keys(pref.v).length ? { preferenze: pref.v } : {};
     const cambiaCollezioni = !nube || impronta(finale) !== impronta(nube.collezioni);
-    if (cambiaCollezioni || paese || tro.cambia) {
+    if (cambiaCollezioni || paese || tro.cambia || (pref && pref.cambia)) {
       if (cambiaCollezioni) aggiornato = Date.now();
       let accettato = null;
       if (!nube) { try { accettato = JSON.parse(localStorage.getItem('ct-accettato')); } catch (e) {} }
       const base = { versione: 1, aggiornato, collezioni: finale };
-      const prove = [Object.assign({}, base, paeseDoc, tro.extra, accettato ? { accettato } : {}), Object.assign({}, base, paeseDoc, tro.extra),
+      const acc = accettato ? { accettato } : {};
+      const prove = [Object.assign({}, base, paeseDoc, tro.extra, prefDoc, acc), Object.assign({}, base, paeseDoc, tro.extra, prefDoc),
+                     Object.assign({}, base, paeseDoc, tro.extra, acc), Object.assign({}, base, paeseDoc, tro.extra),
                      Object.assign({}, base, paeseDoc), base];
       let errore = null, fatto = false;
       for (const dati of prove) {
@@ -163,6 +216,7 @@ function sincronizza() {
     scriviBase(finale);
     aggiornaVista();
     if (cambiaQui && (typeof CONFIG !== 'undefined' || document.getElementById('raccolta'))) location.reload();
+    else preferenzeArrivate(pref && pref.qui);
   })().catch(e => { console.warn('Cloud:', e); }).finally(() => { inCorso = null; });
   return inCorso;
 }
@@ -173,6 +227,12 @@ window.addEventListener('ct-modifica', () => {
   if (!auth.currentUser) return;
   if (daConfermare && !avvisatoConferma) { avvisatoConferma = true; avviso('Per salvare nel cloud conferma la tua email (menu del profilo).'); }
   scriviStato(Object.assign(s, { sporco: true }));
+  clearTimeout(timer);
+  timer = setTimeout(sincronizza, SECONDI_CALMA * 1000);
+});
+window.addEventListener('ct-preferenze-cambiate', () => {
+  if (!auth.currentUser) return;
+  scriviStato(Object.assign(leggiStato(), { sporco: true }));
   clearTimeout(timer);
   timer = setTimeout(sincronizza, SECONDI_CALMA * 1000);
 });
@@ -299,6 +359,7 @@ async function svuotaQui() {
     await scrivi(a, righe.map(r => Object.assign(r, { owned: false, doppi: 0, tags: [], tagsTouched: false })));
     a.close();
   }
+  try { ['ct-pin', 'ct-pausa', 'ct-liste', 'ct-pref-t'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
   try { localStorage.removeItem('ct-cloud'); localStorage.removeItem('ct-cloud-base'); sessionStorage.removeItem('ct-cloud-visita'); } catch (e) {}
   setTimeout(() => location.reload(), 1500);
 }

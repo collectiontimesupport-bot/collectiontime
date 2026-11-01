@@ -25,9 +25,23 @@
       const h = await (await fetch(new URL('index.html', SITO), { cache: 'no-cache' })).text();
       const visti = [...h.matchAll(/catalogo\/([a-z0-9-]+)\/index\.html/g)].map(m => m[1]);
       ordine = [...new Set(visti.filter(c => ordine.includes(c))), ...ordine.filter(c => !visti.includes(c))];
+      ordine = conFissate(ordine, h);
     } catch (e) {}
     ORDINE = ordine;
     ordine.forEach(c => { NOME[c] = NOMI_CATEGORIE[c] || c; });
+  }
+  function conFissate(ordine, h) {
+    try {
+      const inLocale = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+      if (!inLocale && localStorage.getItem('ct-accesso') !== '1') return ordine;
+      const max = Math.max(0, parseInt((h.match(/data-pin-max="(\d+)"/) || [])[1], 10) || 3);
+      const visibili = new Set([...h.replace(/<template[\s\S]*?<\/template>/g, '').matchAll(/class="st-card" href="catalogo\/([a-z0-9-]+)\/index\.html"/g)].map(m => m[1]));
+      const pin = (JSON.parse(localStorage.getItem('ct-pin')) || [])
+        .map(u => (String(u).match(/catalogo\/([a-z0-9-]+)\//) || [])[1] || String(u))
+        .filter(c => c && visibili.has(c) && ordine.includes(c));
+      const fissate = [...new Set(pin)].slice(0, max);
+      return [...fissate, ...ordine.filter(c => !fissate.includes(c))];
+    } catch (e) { return ordine; }
   }
   function caricaCategoria(c) {
     if (caricate.has(c)) return Promise.resolve();
@@ -165,7 +179,7 @@
   const ordinate = l => l.slice().sort((a, b) => ORDINE.indexOf(a.c) - ORDINE.indexOf(b.c));
 
   const pausa = new Set((() => { try { return JSON.parse(localStorage.getItem('ct-pausa')) || []; } catch (e) { return []; } })());
-  const salvaPausa = () => { try { localStorage.setItem('ct-pausa', JSON.stringify([...pausa])); } catch (e) {} };
+  const salvaPausa = () => { try { localStorage.setItem('ct-pausa', JSON.stringify([...pausa])); } catch (e) {} segnaPreferenze('pausa'); };
   let gruppo = '', categoria = '';
 
   function mancanti() {
@@ -435,7 +449,7 @@
       + '</div><div class="liste-conferma" hidden></div>'
       + avvisoRete()
       + (visti.length ? `<ul class="lista-mista">${visti.map(v => pezzoLista(v.s, v.o, v.ok)).join('')}</ul>`
-        : `<section class="empty"><p>${persi ? 'Gli oggetti di questa lista non sono più nel sito.' : 'La lista è vuota. Apri una serie, premi «info» sotto un pezzo e tocca «' + esc(l.nome) + '» per metterlo qui.'}</p><a class="st-btn" href="${SITO.href}index.html">Vai alle serie</a></section>`)
+        : `<section class="empty"><p>${persi ? 'Gli oggetti di questa lista non sono più nel sito.' : 'La lista è vuota. Premi «Aggiungi pezzi» per cercarli in tutto il sito.'}</p><button type="button" class="st-btn" data-aggiungi>+ Aggiungi pezzi</button></section>`)
       + (persi ? `<p class="liste-persi">${persi === 1 ? '1 oggetto non più disponibile' : persi + ' oggetti non più disponibili'}</p>` : '');    contaLista();
   }
   function contaLista() {
@@ -558,17 +572,24 @@
       const campo = document.createElement('input');
       campo.type = 'text'; campo.className = 'lp-campo'; campo.maxLength = ctListe.MAX_NOME; campo.placeholder = 'Nome della lista'; campo.autocomplete = 'off';
       campo.setAttribute('aria-label', 'Nome della nuova lista');
+      const salva = () => {
+        if (!campo.value.trim()) { mostra(); return; }
+        const v = ctListe.crea(campo.value);
+        if (v.errore) { err.textContent = v.errore; err.hidden = false; campo.focus(); return; }
+        location.hash = indirizzoLista(v.nome);
+      };
+      const riga = document.createElement('div'); riga.className = 'liste-nuova-riga';
+      const bSalva = document.createElement('button'); bSalva.type = 'button'; bSalva.className = 'lnr-salva'; bSalva.textContent = 'Salva';
+      bSalva.addEventListener('mousedown', ev => ev.preventDefault());
+      bSalva.addEventListener('click', salva);
       campo.addEventListener('keydown', ev => {
         if (ev.key === 'Escape') { mostra(); return; }
         if (ev.key !== 'Enter') return;
-        ev.preventDefault();
-        if (!campo.value.trim()) { mostra(); return; }
-        const v = ctListe.crea(campo.value);
-        if (v.errore) { err.textContent = v.errore; err.hidden = false; return; }
-        location.hash = indirizzoLista(v.nome);
+        ev.preventDefault(); salva();
       });
       campo.addEventListener('blur', () => { if (!campo.value.trim()) setTimeout(() => { if (campo.isConnected && !campo.value.trim()) mostra(); }, 150); });
-      nuova.replaceWith(campo);
+      riga.append(campo, bSalva);
+      nuova.replaceWith(riga);
       campo.focus();
       return;
     }
