@@ -1056,6 +1056,39 @@ function pinCategorie() {
   disegna();
 }
 
+function dateNovita(oggiForzato) {
+  const GIORNI_ULTIMI = 3, en = LINGUA === 'en';
+  const ul = document.querySelector('ul.st-novita');
+  if (!ul) return;
+  const giorno = s => { const m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(s || ''); return m ? new Date(+m[1], m[2] - 1, +m[3]) : null; };
+  const oggi = oggiForzato ? new Date(oggiForzato) : new Date(); oggi.setHours(0, 0, 0, 0);
+  const tra = d => Math.round((d - oggi) / 864e5);
+  const breve = d => String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+  for (const li of [...ul.children]) {
+    const dal = giorno(li.dataset.dal), al = giorno(li.dataset.al), scritta = li.dataset.scritta || '';
+    if (!dal && !al && !scritta) continue;
+    if (al && oggi > al) { li.remove(); continue; }
+    const a = li.querySelector('a'), bollino = a.querySelector('.st-nuova');
+    let destra = scritta, rosso = false, sotto = '', barra = null;
+    if (dal && oggi < dal) {
+      const n = tra(dal);
+      if (bollino) { bollino.textContent = en ? 'Coming soon' : 'In arrivo'; bollino.classList.add('arrivo'); }
+      destra = destra || (en ? 'From ' : 'Dal ') + breve(dal);
+      sotto = n === 1 ? (en ? 'Out tomorrow' : 'Esce domani') : (en ? 'Out in ' + n + ' days' : 'Esce tra ' + n + ' giorni');
+    } else if (al) {
+      const restano = tra(al) + 1;
+      rosso = restano <= GIORNI_ULTIMI;
+      destra = destra || (rosso ? (restano === 1 ? (en ? 'Last day' : 'Ultimo giorno') : (en ? 'Last ' + restano + ' days' : 'Ultimi ' + restano + ' giorni')) : (en ? 'Until ' : 'Fino al ') + breve(al));
+      sotto = restano === 1 ? (en ? 'Ends today' : 'Finisce oggi') : (en ? restano + ' days left' : 'Mancano ' + restano + ' giorni');
+      if (dal) barra = Math.min(1, Math.max(0, (oggi - dal) / Math.max(1, al - dal + 864e5)));
+    }
+    if (destra) a.insertAdjacentHTML('beforeend', '<span class="st-nv-data' + (rosso ? ' ultimi' : '') + '"></span>'), a.lastChild.textContent = destra;
+    if (barra !== null) a.insertAdjacentHTML('beforeend', '<span class="st-nv-barra' + (rosso ? ' ultimi' : '') + '"><i style="width:' + Math.round(barra * 100) + '%"></i></span>');
+    if (sotto) a.insertAdjacentHTML('beforeend', '<span class="st-nv-resta"></span>'), a.lastChild.textContent = sotto;
+  }
+  if (!ul.children.length) ul.closest('#novita')?.remove();
+}
+
 function carosello() {
   const PER_BLOCCO = 4, SECONDI_AUTO = 8, PAUSA_TOCCO = 10;
   const ul = document.querySelector('ul.st-novita');
@@ -1403,6 +1436,7 @@ attivaAspetto();
 attivaPaese();
 attivaLingua();
 pinCategorie();
+dateNovita();
 carosello();
 
 if (/(^|\.)collectiontime\.com$/.test(location.hostname)) {

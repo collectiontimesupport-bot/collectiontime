@@ -8,3 +8,8 @@ catalogo/**/_prova-anteprima.html
 
 # note private per l'IA locale (memoria, prompt, prove): non vanno pubblicate
 Claude outputs/
+
+# pagine di prova delle Novità sul telefono (02/11/2026): non vanno pubblicate
+_prova-novita-*.html
+# indirizzo del Mac nel Wi-Fi di casa (tasto 📱 dell'admin): non va pubblicato
+_admin/ip-mac.js
