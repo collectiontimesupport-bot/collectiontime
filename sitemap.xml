@@ -2,6 +2,8 @@
 <!-- sitemap.xml — elenco delle pagine di Collection Time per i motori di ricerca.
      Lo rifà da solo l'area amministratore (scheda Pubblica): NON modificarlo a mano. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://collectiontime.com/catalogo/baci/baci-moschino/</loc><lastmod>2026-11-02</lastmod></url>
+  <url><loc>https://collectiontime.com/catalogo/baci/</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/burger-king/</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/dc-justice-league-statues/</loc><lastmod>2026-11-02</lastmod></url>
   <url><loc>https://collectiontime.com/catalogo/burger-king/king-jr-meal/dragon-ball-super/</loc><lastmod>2026-11-02</lastmod></url>

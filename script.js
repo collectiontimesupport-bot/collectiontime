@@ -841,7 +841,8 @@ const NOMI_CATEGORIE = {
   'burger-king': 'Burger King', 'coolthings': 'Cool Things', 'eurospin': 'Eurospin', 'granterre': 'GranTerre', 'kinder': 'Kinder Ferrero', 'legami': 'Legami',
   'lego': 'LEGO Minifigures', 'lidl': 'Lidl', 'mcdonalds': "McDonald's", 'mulino-bianco': 'Mulino Bianco',
   'findus': 'Findus',
-  'conad': 'Conad'
+  'conad': 'Conad',
+  'baci': 'Baci'
 };
 function percorso() {
   const back = document.querySelector('a.st-back');

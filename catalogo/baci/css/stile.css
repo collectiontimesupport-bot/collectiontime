@@ -1,0 +1,12 @@
+
+:root { --titolo: var(--ink); }
+
+h1 .titolo-testo {
+  font-family: "Arial Black", "Helvetica Neue", Arial, system-ui, sans-serif;
+  font-weight: 900; letter-spacing: .02em;
+}
+
+.grid { max-width: 1400px; gap: 28px 16px; }
+@media (max-width: 1000px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 22px 12px; }
+}

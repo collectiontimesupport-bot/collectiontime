@@ -88,7 +88,8 @@ const BADGE = [
   ['granterre', 'Granterre', '#7A9A2E'], ['kinder', 'Kinder', '#1A2140'], ['legami', 'Legami', '#E50A15'],
   ['lego', 'LEGO', '#E00000'], ['lidl', 'Lidl', '#1d1d86'], ['mcdonalds', 'McDonald’s', '#DA291C'], ['mulino-bianco', 'Mulino Bianco', '#A3282B'],
   ['findus', 'Findus', '#ff0000'],
-  ['conad', 'Conad', '#E2001A']
+  ['conad', 'Conad', '#E2001A'],
+  ['baci', 'Baci', '#1C3F94']
 ];
 
 const en = () => typeof LINGUA !== 'undefined' && LINGUA === 'en';
