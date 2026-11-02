@@ -857,9 +857,9 @@
         ctx.save();
         ctx.translate(x, y - SFONDO_TESSERA / 2);
         ctx.scale(SFONDO_TESSERA / 32, SFONDO_TESSERA / 32);
-        tesseraCanvas(ctx, 'rgba(242, 169, 0, .24)', 'rgba(26, 33, 64, .16)');
+        tesseraCanvas(ctx, 'rgba(242, 169, 0, .14)', 'rgba(26, 33, 64, .09)');
         ctx.restore();
-        ctx.fillStyle = 'rgba(26, 33, 64, .09)';
+        ctx.fillStyle = 'rgba(26, 33, 64, .055)';
         ctx.fillText(testo, x + SFONDO_TESSERA + 4, y);
       }
     }
@@ -944,14 +944,14 @@
     let H = orizzontale ? 595.28 : 841.89;
     const COLS = orizzontale ? CONFIG.pdfColonne : PDF_COLONNE;
     const ROWS = CONFIG.pdfFile || 2;
-    const BAND = 42;
-    let TITOLO_H = 32;
+    const BAND = 30;
+    let TITOLO_H = 26;
     const TITOLO_MAXW = W - 2 * MX - 40;
     if (logo && TITOLO_H * logo.width / logo.height > TITOLO_MAXW) TITOLO_H = TITOLO_MAXW * logo.height / logo.width;
     const LOGO_W = logo ? TITOLO_H * logo.width / logo.height : 0;
-    const CART_PX = 26, CART_PY = 12, CART_H = TITOLO_H + 2 * CART_PY;
-    const SOPRA = BAND + 16, gridBottom = 52;
-    const TITOLO_GAP = 18;
+    const CART_PX = 22, CART_PY = 7, CART_H = TITOLO_H + 2 * CART_PY;
+    const SOPRA = BAND + 12, gridBottom = 30;
+    const TITOLO_GAP = 12;
     const spazio = H - SOPRA - CART_H - TITOLO_GAP - gridBottom;
     const ROW_GAP = 12;
     const colPitch = (W - 2 * MX) / COLS;
@@ -1030,10 +1030,10 @@
 
       page.drawRectangle({ x: 0, y: H - BAND, width: W, height: BAND, color: ink });
       page.drawRectangle({ x: 0, y: H - BAND - 2.5, width: W, height: 2.5, color: ambra });
-      marchio(page, MX, H - 8, 26, ink);
-      page.drawText('Collection Time', { x: MX + 34, y: H - 28, size: 20, font: bold, color: bianco });
-      const cw = font.widthOfTextAtSize(cosa, 16);
-      page.drawText(cosa, { x: W - MX - cw, y: H - 26.5, size: 16, font, color: bianco });
+      marchio(page, MX, H - 5.5, 19, ink);
+      page.drawText('Collection Time', { x: MX + 25, y: H - 20.5, size: 15, font: bold, color: bianco });
+      const cw = font.widthOfTextAtSize(cosa, 12.5);
+      page.drawText(cosa, { x: W - MX - cw, y: H - 19.5, size: 12.5, font, color: bianco });
 
       const usaLogo = logo && !soloEstere;
       const title = pdfText(CONFIG.titolo + (soloEstere ? ' (ESTERO)' : ''));
@@ -1113,7 +1113,7 @@
       }
     }
 
-    const FILIGRANA_OPACITA = 0.12;
+    const FILIGRANA_OPACITA = 0.08;
     const fc = document.createElement('canvas');
     fc.width = fc.height = 512;
     const fctx = fc.getContext('2d');
@@ -1132,7 +1132,7 @@
     fctx.fillRect(9, 28.6, 14, 0.6);
     const filigrana = fc;
 
-    const SITO_SIZE = 14, sc = document.createElement('canvas'), sctx = sc.getContext('2d'), SK = 4;
+    const SITO_SIZE = 10, sc = document.createElement('canvas'), sctx = sc.getContext('2d'), SK = 4;
     const sitoW = bold.widthOfTextAtSize('collectiontime.com', SITO_SIZE);
     sc.width = Math.ceil(sitoW * SK); sc.height = Math.ceil(SITO_SIZE * 1.25 * SK);
     sctx.scale(SK, SK);
@@ -1146,8 +1146,8 @@
       const WM = Math.min(250, H * 0.6);
       pg.drawImage(filigrana, { x: (W - WM) / 2, y: primaFila - (bloccoH + WM) / 2, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
 
-      marchio(pg, MX, 36, 18, ink);
-      pg.drawImage(sito, { x: MX + 24, y: 22 - SITO_SIZE * 0.25, width: sc.width / SK, height: sc.height / SK });
+      marchio(pg, MX, 22, 12, ink);
+      pg.drawImage(sito, { x: MX + 16, y: 12 - SITO_SIZE * 0.25, width: sc.width / SK, height: sc.height / SK });
 
     });
 
