@@ -1,4 +1,12 @@
 
+const MAIL_SERIE = ({
+  it: { ogg: 'Segnalazione', ciao: 'Ciao! Ti scrivo per la serie «§»', foto: 'Ho una foto che vi manca / ho trovato un problema (foto, nome, numero…):', problema: 'Cosa non va (foto, nome, numero…):' },
+  en: { ogg: 'Report', ciao: 'Hi! I’m writing about the series “§”', foto: 'I have a photo you’re missing / I found a problem (photo, name, number…):', problema: 'What’s wrong (photo, name, number…):' },
+  fr: { ogg: 'Signalement', ciao: 'Bonjour ! Je t’écris pour la série « § »', foto: 'J’ai une photo qui vous manque / j’ai trouvé un problème (photo, nom, numéro…) :', problema: 'Ce qui ne va pas (photo, nom, numéro…) :' },
+  es: { ogg: 'Aviso', ciao: '¡Hola! Te escribo por la serie «§»', foto: 'Tengo una foto que os falta / he encontrado un problema (foto, nombre, número…):', problema: 'Qué está mal (foto, nombre, número…):' },
+  de: { ogg: 'Meldung', ciao: 'Hallo! Ich schreibe dir wegen der Serie „§“', foto: 'Ich habe ein Foto, das euch fehlt / ich habe ein Problem gefunden (Foto, Name, Nummer…):', problema: 'Was nicht stimmt (Foto, Name, Nummer…):' }
+});
+const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SERIE[LINGUA] : MAIL_SERIE.it;
 (() => {
   const $ = id => document.getElementById(id);
   const grid = $('grid'), dlg = $('dlg');
@@ -149,7 +157,7 @@
     return { propaga, unisci };
   })();
 
-  const savePen = p => db
+  const savePen = p => (typeof SPUNTE_PROVA !== 'undefined' && SPUNTE_PROVA) ? Promise.resolve() : db
     ? wrap(db.transaction(STORE, 'readwrite').objectStore(STORE).put(datiVisitatore(p)))
         .then(() => ristampe ? ristampe.propaga(p) : null)
         .then(segnalaModifica)
@@ -291,9 +299,9 @@
     scrivi.className = 'btn';
     scrivi.textContent = 'Scrivici';
     scrivi.href = 'mailto:' + 'collectiontime.support' + '@' + 'gmail.com'
-      + '?subject=' + encodeURIComponent('Segnalazione · ' + CONFIG.titolo)
-      + '&body=' + encodeURIComponent('Ciao! Ti scrivo per la serie «' + CONFIG.titolo + '» (' + location.href + ').\n\n'
-        + (CONFIG.cercaAcceso ? 'Ho una foto che vi manca / ho trovato un problema (foto, nome, numero…):\n' : 'Cosa non va (foto, nome, numero…):\n'));
+      + '?subject=' + encodeURIComponent(MAIL_SERIE_L.ogg + ' · ' + CONFIG.titolo)
+      + '&body=' + encodeURIComponent(MAIL_SERIE_L.ciao.replace('§', CONFIG.titolo) + ' (' + location.href + ').\n\n'
+        + (CONFIG.cercaAcceso ? MAIL_SERIE_L.foto : MAIL_SERIE_L.problema) + '\n');
     riga.append(frase, scrivi);
     sec.append(riga);
     if (CONFIG.grazieAcceso && String(CONFIG.grazieNome || '').trim()) {
@@ -482,7 +490,8 @@
     } else {
       img.className = 'ghost';
       img.src = SLOT_IMG;
-      img.onerror = () => { img.onerror = null; img.src = new URL('comune/slot-vuoto-quadrato.webp', RADICE).href; };
+      let su = 0;
+      img.onerror = () => { su++; if (su <= 2) img.src = '../'.repeat(su) + 'in-arrivo.webp'; else { img.onerror = null; img.src = new URL('comune/slot-vuoto-quadrato.webp', RADICE).href; } };
       img.alt = '';
       pic.append(img);
     }
@@ -1382,6 +1391,7 @@
       st.clear();
       pens.filter(p => p.owned || p.doppi || p.tagsTouched).forEach(p => st.put(datiVisitatore(p)));
       await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
+      if (typeof SPUNTE_PROVA !== 'undefined' && SPUNTE_PROVA) pens.forEach(p => { p.owned = true; });
       if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
       if (convertite) segnalaModifica();
     } catch (e) {
@@ -1415,3 +1425,4 @@
     }
   })();
 })();
+

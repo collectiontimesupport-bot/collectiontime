@@ -336,7 +336,6 @@
     "Chiaro": "Light",
     "Scuro": "Dark",
     "Lingua": "Language",
-    "English": "Italiano",
     "Il tuo paese": "Your country",
     "Serve per mostrarti come normali i pezzi del tuo paese: gli altri stanno sotto «ESTERO».": "This shows items from your country as regular ones: the others appear under “ABROAD”.",
     "Account e dati": "Account and data",
@@ -398,7 +397,121 @@
     "Apri il menu del browser (i tre puntini ⋮ o le tre righe ☰)": "Open the browser menu (the three dots ⋮ or the three lines ☰)",
     "o": "or",
 
-    "24 Stikeez + la coppa": "24 Stikeez + the cup"
+    "Categoria": "Category",
+    "Menu del sito": "Site menu",
+    "Account": "Account",
+    "I miei trofei": "My trophies", "Carico i trofei…": "Loading trophies…",
+    "1 pezzo": "1 item",
+    "Hai segnato il tuo primo pezzo.": "You ticked your first item.",
+    "Le collezioni dei supermercati Conad.": "Collections from Conad supermarkets.",
+    "Le sorprese degli Happy Meal.": "The Happy Meal surprises.",
+    "I gadget e gli oggetti da collezione.": "Gadgets and collectibles.",
+    "I libri degli Happy Meal.": "The Happy Meal books.",
+    "Astucci 2-in-1 in silicone": "2-in-1 silicone pencil cases",
+    "Astucci in morbido Tessuto Peluche": "Soft plush fabric pencil cases",
+    "Biglie di vetro con i personaggi dell'orto.": "Glass marbles with the vegetable garden characters.",
+    "Candele profumate": "Scented candles",
+    "Collezione di shopper in Cotone": "Cotton tote bag collection",
+    "Gli animaletti 3D che abbracciano la matita.": "3D animals that hug your pencil.",
+    "Gli animaletti di cancelleria delle Sorpresine.": "The stationery animals from the Sorpresine.",
+    "Gomme Profumate": "Scented erasers",
+    "I Minions vestiti da frutta e verdura, con il suono.": "The Minions dressed as fruit and vegetables, with sound.",
+    "I Pencil Top 3D dei Minions.": "The Minions 3D Pencil Tops.",
+    "I Pencil Top dei Minions.": "The Minions Pencil Tops.",
+    "I charm Looney Tunes sportivi.": "The sporty Looney Tunes charms.",
+    "I charm Looney Tunes x DC.": "The Looney Tunes x DC charms.",
+    "I personaggi 3D dei Simpson, con movimento.": "The 3D Simpsons characters, with movement.",
+    "I personaggi 3D del film Kung Fu Panda 4.": "The 3D characters from the movie Kung Fu Panda 4.",
+    "I personaggi 3D del mondo di Harry Potter.": "The 3D characters from the world of Harry Potter.",
+    "I personaggi 3D di Star Wars che si illuminano.": "The 3D Star Wars characters that light up.",
+    "I premi delle raccolte punti per la colazione.": "Breakfast loyalty-point prizes.",
+    "Lampade": "Lamps",
+    "Le gomme 3D dei Minions in tre colori.": "The Minions 3D erasers in three colors.",
+    "Le gommine a forma di confezioni e simboli Mulino Bianco.": "Erasers shaped like Mulino Bianco packs and symbols.",
+    "Le sorpresine da collezionare: animaletti e gommine.": "Collectible surprises: little animals and erasers.",
+    "Le sorpresine degli ovetti con le due metà.": "The surprises from the two-half eggs.",
+    "Le sorpresine degli ovetti di cioccolato.": "The surprises from chocolate eggs.",
+    "Le sorpresine degli ovetti giganti.": "The surprises from giant eggs.",
+    "Le sorpresine delle merendine.": "The surprises from snacks.",
+    "Le statuine da collezione.": "Collectible figurines.",
+    "Le trottole dei Minions.": "The Minions spinning tops.",
+    "Macchinine a retrocarica con i personaggi di Sonic.": "Pull-back cars with the Sonic characters.",
+    "Matite con Antistress": "Pencils with stress toy",
+    "Peluche": "Plush toys",
+    "Peluche Tiny Super Soft!": "Tiny Super Soft! plush toys",
+    "Penne a scatto": "Click pens",
+    "Penne cancellabili": "Erasable pens",
+    "Penne con Antistress": "Pens with stress toy",
+    "Penne con animaletto": "Pens with a little animal",
+    "Penne con le piume": "Pens with feathers",
+    "Penne gel con animaletto": "Gel pens with a little animal",
+    "Penne in confezione blister": "Pens in blister packs",
+    "Piccoli pupazzetti colorati in gomma dotati di una ventosa sulla base.": "Small colorful rubber figures with a suction cup on the base.",
+    "Portapenne da Tavolo": "Desk pen holders",
+    "Segnalibri con elastico": "Bookmarks with elastic band",
+    "Tazze, piattini e set caffè da colazione.": "Mugs, saucers and breakfast coffee sets.",
+    "Tazzine, tazze e schiumalatte.": "Cups, mugs and milk frothers.",
+
+    "24 Stikeez + la coppa": "24 Stikeez + the cup",
+
+    "In arrivo": "Coming soon",
+    "Esce domani": "Out tomorrow",
+    "Ultimo giorno": "Last day",
+    "Finisce oggi": "Ends today",
+    "Comune": "Common",
+    "Non comune": "Uncommon",
+    "Raro": "Rare",
+    "Epico": "Epic",
+    "Leggendario": "Legendary",
+    "Pezzi": "Pieces",
+    "Serie complete": "Complete series",
+    "Esplorazione": "Exploration",
+    "Completista": "Completionist",
+    "Profilo": "Profile",
+    "Nascosti": "Hidden",
+    "Cloud": "Cloud",
+    "Hai completato la tua prima serie.": "You completed your first series.",
+    "Categoria al 50%": "Category at 50%",
+    "Hai metà dei pezzi di un'intera categoria.": "You have half the pieces of a whole category.",
+    "1 doppione": "1 duplicate",
+    "Hai segnato il tuo primo doppione.": "You marked your first duplicate.",
+    "Collezione nel cloud": "Collection in the cloud",
+    "Hai fatto l'accesso: la tua collezione è al sicuro nel cloud.": "You signed in: your collection is safe in the cloud.",
+    "Mi rappresenta": "That's me",
+    "Hai scelto tutti e 3 i tuoi badge \"Amante di…\".": "You chose all 3 of your “Fan of…” badges.",
+    "Etichettatore": "Labeller",
+    "Hai messo il primo pezzo in una delle tue liste.": "You put the first piece in one of your lists.",
+    "Nottambulo": "Night owl",
+    "Hai segnato un pezzo tra mezzanotte e le 5.": "You marked a piece between midnight and 5 am.",
+    "Mattiniero": "Early bird",
+    "Hai segnato un pezzo tra le 5 e le 7.": "You marked a piece between 5 and 7 am.",
+    "Domenica da collezionista": "Collector's Sunday",
+    "Hai segnato un pezzo di domenica.": "You marked a piece on a Sunday.",
+    "Weekend da collezionista": "Collector's weekend",
+    "Hai segnato un pezzo di sabato sera, tra le 20 e le 23.": "You marked a piece on a Saturday evening, between 8 and 11 pm.",
+    "Quasi!": "Almost!",
+    "Una serie è rimasta a un solo pezzo dalla fine per più di un giorno.": "A series stayed one piece away from complete for more than a day.",
+    "Li trovi tutti in Impostazioni.": "You'll find them all in Settings.",
+    "I miei badge": "My badges",
+    "I badge sono per chi ha un account: accedi per scegliere quelli che ti rappresentano.": "Badges are for people with an account: sign in to choose the ones that represent you.",
+    "Nessun badge scelto.": "No badge chosen.",
+    "AMANTE DI": "FAN OF",
+
+    "Checklist di sorpresine e collezionabili": "Checklist of surprise toys and collectibles",
+    "Home": "Home",
+    "Stampa anche le varianti": "Also print the variants",
+    "Variante": "Variant",
+    "Tutte le sorpresine Kinder per codice": "All Kinder surprises by code",
+    "Scegli": "Choose",
+    "Metti": "Put",
+    "sulla Home: si apre come una app.": "on your Home Screen: it opens like an app.",
+    "Metti Collection Time sulla Home": "Put Collection Time on your Home Screen",
+    "il tuo account e la collezione salvata nel cloud: spunte, doppioni e liste di tutte le collezioni. Non si può tornare indietro.": "your account and the collection saved in the cloud: checks, duplicates and lists of all collections. This can't be undone.",
+    "Elimina la lista": "Delete the list",
+    "Trofei": "Trophies",
+    "Sto creando l'immagine…": "Creating the image…",
+    "Foto": "Photo",
+    "La serie": "The series"
   };
 
   var NOMI = {
@@ -425,9 +538,13 @@
     luglio: "July", agosto: "August", settembre: "September", ottobre: "October", novembre: "November", dicembre: "December" };
   function nome(x) { return Object.prototype.hasOwnProperty.call(NOMI, x) ? NOMI[x] : x; }
   var ELENCO_NOMI = Object.keys(NOMI).sort(function (a, b) { return b.length - a.length; }).join('|');
-  var N = function (x) { return String(x).replace(/\s+/g, ' '); };
+  var ha = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
 
+  var tr = function (t) { var r = window.traduciTesto ? window.traduciTesto(t) : null; return r == null ? t : r; };
+
+  var paesi = function (s) { return s.split(/ e |, /).map(function (p) { return ha(PAESI, p) ? PAESI[p] : p; }).join(' and '); };
   var MODELLI = [
+    [/^Novità, blocco (\d+) di (\d+)$/, "News, block $1 of $2"],
     [/^Aggiungi a «(.+)»$/, "Add to «$1»"],
     [/^(\d+) oggett[oi] nella lista$/, function (m) { return m[1] + (m[1] === '1' ? ' item' : ' items') + ' in the list'; }],
     [/^(\d+) oggett[oi] trovat[oi]$/, function (m) { return m[1] + (m[1] === '1' ? ' item found' : ' items found'); }],
@@ -461,10 +578,10 @@
     [/^(\d+) serie · ne mancano (\d+)$/, "$1 series · $2 missing"],
     [/^(\d+) serie · (\d+) doppion[ei]$/, function (m) { return m[1] + ' series · ' + m[2] + (m[2] === '1' ? ' duplicate' : ' duplicates'); }],
     [/^(\d+) (?:possedute|posseduti|posseduto|posseduta) su (\d+)((?: · \d+ doppion[ei])?)((?: · \d+ visibil[ei])?)$/, function (m) {
-      return m[1] + ' owned of ' + m[2] + m[3].replace(/doppion[ei]/, function (d) { return d === 'doppione' ? 'duplicate' : 'duplicates'; }).replace(/visibil[ei]/, 'shown');
+      return m[1] + ' owned of ' + m[2] + m[3].replace(/doppion[ei]/, function (d) { return d === 'doppione' ? 'duplicate' : 'duplicates'; }) + m[4].replace(/visibil[ei]/, 'shown');
     }],
     [/^(\d+) su (\d+)((?: · \d+ doppion[ei])?)((?: · \d+ visibil[ei])?)$/, function (m) {
-      return m[1] + ' of ' + m[2] + m[3].replace(/doppion[ei]/, function (d) { return d === 'doppione' ? 'duplicate' : 'duplicates'; }).replace(/visibil[ei]/, 'shown');
+      return m[1] + ' of ' + m[2] + m[3].replace(/doppion[ei]/, function (d) { return d === 'doppione' ? 'duplicate' : 'duplicates'; }) + m[4].replace(/visibil[ei]/, 'shown');
     }],
     [/^dal (\d{4})$/, "from $1"],
     [/^(Tutte|Tutti) \((\d+)\)$/, "All ($2)"],
@@ -512,8 +629,8 @@
     [/^Salvata nel cloud · (.+)$/, function (m) { return 'Saved in the cloud · ' + m[1].replace(/[a-zì]+/g, function (w) { return MESI[w] || w; }); }],
     [/^(\d+) collezionisti la stanno completando: inizia anche tu!$/, "$1 collectors are completing it: start yours too!"],
     [/^Grazie a (.+) per le foto\.$/, "Thanks to $1 for the photos."],
-    [/^Uscito solo (?:in (.+)|all'estero)$/, function (m) { return 'Released only ' + (m[1] ? 'in ' + m[1].replace(/ e /g, ' and ') : 'abroad'); }],
-    [/^(.*?)\. Uscito solo (?:in (.+)|all'estero)$/, function (m) { return m[1] + '. Released only ' + (m[2] ? 'in ' + m[2].replace(/ e /g, ' and ') : 'abroad'); }],
+    [/^Uscito solo (?:in (.+)|all'estero)$/, function (m) { return 'Released only ' + (m[1] ? 'in ' + paesi(m[1]) : 'abroad'); }],
+    [/^(.*?)\. Uscito solo (?:in (.+)|all'estero)$/, function (m) { return tr(m[1]) + '. Released only ' + (m[2] ? 'in ' + paesi(m[2]) : 'abroad'); }],
     [/^Tutt[eiao] .+?,? con il quadratino spuntato dove ce l'hai\.$/, "All items, with the box checked where you own them."],
     [/^Tutt[eiao] .+? con il quadratino vuoto, da compilare a mano\.$/, "All items with an empty box, to fill in by hand."],
     [/^(?:Premi su|Tocca) (?:una|uno|un)'? ?.+? per segnare che ce l'hai\. Con info vedi i dettagli, le info e gli hashtag\.$/, "Tap an item to mark that you own it. Use info to see details, notes and hashtags."],
@@ -524,71 +641,37 @@
     [/^Vedi (?:tutti|tutte) .+? insieme →$/, "See them all together →"],
     [/^(\d+) su (\d+) · non contano per completare la serie$/, "$1 of $2 · they don't count toward completing the series"],
     [/^«(.+)» spostat[ao] in «Non le cerco più»$/, "“$1” moved to “Not looking for these anymore”"],
+    [/^Dal (\d\d\/\d\d)$/, "From $1"],
+    [/^Fino al (\d\d\/\d\d)$/, "Until $1"],
+    [/^Esce tra (\d+) giorni$/, "Out in $1 days"],
+    [/^Ultimi (\d+) giorni$/, "Last $1 days"],
+    [/^Mancano (\d+) giorni$/, "$1 days to go"],
+    [/^(\d+) pezzi$/, "$1 pieces"],
+    [/^(\d+) serie$/, function (m) { return m[1] + (m[1] === '1' ? ' series' : ' series'); }],
+    [/^(\d+) serie diverse$/, "$1 different series"],
+    [/^(\d+) categorie$/, "$1 categories"],
+    [/^(\d+) doppioni$/, "$1 duplicates"],
+    [/^Hai segnato (\d+) pezzi in tutto il sito\.$/, "You marked $1 pieces across the site."],
+    [/^Hai completato (\d+) serie\.$/, "You completed $1 series."],
+    [/^Hai segnato almeno un pezzo in (\d+) serie diverse\.$/, "You marked at least one piece in $1 different series."],
+    [/^Hai pezzi segnati in (\d+) categorie diverse\.$/, "You have pieces marked in $1 different categories."],
+    [/^Hai (\d+) doppioni da scambiare\.$/, "You have $1 duplicates to trade."],
+    [/^\+(\d+) altri trofei$/, "+$1 more trophies"],
+    [/^Sbloccato il (\d+) (\S+) (\d{4})$/, function (m) { return 'Unlocked on ' + (MESI[m[2]] || m[2]) + ' ' + m[1] + ', ' + m[3]; }],
+    [/^Trofei sbloccati: (\d+) su (\d+)$/, "Trophies unlocked: $1 of $2"],
+    [/^Scegli fino a (\d+) badge da mostrare sul tuo profilo\.$/, "Choose up to $1 badges to show on your profile."],
+    [/^Inizia (\d+) serie in questa categoria per sbloccarlo\.$/, "Start $1 series in this category to unlock it."],
+    [/^Puoi sceglierne al massimo (\d+)\.$/, "You can choose up to $1."],
+    [/^Ancora nessun badge: inizia (\d+) serie in una categoria per sbloccare il suo\.$/, "No badges yet: start $1 series in a category to unlock its badge."],
+    [/^(\d+) scelti su (\d+) · (\d+) sbloccati$/, "$1 of $2 chosen · $3 unlocked"],
+    [/^Cambia o scegli tra i (\d+) sbloccati$/, "Change or choose from the $1 unlocked"],
+    [/^BLOCCATO · (\d+)\/(\d+) serie$/, "LOCKED · $1/$2 series"],
+    [/^Hai tutti i pezzi di «(.+)»\.$/, "You have all the pieces of “$1”."],
+    [/^Vai a «(.+)»$/, "Go to “$1”"],
+    [/^Tocca (?:una|uno|un)'? ?.+? per segnare che ce l'hai \(o toglierlo\)\. Tieni premuto \(o clic destro\)(?: su (?:una|uno|un)'? ?.+?)? per aprire (?:le sue|le) Info o andare alla sua serie\.( Sotto ogni foto c'è il codice\.)?$/, function (m) { return 'Tap a piece to mark that you have it (or to remove it). Press and hold (or right-click) to open its Info or go to its series.' + (m[1] ? ' The code is under each photo.' : ''); }],
+    [/^(.+?)\. Variante$/, function (m) { return tr(m[1]) + '. Variant'; }],
     [/^(\d{4}) · (.+)$/, function (m) { return m[1] + ' · ' + (ha(PAESI, m[2]) ? PAESI[m[2]] : m[2]); }]
   ];
 
-  var MIN = {};
-  Object.keys(FRASI).forEach(function (k) { MIN[k.toLowerCase()] = FRASI[k]; });
-  var ha = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
-
-  function traduci(testo) {
-    var k = N(testo).trim();
-    if (!k || !/[A-Za-zÀ-ú]/.test(k)) return null;
-    if (ha(FRASI, k)) return FRASI[k];
-    var tutto = k === k.toUpperCase();
-    var min = k.toLowerCase();
-    if (tutto && ha(MIN, min)) return MIN[min].toUpperCase();
-    for (var i = 0; i < MODELLI.length; i++) {
-      var m = MODELLI[i][0].exec(k);
-      if (m) return typeof MODELLI[i][1] === 'function' ? MODELLI[i][1](m) : k.replace(MODELLI[i][0], MODELLI[i][1]);
-    }
-    return null;
-  }
-
-  var ATTRIBUTI = ['title', 'aria-label', 'placeholder'];
-  var SALTA = /^(SCRIPT|STYLE|TEXTAREA|CODE|PRE|NOSCRIPT)$/;
-
-  function nodo(n) {
-    if (n.nodeType === 3) {
-      var p = n.parentNode;
-      if (!p || SALTA.test(p.nodeName)) return;
-      var v = n.nodeValue, r = traduci(v);
-      if (r !== null) n.nodeValue = /^\s*/.exec(v)[0] + r + /\s*$/.exec(v)[0];
-      return;
-    }
-    if (n.nodeType !== 1 || SALTA.test(n.nodeName) || n.getAttribute('translate') === 'no') return;
-    if (n.hasAttribute('data-en')) {
-      n.innerHTML = n.getAttribute('data-en');
-      n.removeAttribute('data-en');
-      return;
-    }
-    for (var i = 0; i < ATTRIBUTI.length; i++) {
-      var a = n.getAttribute(ATTRIBUTI[i]);
-      if (a) { var t = traduci(a); if (t !== null) n.setAttribute(ATTRIBUTI[i], t); }
-    }
-    for (var c = n.firstChild; c; c = c.nextSibling) nodo(c);
-  }
-
-  function titoloScheda() {
-    var parti = document.title.split(' · '), r = traduci(parti[0]);
-    if (r !== null) { parti[0] = r; document.title = parti.join(' · '); }
-  }
-
-  document.documentElement.lang = 'en';
-  var osserva;
-  function parti(recs) {
-    osserva.disconnect();
-    for (var i = 0; i < recs.length; i++) {
-      var r = recs[i];
-      if (r.type === 'childList') { for (var j = 0; j < r.addedNodes.length; j++) nodo(r.addedNodes[j]); }
-      else if (r.type === 'characterData') nodo(r.target);
-      else if (r.type === 'attributes') { var a = r.target.getAttribute(r.attributeName); var t = a && traduci(a); if (t) r.target.setAttribute(r.attributeName, t); }
-    }
-    osserva.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRIBUTI });
-  }
-  osserva = new MutationObserver(parti);
-  nodo(document.body);
-  titoloScheda();
-  osserva.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRIBUTI });
-  window.traduciEn = traduci;
+  CTLingua('en', FRASI, MODELLI);
 })();

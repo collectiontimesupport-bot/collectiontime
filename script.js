@@ -42,6 +42,20 @@ const ACCESSO_PROVA = (() => {
     return sessionStorage.getItem('ct-accesso-prova') === '1';
   } catch (e) { return false; }
 })();
+const SPUNTE_PROVA = (() => {
+  if (!IN_LOCALE) return false;
+  try {
+    const m = /[?&]spunte=([01])\b/.exec(location.search);
+    if (m) sessionStorage.setItem('ct-spunte-prova', m[1]);
+    return sessionStorage.getItem('ct-spunte-prova') === '1';
+  } catch (e) { return false; }
+})();
+if (SPUNTE_PROVA) addEventListener('DOMContentLoaded', () => {
+  const e = document.createElement('div');
+  e.textContent = '✅ Prova: tutte spuntate (non salvate)';
+  e.style.cssText = 'position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:99999;background:#1F7A3A;color:#fff;font:600 12px system-ui,sans-serif;padding:5px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none';
+  document.body.append(e);
+});
 function haAccesso() {
   if (ACCESSO_PROVA) return true;
   try { return localStorage.getItem('ct-accesso') === '1'; } catch (e) { return false; }
@@ -77,6 +91,12 @@ if (window.parent !== window) {
     try { prima = sessionStorage.getItem('ct-accesso-prova') || '0'; sessionStorage.setItem('ct-accesso-prova', e.data.anteprimaAccesso); } catch (err) { return; }
     if (prima !== e.data.anteprimaAccesso) location.reload();
   });
+  addEventListener('message', e => {
+    if (e.source !== window.parent || !e.data || (e.data.anteprimaSpunte !== '1' && e.data.anteprimaSpunte !== '0') || !IN_LOCALE) return;
+    let prima = '0';
+    try { prima = sessionStorage.getItem('ct-spunte-prova') || '0'; sessionStorage.setItem('ct-spunte-prova', e.data.anteprimaSpunte); } catch (err) { return; }
+    if (prima !== e.data.anteprimaSpunte) location.reload();
+  });
   const CHIAVE_POS = 'ct-anteprima-posizione:' + location.pathname;
   const salvaPos = () => {
     try {
@@ -106,8 +126,19 @@ if (window.parent !== window) {
   }
 }
 
-const LINGUA = (() => { try { return localStorage.getItem('ct-lingua') === 'en' ? 'en' : 'it'; } catch (e) { return 'it'; } })();
-if (LINGUA === 'en') document.head.append(Object.assign(document.createElement('script'), { src: conVersione('comune/lingua-en.js').href }));
+const LINGUE = ['it', 'en', 'fr', 'es', 'de'];
+const LINGUA = (() => { try { const l = localStorage.getItem('ct-lingua'); return LINGUE.includes(l) ? l : 'it'; } catch (e) { return 'it'; } })();
+if (LINGUA !== 'it') ['comune/lingua.js', 'comune/contenuti-' + LINGUA + '.js', 'comune/lingua-' + LINGUA + '.js'].forEach(f =>
+  document.head.append(Object.assign(document.createElement('script'), { src: conVersione(f).href, async: false })));
+
+const NON_TRADURRE = '#pageTitle, .titolo-testo, .logo-coll, .st-card h2, .st-novita strong, .st-novita small, .nome, .code, .cr-codice, .cat-nome, .lp-nome, .lp-serie, .lps-serie, .lt-nome';
+const proteggiNomi = el => {
+  if (el.nodeType !== 1) return;
+  if (el.matches(NON_TRADURRE)) el.classList.add('notranslate');
+  el.querySelectorAll(NON_TRADURRE).forEach(x => x.classList.add('notranslate'));
+};
+proteggiNomi(document.body);
+new MutationObserver(rs => rs.forEach(r => r.addedNodes.forEach(proteggiNomi))).observe(document.body, { childList: true, subtree: true });
 
 
 async function caricaParte(idSegnaposto, file) {
@@ -120,7 +151,8 @@ async function caricaParte(idSegnaposto, file) {
     box.innerHTML = html;
     sistemaLink(box);
     nascondiHomeSeInstallato();
-    if (file === 'header.html') { controllaIscrizione(); window.dispatchEvent(new Event('ct-header')); setTimeout(vignetteNovita, 1200); }
+    if (file === 'footer.html') sistemaMenuLingua(box);
+    if (file === 'header.html') { controllaIscrizione(); window.dispatchEvent(new Event('ct-header')); setTimeout(vignetteNovita, 1200); setTimeout(proponiLingua, 2500); }
   } catch (e) {
     console.warn('Impossibile caricare ' + file + ':', e);
   }
@@ -561,7 +593,7 @@ if (giaInstallato()) document.getElementById('stAppSez')?.remove();
 
 function invitoApp() {
   const forza = /[?&]invito=1/.test(location.search);
-  if (giaInstallato() || document.querySelector('dialog[open], .vg-giro')) return;
+  if (giaInstallato() || document.querySelector('dialog[open], .vg-giro, .st-promemoria')) return;
   let stato = '';
   try {
     stato = localStorage.getItem('ct-invito-app') || '';
@@ -1269,13 +1301,51 @@ function attivaPaese() {
   });
 }
 
+const NOMI_LINGUE = { it: 'Italiano', en: 'English', fr: 'Français', es: 'Español', de: 'Deutsch' };
 function scegliLingua(l) { try { localStorage.setItem('ct-lingua', l); } catch (e) {} location.reload(); }
+function sistemaMenuLingua(box) {
+  const n = box.querySelector('.st-lingua-nome');
+  if (n) n.textContent = NOMI_LINGUE[LINGUA] || 'Italiano';
+  box.querySelectorAll('.st-lingua-menu [data-l]').forEach(b => { if (b.dataset.l === LINGUA) b.setAttribute('aria-current', 'true'); });
+}
 function attivaLingua() {
   const m = document.getElementById('stLinguaMenu');
   if (m) { m.value = LINGUA; m.addEventListener('change', () => scegliLingua(m.value)); }
+  const chiudi = () => document.querySelectorAll('.st-lingua-menu').forEach(x => { x.hidden = true; x.previousElementSibling?.setAttribute('aria-expanded', 'false'); });
   document.addEventListener('click', e => {
-    if (e.target.closest('#stLingua')) { e.preventDefault(); scegliLingua(LINGUA === 'en' ? 'it' : 'en'); }
+    const voce = e.target.closest('.st-lingua-menu [data-l]');
+    if (voce) { if (voce.dataset.l !== LINGUA) scegliLingua(voce.dataset.l); else chiudi(); return; }
+    const pul = e.target.closest('#stLingua');
+    if (pul) { const menu = pul.nextElementSibling, apri = menu.hidden; chiudi(); menu.hidden = !apri; pul.setAttribute('aria-expanded', String(apri)); return; }
+    chiudi();
   });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') chiudi(); });
+}
+
+const PROPOSTE_LINGUA = {
+  fr: { testo: '<b>Voir le site en français ?</b> Collection Time est aussi disponible en français.', no: 'Non, merci', si: 'Oui, en français' },
+  es: { testo: '<b>¿Ver el sitio en español?</b> Collection Time también está disponible en español.', no: 'No, gracias', si: 'Sí, en español' },
+  de: { testo: '<b>Website auf Deutsch ansehen?</b> Collection Time gibt es auch auf Deutsch.', no: 'Nein, danke', si: 'Ja, auf Deutsch' }
+};
+function proponiLingua() {
+  let gia;
+  try { gia = localStorage.getItem('ct-lingua') || localStorage.getItem('ct-lingua-proposta'); } catch (e) { return; }
+  if (gia || LINGUA !== 'it') return;
+  const l = ((navigator.languages && navigator.languages[0]) || navigator.language || '').slice(0, 2).toLowerCase();
+  const p = PROPOSTE_LINGUA[l];
+  if (!p || document.querySelector('dialog[open], .vg-giro, .st-promemoria, .st-invito-app')) return;
+  const box = document.createElement('div');
+  box.className = 'st-promemoria';
+  box.setAttribute('role', 'status'); box.setAttribute('translate', 'no'); box.lang = l;
+  box.innerHTML = '<p>' + p.testo + '</p><div><button type="button" data-p="dopo">' + p.no + '</button><button type="button" data-p="accedi">' + p.si + '</button></div>';
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    try { localStorage.setItem('ct-lingua-proposta', l); } catch (err) {}
+    box.remove();
+    if (b.dataset.p === 'accedi') scegliLingua(l);
+  });
+  document.body.append(box);
 }
 
 const PUNTI_NOVITA = {
@@ -1296,14 +1366,17 @@ const ICONE_NOVITA = {
   profilo: '<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/>',
   cuore: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>'
 };
-const EN_NOVITA = LINGUA === 'en';
-const TESTI_NOVITA = EN_NOVITA
-  ? { tag: 'UPDATE', nuovo: 'NEW', capito: 'Got it', vedi: 'Show me', avanti: 'Next', fatto: 'Done', salta: 'Skip', titolo: 'What’s new' }
-  : { tag: 'AGGIORNAMENTO', nuovo: 'NOVITÀ', capito: 'Ho capito', vedi: 'Fammi vedere', avanti: 'Avanti', fatto: 'Fatto', salta: 'Salta', titolo: 'Cosa c’è di nuovo' };
+const TESTI_NOVITA = {
+  en: { tag: 'UPDATE', nuovo: 'NEW', capito: 'Got it', vedi: 'Show me', avanti: 'Next', fatto: 'Done', salta: 'Skip', titolo: 'What’s new' },
+  fr: { tag: 'MISE À JOUR', nuovo: 'NOUVEAU', capito: 'J’ai compris', vedi: 'Montre-moi', avanti: 'Suivant', fatto: 'Terminé', salta: 'Passer', titolo: 'Quoi de neuf' },
+  es: { tag: 'ACTUALIZACIÓN', nuovo: 'NUEVO', capito: 'Entendido', vedi: 'Enséñamelo', avanti: 'Siguiente', fatto: 'Hecho', salta: 'Saltar', titolo: 'Novedades' },
+  de: { tag: 'UPDATE', nuovo: 'NEU', capito: 'Verstanden', vedi: 'Zeig es mir', avanti: 'Weiter', fatto: 'Fertig', salta: 'Überspringen', titolo: 'Was ist neu' },
+  it: { tag: 'AGGIORNAMENTO', nuovo: 'NOVITÀ', capito: 'Ho capito', vedi: 'Fammi vedere', avanti: 'Avanti', fatto: 'Fatto', salta: 'Salta', titolo: 'Cosa c’è di nuovo' }
+}[LINGUA] || {};
 const svgNovita = k => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONE_NOVITA[k] || ICONE_NOVITA.stella) + '</svg>';
 const escNovita = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const testoNovita = t => escNovita(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-const inLingua = (v, k) => (EN_NOVITA && v[k + '_en'] && v[k + '_en'].trim()) || v[k] || '';
+const inLingua = (v, k) => { const c = l => LINGUA !== 'it' && v[k + '_' + l] && String(v[k + '_' + l]).trim(); return c(LINGUA) || c('en') || v[k] || ''; };
 
 function datiNovita() {
   const el = document.getElementById('ct-novita');
@@ -1359,6 +1432,15 @@ function finestraNovita(n) {
   dlg.tabIndex = -1; dlg.focus({ preventScroll: true });
   dlg.scrollTop = 0;
 }
+
+const MAIL_GRUPPO = {
+  it: { ogg: 'Il mio gruppo su §', testo: 'Ciao! Ho un gruppo dedicato a § e vorrei proporlo.\n\nNome del gruppo:\nSocial (Facebook, WhatsApp, Telegram…):\nLink per entrare:\nDi cosa si parla:\n' },
+  en: { ogg: 'My group about §', testo: 'Hi! I have a group about § and I would like to suggest it.\n\nGroup name:\nSocial network (Facebook, WhatsApp, Telegram…):\nLink to join:\nWhat it is about:\n' },
+  fr: { ogg: 'Mon groupe sur §', testo: 'Bonjour ! J’ai un groupe consacré à § et je voudrais le proposer.\n\nNom du groupe :\nRéseau social (Facebook, WhatsApp, Telegram…) :\nLien pour rejoindre :\nDe quoi on parle :\n' },
+  es: { ogg: 'Mi grupo sobre §', testo: '¡Hola! Tengo un grupo dedicado a § y me gustaría proponerlo.\n\nNombre del grupo:\nRed social (Facebook, WhatsApp, Telegram…):\nEnlace para entrar:\nDe qué se habla:\n' },
+  de: { ogg: 'Meine Gruppe zu §', testo: 'Hallo! Ich habe eine Gruppe zu § und möchte sie vorschlagen.\n\nName der Gruppe:\nSoziales Netzwerk (Facebook, WhatsApp, Telegram…):\nLink zum Beitreten:\nWorum es geht:\n' }
+};
+MAIL_GRUPPO.attuale = MAIL_GRUPPO[LINGUA] || MAIL_GRUPPO.it;
 
 function giroNovita(n, passo) {
   const passi = n.voci.filter(v => PUNTI_NOVITA[v.punto]);
@@ -1451,8 +1533,8 @@ if (/(^|\.)collectiontime\.com$/.test(location.hostname)) {
 document.querySelectorAll('a[data-proponi]').forEach(a => {
   const cat = a.dataset.proponi;
   a.href = 'mailto:' + 'collectiontime.support' + '@' + 'gmail.com'
-    + '?subject=' + encodeURIComponent('Il mio gruppo su ' + cat + ' · Collection Time')
-    + '&body=' + encodeURIComponent('Ciao! Ho un gruppo dedicato a ' + cat + ' e vorrei proporlo.\n\nNome del gruppo:\nSocial (Facebook, WhatsApp, Telegram…):\nLink per entrare:\nDi cosa si parla:\n');
+    + '?subject=' + encodeURIComponent(MAIL_GRUPPO.attuale.ogg.replace('§', cat) + ' · Collection Time')
+    + '&body=' + encodeURIComponent(MAIL_GRUPPO.attuale.testo.replace('§', cat));
 });
 
 
