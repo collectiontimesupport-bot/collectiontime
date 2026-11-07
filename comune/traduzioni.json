@@ -440,7 +440,8 @@
   "Le Matte Mollette",
   "Le simpatiche Ranoplà",
   "Momenti più buoni 2026",
-  "Totò Sapore"
+  "Totò Sapore",
+  "Pinguini Collection"
  ],
  "testi": {
   "Figure 3D": {
@@ -18329,6 +18330,27 @@
    "fr": "Véhicule Bourdon",
    "es": "Vehículo abejorro",
    "de": "Hummelfahrzeug"
+  },
+  "Natoons Nord America": {
+   "a": 1,
+   "en": "Natoons North America",
+   "fr": "Natoons Amérique du Nord",
+   "es": "Natoons América del Norte",
+   "de": "Natoons Nordamerika"
+  },
+  "Natoons Polonia": {
+   "a": 1,
+   "en": "Natoons Poland",
+   "fr": "Natoons Pologne",
+   "es": "Natoons Polonia",
+   "de": "Natoons Polen"
+  },
+  "Natoons Sostenibili": {
+   "a": 1,
+   "en": "Natoons Sustainable",
+   "fr": "Natoons Durable",
+   "es": "Natoons Sostenible",
+   "de": "Natoons Nachhaltig"
   }
  },
  "proposte": {
@@ -18338,35 +18360,11 @@
    "es": "Tokidoki Unicornio",
    "de": "Tokidoki Einhorn"
   },
-  "Natoons Nord America": {
-   "en": "Natoons North America",
-   "fr": "Natoons Amérique du Nord",
-   "es": "Natoons América del Norte",
-   "de": "Natoons Nordamerika"
-  },
-  "Natoons Polonia": {
-   "en": "Natoons Poland",
-   "fr": "Natoons Pologne",
-   "es": "Natoons Polonia",
-   "de": "Natoons Polen"
-  },
   "Natoons Germania": {
    "en": "Natoons Germany",
    "fr": "Natoons Allemagne",
    "es": "Natoons Alemania",
    "de": "Natoons Deutschland"
-  },
-  "Natoons Sostenibili": {
-   "en": "Natoons Sustainable",
-   "fr": "Natoons Durable",
-   "es": "Natoons Sostenible",
-   "de": "Natoons Nachhaltig"
-  },
-  "Pinguini Collection": {
-   "en": "Penguins Collection",
-   "fr": "Collection de pingouins",
-   "es": "Colección Pingüinos",
-   "de": "Pinguin-Sammlung"
   },
   "I Fortunosi": {
    "en": "The Fortunoyes",
@@ -18394,6 +18392,7 @@
   }
  },
  "marchi": [
+  "Collection Time",
   "Legami",
   "Erasable Pens",
   "Lovely Friends",

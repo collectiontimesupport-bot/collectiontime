@@ -13,3 +13,5 @@ Claude outputs/
 _prova-novita-*.html
 # indirizzo del Mac nel Wi-Fi di casa (tasto 📱 dell'admin): non va pubblicato
 _admin/ip-mac.js
+# archivio mese per mese delle visite (GoatCounter + Analytics) dell'admin: non va pubblicato
+_admin/archivio-visite.json

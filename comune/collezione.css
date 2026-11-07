@@ -592,3 +592,7 @@ body.ag-aperto { overflow: hidden; }
 .cr-piedi:empty { display: none; }
 .cr-solo { font-weight: 600; font-size: .9rem; color: inherit; }
 .cr-sez .lp-serie { color: var(--muted); }
+
+.tr-b { display: flex; align-items: center; gap: 6px; margin: 6px 0 0; font-size: .8125rem; color: var(--muted); }
+.tr-b svg { flex: none; }
+.tr-b button { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }

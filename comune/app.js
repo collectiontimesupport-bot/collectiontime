@@ -648,6 +648,27 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
   const inLista = (p, n) => listeDi(p).some(x => LISTE.uguale(x, n));
 
 
+  function barraTraduzione(p) {
+    const box = $('fInfoBox'), info = $('fInfo');
+    if (!box || !info || document.documentElement.lang === 'it' || typeof window.traduciTesto !== 'function' || !p.info) return;
+    const t = window.traduciTesto(p.info);
+    if (t === null || t === p.info) return;
+    const bar = document.createElement('div'), msg = document.createElement('span'), btn = document.createElement('button');
+    bar.className = 'tr-b'; btn.type = 'button';
+    bar.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>';
+    bar.append(msg, ' · ', btn);
+    let originale = false;
+    const scrivi = () => {
+      if (originale) info.setAttribute('translate', 'no'); else info.removeAttribute('translate');
+      if (p.richInfo) info.innerHTML = p.richInfo; else info.textContent = p.info;
+      msg.textContent = originale ? 'Testo originale (italiano)' : 'Tradotto automaticamente';
+      btn.textContent = originale ? 'Traduci' : "Vedi l'originale";
+    };
+    btn.addEventListener('click', () => { originale = !originale; scrivi(); });
+    info.after(bar);
+    msg.textContent = 'Tradotto automaticamente'; btn.textContent = "Vedi l'originale";
+  }
+
   let fotoBox = null;
   function mostraFotoInfo(p) {
     if (!fotoBox) {
@@ -724,9 +745,11 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
       $('colorDot').classList.toggle('empty', !p.colorHex);
       $('fColorName').value = p.colorName;
     } else campoColore.remove();
+    $('fInfo').removeAttribute('translate'); $('fInfoBox').querySelector('.tr-b')?.remove();
     if (p.richInfo) $('fInfo').innerHTML = p.richInfo; else $('fInfo').textContent = p.info;
     $('fInfoBox').hidden = !p.info;
     mostraFotoInfo(p);
+    barraTraduzione(p);
     editListe = listeDi(p);
     if (campoListe) $('listeErr').hidden = true;
     disegnaListe();

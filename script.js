@@ -152,7 +152,7 @@ async function caricaParte(idSegnaposto, file) {
     sistemaLink(box);
     nascondiHomeSeInstallato();
     if (file === 'footer.html') sistemaMenuLingua(box);
-    if (file === 'header.html') { controllaIscrizione(); window.dispatchEvent(new Event('ct-header')); setTimeout(vignetteNovita, 1200); setTimeout(proponiLingua, 2500); }
+    if (file === 'header.html') { controllaIscrizione(); window.dispatchEvent(new Event('ct-header')); setTimeout(vignetteNovita, 1200); setTimeout(proponiLingua, 2500); setTimeout(bannerCookie, 3500); }
   } catch (e) {
     console.warn('Impossibile caricare ' + file + ':', e);
   }
@@ -1089,6 +1089,33 @@ function pinCategorie() {
   disegna();
 }
 
+const GRUPPI_PAESE = { IT: 'IT SM VA', FR: 'FR BE LU MC', DE: 'DE AT CH LI', ES: 'ES MX AR CL CO PE UY', EN: 'GB IE US CA AU NZ ZA' };
+function gruppiNovita() {
+  const di = c => Object.keys(GRUPPI_PAESE).find(g => GRUPPI_PAESE[g].split(' ').includes(c)) || '';
+  const prova = ((/[?&]novitapaese=([A-Za-z]{2})\b/.exec(location.search) || [])[1] || '').toUpperCase();
+  if (prova) return new Set([GRUPPI_PAESE[prova] ? prova : di(prova)].filter(Boolean));
+  const mio = new Set();
+  const g = di(paeseVisitatore()); if (g) mio.add(g);
+  let scelta = ''; try { scelta = localStorage.getItem('ct-lingua') || ''; } catch (e) {}
+  if (LINGUE.includes(scelta)) mio.add(scelta.toUpperCase());
+  if (!mio.size) { const l = String(navigator.language || '').slice(0, 2).toUpperCase(); if (GRUPPI_PAESE[l]) mio.add(l); }
+  return mio;
+}
+function paesiNovita() {
+  const ul = document.querySelector('ul.st-novita');
+  if (!ul) return;
+  const mio = gruppiNovita(), lista = s => String(s || '').toUpperCase().split(/[\s,]+/).filter(Boolean);
+  const prime = [];
+  for (const li of [...ul.children]) {
+    const solo = lista(li.dataset.paesi);
+    if (solo.length && !solo.some(g => mio.has(g))) { li.remove(); continue; }
+    if (lista(li.dataset.tranne).some(g => mio.has(g))) { li.remove(); continue; }
+    if (lista(li.dataset.prima).some(g => mio.has(g))) prime.push(li);
+  }
+  prime.reverse().forEach(li => ul.prepend(li));
+  if (!ul.children.length) ul.closest('#novita')?.remove();
+}
+
 function dateNovita(oggiForzato) {
   const GIORNI_ULTIMI = 3, en = LINGUA === 'en';
   const ul = document.querySelector('ul.st-novita');
@@ -1122,6 +1149,12 @@ function dateNovita(oggiForzato) {
   if (!ul.children.length) ul.closest('#novita')?.remove();
 }
 
+function limitaNovita() {
+  const NOVITA_VISIBILI = 8;
+  const ul = document.querySelector('ul.st-novita');
+  if (ul) [...ul.children].slice(NOVITA_VISIBILI).forEach(li => li.remove());
+}
+
 function carosello() {
   const PER_BLOCCO = 4, SECONDI_AUTO = 8, PAUSA_TOCCO = 10;
   const ul = document.querySelector('ul.st-novita');
@@ -1142,7 +1175,7 @@ function carosello() {
   const freccia = (verso, testo) => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'st-car-freccia ' + (verso < 0 ? 'prima' : 'dopo');
-    b.textContent = verso < 0 ? '‹' : '›'; b.setAttribute('aria-label', testo);
+    b.textContent = verso < 0 ? '‹' : '›'; b.setAttribute('aria-label', testo); b.setAttribute('translate', 'no'); b.classList.add('notranslate');
     b.addEventListener('click', () => vai(attuale() + verso));
     return b;
   };
@@ -1304,6 +1337,7 @@ function attivaPaese() {
 const NOMI_LINGUE = { it: 'Italiano', en: 'English', fr: 'Français', es: 'Español', de: 'Deutsch' };
 function scegliLingua(l) { try { localStorage.setItem('ct-lingua', l); } catch (e) {} location.reload(); }
 function sistemaMenuLingua(box) {
+  document.querySelectorAll('.st-band-anno').forEach(a => { a.textContent = new Date().getFullYear(); });
   const n = box.querySelector('.st-lingua-nome');
   if (n) n.textContent = NOMI_LINGUE[LINGUA] || 'Italiano';
   box.querySelectorAll('.st-lingua-menu [data-l]').forEach(b => { if (b.dataset.l === LINGUA) b.setAttribute('aria-current', 'true'); });
@@ -1519,7 +1553,9 @@ attivaAspetto();
 attivaPaese();
 attivaLingua();
 pinCategorie();
+paesiNovita();
 dateNovita();
+limitaNovita();
 carosello();
 
 if (/(^|\.)collectiontime\.com$/.test(location.hostname)) {
@@ -1529,6 +1565,51 @@ if (/(^|\.)collectiontime\.com$/.test(location.hostname)) {
   gc.src = 'https://gc.zgo.at/count.js';
   document.head.append(gc);
 }
+
+const GA_ID = 'G-7EL8FBQ1JQ';
+function sceltaCookie() { try { return localStorage.getItem('ct-cookie') || ''; } catch (e) { return 'no'; } }
+function avviaAnalytics() {
+  if (!/(^|\.)collectiontime\.com$/.test(location.hostname) || window.ctGA) return;
+  window.ctGA = true;
+  window['ga-disable-' + GA_ID] = false;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', GA_ID);
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+  document.head.append(s);
+}
+function fermaAnalytics() {
+  window['ga-disable-' + GA_ID] = true;
+  const dom = location.hostname.replace(/^www\./, '');
+  document.cookie.split(';').map(c => c.split('=')[0].trim()).filter(n => /^_ga(_|$)|^_gid$/.test(n)).forEach(n => {
+    for (const d of ['', '; domain=' + location.hostname, '; domain=.' + dom]) document.cookie = n + '=; Max-Age=0; path=/' + d;
+  });
+}
+function salvaCookie(v) {
+  try { localStorage.setItem('ct-cookie', v); } catch (e) {}
+  if (v === 'si') avviaAnalytics(); else fermaAnalytics();
+  document.querySelectorAll('.st-cookie button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ck === v)));
+  document.querySelector('.st-ck')?.remove();
+}
+if (sceltaCookie() === 'si') avviaAnalytics();
+function bannerCookie() {
+  if (sceltaCookie() || document.querySelector('.st-ck')) return;
+  if (document.querySelector('dialog[open], .vg-giro, .st-promemoria, .st-invito-app')) { setTimeout(bannerCookie, 4000); return; }
+  const box = document.createElement('div');
+  box.className = 'st-promemoria st-ck';
+  box.setAttribute('role', 'region'); box.setAttribute('aria-label', 'Cookie');
+  box.innerHTML = '<p><b>Cookie</b> <span>Usiamo Google Analytics per capire come viene usato il sito (visite, pagine, paesi). Niente pubblicità.</span> <a href="/privacy.html#cookie">Privacy</a></p>'
+    + '<div><button type="button" data-ck="no">Rifiuta</button><button type="button" data-ck="si" data-p="accedi">Accetta</button></div>';
+  box.addEventListener('click', e => { const b = e.target.closest('button[data-ck]'); if (b) salvaCookie(b.dataset.ck); });
+  document.body.append(box);
+}
+document.querySelectorAll('.st-cookie button').forEach(b => {
+  b.setAttribute('aria-pressed', String(b.dataset.ck === sceltaCookie()));
+  b.addEventListener('click', () => salvaCookie(b.dataset.ck));
+});
 
 document.querySelectorAll('a[data-proponi]').forEach(a => {
   const cat = a.dataset.proponi;
