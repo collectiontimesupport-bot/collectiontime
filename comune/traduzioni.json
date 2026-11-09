@@ -18351,6 +18351,24 @@
    "fr": "Natoons Durable",
    "es": "Natoons Sostenible",
    "de": "Natoons Nachhaltig"
+  },
+  "Locomotiva e vagoni di Natale": {
+   "en": "Christmas locomotive and wagons",
+   "fr": "Locomotive et wagons de Noël",
+   "es": "Locomotora y vagones navideños.",
+   "de": "Weihnachtslokomotive und Waggons"
+  },
+  "Locomotiva": {
+   "en": "Locomotive",
+   "fr": "Locomotive",
+   "es": "locomotora",
+   "de": "Lokomotive"
+  },
+  "Vagone": {
+   "en": "Wagon",
+   "fr": "Chariot",
+   "es": "vagón",
+   "de": "Wagen"
   }
  },
  "proposte": {
@@ -18389,6 +18407,12 @@
    "fr": "Vissez-les",
    "es": "Que se jodan",
    "de": "Scheiß drauf"
+  },
+  "Trenino di Natale Disney": {
+   "en": "Disney Christmas Train",
+   "fr": "Train de Noël Disney",
+   "es": "Tren de Navidad de Disney",
+   "de": "Disney-Weihnachtszug"
   }
  },
  "marchi": [
