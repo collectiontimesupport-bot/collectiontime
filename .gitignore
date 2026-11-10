@@ -15,3 +15,6 @@ _prova-novita-*.html
 _admin/ip-mac.js
 # archivio mese per mese delle visite (GoatCounter + Analytics) dell'admin: non va pubblicato
 _admin/archivio-visite.json
+
+# trasloco su Cloudflare (10/11/2026): contiene il token API e una copia del sito, non va mai pubblicato
+_trasloco-cloudflare/

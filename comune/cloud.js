@@ -2,7 +2,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, deleteUser,
   signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, updateProfile } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-lite.js';
 
 const FIREBASE = {
   apiKey: 'AIzaSyCgch5N04Z8YBprYCyJiMj_cYoXfz32b7c',
@@ -16,8 +15,33 @@ const FIREBASE = {
 const app = initializeApp(FIREBASE);
 const auth = getAuth(app);
 auth.languageCode = LINGUA;
-const db = getFirestore(app);
-const documento = uid => doc(db, 'collezioni', uid);
+const API_PROGRAMMA = 'https://collection-time-prova.collectiontime-support.workers.dev';
+const API_COLLEZIONE = (location.origin === API_PROGRAMMA ? '' : API_PROGRAMMA) + '/api/collezione';
+async function chiamaApi(metodo, corpo, forza) {
+  const u = auth.currentUser;
+  if (!u) throw new Error('Cloud: accesso non fatto');
+  const token = await u.getIdToken(!!forza);
+  const intest = { authorization: 'Bearer ' + token };
+  if (corpo) intest['content-type'] = 'application/json';
+  return fetch(API_COLLEZIONE, { method: metodo, headers: intest, body: corpo ? JSON.stringify(corpo) : undefined, cache: 'no-store' });
+}
+async function leggiDoc() {
+  let r = await chiamaApi('GET');
+  if (r.status === 401) r = await chiamaApi('GET', null, true);
+  if (r.status === 404) return undefined;
+  if (!r.ok) throw new Error('Cloud: lettura ' + r.status);
+  return (await r.json()).dati;
+}
+async function scriviDoc(dati) {
+  let r = await chiamaApi('PUT', dati);
+  if (r.status === 401 || r.status === 403) r = await chiamaApi('PUT', dati, true);
+  if (!r.ok) throw new Error('Cloud: salvataggio ' + r.status);
+}
+async function eliminaDoc() {
+  let r = await chiamaApi('DELETE');
+  if (r.status === 401) r = await chiamaApi('DELETE', null, true);
+  if (!r.ok) throw new Error('Cloud: eliminazione ' + r.status);
+}
 
 const leggiStato = () => { try { return JSON.parse(localStorage.getItem('ct-cloud')) || {}; } catch (e) { return {}; } };
 const scriviStato = s => { try { localStorage.setItem('ct-cloud', JSON.stringify(s)); } catch (e) {} };
@@ -160,7 +184,7 @@ function sincronizza() {
     if (!utente) return;
     try { sessionStorage.setItem('ct-cloud-controllo', Date.now()); } catch (e) {}
     const stato = leggiStato();
-    const nube = (await getDoc(documento(utente.uid))).data();
+    const nube = await leggiDoc();
     daConfermare = !nube && conPassword(utente) && !utente.emailVerified;
     if (daConfermare) {
       aggiornaVista();
@@ -208,7 +232,7 @@ function sincronizza() {
                      Object.assign({}, base, paeseDoc), base];
       let errore = null, fatto = false;
       for (const dati of prove) {
-        try { await setDoc(documento(utente.uid), dati); fatto = true; break; } catch (e) { errore = e; }
+        try { await scriviDoc(dati); fatto = true; break; } catch (e) { errore = e; }
       }
       if (!fatto) throw errore;
     }
@@ -393,7 +417,7 @@ function chiedi() {
 async function eliminaDati() {
   const utente = auth.currentUser;
   if (!utente) return;
-  await deleteDoc(documento(utente.uid));
+  await eliminaDoc();
   try { await deleteUser(utente); avviso('Account e collezione eliminati.'); }
   catch (e) {
     await signOut(auth);

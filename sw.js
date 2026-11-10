@@ -9,7 +9,7 @@ self.addEventListener('activate', e => e.waitUntil((async () => {
   await self.clients.claim();
 })()));
 
-const daSaltare = u => u.origin !== location.origin || /^\/(__|_admin)\//.test(u.pathname) || u.pathname.endsWith('/sw.js');
+const daSaltare = u => u.origin !== location.origin || /^\/(__|_admin|api)\//.test(u.pathname) || u.pathname.endsWith('/sw.js');
 
 self.addEventListener('fetch', e => {
   const r = e.request, u = new URL(r.url);
