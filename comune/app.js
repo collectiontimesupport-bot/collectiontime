@@ -802,6 +802,7 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
     i.src = src;
   });
   const pdfText = t => String(t).replace(/[\u0000-\u001F]/g, '');
+  const tl = t => { const r = (document.documentElement.lang !== 'it' && typeof window.traduciTesto === 'function') ? window.traduciTesto(t) : null; return r == null ? t : r; };
   const misuraCtx = document.createElement('canvas').getContext('2d');
   const righello = peso => ({ widthOfTextAtSize(t, size) { misuraCtx.font = peso + ' ' + size + 'px Helvetica, Arial, sans-serif'; return misuraCtx.measureText(t).width; } });
   const rgb = (r, g, b) => ({ red: r, green: g, blue: b });
@@ -898,7 +899,7 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
     return c;
   }
 
-  const IMG_K = 2;
+  let IMG_K = 2;
   function paginaTela(W, H, bold) {
     const c = document.createElement('canvas');
     c.width = Math.round(W * IMG_K); c.height = Math.round(H * IMG_K);
@@ -959,8 +960,20 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
   }
 
   const PDF_COLONNE = 6;
+  let qrPronto = null;
+  function caricaQR() {
+    if (window.qrcode) return Promise.resolve();
+    if (!qrPronto) qrPronto = new Promise(ok => {
+      const app = document.querySelector('script[src*="comune/app.js"]'), sc = document.createElement('script');
+      sc.src = app ? app.src.replace(/app\.js(\?.*)?$/, 'qrcode.js$1') : '/comune/qrcode.js';
+      sc.onload = sc.onerror = () => ok();
+      document.head.appendChild(sc);
+    });
+    return qrPronto;
+  }
   async function makeImmagine(sezioni, kind) {
     say("Sto creando l'immagine…");
+    await caricaQR();
     const font = righello('400'), bold = righello('700');
     const titolo = await titoloTela();
     const logo = titolo ? titolo : null;
@@ -974,7 +987,7 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
     const orizzontale = !!CONFIG.pdfColonne;
     const W = orizzontale ? 841.89 : 595.28, MX = 28;
     let H = orizzontale ? 595.28 : 841.89;
-    const COLS = orizzontale ? CONFIG.pdfColonne : PDF_COLONNE;
+    let COLS = orizzontale ? CONFIG.pdfColonne : PDF_COLONNE;
     const ROWS = CONFIG.pdfFile || 2;
     const BAND = 30;
     let TITOLO_H = 26;
@@ -982,50 +995,90 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
     if (logo && TITOLO_H * logo.width / logo.height > TITOLO_MAXW) TITOLO_H = TITOLO_MAXW * logo.height / logo.width;
     const LOGO_W = logo ? TITOLO_H * logo.width / logo.height : 0;
     const CART_PX = 22, CART_PY = 7, CART_H = TITOLO_H + 2 * CART_PY;
-    const SOPRA = BAND + 12, gridBottom = 30;
-    const TITOLO_GAP = 12;
-    const spazio = H - SOPRA - CART_H - TITOLO_GAP - gridBottom;
+    const FOOT_H = 58, INFO_H = 30;
+    const SOPRA = BAND + 12, gridBottom = FOOT_H + 28;
+    const TITOLO_GAP = 8 + INFO_H + 10;
+    const spazio = H - SOPRA - CART_H - 12 - 30;
     const ROW_GAP = 12;
-    const colPitch = (W - 2 * MX) / COLS;
-    const CARD_GAP = Math.min(6, colPitch * 0.06);
-    const cardW = colPitch - CARD_GAP;
-    const PAD = Math.min(5, cardW * 0.06);
     const GAP = 3, CODE_H = 13, BOX = 8;
     const NOME_SIZE = 7.5, NOME_RIGA = 9;
     const nomi = !!CONFIG.mostraNomi;
     const NOME_H = nomi ? 2 * NOME_RIGA + GAP : 0;
     const TESTO_H = GAP + NOME_H + CODE_H + GAP + BOX;
-    const fotoW = cardW - 2 * PAD;
-    const fotoMaxH = orizzontale ? (spazio - (ROWS - 1) * ROW_GAP) / ROWS - 2 * PAD - TESTO_H
-                                 : fotoW;
+    const TESTA_H = 24;
 
     const list = sezioni.flatMap(s => s.items);
     const fotoLette = await Promise.all(list.map(p => p.image ? ritaglio(p.image).catch(() => null) : ritaglio(SLOT_IMG).catch(() => null)));
     const foto = new Map(list.map((p, i) => [p, fotoLette[i]]));
     const altiUguali = (CONFIG.proporzione || 7) > 1;
     const maxW = Math.max(1, ...fotoLette.map(f => f ? f.w : 0)), maxH = Math.max(1, ...fotoLette.map(f => f ? f.h : 0));
-    const scala = Math.min(fotoW / maxW, fotoMaxH / maxH);
     const misura = f => {
-      const k = altiUguali ? Math.min(fotoW / f.w, fotoMaxH / f.h) : scala;
+      const k = altiUguali ? Math.min(fotoW / f.w, orizzontale ? fotoMaxH / f.img.naturalHeight : fotoMaxH / f.h) : scala;
       return [f.w * k, f.h * k];
     };
-    const fotoH = altiUguali ? fotoMaxH : maxH * scala;
-    const cardH = fotoH + 2 * PAD + TESTO_H;
 
-    const TESTA_H = 24;
-    const file = [];
-    sezioni.forEach(s => {
-      if (s.titolo) file.push({ testa: s });
-      for (let i = 0; i < s.items.length; i += COLS) file.push({ items: s.items.slice(i, i + COLS), sezione: s });
-    });
+    let colPitch, CARD_GAP, cardW, PAD, fotoW, fotoMaxH, scala, fotoH, cardH, file;
     const alto = ff => ff.reduce((t, f) => t + (f.testa ? TESTA_H : cardH), 0) + Math.max(0, ff.length - 1) * ROW_GAP;
+    function impagina(cols, altezzaFoto) {
+      COLS = cols;
+      colPitch = (W - 2 * MX) / COLS;
+      CARD_GAP = Math.min(6, colPitch * 0.06);
+      cardW = colPitch - CARD_GAP;
+      PAD = Math.min(5, cardW * 0.06);
+      fotoW = cardW - 2 * PAD;
+      fotoMaxH = altezzaFoto || (orizzontale ? (spazio - (ROWS - 1) * ROW_GAP) / ROWS - 2 * PAD - TESTO_H
+                                             : fotoW);
+      scala = Math.min(fotoW / maxW, fotoMaxH / maxH);
+      fotoH = altiUguali ? fotoMaxH : maxH * scala;
+      cardH = fotoH + 2 * PAD + TESTO_H;
+      file = [];
+      sezioni.forEach(s => {
+        if (s.titolo) file.push({ testa: s });
+        for (let i = 0; i < s.items.length; i += COLS) file.push({ items: s.items.slice(i, i + COLS), sezione: s });
+      });
+      return SOPRA + CART_H + TITOLO_GAP + alto(file) + gridBottom;
+    }
 
-    const pagine = [file];
-    H = SOPRA + CART_H + TITOLO_GAP + alto(file) + gridBottom;
+    const LARGHEZZA_PX = 1620, ALTEZZA_MAX_PX = 10000;
+    IMG_K = LARGHEZZA_PX / W;
+    const H_MIN = W * 5 / 4, H_MAX = ALTEZZA_MAX_PX / IMG_K;
+    let altezza = impagina(COLS);
+    if (altezza < H_MIN) {
+      if (orizzontale) {
+        const piuLunga = Math.max(...sezioni.map(s => s.items.length));
+        if (piuLunga < COLS) altezza = impagina(Math.max(4, piuLunga));
+        const righe = file.filter(f => f.items).length, teste = file.length - righe;
+        const libero = H_MIN - SOPRA - CART_H - TITOLO_GAP - gridBottom - teste * TESTA_H - (file.length - 1) * ROW_GAP;
+        const tetto = Math.min(...fotoLette.filter(Boolean).map(f => fotoW * f.h / f.w));
+        const hFoto = Math.min(libero / righe - 2 * PAD - TESTO_H, tetto);
+        if (hFoto > fotoMaxH) altezza = impagina(COLS, hFoto);
+      } else {
+        for (let c = COLS - 1; c >= 2; c--) {
+          const a = impagina(c);
+          if (a > H_MIN) { altezza = impagina(c + 1); break; }
+          altezza = a;
+        }
+      }
+    }
+    let pagine = [file];
+    if (altezza > H_MAX) {
+      const base = SOPRA + CART_H + TITOLO_GAP + gridBottom;
+      pagine = [];
+      let pag = [];
+      file.forEach((f, i) => {
+        const conLaFila = f.testa && file[i + 1] ? [f, file[i + 1]] : [f];
+        if (pag.length && base + alto(pag.concat(conLaFila)) > H_MAX) { pagine.push(pag); pag = []; }
+        pag.push(f);
+      });
+      if (pag.length) pagine.push(pag);
+      altezza = base + Math.max(...pagine.map(alto));
+    }
+    H = Math.max(altezza, H_MIN);
+
     const areaTop = H - SOPRA, gridTop = areaTop - CART_H - TITOLO_GAP;
     const bloccoH = Math.max(...pagine.map(alto));
-    const avanzo = (gridTop - gridBottom - bloccoH) / 2;
-    const cartTop = areaTop - avanzo, primaFila = gridTop - avanzo;
+    const avanzo = Math.max(0, (gridTop - gridBottom - bloccoH) / 2);
+    const cartTop = areaTop, primaFila = gridTop - avanzo;
 
     const R = Math.min(6, cardW * 0.12);
     const scheda = (w, h) => `M${R} 0H${w - R}Q${w} 0 ${w} ${R}V${h - R}Q${w} ${h} ${w - R} ${h}H${R}Q0 ${h} 0 ${h - R}V${R}Q0 0 ${R} 0Z`;
@@ -1038,7 +1091,7 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
       for (let k = 0; k < 2; k++) pg.drawLine({ start: P[k], end: P[k + 1], thickness: SPESSORI[k] * scale, color: spunta, lineCap: true });
     }
 
-    const cosa = { owned: 'La mia collezione', scambi: 'Cerco e scambio', mancanti: 'Mancanti', doppioni: 'Doppioni', all: 'Checklist da compilare' }[kind];
+    const cosa = tl({ owned: 'La mia collezione', scambi: 'Cerco e scambio', mancanti: 'Mancanti', doppioni: 'Doppioni', all: 'Checklist da compilare' }[kind]);
 
     function testata(pg, s, top) {
       const T = pdfText(s.titolo), D = pdfText(s.sotto || ''), SZ = 12, sz = 9;
@@ -1048,101 +1101,6 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
       pg.drawText(T, { x: MX + 12, y: top - h / 2 - SZ * 0.35, size: SZ, font: bold, color: ink });
       if (D) pg.drawText(D, { x: MX + 12 + tw + 10, y: top - h / 2 - sz * 0.35, size: sz, font, color: grigio });
       pg.drawRectangle({ x: MX + w + 8, y: top - h / 2 - 0.75, width: W - 2 * MX - w - 8, height: 1.5, color: ambra });
-    }
-
-    const sfondo = sfondoTela(W, H);
-    const pages = [];
-    let ghost = null;
-    for (const filePagina of pagine) {
-      const page = paginaTela(W, H, bold);
-      pages.push(page);
-
-      page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: carta });
-      page.drawImage(sfondo, { x: 0, y: 0, width: W, height: H });
-
-      page.drawRectangle({ x: 0, y: H - BAND, width: W, height: BAND, color: ink });
-      page.drawRectangle({ x: 0, y: H - BAND - 2.5, width: W, height: 2.5, color: ambra });
-      marchio(page, MX, H - 5.5, 19, ink);
-      page.drawText('Collection Time', { x: MX + 25, y: H - 20.5, size: 15, font: bold, color: bianco });
-      const cw = font.widthOfTextAtSize(cosa, 12.5);
-      page.drawText(cosa, { x: W - MX - cw, y: H - 19.5, size: 12.5, font, color: bianco });
-
-      const usaLogo = logo && !soloEstere;
-      const title = pdfText(CONFIG.titolo + (soloEstere ? ' (ESTERO)' : ''));
-      let tsz = TITOLO_H * 1.35;
-      while (!usaLogo && tsz > 10 && bold.widthOfTextAtSize(title, tsz) > W - 2 * MX - 2 * CART_PX) tsz -= 1;
-      const tw = usaLogo ? LOGO_W : bold.widthOfTextAtSize(title, tsz);
-      const cartW = tw + 2 * CART_PX;
-      page.drawSvgPath(scheda(cartW, CART_H), { x: (W - cartW) / 2, y: cartTop, color: bianco, borderColor: gray, borderWidth: 0.6 });
-      page.drawRectangle({ x: (W - cartW) / 2 + R, y: cartTop - CART_H, width: cartW - 2 * R, height: 2.5, color: ambra });
-      if (usaLogo) page.drawImage(logo, { x: (W - LOGO_W) / 2, y: cartTop - CART_PY - TITOLO_H, width: LOGO_W, height: TITOLO_H });
-      else page.drawText(title, { x: (W - tw) / 2, y: cartTop - CART_PY - TITOLO_H, size: tsz, font: bold, color: ink });
-
-      let top = primaFila;
-      for (const fila of filePagina) {
-        if (fila.testa) { testata(page, fila.testa, top); top -= TESTA_H + ROW_GAP; continue; }
-        const inFila = fila.items.length;
-        for (let c = 0; c < inFila; c++) {
-          const p = fila.items[c];
-          const spost = orizzontale ? 0 : (COLS - inFila) * colPitch / 2;
-          const cx = MX + spost + c * colPitch + colPitch / 2;
-          const spuntata = kind === 'owned' && p.owned;
-
-          page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, color: bianco,
-            borderColor: spuntata ? ambra : gray, borderWidth: spuntata ? 1.4 : 0.6 });
-          if (spuntata) {
-            const K = 4, g = document.createElement('canvas');
-            g.width = Math.round(cardW * K); g.height = Math.round(cardH * K);
-            const gx = g.getContext('2d'); gx.scale(K, K);
-            gx.fillStyle = '#FFF2CC'; gx.fill(new Path2D(schedaPath));
-            page.drawImage(g, { x: cx - cardW / 2, y: top - cardH, width: cardW, height: cardH });
-            page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, borderColor: ambra, borderWidth: 1.4 });
-          }
-
-          const fotoTop = top - PAD, f = foto.get(p);
-          if (f) {
-            const [dw, dh] = misura(f), x = cx - dw / 2, y = fotoTop - fotoH;
-            if (p.image) page.drawImage(fotoTela(f, dw, dh, spuntata), { x, y, width: dw, height: dh });
-            else {
-              if (!ghost) ghost = fotoTela(f, dw, dh);
-              page.drawImage(ghost, { x, y, width: dw, height: dh });
-            }
-          }
-          let y = fotoTop - fotoH - GAP;
-
-          if (nomi) {
-            const righe = righeNome(pdfText(p.name || ''), bold, NOME_SIZE, cardW - 2 * PAD);
-            const y0 = y - NOME_RIGA + 2 - (2 - righe.length) * NOME_RIGA / 2;
-            righe.forEach((t, k) => {
-              const tw = bold.widthOfTextAtSize(t, NOME_SIZE);
-              page.drawText(t, { x: cx - tw / 2, y: y0 - k * NOME_RIGA, size: NOME_SIZE, font: bold, color: ink });
-            });
-            y -= NOME_H;
-          }
-
-          const boxY = y - CODE_H;
-          const code = pdfText(p.code || ''), codeW = bold.widthOfTextAtSize(code, 7.5);
-          const boxW = Math.min(cardW - 2 * PAD, Math.max(26, codeW + 10));
-          page.drawRectangle({ x: cx - boxW / 2, y: boxY, width: boxW, height: CODE_H, color: carta, borderColor: gray, borderWidth: 0.6 });
-          if (code) page.drawText(code, { x: cx - codeW / 2, y: boxY + 3.6, size: 7.5, font: bold, color: p.limited ? red : ink });
-
-          if (fila.sezione.scambio) {
-            if (p.doppi > 1) {
-              const t = '×' + p.doppi, tw = bold.widthOfTextAtSize(t, 9);
-              page.drawText(t, { x: cx - tw / 2, y: boxY - GAP - BOX + 0.5, size: 9, font: bold, color: ambra });
-            }
-            continue;
-          }
-
-          const qy = boxY - GAP - BOX;
-          page.drawRectangle({ x: cx - BOX / 2, y: qy, width: BOX, height: BOX, color: bianco, borderColor: grigio, borderWidth: 0.8 });
-          if (spuntata) {
-            page.drawLine({ start: { x: cx - 2.6, y: qy + 3.9 }, end: { x: cx - 0.7, y: qy + 1.7 }, thickness: 1.3, color: ambra });
-            page.drawLine({ start: { x: cx - 0.7, y: qy + 1.7 }, end: { x: cx + 3, y: qy + 6.4 }, thickness: 1.3, color: ambra });
-          }
-        }
-        top -= cardH + ROW_GAP;
-      }
     }
 
     const FILIGRANA_OPACITA = 0.08;
@@ -1174,31 +1132,204 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
     sctx.fillText('collectiontime.com', 0, SITO_SIZE);
     const sito = sc;
 
-    pages.forEach(pg => {
+    const blobs = [];
+    const tutti = printList(false), haiN = tutti.filter(p => p.owned).length;
+    const personale = kind !== 'all';
+    const oggiTxt = new Date().toLocaleDateString(document.documentElement.lang || 'it', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const conLE = list.some(p => p.limited);
+    function pillola(pg, x, yTop, testo, size) {
+      const w = bold.widthOfTextAtSize(testo, size) + size * 1.1, h = size * 1.6, r = h / 2;
+      pg.drawSvgPath(`M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w - r} ${h}H${r}A${r} ${r} 0 0 1 ${r} 0Z`, { x, y: yTop, color: ambra });
+      pg.drawText(testo, { x: x + size * 0.55, y: yTop - h / 2 - size * 0.36, size, font: bold, color: bianco });
+      return w;
+    }
+    function rigaInfo(pg, top) {
+      const cy = top - INFO_H / 2;
+      let fineSx = MX;
+      if (personale) {
+        const R0 = 12.5, ccx = MX + R0 + 2, ctx2 = pg.tela.getContext('2d'), fr = tutti.length ? haiN / tutti.length : 0;
+        ctx2.save(); ctx2.lineWidth = 3.4; ctx2.lineCap = 'round';
+        ctx2.strokeStyle = '#E3E5EC'; ctx2.beginPath(); ctx2.arc(ccx, H - cy, R0, 0, 2 * Math.PI); ctx2.stroke();
+        if (fr > 0) { ctx2.strokeStyle = 'rgb(242,169,0)'; ctx2.beginPath(); ctx2.arc(ccx, H - cy, R0, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * fr); ctx2.stroke(); }
+        ctx2.restore();
+        const pc = Math.round(fr * 100) + '%', pw = bold.widthOfTextAtSize(pc, 7.5);
+        pg.drawText(pc, { x: ccx - pw / 2, y: cy - 2.6, size: 7.5, font: bold, color: ink });
+        const tx = ccx + R0 + 9;
+        const prog = pdfText(tl('Ne hai ' + haiN + ' su ' + tutti.length));
+        const r1 = prog, r2 = oggiTxt;
+        pg.drawText(r1, { x: tx, y: cy + 2, size: 11, font: bold, color: ink });
+        pg.drawText(r2, { x: tx, y: cy - 10, size: 8.5, font, color: grigio });
+        fineSx = tx + Math.max(bold.widthOfTextAtSize(r1, 11), font.widthOfTextAtSize(r2, 8.5));
+      }
+      if (kind !== 'owned') return;
+      const voci = [['ok', tl("ce l'ho")], ['no', tl('mi manca')], ['+1', tl('doppione')]];
+      const S = 8, gap = 12, sw = 9.5;
+      const larg = voci.reduce((t, [k, v]) => t + (k === '+1' ? bold.widthOfTextAtSize('+1', 7) + 7.7 : sw) + 4 + font.widthOfTextAtSize(v, S), 0) + gap * (voci.length - 1);
+      let x = W - MX - 2 - larg;
+      if (x < fineSx + 16) return;
+      voci.forEach(([k, v]) => {
+        if (k === 'ok') { pg.drawRectangle({ x, y: cy - sw / 2, width: sw, height: sw, color: rgb(1, 0.949, 0.8), borderColor: ambra, borderWidth: 1 }); x += sw; }
+        else if (k === 'no') { pg.drawRectangle({ x, y: cy - sw / 2, width: sw, height: sw, color: bianco, borderColor: gray, borderWidth: 0.8 }); x += sw; }
+        else x += pillola(pg, x, cy + 5.6, '+1', 7);
+        x += 4;
+        pg.drawText(v, { x, y: cy - S * 0.36, size: S, font, color: grigio });
+        x += font.widthOfTextAtSize(v, S) + gap;
+      });
+    }
+
+    const indirizzo = 'https://collectiontime.com' + location.pathname.replace(/index\.html$/, '');
+    let qrTela = null;
+    if (window.qrcode) {
+      const q = window.qrcode(0, 'M'); q.addData(indirizzo); q.make();
+      const n = q.getModuleCount(), M = 8;
+      qrTela = document.createElement('canvas'); qrTela.width = qrTela.height = (n + 2) * M;
+      const qx = qrTela.getContext('2d'); qx.fillStyle = '#fff'; qx.fillRect(0, 0, qrTela.width, qrTela.height); qx.fillStyle = '#1A2140';
+      for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) qx.fillRect((c + 1) * M, (r + 1) * M, M, M);
+    }
+    function riquadro(pg) {
+      const y0 = 16 + FOOT_H, w = W - 2 * MX;
+      pg.drawSvgPath(scheda(w, FOOT_H), { x: MX, y: y0, color: bianco, borderColor: ambra, borderWidth: 1.2 });
+      marchio(pg, MX + 12, y0 - 12, 18, ink);
+      pg.drawText('Collection Time', { x: MX + 36, y: y0 - 25.5, size: 12, font: bold, color: ink });
+      pg.drawText(pdfText(tl('Crea anche tu la tua checklist, gratis')), { x: MX + 12, y: y0 - 40, size: 8.5, font, color: grigio });
+      pg.drawImage(sito, { x: MX + 12, y: y0 - 52.5, width: sc.width / SK, height: sc.height / SK });
+      if (qrTela) {
+        const QS = FOOT_H - 10;
+        pg.drawImage(qrTela, { x: MX + w - QS - 6, y: y0 - 5 - QS, width: QS, height: QS });
+        const t1 = tl('Inquadra per aprire'), t2 = tl('questa serie'), tx = MX + w - QS - 14;
+        pg.drawText(pdfText(t1), { x: tx - font.widthOfTextAtSize(t1, 8), y: y0 - FOOT_H / 2 + 2, size: 8, font, color: grigio });
+        pg.drawText(pdfText(t2), { x: tx - bold.widthOfTextAtSize(t2, 8), y: y0 - FOOT_H / 2 - 8, size: 8, font: bold, color: ink });
+      }
+    }
+
+    const sfondo = sfondoTela(W, H);
+    const pages = [];
+    let ghost = null;
+    for (const [nPagina, filePagina] of pagine.entries()) {
+      const page = paginaTela(W, H, bold);
+      pages.push(page);
+
+      page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: carta });
+      page.drawImage(sfondo, { x: 0, y: 0, width: W, height: H });
+
+      page.drawRectangle({ x: 0, y: H - BAND, width: W, height: BAND, color: ink });
+      page.drawRectangle({ x: 0, y: H - BAND - 2.5, width: W, height: 2.5, color: ambra });
+      marchio(page, MX, H - 5.5, 19, ink);
+      page.drawText('Collection Time', { x: MX + 25, y: H - 20.5, size: 15, font: bold, color: bianco });
+      const cosaPag = cosa + (pagine.length > 1 ? '  ' + (nPagina + 1) + '/' + pagine.length : '');
+      const cw = font.widthOfTextAtSize(cosaPag, 12.5);
+      page.drawText(cosaPag, { x: W - MX - cw, y: H - 19.5, size: 12.5, font, color: bianco });
+
+      const usaLogo = logo && !soloEstere;
+      const title = pdfText(tl(CONFIG.titolo) + (soloEstere ? ' (' + tl('ESTERO') + ')' : ''));
+      let tsz = TITOLO_H * 1.35;
+      while (!usaLogo && tsz > 10 && bold.widthOfTextAtSize(title, tsz) > W - 2 * MX - 2 * CART_PX) tsz -= 1;
+      const tw = usaLogo ? LOGO_W : bold.widthOfTextAtSize(title, tsz);
+      const cartW = tw + 2 * CART_PX;
+      page.drawSvgPath(scheda(cartW, CART_H), { x: (W - cartW) / 2, y: cartTop, color: bianco, borderColor: gray, borderWidth: 0.6 });
+      page.drawRectangle({ x: (W - cartW) / 2 + R, y: cartTop - CART_H, width: cartW - 2 * R, height: 2.5, color: ambra });
+      if (usaLogo) page.drawImage(logo, { x: (W - LOGO_W) / 2, y: cartTop - CART_PY - TITOLO_H, width: LOGO_W, height: TITOLO_H });
+      else page.drawText(title, { x: (W - tw) / 2, y: cartTop - CART_PY - TITOLO_H, size: tsz, font: bold, color: ink });
+      rigaInfo(page, cartTop - CART_H - 8 - avanzo);
+
+      let top = primaFila;
+      for (const fila of filePagina) {
+        if (fila.testa) { testata(page, fila.testa, top); top -= TESTA_H + ROW_GAP; continue; }
+        const inFila = fila.items.length;
+        for (let c = 0; c < inFila; c++) {
+          const p = fila.items[c];
+          const spost = (!orizzontale || fila.sezione.items.length < COLS) ? (COLS - inFila) * colPitch / 2 : 0;
+          const cx = MX + spost + c * colPitch + colPitch / 2;
+          const spuntata = kind === 'owned' && p.owned;
+
+          page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, color: bianco,
+            borderColor: spuntata ? ambra : gray, borderWidth: spuntata ? 1.4 : 0.6 });
+          if (spuntata) {
+            const K = 4, g = document.createElement('canvas');
+            g.width = Math.round(cardW * K); g.height = Math.round(cardH * K);
+            const gx = g.getContext('2d'); gx.scale(K, K);
+            gx.fillStyle = '#FFF2CC'; gx.fill(new Path2D(schedaPath));
+            page.drawImage(g, { x: cx - cardW / 2, y: top - cardH, width: cardW, height: cardH });
+            page.drawSvgPath(schedaPath, { x: cx - cardW / 2, y: top, borderColor: ambra, borderWidth: 1.4 });
+          }
+
+          const fotoTop = top - PAD, f = foto.get(p);
+          if (f) {
+            const [dw, dh] = misura(f), x = cx - dw / 2, y = fotoTop - fotoH;
+            if (p.image) page.drawImage(fotoTela(f, dw, dh, spuntata), { x, y, width: dw, height: dh });
+            else {
+              if (!ghost) ghost = fotoTela(f, dw, dh);
+              page.drawImage(ghost, { x, y, width: dw, height: dh });
+            }
+          }
+          let y = fotoTop - fotoH - GAP;
+
+          if (nomi) {
+            const righe = righeNome(pdfText(tl(p.name || '')), bold, NOME_SIZE, cardW - 2 * PAD);
+            const y0 = y - NOME_RIGA + 2 - (2 - righe.length) * NOME_RIGA / 2;
+            righe.forEach((t, k) => {
+              const tw = bold.widthOfTextAtSize(t, NOME_SIZE);
+              page.drawText(t, { x: cx - tw / 2, y: y0 - k * NOME_RIGA, size: NOME_SIZE, font: bold, color: ink });
+            });
+            y -= NOME_H;
+          }
+
+          const boxY = y - CODE_H;
+          const code = pdfText(p.code || ''), codeW = bold.widthOfTextAtSize(code, 7.5);
+          const boxW = Math.min(cardW - 2 * PAD, Math.max(26, codeW + 10));
+          page.drawRectangle({ x: cx - boxW / 2, y: boxY, width: boxW, height: CODE_H, color: carta, borderColor: gray, borderWidth: 0.6 });
+          if (code) page.drawText(code, { x: cx - codeW / 2, y: boxY + 3.6, size: 7.5, font: bold, color: p.limited ? red : ink });
+
+          if (fila.sezione.scambio) {
+            if (p.doppi > 1) {
+              const t = '×' + p.doppi, tw = bold.widthOfTextAtSize(t, 9);
+              page.drawText(t, { x: cx - tw / 2, y: boxY - GAP - BOX + 0.5, size: 9, font: bold, color: ambra });
+            }
+            continue;
+          }
+
+          if (kind === 'owned' && p.doppi > 0) {
+            const t = '+' + p.doppi, sz = 7.5, pw = bold.widthOfTextAtSize(t, sz) + sz * 1.1;
+            pillola(page, cx + cardW / 2 - pw + 3, top + sz * 0.8, t, sz);
+          }
+          if (kind !== 'all') continue;
+          const qy = boxY - GAP - BOX;
+          page.drawRectangle({ x: cx - BOX / 2, y: qy, width: BOX, height: BOX, color: bianco, borderColor: grigio, borderWidth: 0.8 });
+          if (spuntata) {
+            page.drawLine({ start: { x: cx - 2.6, y: qy + 3.9 }, end: { x: cx - 0.7, y: qy + 1.7 }, thickness: 1.3, color: ambra });
+            page.drawLine({ start: { x: cx - 0.7, y: qy + 1.7 }, end: { x: cx + 3, y: qy + 6.4 }, thickness: 1.3, color: ambra });
+          }
+        }
+        top -= cardH + ROW_GAP;
+      }
+
       const WM = Math.min(250, H * 0.6);
-      pg.drawImage(filigrana, { x: (W - WM) / 2, y: primaFila - (bloccoH + WM) / 2, width: WM, height: WM, opacity: FILIGRANA_OPACITA * 2 });
+      page.drawImage(filigrana, { x: (W - WM) / 2, y: primaFila - (bloccoH + WM) / 2, width: WM, height: WM, opacity: FILIGRANA_OPACITA });
 
-      marchio(pg, MX, 22, 12, ink);
-      pg.drawImage(sito, { x: MX + 16, y: 12 - SITO_SIZE * 0.25, width: sc.width / SK, height: sc.height / SK });
+      riquadro(page);
+      blobs.push(await fileDi(page.tela, 'image/jpeg'));
+      page.tela.width = page.tela.height = 0;
+    }
 
-    });
 
-    const blob = await fileDi(pages[0].tela, 'image/jpeg');
     const oggi = new Date(), dd = n => String(n).padStart(2, '0');
-    const nome = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + (soloEstere ? '-estero' : '') + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate()) + '.jpg';
+    const radice = 'collection-time_' + CONFIG.id + '_' + kindName[kind] + (soloEstere ? '-estero' : '') + '_' + oggi.getFullYear() + '-' + dd(oggi.getMonth() + 1) + '-' + dd(oggi.getDate());
+    const nomiFile = blobs.map((b, i) => radice + (blobs.length > 1 ? '_' + (i + 1) + '-di-' + blobs.length : '') + '.jpg');
     const scarica = () => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = nome;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-      say('Immagine salvata nella cartella Download.');
+      blobs.forEach((blob, i) => setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nomiFile[i];
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      }, i * 400));
+      say(blobs.length > 1 ? 'Immagini salvate nella cartella Download.' : 'Immagine salvata nella cartella Download.');
     };
-    const jpg = typeof File === 'function' ? new File([blob], nome, { type: 'image/jpeg' }) : null;
-    if (jpg && navigator.canShare && navigator.canShare({ files: [jpg] }) && matchMedia('(pointer: coarse)').matches) {
-      navigator.share({ files: [jpg] }).catch(err => { if (!err || err.name !== 'AbortError') scarica(); });
+    const jpg = typeof File === 'function' ? blobs.map((b, i) => new File([b], nomiFile[i], { type: 'image/jpeg' })) : null;
+    if (jpg && navigator.canShare && navigator.canShare({ files: jpg }) && matchMedia('(pointer: coarse)').matches) {
+      navigator.share({ files: jpg }).catch(err => { if (!err || err.name !== 'AbortError') scarica(); });
     }
     else scarica();
   }
@@ -1227,15 +1358,15 @@ const MAIL_SERIE_L = typeof LINGUA === 'string' && MAIL_SERIE[LINGUA] ? MAIL_SER
     nota.hidden = si;
   }
 
-  const parteMancanti = titolo => { const l = printList(true); return { titolo, sotto: 'Mancanti · ' + l.length, items: l }; };
-  const parteDoppioni = titolo => {
-    const l = printList(false).filter(p => p.doppi > 0);
-    return { titolo, sotto: 'Doppioni · ' + l.reduce((t, p) => t + p.doppi, 0), items: l, scambio: true };
+  const parteMancanti = (titolo, soloNumero) => { const l = printList(true); return soloNumero ? { titolo: titolo + ' · ' + l.length, items: l } : { titolo, sotto: tl('Mancanti') + ' · ' + l.length, items: l }; };
+  const parteDoppioni = (titolo, soloNumero) => {
+    const l = printList(false).filter(p => p.doppi > 0), n = l.reduce((t, p) => t + p.doppi, 0);
+    return soloNumero ? { titolo: titolo + ' · ' + n, items: l, scambio: true } : { titolo, sotto: tl('Doppioni') + ' · ' + n, items: l, scambio: true };
   };
   const sezioniDi = {
-    scambi:   () => [parteMancanti('CERCO'), parteDoppioni('SCAMBIO')],
-    mancanti: () => [parteMancanti('MANCANTI')],
-    doppioni: () => [parteDoppioni('DOPPIONI')],
+    scambi:   () => [parteMancanti(tl('CERCO')), parteDoppioni(tl('SCAMBIO'))],
+    mancanti: () => [parteMancanti(tl('MANCANTI'), true)],
+    doppioni: () => [parteDoppioni(tl('DOPPIONI'), true)],
     owned:    () => [{ items: printList(false) }],
     all:      () => [{ items: printList(false) }]
   };

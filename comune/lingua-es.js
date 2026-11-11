@@ -321,6 +321,16 @@
     "Cerco e scambio": "Busco y cambio",
     "Da condividere: in alto quelli che cerco (mi mancano), sotto quelli che scambio (i doppioni).": "Para compartir: arriba los que busco (me faltan), abajo los que cambio (los repetidos).",
     "Checklist vuota": "Checklist vacía",
+    "Cerco": "Busco",
+    "Scambio": "Cambio",
+    "Checklist da compilare": "Checklist para rellenar",
+    "ce l'ho": "lo tengo",
+    "mi manca": "me falta",
+    "doppione": "repetido",
+    "Crea anche tu la tua checklist, gratis": "Crea tú también tu checklist, gratis",
+    "Inquadra per aprire": "Escanea para abrir",
+    "questa serie": "esta serie",
+    "Immagini salvate nella cartella Download.": "Imágenes guardadas en la carpeta Descargas.",
     "Crea immagine": "Crear imagen",
     "Per creare l'immagine della tua collezione, dei \"Mancanti\" e dei \"Doppioni\" serve un account gratuito.": "Para crear la imagen de tu colección, de «Faltan» y de «Repetidos» necesitas una cuenta gratuita.",
     "Per creare l'immagine della tua collezione, dei \"Mancanti\" e dei \"Doppioni\" serve un account gratuito. ": "Para crear la imagen de tu colección, de «Faltan» y de «Repetidos» necesitas una cuenta gratuita. ",
@@ -549,6 +559,7 @@
   var tr = function (t) { var r = window.traduciTesto ? window.traduciTesto(t) : null; return r == null ? t : r; };
 
   var MODELLI = [
+    [/^Ne hai (\d+) su (\d+)$/, "Tienes $1 de $2"],
     [/^Novità, blocco (\d+) di (\d+)$/, "Novedades, bloque $1 de $2"],
     [/^Aggiungi a «(.+)»$/, "Añadir a «$1»"],
     [/^(\d+) oggett[oi] nella lista$/, function (m) { return m[1] + pl(m[1], ' objeto', ' objetos') + ' en la lista'; }],

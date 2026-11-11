@@ -321,6 +321,16 @@
     "Cerco e scambio": "Wanted & trading",
     "Da condividere: in alto quelli che cerco (mi mancano), sotto quelli che scambio (i doppioni).": "To share: the ones I'm looking for (missing) on top, the ones I'm trading (duplicates) below.",
     "Checklist vuota": "Empty checklist",
+    "Cerco": "Wanted",
+    "Scambio": "Trading",
+    "Checklist da compilare": "Checklist to fill in",
+    "ce l'ho": "I have it",
+    "mi manca": "missing",
+    "doppione": "duplicate",
+    "Crea anche tu la tua checklist, gratis": "Make your own checklist too, for free",
+    "Inquadra per aprire": "Scan to open",
+    "questa serie": "this series",
+    "Immagini salvate nella cartella Download.": "Images saved in the Downloads folder.",
     "Crea immagine": "Create image",
     "Per creare l'immagine della tua collezione, dei \"Mancanti\" e dei \"Doppioni\" serve un account gratuito.": "To create an image of your collection, your “Missing” or your “Duplicates” you need a free account.",
     "Per creare l'immagine della tua collezione, dei \"Mancanti\" e dei \"Doppioni\" serve un account gratuito. ": "To create an image of your collection, your “Missing” or your “Duplicates” you need a free account.",
@@ -558,6 +568,7 @@
 
   var paesi = function (s) { return s.split(/ e |, /).map(function (p) { return ha(PAESI, p) ? PAESI[p] : p; }).join(' and '); };
   var MODELLI = [
+    [/^Ne hai (\d+) su (\d+)$/, "You have $1 of $2"],
     [/^Novità, blocco (\d+) di (\d+)$/, "News, block $1 of $2"],
     [/^Aggiungi a «(.+)»$/, "Add to «$1»"],
     [/^(\d+) oggett[oi] nella lista$/, function (m) { return m[1] + (m[1] === '1' ? ' item' : ' items') + ' in the list'; }],
