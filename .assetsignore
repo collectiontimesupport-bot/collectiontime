@@ -1,0 +1,11 @@
+# File che NON vanno online come pagine del sito (Cloudflare li salta)
+.git
+.github
+.gitignore
+.assetsignore
+CNAME
+_config.yml
+wrangler.jsonc
+src
+node_modules
+.wrangler
