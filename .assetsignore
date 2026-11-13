@@ -9,3 +9,4 @@ wrangler.jsonc
 src
 node_modules
 .wrangler
+# (13/11/2026) Cloudflare pubblica il sito da GitHub a ogni Push
